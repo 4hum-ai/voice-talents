@@ -4,6 +4,9 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
+            <th v-if="selectable" class="px-6 py-3">
+              <input type="checkbox" :checked="allSelected" @change="toggleSelectAll" />
+            </th>
             <th
               v-for="column in config.columns"
               :key="column.key"
@@ -26,6 +29,9 @@
             @click="handleRowClick(item)"
             :title="`Click to view ${item.name || item.title || 'details'}`"
           >
+            <td v-if="selectable" class="px-6 py-4 whitespace-nowrap" @click.stop>
+              <input type="checkbox" :checked="isSelected(item)" @change="toggleSelectRow(item)" />
+            </td>
             <td
               v-for="column in config.columns"
               :key="column.key"
@@ -54,12 +60,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-type Props = { data: any[]; config: { columns: any[]; actions: any[] } }
-const props = defineProps<Props>()
-const emit = defineEmits<{ action: [action:string, item?:any]; sort: [field:string, direction:'asc'|'desc']; itemClick: [item:any] }>()
+type Props = { data: any[]; config: { columns: any[]; actions: any[] }; selectable?: boolean; rowIdKey?: string }
+const props = withDefaults(defineProps<Props>(), { selectable: true, rowIdKey: 'id' })
+const emit = defineEmits<{ action: [action:string, item?:any]; sort: [field:string, direction:'asc'|'desc']; itemClick: [item:any]; 'selection-change': [ids:(string|number)[]] }>()
 
 const sortField = ref('')
 const sortDirection = ref<'asc'|'desc'>('asc')
+const selectedIds = ref<Set<string|number>>(new Set())
 
 const sortedData = computed(() => {
   const d = [...props.data]
@@ -81,6 +88,24 @@ const handleSort = (field:string) => {
 
 const handleAction = (action:string, item?:any) => emit('action', action, item)
 const handleRowClick = (item:any) => emit('itemClick', item)
+
+const getRowId = (item:any): string|number => item?.[props.rowIdKey as string]
+const isSelected = (item:any): boolean => selectedIds.value.has(getRowId(item))
+const allSelected = computed(() => sortedData.value.length > 0 && sortedData.value.every(it => selectedIds.value.has(getRowId(it))))
+const toggleSelectRow = (item:any) => {
+  const id = getRowId(item)
+  if (selectedIds.value.has(id)) selectedIds.value.delete(id)
+  else selectedIds.value.add(id)
+  emit('selection-change', Array.from(selectedIds.value))
+}
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selectedIds.value.clear()
+  } else {
+    sortedData.value.forEach(it => selectedIds.value.add(getRowId(it)))
+  }
+  emit('selection-change', Array.from(selectedIds.value))
+}
 
 const toDate = (v: any): Date | null => {
   if (v instanceof Date) return v

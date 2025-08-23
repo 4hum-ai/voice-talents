@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 interface Props { data: any[]; config: { imageField?: string; titleField: string; descriptionField?: string; actions?: any[] } }
-const props = defineProps<Props>()
+defineProps<Props>()
 const emit = defineEmits<{ action: [action:string, item?:any]; itemClick: [item:any] }>()
 
 // Removed unused handleAction to satisfy type checks

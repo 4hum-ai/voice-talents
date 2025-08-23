@@ -34,6 +34,13 @@
           >
             Add {{ uiConfig?.displayName?.slice(0, -1) || 'Item' }}
           </button>
+          <button
+            v-if="currentView === 'list' && selectedIds.length > 0"
+            @click="handleBulkDelete"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Delete ({{ selectedIds.length }})
+          </button>
         </div>
       </template>
     </PageHeader>
@@ -45,7 +52,7 @@
         <div v-if="loading" class="text-sm text-gray-600">Loading {{ uiConfig?.displayName || moduleName }}...</div>
         <div v-else-if="error" class="text-sm text-red-600">{{ error }}</div>
         <div v-else>
-          <ListView v-if="currentView === 'list' && uiConfig?.views?.list" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" />
+          <ListView v-if="currentView === 'list' && uiConfig?.views?.list" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" @selection-change="onSelectionChange" />
           <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" />
           <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" @action="handleAction" @item-click="handleItemClick" />
           <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" />
@@ -91,10 +98,11 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
 
-const emit = defineEmits(['action', 'sort', 'page-change', 'create'])
+const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delete'])
 
 const currentView = ref('list')
 const searchQuery = ref('')
+const selectedIds = ref<(string|number)[]>([])
 const showFormSidebar = ref(false)
 const formSidebarTitle = ref('')
 const formSidebarData = ref<Record<string, any>>({})
@@ -158,6 +166,17 @@ async function handleSwitchView(view: string) {
 const handleSort = (field: string, direction: string) => emit('sort', field, direction)
 const handlePageChange = (page: number) => emit('page-change', page)
 const handleItemClick = (_item: any) => {}
+
+function onSelectionChange(ids: (string|number)[]) {
+  selectedIds.value = ids
+}
+
+function handleBulkDelete() {
+  if (selectedIds.value.length === 0) return
+  const ok = window.confirm(`Delete ${selectedIds.value.length} selected item(s)? This cannot be undone.`)
+  if (!ok) return
+  emit('bulk-delete', selectedIds.value)
+}
 
 function closeFormSidebar() {
   showFormSidebar.value = false

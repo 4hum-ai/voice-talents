@@ -11,6 +11,7 @@
     :per-page="pagination.limit"
     @page-change="load"
     @action="onAction"
+    @bulk-delete="onBulkDelete"
   />
 </template>
 
@@ -18,7 +19,8 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ResourceViewTemplate from '@/components/templates/ResourceViewTemplate.vue'
-import { movieApi, type PaginatedResponse } from '@/utils/movieApi'
+import { useMovieService, type PaginatedResponse } from '@/composables/useMovieService'
+const movie = useMovieService()
 
 const route = useRoute()
 const module = computed(() => {
@@ -40,7 +42,7 @@ async function loadUiConfig() {
   try {
     loading.value = true
     error.value = null
-    const res = await movieApi.getModuleUiConfig(module.value)
+    const res = await movie.getModuleUiConfig(module.value)
     // API returns { module, config } – use config
     uiConfig.value = res?.config ?? res ?? null
     if (!uiConfig.value) {
@@ -67,7 +69,7 @@ async function load(page = 1) {
     if (!uiConfig.value) {
       await loadUiConfig()
     }
-    const res: PaginatedResponse<any> = await movieApi.listModuleItems(module.value, { page, limit: pagination.value.limit })
+    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, { page, limit: pagination.value.limit })
     items.value = res.data
     const p = res.pagination
     pagination.value = {
@@ -86,9 +88,23 @@ async function load(page = 1) {
 function onAction(action: string, payload?: any) {
   if (action === 'create') {
     // Quick create path; can be replaced with form mapping
-    movieApi.createModuleItem(module.value, payload)
+    movie.createModuleItem(module.value, payload)
       .then(() => load(pagination.value.page))
       .catch((e: any) => error.value = e?.message || 'Create failed')
+  }
+}
+
+async function onBulkDelete(ids: (string|number)[]) {
+  if (!ids || ids.length === 0) return
+  loading.value = true
+  error.value = null
+  try {
+    await Promise.all(ids.map((id) => movie.deleteModuleItem(module.value, String(id))))
+    await load(pagination.value.page)
+  } catch (e: any) {
+    error.value = e?.message || 'Delete failed'
+  } finally {
+    loading.value = false
   }
 }
 
