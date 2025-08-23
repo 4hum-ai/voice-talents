@@ -1,5 +1,5 @@
 import { ref, computed, readonly } from 'vue'
-import { api } from '@/utils/api'
+import { movieApi } from '../utils/movieApi'
 
 const isConnected = ref<boolean | null>(null)
 const lastCheck = ref<Date | null>(null)
@@ -15,7 +15,7 @@ export function useConnectionStatus() {
   const checkConnection = async (): Promise<boolean> => {
     checking.value = true
     try {
-      const connected = await api.checkConnection()
+      const connected = await movieApi.checkConnection()
       isConnected.value = connected
       lastCheck.value = new Date()
       return connected

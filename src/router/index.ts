@@ -1,36 +1,42 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+// Declare resource-driven routes for scalability
+const resourceModules = [
+  'organizations', 
+  'users', 
+  'revenues', 
+  'payouts', 
+  'titles', 
+  'media', 
+  'media-relationships'
+] as const
+
+const resourceRoutes: RouteRecordRaw[] = resourceModules.map((mod) => ({
+  path: `/${mod}`,
+  component: () => import('../views/ModuleView.vue'),
+  meta: { title: mod.charAt(0).toUpperCase() + mod.slice(1), requiresAuth: true, module: mod }
+}))
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../views/Dashboard.vue'),
-    meta: { title: 'Admin Dashboard' }
+    meta: { title: 'Admin Dashboard', requiresAuth: true }
   },
-  {
-    path: '/organizations',
-    component: () => import('../views/Organizations.vue'),
-    meta: { title: 'Organizations' }
-  },
-  {
-    path: '/users',
-    component: () => import('../views/Users.vue'),
-    meta: { title: 'Users' }
-  },
-  {
-    path: '/revenues',
-    component: () => import('../views/Revenues.vue'),
-    meta: { title: 'Revenues' }
-  },
-  {
-    path: '/payouts',
-    component: () => import('../views/Payouts.vue'),
-    meta: { title: 'Payouts' }
-  },
+  ...resourceRoutes,
   {
     path: '/module',
     component: () => import('../views/ModuleView.vue'),
-    meta: { title: 'Module' }
+    meta: { title: 'Module', requiresAuth: true }
+  },
+  // Auth
+  {
+    path: '/auth',
+    name: 'Auth',
+    component: () => import('../views/Auth.vue'),
+    meta: { title: 'Sign In' }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -44,9 +50,22 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   document.title = `Movie Dubie Admin - ${to.meta.title || 'Admin'}`
-  next()
+  const authStore = useAuthStore()
+  if (!authStore.user) {
+    await authStore.initialize()
+  }
+  if (to.name === 'Auth' && authStore.isAuthenticated) {
+    const redirectPath = (to.query.redirect as string) || '/'
+    next(redirectPath)
+    return
+  }
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next({ name: 'Auth', query: { redirect: to.fullPath } })
+  } else {
+    next()
+  }
 })
 
 export default router

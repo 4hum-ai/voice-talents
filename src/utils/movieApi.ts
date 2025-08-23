@@ -1,4 +1,5 @@
-// Basic API client for Admin low-code views
+// Movie Service API client for Admin low-code views
+import { createApiClient } from '@/utils/apiGateway'
 export interface PaginatedResponse<T> {
   data: T[]
   pagination: { page: number; limit: number; total: number; totalPages: number }
@@ -16,8 +17,11 @@ export class ConnectionError extends Error {
   }
 }
 
-class ApiService {
-  constructor(private baseUrl: string) {}
+class MovieApiService {
+  private client
+  constructor(private baseUrl: string) {
+    this.client = createApiClient({ baseUrl })
+  }
 
   async checkConnection(): Promise<boolean> {
     try {
@@ -38,13 +42,9 @@ class ApiService {
         'API base URL is not configured. Set VITE_PUBLIC_API_URL in apps/admin/.env to your API Gateway base URL (e.g., https://<gateway-domain>)'
       )
     }
-    const url = `${this.baseUrl}${endpoint}`
-    const config: RequestInit = {
-      headers: { 'Content-Type': 'application/json', ...options.headers },
-      ...options
-    }
+    // using shared api gateway client under the hood
     try {
-      const res = await fetch(url, config)
+      const res = await this.client.request(endpoint, options)
       if (!res.ok) {
         let message = `HTTP error! status: ${res.status}`
         const contentType = res.headers.get('content-type') || ''
@@ -52,7 +52,10 @@ class ApiService {
           try {
             const err = await res.json()
             message = err.message || err.error || message
-          } catch {}
+          } catch {
+            // Non-JSON error body; keep default message
+            void 0
+          }
         } else {
           const text = await res.text().catch(() => '')
           if (text?.startsWith('<!doctype') || text?.startsWith('<!DOCTYPE')) {
@@ -103,15 +106,27 @@ class ApiService {
   }
 
   async listModuleItems(module: string, params?: Record<string, any>): Promise<PaginatedResponse<any>> {
-    const response = await this.get<any>(`/api/${module}`, params)
+    const payload = await this.get<any>(`/api/${module}`, params)
+    const pg = payload?.pagination ?? {}
+    const page = Number(pg.page ?? payload.page ?? 1) || 1
+    const limit = Number(pg.limit ?? payload.limit ?? 20) || 20
+    const total = Number(pg.total ?? payload.total ?? 0) || 0
+    const totalPages = Number(pg.totalPages ?? payload.totalPages ?? Math.ceil(total / (limit || 1))) || Math.max(1, Math.ceil(total / (limit || 1)))
     return {
-      data: response.data || [],
+      data: payload.data || [],
       pagination: {
-        page: response.page || 1,
-        limit: response.limit || 20,
-        total: response.total || 0,
-        totalPages: response.totalPages || 0
+        page,
+        limit,
+        total,
+        totalPages
       }
+    }
+  }
+  async getModuleUiConfig(module: string): Promise<any | null> {
+    try {
+      return await this.get<any>(`/api/admin-ui/modules/${module}/config`)
+    } catch (_) {
+      return null
     }
   }
   async createModuleItem(module: string, data: any): Promise<any> {
@@ -127,6 +142,7 @@ class ApiService {
   }
 }
 
-export const api = new ApiService(API_BASE_URL)
+export const movieApi = new MovieApiService(API_BASE_URL)
+
 
 

@@ -11,7 +11,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: Number(process.env.VITE_PORT) || 5175
+    port: 5173
   }
 })
 

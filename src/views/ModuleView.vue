@@ -15,28 +15,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ResourceViewTemplate from '@/components/templates/ResourceViewTemplate.vue'
-import { api, type PaginatedResponse } from '@/utils/api'
+import { movieApi, type PaginatedResponse } from '@/utils/movieApi'
 
 const route = useRoute()
-const module = computed(() => String(route.query.module || 'organizations'))
+const module = computed(() => {
+  // Prefer module from route meta if provided by resource routes
+  const metaModule = route.meta?.module as string | undefined
+  if (metaModule) return metaModule
+  // Fallback to query param to allow ad-hoc module access
+  return String(route.query.module || 'organizations')
+})
 
-const uiConfig = computed(() => getUiConfig(module.value))
+const uiConfig = ref<any | null>(null)
 
 const items = ref<any[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
 
+async function loadUiConfig() {
+  try {
+    loading.value = true
+    error.value = null
+    const res = await movieApi.getModuleUiConfig(module.value)
+    // API returns { module, config } – use config
+    uiConfig.value = res?.config ?? res ?? null
+    if (!uiConfig.value) {
+      throw new Error('UI configuration not available')
+    }
+    // Apply page size from config if provided
+    const pageSize = uiConfig.value?.views?.list?.pageSize
+    if (pageSize && typeof pageSize === 'number') {
+      pagination.value.limit = pageSize
+    }
+  } catch (e: any) {
+    error.value = e?.message || 'Failed to load UI configuration'
+    throw e
+  } finally {
+    loading.value = false
+  }
+}
+
 async function load(page = 1) {
   loading.value = true
   error.value = null
   try {
-    const res: PaginatedResponse<any> = await api.listModuleItems(module.value, { page, limit: pagination.value.limit })
+    // Ensure UI config is loaded first
+    if (!uiConfig.value) {
+      await loadUiConfig()
+    }
+    const res: PaginatedResponse<any> = await movieApi.listModuleItems(module.value, { page, limit: pagination.value.limit })
     items.value = res.data
-    pagination.value = { page: res.pagination.page, limit: res.pagination.limit, total: res.pagination.total, totalPages: res.pagination.totalPages }
+    const p = res.pagination
+    pagination.value = {
+      page: Number(p.page) || 1,
+      limit: Number(p.limit) || 20,
+      total: Number(p.total) || 0,
+      totalPages: Number(p.totalPages) || Math.max(1, Math.ceil((Number(p.total) || 0) / (Number(p.limit) || 1)))
+    }
   } catch (e: any) {
     error.value = e?.message || 'Failed to load data'
   } finally {
@@ -47,73 +86,27 @@ async function load(page = 1) {
 function onAction(action: string, payload?: any) {
   if (action === 'create') {
     // Quick create path; can be replaced with form mapping
-    api.createModuleItem(module.value, payload)
+    movieApi.createModuleItem(module.value, payload)
       .then(() => load(pagination.value.page))
       .catch((e: any) => error.value = e?.message || 'Create failed')
   }
 }
 
-onMounted(() => load())
+onMounted(async () => {
+  await loadUiConfig()
+  await load(1)
+})
 
-function getUiConfig(mod: string) {
-  const baseActions = [
-    { name: 'view', label: 'View', icon: 'eye' },
-    { name: 'edit', label: 'Edit', icon: 'edit' },
-    { name: 'delete', label: 'Delete', icon: 'trash' },
-    { name: 'create', label: 'Create', icon: 'plus' }
-  ]
-  if (mod === 'organizations') {
-    return {
-      displayName: 'Organizations',
-      views: {
-        list: {
-          columns: [
-            { key: 'name', label: 'Name', sortable: true },
-            { key: 'country', label: 'Country' },
-            { key: 'status', label: 'Status' },
-            { key: 'actions', label: 'Actions' }
-          ],
-          actions: baseActions
-        },
-        kanban: {
-          groupByField: 'status',
-          columns: [
-            { value: 'active', label: 'Active', color: '#16a34a' },
-            { value: 'pending', label: 'Pending', color: '#f59e0b' },
-            { value: 'suspended', label: 'Suspended', color: '#ef4444' }
-          ],
-          cardTitleField: 'name',
-          cardDescriptionField: 'country',
-          actions: baseActions
-        },
-        gallery: { titleField: 'name', descriptionField: 'country', actions: baseActions },
-        calendar: { titleField: 'name', dateField: 'createdAt', actions: baseActions }
-      },
-      formView: {
-        fields: [
-          { key: 'name', label: 'Name', type: 'text', required: true },
-          { key: 'email', label: 'Email', type: 'email' },
-          { key: 'country', label: 'Country', type: 'text' },
-          { key: 'status', label: 'Status', type: 'select', options: [
-            { value: 'active', label: 'Active' },
-            { value: 'pending', label: 'Pending' },
-            { value: 'suspended', label: 'Suspended' }
-          ]}
-        ]
-      },
-      features: { stats: [] }
-    }
-  }
-  // default generic config
-  return {
-    displayName: mod,
-    views: {
-      list: { columns: [ { key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }, { key: 'actions', label: 'Actions' } ], actions: baseActions }
-    },
-    formView: { fields: [ { key: 'name', label: 'Name', type: 'text', required: true } ] },
-    features: { stats: [] }
-  }
-}
+watch(module, async () => {
+  // Reset when switching modules
+  uiConfig.value = null
+  items.value = []
+  pagination.value = { page: 1, limit: 20, total: 0, totalPages: 1 }
+  await loadUiConfig()
+  await load(1)
+})
+
+// Removed local fallback; UI config must come from API
 </script>
 
 

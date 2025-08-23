@@ -1,19 +1,46 @@
 <template>
-  <div style="background:#0f1116; border:1px solid #1e2130; border-radius:8px; overflow:hidden">
-    <div style="overflow:auto">
-      <table style="width:100%; border-collapse:collapse">
-        <thead>
-          <tr style="background:#111318; color:#a0a0a7">
-            <th v-for="column in config.columns" :key="column.key" @click="column.sortable ? handleSort(column.key) : null" style="text-align:left; font-size:12px; padding:12px; cursor:pointer">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              v-for="column in config.columns"
+              :key="column.key"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider transition-colors duration-150"
+              :class="[
+                column.sortable ? 'cursor-pointer hover:bg-gray-100' : '',
+                column.align ? `text-${column.align}` : 'text-left'
+              ]"
+              @click="column.sortable ? handleSort(column.key) : null"
+            >
               {{ column.label }}
             </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="item in sortedData" :key="item.id" @click="handleRowClick(item)" style="border-top:1px solid #1e2130; cursor:pointer" title="Click to view details">
-            <td v-for="column in config.columns" :key="column.key" style="padding:12px;">
-              <div v-if="column.key==='actions'" style="display:flex; gap:8px; justify-content:flex-end">
-                <button v-for="action in config.actions" :key="action.name" @click.stop="handleAction(action.name, item)">{{ action.label }}</button>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr
+            v-for="item in sortedData"
+            :key="item.id"
+            class="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+            @click="handleRowClick(item)"
+            :title="`Click to view ${item.name || item.title || 'details'}`"
+          >
+            <td
+              v-for="column in config.columns"
+              :key="column.key"
+              class="px-6 py-4 whitespace-nowrap"
+              :class="column.align ? `text-${column.align}` : ''"
+            >
+              <div v-if="column.key==='actions'" class="flex items-center justify-end space-x-2">
+                <button
+                  v-for="action in config.actions"
+                  :key="action.name"
+                  @click.stop="handleAction(action.name, item)"
+                  class="px-2 py-1 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  {{ action.label }}
+                </button>
               </div>
               <div v-else>{{ formatCellValue(item[column.key], column) }}</div>
             </td>
@@ -27,7 +54,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-interface Props { data: any[]; config: { columns: any[]; actions: any[] } }
+type Props = { data: any[]; config: { columns: any[]; actions: any[] } }
 const props = defineProps<Props>()
 const emit = defineEmits<{ action: [action:string, item?:any]; sort: [field:string, direction:'asc'|'desc']; itemClick: [item:any] }>()
 
@@ -55,13 +82,32 @@ const handleSort = (field:string) => {
 const handleAction = (action:string, item?:any) => emit('action', action, item)
 const handleRowClick = (item:any) => emit('itemClick', item)
 
+const toDate = (v: any): Date | null => {
+  if (v instanceof Date) return v
+  if (typeof v === 'string' || typeof v === 'number') {
+    const d = new Date(v)
+    return isNaN(d.getTime()) ? null : d
+  }
+  if (v && typeof v === 'object') {
+    // Support Firestore-like timestamp
+    const seconds = (v._seconds ?? v.seconds)
+    const nanos = (v._nanoseconds ?? v.nanoseconds ?? 0)
+    if (typeof seconds === 'number') {
+      const ms = seconds * 1000 + Math.floor(nanos / 1e6)
+      const d = new Date(ms)
+      return isNaN(d.getTime()) ? null : d
+    }
+  }
+  return null
+}
+
 const formatCellValue = (value:any, column:any) => {
   if (value === null || value === undefined) return '-'
   switch (column.type) {
     case 'date': {
-      const dateValue = typeof value === 'string' ? new Date(value) : value
-      if (isNaN(dateValue.getTime())) return '-'
-      return dateValue.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      const d = toDate(value)
+      if (!d) return '-'
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
     }
     case 'boolean': return value ? 'Yes' : 'No'
     case 'array': return Array.isArray(value) ? value.join(', ') : value

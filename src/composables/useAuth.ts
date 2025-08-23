@@ -1,0 +1,123 @@
+import { ref, readonly, computed } from "vue";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  getAdditionalUserInfo,
+  setPersistence,
+  browserLocalPersistence,
+  type User as FirebaseUser,
+} from "firebase/auth";
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+}
+
+const firebaseConfig = {
+  apiKey: (import.meta as any).env?.VITE_FIREBASE_API_KEY,
+  authDomain: (import.meta as any).env?.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: (import.meta as any).env?.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: (import.meta as any).env?.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: (import.meta as any).env?.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: (import.meta as any).env?.VITE_FIREBASE_APP_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+void setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+export function useAuth() {
+  const isLoading = ref(true);
+  const error = ref<string | null>(null);
+  const user = ref<AuthUser | null>(null);
+
+  const convertFirebaseUser = (firebaseUser: FirebaseUser): AuthUser => {
+    return {
+      id: firebaseUser.uid,
+      email: firebaseUser.email || "",
+      displayName: firebaseUser.displayName || undefined,
+      photoURL: firebaseUser.photoURL || undefined,
+    };
+  };
+
+  const getCurrentUser = async (): Promise<AuthUser | null> => {
+    return new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          const converted = convertFirebaseUser(firebaseUser);
+          user.value = converted;
+          resolve(converted);
+        } else {
+          user.value = null;
+          resolve(null);
+        }
+        isLoading.value = false;
+        unsubscribe();
+      });
+    });
+  };
+
+  const login = async (email: string, password: string): Promise<AuthUser> => {
+    try {
+      error.value = null;
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const converted = convertFirebaseUser(cred.user);
+      user.value = converted;
+      return converted;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Login failed";
+      error.value = message;
+      throw new Error(message);
+    }
+  };
+
+  const loginWithGoogle = async (): Promise<{ user: AuthUser; newUser?: boolean }> => {
+    try {
+      error.value = null;
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const converted = convertFirebaseUser(result.user);
+      const info = getAdditionalUserInfo(result);
+      user.value = converted;
+      return { user: converted, newUser: info?.isNewUser };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Google login failed";
+      error.value = message;
+      throw new Error(message);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      error.value = null;
+      await signOut(auth);
+      user.value = null;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Logout failed";
+      error.value = message;
+      throw new Error(message);
+    }
+  };
+
+  const isAuthenticated = computed(() => !!user.value);
+
+  return {
+    user: readonly(user),
+    isLoading: readonly(isLoading),
+    error: readonly(error),
+    isAuthenticated,
+    getCurrentUser,
+    login,
+    loginWithGoogle,
+    logout,
+  };
+}
+
+
