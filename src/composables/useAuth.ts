@@ -6,6 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
+  GithubAuthProvider,
+  OAuthProvider,
   signInWithPopup,
   getAdditionalUserInfo,
   setPersistence,
@@ -94,6 +96,38 @@ export function useAuth() {
     }
   };
 
+  const loginWithOAuth = async (
+    providerName: 'google' | 'github' | 'microsoft' | 'apple'
+  ): Promise<{ user: AuthUser; newUser?: boolean }> => {
+    try {
+      error.value = null;
+      let providerInstance: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
+      switch (providerName) {
+        case 'google':
+          providerInstance = new GoogleAuthProvider();
+          break;
+        case 'github':
+          providerInstance = new GithubAuthProvider();
+          break;
+        case 'microsoft':
+          providerInstance = new OAuthProvider('microsoft.com');
+          break;
+        case 'apple':
+          providerInstance = new OAuthProvider('apple.com');
+          break;
+      }
+      const result = await signInWithPopup(auth, providerInstance as any);
+      const converted = convertFirebaseUser(result.user);
+      const info = getAdditionalUserInfo(result);
+      user.value = converted;
+      return { user: converted, newUser: info?.isNewUser };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'OAuth login failed';
+      error.value = message;
+      throw new Error(message);
+    }
+  };
+
   const logout = async (): Promise<void> => {
     try {
       error.value = null;
@@ -116,6 +150,7 @@ export function useAuth() {
     getCurrentUser,
     login,
     loginWithGoogle,
+    loginWithOAuth,
     logout,
   };
 }

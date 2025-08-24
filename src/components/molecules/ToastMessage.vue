@@ -1,8 +1,12 @@
 <template>
   <div
     :class="[
-      'relative flex w-sm flex-row gap-2 rounded border border-zinc-800 bg-zinc-900 p-3',
+      'flex w-sm flex-row items-start gap-2 rounded border p-3',
+      theme === 'dark'
+        ? 'border-zinc-800 bg-zinc-900'
+        : 'border-zinc-200 bg-zinc-100 shadow',
     ]"
+    @hover="onHover"
   >
     <component
       :is="icons[props.message.type]"
@@ -15,32 +19,47 @@
               ? 'text-green-500'
               : props.message.type === 'warning'
                 ? 'text-yellow-500'
-                : 'text-zinc-50',
+                : theme === 'dark'
+                  ? 'text-zinc-50'
+                  : 'text-zinc-900',
         'mt-0.5 flex-none text-base',
       ]"
     />
+
+    <div
+      :class="[
+        'flex-auto wrap-break-word',
+        theme === 'dark' ? 'text-zinc-50' : 'text-zinc-900',
+      ]"
+    >
+      <h4 class="font-medium">{{ props.message.title }}</h4>
+      <span>{{ props.message.body }}</span>
+    </div>
+
     <button
-      class="absolute top-2 right-2 text-zinc-400 transition hover:text-zinc-50"
+      :class="[
+        'flex-none text-base transition',
+        theme === 'dark'
+          ? 'text-zinc-400 hover:text-zinc-200'
+          : 'text-zinc-600 hover:text-zinc-800',
+      ]"
       @click="emit('destroy', props.message.id)"
     >
       <CloseIcon />
     </button>
-    <div class="flex-auto wrap-break-word">
-      <h4 class="font-medium">{{ props.message.title }}</h4>
-      <span>{{ props.message.body }}</span>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { IToastMessage, MessageType } from "@/types/toast";
-import { promiseTimeout } from "@vueuse/core";
-import { FunctionalComponent, onMounted, SVGAttributes } from "vue";
+import { useTimeout } from "@vueuse/core";
+import { FunctionalComponent, onMounted, SVGAttributes, watch } from "vue";
 import ErrorIcon from "~icons/mdi/error-outline";
 import InfoIcon from "~icons/mdi/information-outline";
 import SuccessIcon from "~icons/mdi/check-circle-outline";
 import WarningIcon from "~icons/mdi/warning-outline";
 import CloseIcon from "~icons/mdi/close";
+import { theme } from "@/composables/useToast";
 
 // Types
 interface Props {
@@ -55,6 +74,12 @@ const emit = defineEmits<{
 // Props
 const props = defineProps<Props>();
 
+// Composables
+const { start, stop, ready } = useTimeout(props.message.timeout || 0, {
+  controls: true,
+  immediate: false,
+});
+
 // State
 const icons: Record<MessageType, FunctionalComponent<SVGAttributes>> = {
   success: SuccessIcon,
@@ -64,12 +89,20 @@ const icons: Record<MessageType, FunctionalComponent<SVGAttributes>> = {
 };
 
 // Watchers
+const onHover = () => stop();
+
 onMounted(async () => {
-  if (!(props.message.timeout !== undefined && props.message.timeout > 0))
-    return;
-
-  await promiseTimeout(props.message.timeout);
-
-  emit("destroy", props.message.id);
+  if (props.message.timeout === undefined || props.message.timeout <= 0) return;
+  start();
 });
+
+watch(
+  ready,
+  (newValue) => {
+    if (newValue) {
+      emit("destroy", props.message.id);
+    }
+  },
+  { immediate: false },
+);
 </script>

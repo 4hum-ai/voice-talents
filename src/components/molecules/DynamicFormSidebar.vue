@@ -2,16 +2,16 @@
   <div class="fixed inset-0 overflow-hidden z-50 pointer-events-none">
     <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex pointer-events-auto">
       <div class="w-screen max-w-md">
-        <div class="h-full flex flex-col bg-white shadow-xl border-l border-gray-200">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
-            <h3 class="text-lg font-medium text-gray-900">{{ title }}</h3>
-            <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600">✕</button>
+        <div class="h-full flex flex-col bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ title }}</h3>
+            <button @click="$emit('close')" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">✕</button>
           </div>
-          <div class="flex-1 overflow-y-auto bg-white">
+          <div class="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
             <form @submit.prevent="handleSubmit" class="px-6 py-6 space-y-6">
               <div class="space-y-4">
                 <div v-for="field in resolvedForm.fields" :key="field.key" class="space-y-2">
-                  <label :for="field.key" class="block text-sm font-medium text-gray-700">{{ field.label }}<span v-if="field.required" class="text-red-500">*</span></label>
+                  <label :for="field.key" class="block text-sm font-medium text-gray-700 dark:text-gray-200">{{ field.label }}<span v-if="field.required" class="text-red-500">*</span></label>
                   <input v-if="field.type==='text' || field.type==='email' || field.type==='url'" :id="field.key" v-model="formData[field.key]" :type="inputType(field)" :placeholder="field.placeholder" :class="inputClass(field)" @blur="onBlur(field)" @input="onInput(field)" />
                   <input v-else-if="field.type==='number'" :id="field.key" v-model.number="formData[field.key]" type="number" :placeholder="field.placeholder" :class="inputClass(field)" @blur="onBlur(field)" @input="onInput(field)" />
                   <input v-else-if="field.type==='date'" :id="field.key" v-model="formData[field.key]" type="date" :class="inputClass(field)" @blur="onBlur(field)" @input="onInput(field)" />
@@ -20,16 +20,16 @@
                     <option v-for="opt in field.options || []" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                   </select>
                   <textarea v-else-if="field.type==='textarea'" :id="field.key" v-model="formData[field.key]" :placeholder="field.placeholder" rows="3" :class="textareaClass(field)" @blur="onBlur(field)" @input="onInput(field)"></textarea>
-                  <div v-else-if="field.type==='boolean'" class="flex items-center"><input :id="field.key" v-model="formData[field.key]" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" @change="onInput(field)" /><label :for="field.key" class="ml-2 block text-sm text-gray-900">{{ field.label }}</label></div>
-                  <p v-if="field.helpText" class="text-xs text-gray-500">{{ field.helpText }}</p>
+                  <div v-else-if="field.type==='boolean'" class="flex items-center"><input :id="field.key" v-model="formData[field.key]" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800" @change="onInput(field)" /><label :for="field.key" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">{{ field.label }}</label></div>
+                  <p v-if="field.helpText" class="text-xs text-gray-500 dark:text-gray-400">{{ field.helpText }}</p>
                   <p v-if="shouldShowError(field)" class="text-xs text-red-600">{{ errors[field.key] }}</p>
                 </div>
               </div>
             </form>
           </div>
-          <div class="flex-shrink-0 px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <div class="flex-shrink-0 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             <div class="flex justify-end space-x-3">
-              <button type="button" @click="$emit('close')" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
+              <button type="button" @click="$emit('close')" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
               <button type="submit" :disabled="loading || !isFormValid" @click="handleSubmit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
                 <span v-if="loading">{{ loadingText }}</span>
                 <span v-else>{{ submitText }}</span>
@@ -70,12 +70,12 @@ const resolvedForm = computed<FormConfig>(() => {
   return base
 })
 
-const inputBase = 'block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2'
+const inputBase = 'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:border-red-500 border-gray-300 dark:border-gray-700'
 const touched = reactive<Record<string, boolean>>({})
 const submitted = ref(false)
 const shouldShowError = (field: FormField) => (touched[field.key] || submitted.value) && !!errors[field.key]
-const inputClass = (field: FormField) => [inputBase, shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500']
-const textareaClass = (field: FormField) => [inputBase, 'min-h-[96px]', shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500']
+const inputClass = (field: FormField) => [inputBase, shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : '']
+const textareaClass = (field: FormField) => [inputBase, 'min-h-[96px]', shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : '']
 const inputType = (field: FormField) => {
   if (field.type === 'text' && field.key === 'email') return 'email'
   return field.type

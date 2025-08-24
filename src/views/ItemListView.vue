@@ -10,6 +10,7 @@
     :total-items="pagination.total"
     :per-page="pagination.limit"
     @page-change="load"
+    @sort="onSort"
     @action="onAction"
     @bulk-delete="onBulkDelete"
   />
@@ -67,7 +68,15 @@ async function load(page = 1) {
     if (!uiConfig.value) {
       await loadUiConfig()
     }
-    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, { page, limit: pagination.value.limit })
+    const url = new URL(window.location.href)
+    const search = url.searchParams.get('search') || undefined
+    const searchField = url.searchParams.get('searchField') || undefined
+    const sortParam = url.searchParams.get('sort') || undefined
+    const params: Record<string, any> = { page, limit: pagination.value.limit }
+    if (search) params.search = search
+    if (searchField) params.searchFields = searchField
+    if (sortParam) params.sort = sortParam
+    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params)
     items.value = res.data
     const p = res.pagination
     pagination.value = {
@@ -81,6 +90,14 @@ async function load(page = 1) {
   } finally {
     loading.value = false
   }
+}
+function onSort(field: string, direction: string) {
+  try {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', `${field}:${direction}`)
+    history.replaceState(null, '', url.toString())
+  } catch {}
+  load(1)
 }
 
 function onAction(action: string, payload?: any) {

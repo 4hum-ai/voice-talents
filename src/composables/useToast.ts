@@ -1,7 +1,8 @@
-import { IToastMessage } from "@/types/toast";
+import { IToastMessage, ToastTheme } from "@/types/toast";
 import { ref, Ref } from "vue";
 
 const messages: Ref<IToastMessage[]> = ref([]);
+export const theme: ToastTheme = "light";
 
 export const useToast = () => {
   const push = (message: IToastMessage) => {

@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
-      <div v-for="item in data" :key="item.id" class="bg-white rounded-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-sm transition-shadow" @click="handleItemClick(item)">
-        <div class="aspect-square bg-gray-100 flex items-center justify-center">
-          <span class="text-4xl text-gray-400 font-medium">{{ getInitials(item[config.titleField]) }}</span>
+      <div v-for="item in data" :key="item.id" class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-sm transition-shadow" @click="handleItemClick(item)">
+        <div class="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          <span class="text-4xl text-gray-400 dark:text-gray-500 font-medium">{{ getInitials(item[config.titleField]) }}</span>
         </div>
         <div class="p-4">
-          <h3 class="font-medium text-sm text-gray-900 mb-1">{{ item[config.titleField] }}</h3>
-          <p v-if="config.descriptionField" class="text-xs text-gray-500">{{ item[config.descriptionField] }}</p>
+          <h3 class="font-medium text-sm text-gray-900 dark:text-gray-100 mb-1">{{ item[config.titleField] }}</h3>
+          <p v-if="config.descriptionField" class="text-xs text-gray-500 dark:text-gray-400">{{ item[config.descriptionField] }}</p>
         </div>
       </div>
     </div>

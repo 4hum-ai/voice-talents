@@ -11,7 +11,11 @@ app.use(createPinia())
 app.use(router)
 // Initialize auth store before mount so guards have state
 import { useAuthStore } from './stores/auth'
+import { useTheme } from './composables/useTheme'
 const authStore = useAuthStore()
+// Initialize theme before mounting to prevent FOUC
+const { initialize: initTheme } = useTheme()
+initTheme()
 authStore.initialize().finally(() => {
   app.mount('#app')
 })

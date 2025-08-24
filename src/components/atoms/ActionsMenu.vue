@@ -13,16 +13,16 @@
     <!-- Popover (desktop) -->
     <TransitionRoot appear as="template" enter="transition ease-out duration-100" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="transition ease-in duration-75" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
       <MenuItems as="div" class="contents">
-        <div ref="itemsEl" :style="floatingStyles" class="z-50 min-w-[12rem] rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none fixed">
+        <div ref="itemsEl" :style="floatingStyles" class="z-50 min-w-[12rem] rounded-md border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white/10 focus:outline-none fixed">
           <div class="py-1" role="none">
             <HMenuItem v-for="item in items" :key="item.key" v-slot="{ active }">
-              <button type="button" :class="['group flex w-full items-start gap-3 text-left focus:outline-none', itemPadding, active ? 'bg-gray-50' : '']" @click="onSelect(item)">
+              <button type="button" :class="['group flex w-full items-start gap-3 text-left focus:outline-none', itemPadding, active ? 'bg-gray-50 dark:bg-gray-700' : '']" @click="onSelect(item)">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-800 truncate">{{ item.label }}</span>
-                    <span v-if="item.value" class="ml-4 shrink-0 text-xs text-gray-500">{{ item.value }}</span>
+                    <span class="text-sm text-gray-800 dark:text-gray-100 truncate">{{ item.label }}</span>
+                    <span v-if="item.value" class="ml-4 shrink-0 text-xs text-gray-500 dark:text-gray-400">{{ item.value }}</span>
                   </div>
-                  <p v-if="item.description" class="mt-0.5 text-xs text-gray-500 leading-snug line-clamp-2">{{ item.description }}</p>
+                  <p v-if="item.description" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">{{ item.description }}</p>
                 </div>
               </button>
             </HMenuItem>
@@ -57,7 +57,7 @@ const floatingStyles = ref<Record<string, string>>({})
 const buttonAriaLabel = computed(() => 'Open actions menu')
 const size = computed(() => props.size || 'md')
 const triggerClass = computed(() => {
-  const base = 'inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500'
+  const base = 'inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500'
   const sizes: Record<string, string> = {
     sm: 'h-7 w-7',
     md: 'h-9 w-9',

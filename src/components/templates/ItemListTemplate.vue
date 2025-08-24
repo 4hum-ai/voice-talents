@@ -1,81 +1,76 @@
 <template>
   <div class="min-h-screen">
-    <!-- Fixed App Bar -->
-    <div class="fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
-      <div class="px-4 py-3">
-        <div class="flex items-center gap-2">
-          <button @click="goBack" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Go back">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12.78 15.53a.75.75 0 01-1.06 0l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 111.06 1.06L8.31 10l4.47 4.47a.75.75 0 010 1.06z" clip-rule="evenodd" />
-            </svg>
-          </button>
-
-          <!-- Normal state -->
-          <template v-if="!isSearchOpen">
-            <div class="min-w-0 flex-1">
-              <div class="text-base font-semibold text-gray-900 truncate">
-                <slot name="title">{{ uiConfig?.displayName || moduleName }}</slot>
-              </div>
-              <div class="text-xs text-gray-500 truncate">
-                <slot name="subtitle">{{ uiConfig?.description }}</slot>
-              </div>
+    <AppBar :loading="loading" :show-back="true" @back="goBack">
+      <template #left>
+        <template v-if="!isSearchOpen">
+          <div class="min-w-0">
+            <div class="text-base font-semibold text-gray-900 truncate">
+              <slot name="title">{{ uiConfig?.displayName || moduleName }}</slot>
             </div>
-            <div class="ml-auto flex items-center gap-2">
-              <button
-                v-if="hasCreateAction"
-                @click="handleAction('create')"
-                class="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              >
-                + Add {{ displayNameSingular }}
-              </button>
-              <button
-                v-if="hasCreateAction"
-                @click="handleAction('create')"
-                class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9"
-                aria-label="Add"
-              >
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z" />
-                </svg>
-              </button>
-              <button @click="openSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Search">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              <ActionsMenu :items="layoutMenuItems" size="md" @select="handleLayoutSelect">
-                <template #label>
-                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 0112 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0112 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0021 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z" />
-                  </svg>
-                </template>
-              </ActionsMenu>
+            <div class="text-xs text-gray-500 truncate">
+              <slot name="subtitle">{{ uiConfig?.description }}</slot>
             </div>
-          </template>
-
-          <!-- Search state -->
-          <template v-else>
+          </div>
+        </template>
+        <template v-else>
+          <div class="flex items-center gap-2 min-w-0 flex-1">
             <div class="min-w-0 flex-1">
-              <input v-model="searchQuery" :placeholder="`Search ${moduleName}...`" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+              <input ref="searchInputRef" v-model="searchQuery" @input="handleSearchInputDebounced" @keydown.esc.prevent="handleEscape" :placeholder="`Search ${moduleName}...`" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
             </div>
             <div class="hidden sm:flex items-center gap-2">
               <div class="inline-flex items-center gap-2 text-sm text-gray-600">
                 <label class="text-xs text-gray-500">Fields</label>
-                <select class="px-2 py-1.5 border border-gray-300 rounded-md text-sm">
+                <select v-model="selectedSearchField" @change="handleSearchInput" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm">
                   <option value="all">All fields</option>
+                  <option v-for="f in searchableFieldOptions" :key="f.key" :value="f.key">{{ f.label }}</option>
                 </select>
               </div>
               <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">Filters</button>
             </div>
-            <button @click="closeSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Close search">
+          </div>
+        </template>
+      </template>
+      <template #actions>
+        <template v-if="!isSearchOpen">
+          <button
+            v-if="hasCreateAction"
+            @click="handleAction('create')"
+            class="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            + Add {{ displayNameSingular }}
+          </button>
+          <button
+            v-if="hasCreateAction"
+            @click="handleAction('create')"
+            class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9"
+            aria-label="Add"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z" />
+            </svg>
+          </button>
+          <button @click="openSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Search">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <ActionsMenu :items="layoutMenuItems" size="md" @select="handleLayoutSelect">
+            <template #label>
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                <path d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 0112 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0112 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0021 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z" />
               </svg>
-            </button>
-          </template>
-        </div>
-      </div>
-    </div>
+            </template>
+          </ActionsMenu>
+        </template>
+        <template v-else>
+          <button @click="closeSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Close search">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </template>
+      </template>
+    </AppBar>
 
     <!-- Spacer for fixed header -->
     <div class="h-16"></div>
@@ -103,7 +98,7 @@
         <div v-else-if="error" class="text-sm text-red-600">{{ error }}</div>
         <div v-else>
           <TableView v-if="currentView === 'list' && uiConfig?.views?.list && filteredData.length > 0" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" @selection-change="onSelectionChange" />
-          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" />
+          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" />
           <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" @action="handleAction" @item-click="handleItemClick" />
           <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar && filteredData.length > 0" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" />
           <div v-else-if="filteredData.length === 0" class="py-16 text-center border border-dashed border-gray-200 rounded-lg bg-white">
@@ -144,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, unref, nextTick, defineAsyncComponent } from 'vue'
+import { ref, computed, unref, nextTick, defineAsyncComponent, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Pagination from '@/components/molecules/Pagination.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
@@ -154,6 +149,10 @@ import GalleryView from '@/components/organisms/GalleryView.vue'
 import CalendarView from '@/components/organisms/CalendarView.vue'
 import StatsView from '@/components/organisms/StatsView.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
+import { useMovieService } from '@/composables/useMovieService'
+import { useToast } from '@/composables/useToast'
+import { usePreference } from '@/composables/usePreference'
 const router = useRouter()
 
 interface Props {
@@ -176,9 +175,18 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delete'])
 
-const currentView = ref('list')
+const moduleName = computed(() => props.moduleName)
+const viewPrefKey = computed(() => `${moduleName.value}-list-view`)
+const viewPref = ref<ReturnType<typeof usePreference> | null>(null)
+watch(viewPrefKey, (k) => {
+  viewPref.value = usePreference(k)
+}, { immediate: true })
+
+const currentView = ref<'list' | 'gallery' | 'calendar' | 'kanban'>('list')
 const searchQuery = ref('')
+const selectedSearchField = ref<'all' | string>('all')
 const isSearchOpen = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null)
 const selectedIds = ref<(string|number)[]>([])
 const showFormSidebar = ref(false)
 const formSidebarTitle = ref('')
@@ -190,7 +198,23 @@ const formSidebarLoadingText = ref('Creating...')
 // (Tabs removed in favor of layout menu)
 
 const uiConfig = computed(() => unref(props.uiConfig))
-const moduleName = computed(() => props.moduleName)
+const searchableFieldOptions = computed<{ key: string, label: string }[]>(() => {
+  const cfg = uiConfig.value
+  if (!cfg?.views?.list) return []
+  const explicit = cfg.views.list.searchableFields as string[] | undefined
+  const columns = (cfg.views.list.columns || []) as any[]
+  const fromColumns = columns
+    .filter(c => (c?.type === 'text' || c?.type === 'url' || c?.type === 'email' || c?.searchable === true))
+    .map(c => ({ key: String(c.key), label: String(c.label || c.key) }))
+  const fromExplicit = (explicit || [])
+    .map(k => {
+      const col = columns.find(c => c.key === k)
+      return { key: String(k), label: String(col?.label || k) }
+    })
+  const merged: Record<string, { key: string, label: string }> = {}
+  for (const f of [...fromColumns, ...fromExplicit]) merged[f.key] = f
+  return Object.values(merged)
+})
 const data = computed(() => props.data || [])
 const loading = computed(() => props.loading || false)
 const error = computed(() => props.error || null)
@@ -208,14 +232,49 @@ const pagination = computed(() => {
   }
 })
 
-const filteredData = computed(() => {
-  let f = data.value
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase()
-    f = f.filter(item => Object.values(item).some(v => typeof v === 'string' && v.toLowerCase().includes(q)))
+const filteredData = computed(() => data.value)
+
+const { updateModuleItem } = useMovieService()
+const { push } = useToast()
+
+onMounted(() => {
+  const saved = viewPref.value?.get()
+  if (saved === 'kanban' || saved === 'gallery' || saved === 'calendar' || saved === 'list') {
+    currentView.value = saved as any
   }
-  return f
 })
+
+watch(currentView, (v) => {
+  const def = 'list'
+  if (!v || v === def) viewPref.value?.remove()
+  else viewPref.value?.set(v)
+})
+
+async function handleKanbanStatusChange(payload: { item: any; from: string; to: string }) {
+  const groupByField = uiConfig.value?.views?.kanban?.groupByField
+  const id = String(payload?.item?.id ?? '')
+  if (!groupByField || !id) return
+  try {
+    await updateModuleItem(moduleName.value, id, { [groupByField]: payload.to })
+    push({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      type: 'success',
+      position: 'tr',
+      title: 'Status updated',
+      body: `${groupByField} → ${payload.to}`,
+      timeout: 3000,
+    })
+  } catch (error: any) {
+    push({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      type: 'error',
+      position: 'tr',
+      title: 'Failed to update status',
+      body: error?.message || 'Unexpected error',
+      timeout: 6000,
+    })
+  }
+}
 
 const handleAction = (actionName: string, item?: any) => {
   if (actionName === 'create') {
@@ -232,14 +291,14 @@ const handleAction = (actionName: string, item?: any) => {
   }
 }
 
-async function handleSwitchView(view: string) {
+async function handleSwitchView(view: 'list' | 'gallery' | 'calendar' | 'kanban') {
   if (currentView.value === view) return
   currentView.value = view
   await nextTick()
 }
 
 // Layout ActionsMenu
-type LayoutItem = { key: string; label: string }
+type LayoutItem = { key: 'list' | 'gallery' | 'calendar' | 'kanban'; label: string }
 const layoutMenuItems = computed<LayoutItem[]>(() => [
   { key: 'list', label: 'Table' },
   { key: 'gallery', label: 'Gallery' },
@@ -247,11 +306,13 @@ const layoutMenuItems = computed<LayoutItem[]>(() => [
   { key: 'kanban', label: 'Kanban' }
 ])
 function handleLayoutSelect(key: string) {
-  if (['list', 'gallery', 'calendar', 'kanban'].includes(key)) handleSwitchView(key)
+  if (['list', 'gallery', 'calendar', 'kanban'].includes(key)) handleSwitchView(key as any)
 }
 
 function openSearch() {
   isSearchOpen.value = true
+  // Autofocus shortly after opening
+  setTimeout(() => searchInputRef.value?.focus(), 0)
 }
 function closeSearch() {
   isSearchOpen.value = false
@@ -287,6 +348,29 @@ function handleFormSubmit(data: Record<string, any>) {
   closeFormSidebar()
 }
 
+function handleSearchInput() {
+  const search = searchQuery.value?.trim() || ''
+  const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
+  emit('page-change', 1)
+  try {
+    const url = new URL(window.location.href)
+    if (search) url.searchParams.set('search', search); else url.searchParams.delete('search')
+    if (field) url.searchParams.set('searchField', field); else url.searchParams.delete('searchField')
+    history.replaceState(null, '', url.toString())
+  } catch {}
+}
+
+// Debounce for better UX
+let searchDebounceTimer: number | undefined
+function handleSearchInputDebounced() {
+  if (searchDebounceTimer) window.clearTimeout(searchDebounceTimer)
+  searchDebounceTimer = window.setTimeout(() => handleSearchInput(), 300)
+}
+
+function handleEscape() {
+  closeSearch()
+}
+
 // Empty-state helpers
 const displayNameSingular = computed(() => uiConfig.value?.displayName?.slice(0, -1) || 'Item')
 const hasCreateAction = computed(() => {
@@ -313,3 +397,5 @@ const contentMinHeight = computed(() => `${approximateRowHeight * (skeletonRows.
 </script>
 
 
+<style scoped>
+</style>

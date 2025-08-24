@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+  <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>
             <th v-if="selectable" class="px-6 py-3">
               <input type="checkbox" :checked="allSelected" @change="toggleSelectAll" />
@@ -10,9 +10,9 @@
             <th
               v-for="column in visibleColumns"
               :key="column.key"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider transition-colors duration-150"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider transition-colors duration-150"
               :class="[
-                column.sortable ? 'cursor-pointer hover:bg-gray-100' : '',
+                column.sortable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
                 column.align ? `text-${column.align}` : 'text-left'
               ]"
               :style="{ width: column.width || undefined }"
@@ -22,11 +22,11 @@
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
           <tr
             v-for="item in sortedData"
             :key="item.id"
-            class="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+            class="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors duration-150"
             @click="handleRowClick(item)"
             :title="`Click to view ${item.name || item.title || 'details'}`"
           >
@@ -36,7 +36,7 @@
             <td
               v-for="column in visibleColumns"
               :key="column.key"
-              class="px-6 py-4 whitespace-nowrap"
+              class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100"
               :class="column.align ? `text-${column.align}` : ''"
               :style="{ width: column.width || undefined }"
             >
@@ -51,8 +51,8 @@
                 <!-- Title/Subtitle rendering if configured -->
                 <div v-if="column.titleField" class="flex items-center gap-3">
                   <div class="min-w-0">
-                    <div class="text-sm font-medium text-gray-900 truncate">{{ getTitle(item, column) }}</div>
-                    <div v-if="getSubtitle(item, column)" class="text-xs text-gray-500 truncate">{{ getSubtitle(item, column) }}</div>
+                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ getTitle(item, column) }}</div>
+                    <div v-if="getSubtitle(item, column)" class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ getSubtitle(item, column) }}</div>
                   </div>
                 </div>
                 <!-- Country formatter with flag -->
@@ -63,20 +63,20 @@
                       <img :src="`https://flagcdn.com/24x18/${countryCode(item[column.key])}.png`" alt="" width="24" height="18" class="rounded-sm" />
                     </picture>
                   </div>
-                  <span class="text-sm text-gray-900">{{ countryName(item[column.key]) || item[column.key] || '-' }}</span>
+                  <span class="text-sm text-gray-900 dark:text-gray-100">{{ countryName(item[column.key]) || item[column.key] || '-' }}</span>
                 </div>
                 <!-- Image type -->
                 <div v-else-if="column.type==='image'" class="flex items-center">
-                  <img :src="item[column.key]" alt="" class="h-8 w-8 rounded object-cover bg-gray-100" />
+                  <img :src="item[column.key]" alt="" class="h-8 w-8 rounded object-cover bg-gray-100 dark:bg-gray-800" />
                 </div>
                 <!-- URL type -->
                 <div v-else-if="column.type==='url'">
-                  <a :href="item[column.key]" target="_blank" rel="noopener" class="text-primary-600 hover:underline">{{ item[column.key] }}</a>
+                  <a :href="item[column.key]" target="_blank" rel="noopener" class="text-primary-600 dark:text-primary-400 hover:underline">{{ item[column.key] }}</a>
                 </div>
                 <!-- Color type -->
                 <div v-else-if="column.type==='color'" class="flex items-center gap-2">
-                  <span class="inline-block h-4 w-4 rounded border border-gray-300" :style="{ backgroundColor: String(item[column.key] || '#ffffff') }"></span>
-                  <span class="text-sm text-gray-900">{{ String(item[column.key] || '-') }}</span>
+                  <span class="inline-block h-4 w-4 rounded border border-gray-300 dark:border-gray-700" :style="{ backgroundColor: String(item[column.key] || '#ffffff') }"></span>
+                  <span class="text-sm text-gray-900 dark:text-gray-100">{{ String(item[column.key] || '-') }}</span>
                 </div>
                 <!-- Badge formatter -->
                 <div v-else-if="column.formatter==='badge'">
@@ -88,7 +88,7 @@
                   <span :class="['text-xs font-medium px-2 py-0.5 rounded', statusBadgeClass(item[column.key])]">{{ item[column.key] ?? '-' }}</span>
                 </div>
                 <!-- Date/Number/Currency/Boolean/Text fallback via formatter utility -->
-                <div v-else>{{ formatCellValue(item[column.key], column, item) }}</div>
+                <div v-else class="text-gray-900 dark:text-gray-100">{{ formatCellValue(item[column.key], column, item) }}</div>
               </div>
             </td>
           </tr>

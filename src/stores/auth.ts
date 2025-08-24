@@ -10,7 +10,7 @@ export const useAuthStore = defineStore("auth", () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const { login, loginWithGoogle, logout, getCurrentUser } = useAuth();
+  const { login, loginWithGoogle, loginWithOAuth, logout, getCurrentUser } = useAuth();
 
   const isAuthenticated = computed(() => !!user.value);
 
@@ -55,6 +55,21 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const loginWithProvider = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
+    try {
+      isLoading.value = true;
+      error.value = null;
+      const { user: loggedIn } = await loginWithOAuth(provider);
+      user.value = loggedIn;
+      return loggedIn;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : "Login failed";
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   const logoutUser = async () => {
     try {
       isLoading.value = true;
@@ -71,7 +86,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const clearError = () => { error.value = null };
 
-  return { user, isLoading, error, isAuthenticated, initialize, loginUser, loginWithGoogleUser, logoutUser, clearError };
+  return { user, isLoading, error, isAuthenticated, initialize, loginUser, loginWithGoogleUser, loginWithProvider, logoutUser, clearError };
 });
 
 

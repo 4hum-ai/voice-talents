@@ -1,31 +1,31 @@
 <template>
-  <div class="bg-white rounded-lg border border-gray-200">
+  <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
     <!-- Calendar header -->
-    <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+    <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <button @click="goPrevMonth" class="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">Prev</button>
-        <button @click="goToday" class="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">Today</button>
-        <button @click="goNextMonth" class="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">Next</button>
+        <button @click="goPrevMonth" class="px-2 py-1 rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Prev</button>
+        <button @click="goToday" class="px-2 py-1 rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Today</button>
+        <button @click="goNextMonth" class="px-2 py-1 rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Next</button>
       </div>
-      <div class="text-lg font-semibold text-gray-900">{{ monthLabel }} {{ currentYear }}</div>
+      <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ monthLabel }} {{ currentYear }}</div>
       <div class="w-[96px]"></div>
     </div>
 
     <!-- Weekdays -->
-    <div class="grid grid-cols-7 text-xs font-medium text-gray-500 px-4 pt-3">
+    <div class="grid grid-cols-7 text-xs font-medium text-gray-500 dark:text-gray-400 px-4 pt-3">
       <div class="pb-2" v-for="w in weekdays" :key="w">{{ w }}</div>
     </div>
 
     <!-- Days grid -->
-    <div class="grid grid-cols-7 gap-px bg-gray-200">
+    <div class="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700">
       <div
         v-for="day in calendarDays"
         :key="day.key"
-        class="bg-white min-h-[110px] p-2 overflow-hidden"
-        :class="day.inMonth ? '' : 'bg-gray-50 text-gray-400'"
+        class="bg-white dark:bg-gray-900 min-h-[110px] p-2 overflow-hidden"
+        :class="day.inMonth ? '' : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'"
       >
         <div class="flex items-center justify-between">
-          <div class="text-xs font-medium" :class="isToday(day.date) ? 'text-red-600' : ''">{{ day.date.getDate() }}</div>
+          <div class="text-xs font-medium text-gray-900 dark:text-gray-100" :class="isToday(day.date) ? 'text-red-600' : ''">{{ day.date.getDate() }}</div>
           <div v-if="isToday(day.date)" class="text-[10px] text-red-600 font-semibold">Today</div>
         </div>
         <div class="mt-2 space-y-1">
@@ -33,12 +33,12 @@
             v-for="(evt, idx) in day.events.slice(0, 3)"
             :key="evt.id ?? idx"
             @click.stop="handleItemClick(evt)"
-            class="w-full text-left px-2 py-1 rounded text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 truncate"
+            class="w-full text-left px-2 py-1 rounded text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 truncate"
             :title="eventTitle(evt)"
           >
             {{ eventTitle(evt) }}
           </button>
-          <div v-if="day.events.length > 3" class="text-[10px] text-gray-500">+{{ day.events.length - 3 }} more</div>
+          <div v-if="day.events.length > 3" class="text-[10px] text-gray-500 dark:text-gray-400">+{{ day.events.length - 3 }} more</div>
         </div>
       </div>
     </div>

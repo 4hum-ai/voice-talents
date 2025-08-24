@@ -147,7 +147,7 @@
   }
   
   body {
-    @apply bg-black text-white;
+    @apply text-gray-900 bg-gray-50 dark:text-white dark:bg-black;
     font-family: 'Inter', system-ui, sans-serif;
   }
   
@@ -378,6 +378,10 @@
   body {
     background-color: #f9fafb;
     color: #111827;
+  }
+  .dark body {
+    background-color: #000000;
+    color: #ffffff;
   }
 }
 

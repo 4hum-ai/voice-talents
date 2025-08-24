@@ -1,29 +1,17 @@
 <template>
   <div class="min-h-screen">
-    <!-- Fixed App Bar -->
-    <div class="fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
-      <div class="px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3 min-w-0">
-          <button v-if="onBack" @click="onBack" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Go back">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M12.78 15.53a.75.75 0 01-1.06 0l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 111.06 1.06L8.31 10l4.47 4.47a.75.75 0 010 1.06z" clip-rule="evenodd" />
-            </svg>
-          </button>
-          <div class="min-w-0">
-            <div class="text-base font-semibold text-gray-900 truncate">
-              <slot name="title">{{ title }}</slot>
-            </div>
-            <div class="text-xs text-gray-500 truncate">
-              <slot name="subtitle">{{ subtitle }}</slot>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button v-if="enableEdit" @click="handleEdit" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Edit</button>
-          <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
-        </div>
-      </div>
-    </div>
+    <AppBar :loading="loading" :show-back="Boolean(onBack)" @back="onBack && onBack()">
+      <template #title>
+        <slot name="title">{{ title }}</slot>
+      </template>
+      <template #subtitle>
+        <slot name="subtitle">{{ subtitle }}</slot>
+      </template>
+      <template #actions>
+        <button v-if="enableEdit" @click="handleEdit" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Edit</button>
+        <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
+      </template>
+    </AppBar>
 
     <!-- Spacer to offset the fixed app bar height -->
     <div class="h-16"></div>
@@ -34,7 +22,37 @@
     </div>
 
     <main class="p-4">
-      <div v-if="loading" class="text-sm text-gray-600">Loading...</div>
+      <div v-if="loading" class="space-y-6">
+        <div v-if="detailSections && detailSections.length" class="space-y-6">
+          <section
+            v-for="(section, sIdx) in detailSections"
+            :key="`skeleton-sec-${sIdx}`"
+            class="rounded-lg border border-gray-200 bg-white shadow-sm"
+          >
+            <div v-if="section.title" class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+              <div class="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                v-for="i in (section.fields?.length || 4)"
+                :key="`skeleton-field-${sIdx}-${i}`"
+                class="flex flex-col gap-2"
+              >
+                <div class="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                <div class="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div v-else class="bg-white border border-gray-200 rounded-lg p-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
+              <div class="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+              <div class="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div v-else-if="error" class="text-sm text-red-600">{{ error }}</div>
       <div v-else>
         <slot name="details" :item="item">
@@ -84,6 +102,7 @@ import Breadcrumbs from '@/components/molecules/Breadcrumbs.vue'
 import FieldValue from '@/components/atoms/FieldValue.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 
 interface Props {
   moduleName: string
@@ -108,13 +127,13 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['edit', 'delete', 'update'])
 
 const title = computed(() => props.item?.name || props.item?.title || 'Details')
-const subtitle = computed(() => `${props.moduleName} details`)
+const subtitle = computed(() => props.item?.id)
 
 const displayPairs = computed(() => props.item || {})
 
 const breadcrumbs = computed(() => [
   { label: 'Dashboard', to: '/' },
-  { label: props.moduleName, to: `/${props.moduleName}` },
+  { label: props.uiConfig?.displayName, to: `/${props.moduleName}` },
   { label: String(title.value) }
 ])
 
@@ -173,5 +192,3 @@ function handleActionMenuSelect(key: string) {
   if (key === 'delete') emit('delete')
 }
 </script>
-
-
