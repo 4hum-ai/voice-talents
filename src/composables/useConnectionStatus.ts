@@ -1,5 +1,5 @@
 import { ref, computed, readonly } from 'vue'
-import { movieApi } from '../utils/movieApi'
+import { useMovieService } from './useMovieService'
 
 const isConnected = ref<boolean | null>(null)
 const lastCheck = ref<Date | null>(null)
@@ -12,10 +12,11 @@ const connectionStatus = computed(() => {
 const isConnectionHealthy = computed(() => isConnected.value === true)
 
 export function useConnectionStatus() {
+  const movie = useMovieService()
   const checkConnection = async (): Promise<boolean> => {
     checking.value = true
     try {
-      const connected = await movieApi.checkConnection()
+      const connected = await movie.checkConnection()
       isConnected.value = connected
       lastCheck.value = new Date()
       return connected

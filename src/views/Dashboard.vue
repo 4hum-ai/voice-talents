@@ -8,8 +8,8 @@
         Manage organizations, users, media, titles, revenues, distributions, and payouts
       </template>
       <template #actions>
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 text-sm">
+        <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+          <div class="flex items-center gap-2 text-sm w-full sm:w-auto">
             <span
               class="inline-block h-2.5 w-2.5 rounded-full"
               :class="{
@@ -21,22 +21,17 @@
             <span class="text-gray-700 capitalize">{{ connectionStatus }}</span>
             <span v-if="lastCheck" class="text-gray-500">· Last check: {{ lastCheck.toLocaleTimeString() }}</span>
           </div>
-          <button
-            class="px-3 py-1.5 rounded-md border text-sm bg-white hover:bg-gray-50 active:bg-gray-100"
-            :disabled="checking"
-            @click="onCheckConnection"
+          <ActionsMenu
+            :items="[
+              { key: 'check-connection', label: checking ? 'Checking…' : 'Check Connection' },
+              { key: 'refresh-stats', label: loadingCounts ? 'Refreshing…' : 'Refresh Stats' }
+            ]"
+            @select="onMenuSelect"
           >
-            <span v-if="checking">Checking…</span>
-            <span v-else>Check Connection</span>
-          </button>
-          <button
-            class="px-3 py-1.5 rounded-md border text-sm bg-white hover:bg-gray-50 active:bg-gray-100"
-            :disabled="loadingCounts"
-            @click="loadCounts"
-          >
-            <span v-if="loadingCounts">Refreshing…</span>
-            <span v-else>Refresh Stats</span>
-          </button>
+            <template #label>
+              More
+            </template>
+          </ActionsMenu>
         </div>
       </template>
     </PageHeader>
@@ -74,6 +69,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import PageHeader from '@/components/molecules/PageHeader.vue'
+import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import { useConnectionStatus } from '@/composables/useConnectionStatus'
 import { useMovieService, type AdminModuleInfo } from '@/composables/useMovieService'
 
@@ -128,6 +124,14 @@ const loadCounts = async () => {
 
 const onCheckConnection = async () => {
   await checkConnection()
+}
+
+const onMenuSelect = async (key: string) => {
+  if (key === 'check-connection') {
+    await onCheckConnection()
+  } else if (key === 'refresh-stats') {
+    await loadCounts()
+  }
 }
 
 onMounted(async () => {

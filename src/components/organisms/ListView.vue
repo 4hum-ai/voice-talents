@@ -38,15 +38,12 @@
               class="px-6 py-4 whitespace-nowrap"
               :class="column.align ? `text-${column.align}` : ''"
             >
-              <div v-if="column.key==='actions'" class="flex items-center justify-end space-x-2">
-                <button
-                  v-for="action in config.actions"
-                  :key="action.name"
-                  @click.stop="handleAction(action.name, item)"
-                  class="px-2 py-1 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
-                >
-                  {{ action.label }}
-                </button>
+              <div v-if="column.key==='actions'" class="flex items-center justify-end">
+                <ActionsMenu
+                  :items="config.actions.map(a => ({ key: a.name, label: a.label }))"
+                  size="sm"
+                  @select="key => handleAction(key, item)"
+                />
               </div>
               <div v-else>{{ formatCellValue(item[column.key], column) }}</div>
             </td>
@@ -59,6 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 
 type Props = { data: any[]; config: { columns: any[]; actions: any[] }; selectable?: boolean; rowIdKey?: string }
 const props = withDefaults(defineProps<Props>(), { selectable: true, rowIdKey: 'id' })

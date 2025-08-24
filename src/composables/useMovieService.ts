@@ -20,6 +20,10 @@ export class ConnectionError extends Error {
   }
 }
 
+// Module-level singletons (persist across composable calls, per tab)
+const singletonUiConfig = new Map<string, any>()
+const singletonAdminModules: { data: AdminModuleInfo[] | null } = { data: null }
+
 export function useMovieService() {
   const client = useApiGateway()
 
@@ -28,7 +32,13 @@ export function useMovieService() {
       const base = (client as any).baseUrl as string | undefined
       const response = await fetch(`${base}/health`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
         signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(5000) : undefined
       })
       return response.ok
@@ -106,20 +116,32 @@ export function useMovieService() {
     }
   }
 
-  const getModuleUiConfig = async (module: string): Promise<any | null> => {
+  const getModuleUiConfig = async (module: string, opts?: { force?: boolean }): Promise<any | null> => {
+    if (!opts?.force && singletonUiConfig.has(module)) {
+      return singletonUiConfig.get(module)
+    }
     try {
-      return await get<any>(`/api/admin-ui/modules/${module}/config`)
+      const data = await get<any>(`/api/admin-ui/modules/${module}/config`)
+      singletonUiConfig.set(module, data)
+      return data
     } catch (_) {
-      return null
+      // stale-on-error
+      return singletonUiConfig.get(module) ?? null
     }
   }
 
-  const listAdminModules = async (): Promise<AdminModuleInfo[]> => {
+  const listAdminModules = async (opts?: { force?: boolean }): Promise<AdminModuleInfo[]> => {
+    if (!opts?.force && singletonAdminModules.data) {
+      return singletonAdminModules.data
+    }
     try {
       const payload = await get<{ modules?: AdminModuleInfo[] }>(`/api/admin-ui/modules`)
-      return Array.isArray(payload?.modules) ? payload.modules : []
+      const modules = Array.isArray(payload?.modules) ? payload.modules : []
+      singletonAdminModules.data = modules
+      return modules
     } catch (_) {
-      return []
+      // stale-on-error
+      return singletonAdminModules.data ?? []
     }
   }
 
