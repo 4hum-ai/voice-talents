@@ -1,23 +1,37 @@
 <template>
   <div class="min-h-screen">
-    <PageHeader>
-      <template #breadcrumbs>
-        <Breadcrumbs :items="breadcrumbs" />
-      </template>
-      <template #title>
-        <slot name="title">{{ title }}</slot>
-      </template>
-      <template #subtitle>
-        <slot name="subtitle">{{ subtitle }}</slot>
-      </template>
-      <template #actions>
-        <div class="flex items-center gap-3">
-          <button v-if="onBack" @click="onBack" class="px-3 py-2 text-sm rounded-md border border-gray-300 bg-white hover:bg-gray-50">Back</button>
-          <button v-if="enableEdit" @click="handleEdit" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Edit</button>
-          <button v-if="enableDelete" @click="$emit('delete')" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
+    <!-- Fixed App Bar -->
+    <div class="fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3 min-w-0">
+          <button v-if="onBack" @click="onBack" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Go back">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.78 15.53a.75.75 0 01-1.06 0l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 111.06 1.06L8.31 10l4.47 4.47a.75.75 0 010 1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="min-w-0">
+            <div class="text-base font-semibold text-gray-900 truncate">
+              <slot name="title">{{ title }}</slot>
+            </div>
+            <div class="text-xs text-gray-500 truncate">
+              <slot name="subtitle">{{ subtitle }}</slot>
+            </div>
+          </div>
         </div>
-      </template>
-    </PageHeader>
+        <div class="flex items-center gap-2">
+          <button v-if="enableEdit" @click="handleEdit" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Edit</button>
+          <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacer to offset the fixed app bar height -->
+    <div class="h-16"></div>
+
+    <!-- Breadcrumbs under the app bar -->
+    <div class="px-4 py-2">
+      <Breadcrumbs :items="breadcrumbs" />
+    </div>
 
     <main class="p-4">
       <div v-if="loading" class="text-sm text-gray-600">Loading...</div>
@@ -66,10 +80,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import PageHeader from '@/components/molecules/PageHeader.vue'
 import Breadcrumbs from '@/components/molecules/Breadcrumbs.vue'
 import FieldValue from '@/components/atoms/FieldValue.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
+import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 
 interface Props {
   moduleName: string
@@ -117,6 +131,14 @@ const currencyCode = (obj: any): string | undefined => {
   return typeof code === 'string' && code.length >= 3 ? code : undefined
 }
 
+// Actions menu items (e.g., Delete lives here now)
+type ActionMenuItem = { key: string; label: string; description?: string }
+const actionMenuItems = computed<ActionMenuItem[]>(() => {
+  const items: ActionMenuItem[] = []
+  if (props.enableDelete) items.push({ key: 'delete', label: 'Delete' })
+  return items
+})
+
 // Edit sidebar state
 const showFormSidebar = ref(false)
 const formSidebarTitle = ref('')
@@ -145,6 +167,10 @@ function closeFormSidebar() {
 function handleFormSubmit(data: Record<string, any>) {
   emit('update', data)
   closeFormSidebar()
+}
+
+function handleActionMenuSelect(key: string) {
+  if (key === 'delete') emit('delete')
 }
 </script>
 

@@ -1,51 +1,92 @@
 <template>
   <div class="min-h-screen">
-    <PageHeader>
-      <template #title>
-        <slot name="title">{{ uiConfig?.displayName || moduleName }} Management</slot>
-      </template>
-      <template #subtitle>
-        <slot name="subtitle">Manage {{ moduleName }}</slot>
-      </template>
-      <template #actions>
-        <div class="flex items-center gap-3">
-          <div v-if="availableViews.length > 1" class="flex items-center gap-1 bg-gray-100 p-1 rounded-md">
-            <button
-              v-for="view in availableViews"
-              :key="`tab-${view}`"
-              @click="handleSwitchView(view)"
-              class="px-3 py-1 text-sm rounded-md transition-colors"
-              :class="currentView === view ? 'bg-white shadow-sm border border-gray-200 text-gray-900' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
-            >
-              {{ viewLabels[view] || view }}
+    <!-- Fixed App Bar -->
+    <div class="fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
+      <div class="px-4 py-3">
+        <div class="flex items-center gap-2">
+          <button @click="goBack" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Go back">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.78 15.53a.75.75 0 01-1.06 0l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 111.06 1.06L8.31 10l4.47 4.47a.75.75 0 010 1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+
+          <!-- Normal state -->
+          <template v-if="!isSearchOpen">
+            <div class="min-w-0 flex-1">
+              <div class="text-base font-semibold text-gray-900 truncate">
+                <slot name="title">{{ uiConfig?.displayName || moduleName }}</slot>
+              </div>
+              <div class="text-xs text-gray-500 truncate">
+                <slot name="subtitle">{{ uiConfig?.description }}</slot>
+              </div>
+            </div>
+            <div class="ml-auto flex items-center gap-2">
+              <button
+                v-if="hasCreateAction"
+                @click="handleAction('create')"
+                class="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                + Add {{ displayNameSingular }}
+              </button>
+              <button
+                v-if="hasCreateAction"
+                @click="handleAction('create')"
+                class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9"
+                aria-label="Add"
+              >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z" />
+                </svg>
+              </button>
+              <button @click="openSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Search">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" clip-rule="evenodd" />
+                </svg>
+              </button>
+              <ActionsMenu :items="layoutMenuItems" size="md" @select="handleLayoutSelect">
+                <template #label>
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 0112 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0112 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0021 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z" />
+                  </svg>
+                </template>
+              </ActionsMenu>
+            </div>
+          </template>
+
+          <!-- Search state -->
+          <template v-else>
+            <div class="min-w-0 flex-1">
+              <input v-model="searchQuery" :placeholder="`Search ${moduleName}...`" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+            </div>
+            <div class="hidden sm:flex items-center gap-2">
+              <div class="inline-flex items-center gap-2 text-sm text-gray-600">
+                <label class="text-xs text-gray-500">Fields</label>
+                <select class="px-2 py-1.5 border border-gray-300 rounded-md text-sm">
+                  <option value="all">All fields</option>
+                </select>
+              </div>
+              <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">Filters</button>
+            </div>
+            <button @click="closeSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Close search">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z" clip-rule="evenodd" />
+              </svg>
             </button>
-          </div>
-          <div>
-            <input
-              v-model="searchQuery"
-              :placeholder="`Search ${moduleName}...`"
-              class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            />
-          </div>
-          <button
-            v-if="uiConfig?.views?.list?.actions?.find((a: any) => a.name === 'create')"
-            @click="handleAction('create')"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-          >
-            Add {{ uiConfig?.displayName?.slice(0, -1) || 'Item' }}
-          </button>
-          <button
-            v-if="currentView === 'list' && selectedIds.length > 0"
-            @click="handleBulkDelete"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Delete ({{ selectedIds.length }})
-          </button>
+          </template>
         </div>
-      </template>
-    </PageHeader>
+      </div>
+    </div>
+
+    <!-- Spacer for fixed header -->
+    <div class="h-16"></div>
 
     <main class="p-4">
+      <!-- Selection toolbar (only when some are selected) -->
+      <div v-if="currentView === 'list' && selectedIds.length > 0" class="mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
+        <div class="text-xs text-gray-600">{{ selectedIds.length }} selected</div>
+        <button @click="handleBulkDelete" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
+      </div>
+
       <StatsView v-if="uiConfig?.features?.stats" :stats="uiConfig.features.stats" :data="data" />
 
       <div :style="{ minHeight: contentMinHeight }">
@@ -104,15 +145,16 @@
 
 <script setup lang="ts">
 import { ref, computed, unref, nextTick, defineAsyncComponent } from 'vue'
+import { useRouter } from 'vue-router'
 import Pagination from '@/components/molecules/Pagination.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
-// @ts-expect-error Vue SFC typing resolved by Vite
 const TableView = defineAsyncComponent(() => import('@/components/organisms/TableView.vue'))
 import KanbanView from '@/components/organisms/KanbanView.vue'
 import GalleryView from '@/components/organisms/GalleryView.vue'
 import CalendarView from '@/components/organisms/CalendarView.vue'
 import StatsView from '@/components/organisms/StatsView.vue'
-import PageHeader from '@/components/molecules/PageHeader.vue'
+import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+const router = useRouter()
 
 interface Props {
   moduleName: string
@@ -136,6 +178,7 @@ const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delet
 
 const currentView = ref('list')
 const searchQuery = ref('')
+const isSearchOpen = ref(false)
 const selectedIds = ref<(string|number)[]>([])
 const showFormSidebar = ref(false)
 const formSidebarTitle = ref('')
@@ -144,8 +187,7 @@ const formSidebarLoading = ref(false)
 const formSidebarSubmitText = ref('Create')
 const formSidebarLoadingText = ref('Creating...')
 
-const availableViews = computed(() => Object.keys(uiConfig.value?.views || {}))
-const viewLabels: Record<string, string> = { list: 'List', kanban: 'Kanban', gallery: 'Gallery', calendar: 'Calendar' }
+// (Tabs removed in favor of layout menu)
 
 const uiConfig = computed(() => unref(props.uiConfig))
 const moduleName = computed(() => props.moduleName)
@@ -194,6 +236,30 @@ async function handleSwitchView(view: string) {
   if (currentView.value === view) return
   currentView.value = view
   await nextTick()
+}
+
+// Layout ActionsMenu
+type LayoutItem = { key: string; label: string }
+const layoutMenuItems = computed<LayoutItem[]>(() => [
+  { key: 'list', label: 'Table' },
+  { key: 'gallery', label: 'Gallery' },
+  { key: 'calendar', label: 'Calendar' },
+  { key: 'kanban', label: 'Kanban' }
+])
+function handleLayoutSelect(key: string) {
+  if (['list', 'gallery', 'calendar', 'kanban'].includes(key)) handleSwitchView(key)
+}
+
+function openSearch() {
+  isSearchOpen.value = true
+}
+function closeSearch() {
+  isSearchOpen.value = false
+}
+
+function goBack() {
+  if (window.history.length > 1) router.back()
+  else router.push('/')
 }
 
 const handleSort = (field: string, direction: string) => emit('sort', field, direction)

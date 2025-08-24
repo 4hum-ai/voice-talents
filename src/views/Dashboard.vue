@@ -1,51 +1,47 @@
 <template>
   <main class="p-6">
-    <PageHeader>
-      <template #title>
-        Admin Dashboard
-      </template>
-      <template #subtitle>
-        Manage organizations, users, media, titles, revenues, distributions, and payouts
-      </template>
-      <template #actions>
-        <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-          <div class="flex items-center gap-2 text-sm w-full sm:w-auto">
-            <span
-              class="inline-block h-2.5 w-2.5 rounded-full"
-              :class="{
-                'bg-green-500': connectionStatus === 'connected',
-                'bg-red-500': connectionStatus === 'disconnected',
-                'bg-gray-300': connectionStatus === 'unknown'
-              }"
-            />
-            <span class="text-gray-700 capitalize">{{ connectionStatus }}</span>
-            <span v-if="lastCheck" class="text-gray-500">· Last check: {{ lastCheck.toLocaleTimeString() }}</span>
-          </div>
-
-          <div class="w-full sm:w-64">
-            <label class="sr-only" for="module-search">Search modules</label>
-            <input
-              id="module-search"
-              v-model="filter"
-              type="search"
-              placeholder="Search modules…"
-              class="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200"
-            />
-          </div>
-          <ActionsMenu
-            :items="[
-              { key: 'check-connection', label: checking ? 'Checking…' : 'Check Connection' },
-              { key: 'refresh-stats', label: loadingCounts ? 'Refreshing…' : 'Refresh Stats' }
-            ]"
-            @select="onMenuSelect"
-          >
-            <template #label>
-              More
-            </template>
-          </ActionsMenu>
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
+        <p class="text-xs text-gray-500">Manage organizations, users, media, titles, revenues, distributions, and payouts</p>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-2 text-sm w-full sm:w-auto">
+          <span
+            class="inline-block h-2.5 w-2.5 rounded-full"
+            :class="{
+              'bg-green-500': connectionStatus === 'connected',
+              'bg-red-500': connectionStatus === 'disconnected',
+              'bg-gray-300': connectionStatus === 'unknown'
+            }"
+          />
+          <span class="text-gray-700 capitalize">{{ connectionStatus }}</span>
+          <span v-if="lastCheck" class="text-gray-500">· Last check: {{ lastCheck.toLocaleTimeString() }}</span>
         </div>
-      </template>
-    </PageHeader>
+
+        <div class="w-full sm:w-64">
+          <label class="sr-only" for="module-search">Search modules</label>
+          <input
+            id="module-search"
+            v-model="filter"
+            type="search"
+            placeholder="Search modules…"
+            class="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          />
+        </div>
+        <ActionsMenu
+          :items="[
+            { key: 'check-connection', label: checking ? 'Checking…' : 'Check Connection' },
+            { key: 'refresh-stats', label: loadingCounts ? 'Refreshing…' : 'Refresh Stats' }
+          ]"
+          @select="onMenuSelect"
+        >
+          <template #label>
+            More
+          </template>
+        </ActionsMenu>
+      </div>
+    </div>
 
     <section v-if="connectionStatus === 'disconnected'" class="mb-6 p-4 rounded-md border border-red-200 bg-red-50 text-red-800">
       Unable to reach the API. Verify your `.env` has `VITE_PUBLIC_API_URL` configured per the README and that the gateway is running.
@@ -98,7 +94,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
-import PageHeader from '@/components/molecules/PageHeader.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import { useConnectionStatus } from '@/composables/useConnectionStatus'

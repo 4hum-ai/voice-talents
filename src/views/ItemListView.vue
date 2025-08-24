@@ -27,6 +27,8 @@ const router = useRouter()
 const module = computed(() => {
   const metaModule = route.meta?.module as string | undefined
   if (metaModule) return metaModule
+  const paramModule = route.params?.module as string | undefined
+  if (paramModule) return paramModule
   return String(route.query.module || 'organizations')
 })
 
