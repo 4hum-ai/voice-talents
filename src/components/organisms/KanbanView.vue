@@ -1,5 +1,19 @@
 <template>
   <div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="text-sm text-gray-600 dark:text-gray-300">Time window</div>
+      <div class="flex items-center gap-2">
+        <select v-model="selectedPreset" @change="emitFilters" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+          <option value="all">All time</option>
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="90d">Last 90 days</option>
+          <option value="custom">Custom…</option>
+        </select>
+        <input v-if="selectedPreset==='custom'" type="date" v-model="fromDate" @change="emitFilters" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+        <input v-if="selectedPreset==='custom'" type="date" v-model="toDate" @change="emitFilters" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+      </div>
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
       <div
         v-for="column in config.columns"
@@ -44,7 +58,7 @@ interface Props {
   config: { columns: any[]; groupByField: string; cardTitleField: string; cardDescriptionField?: string; actions?: any[] }
 }
 const props = defineProps<Props>()
-const emit = defineEmits<{ action: [action:string, item?:any]; itemClick: [item:any]; statusChange: [payload:{ item:any; from:string; to:string }] }>()
+const emit = defineEmits<{ action: [action:string, item?:any]; itemClick: [item:any]; statusChange: [payload:{ item:any; from:string; to:string }]; filtersChange: [payload:{ from?: string; to?: string; preset?: string }] }>()
 
 const items = ref<any[]>([])
 watch(
@@ -59,6 +73,20 @@ const getKanbanCount = (columnValue: string) => items.value.filter(item => item[
 const getKanbanItems = (columnValue: string) => items.value.filter(item => item[props.config.groupByField] === columnValue)
 
 const handleItemClick = (item:any) => emit('itemClick', item)
+
+// Time window filters
+const selectedPreset = ref<'all' | '7d' | '30d' | '90d' | 'custom'>('all')
+const fromDate = ref<string>('')
+const toDate = ref<string>('')
+function emitFilters() {
+  if (selectedPreset.value !== 'custom') {
+    emit('filtersChange', { preset: selectedPreset.value })
+    return
+  }
+  const from = fromDate.value ? new Date(fromDate.value).toISOString() : undefined
+  const to = toDate.value ? new Date(toDate.value).toISOString() : undefined
+  emit('filtersChange', { from, to, preset: 'custom' })
+}
 
 // Column refs for hit-testing
 const columnRefs = reactive<Record<string, HTMLElement | null>>({})

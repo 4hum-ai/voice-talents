@@ -1,35 +1,35 @@
 <template>
-  <span v-if="displayKind==='text'" class="text-sm text-gray-900">{{ textValue }}</span>
-  <span v-else-if="displayKind==='boolean'" class="text-sm text-gray-900">{{ value ? 'Yes' : 'No' }}</span>
-  <span v-else-if="displayKind==='date'" class="text-sm text-gray-900">{{ dateValue }}</span>
-  <span v-else-if="displayKind==='number'" class="text-sm text-gray-900">{{ numberValue }}</span>
-  <span v-else-if="displayKind==='currency'" class="text-sm text-gray-900">{{ currencyValue }}</span>
-  <span v-else-if="displayKind==='rating'" class="text-sm text-gray-900">{{ ratingValue }}</span>
+  <span v-if="displayKind==='text'" class="text-sm text-gray-900 dark:text-gray-100">{{ textValue }}</span>
+  <span v-else-if="displayKind==='boolean'" class="text-sm text-gray-900 dark:text-gray-100">{{ value ? 'Yes' : 'No' }}</span>
+  <span v-else-if="displayKind==='date'" class="text-sm text-gray-900 dark:text-gray-100">{{ dateValue }}</span>
+  <span v-else-if="displayKind==='number'" class="text-sm text-gray-900 dark:text-gray-100">{{ numberValue }}</span>
+  <span v-else-if="displayKind==='currency'" class="text-sm text-gray-900 dark:text-gray-100">{{ currencyValue }}</span>
+  <span v-else-if="displayKind==='rating'" class="text-sm text-gray-900 dark:text-gray-100">{{ ratingValue }}</span>
   <span v-else-if="displayKind==='badge'" :class="['inline-flex items-center px-2 py-0.5 rounded text-xs font-medium', badgeClass]">{{ textValue }}</span>
   <span v-else-if="displayKind==='status'" class="inline-flex items-center gap-2">
     <span :class="['h-2 w-2 rounded-full', statusDotClass]" />
     <span :class="['text-xs font-medium px-2 py-0.5 rounded', statusBadgeClass]">{{ textValue }}</span>
   </span>
   <span v-else-if="displayKind==='color'" class="inline-flex items-center gap-2">
-    <span class="inline-block h-4 w-4 rounded border border-gray-300" :style="{ backgroundColor: String(value || '#ffffff') }"></span>
-    <span class="text-sm text-gray-900">{{ textValue }}</span>
+    <span class="inline-block h-4 w-4 rounded border border-gray-300 dark:border-gray-700" :style="{ backgroundColor: String(value || '#ffffff') }"></span>
+    <span class="text-sm text-gray-900 dark:text-gray-100">{{ textValue }}</span>
   </span>
   <span v-else-if="displayKind==='url'" class="text-sm inline-flex items-center gap-2">
-    <a :href="normalizedHref" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline break-all">{{ String(value) }}</a>
-    <button type="button" @click="copy(String(value))" class="text-gray-400 hover:text-gray-600" aria-label="Copy URL">⧉</button>
+    <a :href="normalizedHref" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline break-all">{{ String(value) }}</a>
+    <button type="button" @click="copy(String(value))" class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Copy URL">⧉</button>
   </span>
   <span v-else-if="displayKind==='email'" class="text-sm inline-flex items-center gap-2">
-    <a :href="`mailto:${String(value)}`" class="text-primary-600 hover:underline break-words">{{ String(value) }}</a>
-    <button type="button" @click="copy(String(value))" class="text-gray-400 hover:text-gray-600" aria-label="Copy email">⧉</button>
+    <a :href="`mailto:${String(value)}`" class="text-primary-600 dark:text-primary-400 hover:underline break-words">{{ String(value) }}</a>
+    <button type="button" @click="copy(String(value))" class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Copy email">⧉</button>
   </span>
   <span v-else-if="displayKind==='phone'" class="text-sm inline-flex items-center gap-2">
-    <a :href="`tel:${String(value)}`" class="text-primary-600 hover:underline break-words">{{ String(value) }}</a>
-    <button type="button" @click="copy(String(value))" class="text-gray-400 hover:text-gray-600" aria-label="Copy phone">⧉</button>
+    <a :href="`tel:${String(value)}`" class="text-primary-600 dark:text-primary-400 hover:underline break-words">{{ String(value) }}</a>
+    <button type="button" @click="copy(String(value))" class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200" aria-label="Copy phone">⧉</button>
   </span>
-  <span v-else-if="displayKind==='array'" class="text-sm text-gray-900">{{ Array.isArray(value) ? value.join(', ') : textValue }}</span>
-  <span v-else-if="displayKind==='object'" class="text-sm text-gray-900">{{ objectValue }}</span>
+  <span v-else-if="displayKind==='array'" class="text-sm text-gray-900 dark:text-gray-100">{{ Array.isArray(value) ? value.join(', ') : textValue }}</span>
+  <span v-else-if="displayKind==='object'" class="text-sm text-gray-900 dark:text-gray-100">{{ objectValue }}</span>
   <span v-else-if="displayKind==='image'" class="inline-flex items-center">
-    <img :src="String(value)" alt="" class="h-10 w-10 rounded object-cover bg-gray-100" />
+    <img :src="String(value)" alt="" class="h-10 w-10 rounded object-cover bg-gray-100 dark:bg-gray-800" />
   </span>
   <span v-else-if="displayKind==='country'" class="inline-flex items-center gap-2">
     <span v-if="country.code" class="shrink-0">
@@ -38,7 +38,7 @@
         <img :src="`https://flagcdn.com/24x18/${country.code}.png`" alt="" width="24" height="18" class="rounded-sm" />
       </picture>
     </span>
-    <span class="text-sm text-gray-900">{{ country.name || textValue }}</span>
+    <span class="text-sm text-gray-900 dark:text-gray-100">{{ country.name || textValue }}</span>
   </span>
 </template>
 

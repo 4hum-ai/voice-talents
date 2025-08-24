@@ -10,6 +10,8 @@
     :total-items="pagination.total"
     :per-page="pagination.limit"
     @page-change="load"
+    @load-more="onLoadMore"
+    @filters-change="onFiltersChange"
     @sort="onSort"
     @action="onAction"
     @bulk-delete="onBulkDelete"
@@ -39,6 +41,7 @@ const items = ref<any[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
+const timeWindow = ref<{ preset?: string; from?: string; to?: string }>({})
 
 async function loadUiConfig() {
   try {
@@ -76,6 +79,9 @@ async function load(page = 1) {
     if (search) params.search = search
     if (searchField) params.searchFields = searchField
     if (sortParam) params.sort = sortParam
+    if (timeWindow.value?.preset && timeWindow.value.preset !== 'all') params.preset = timeWindow.value.preset
+    if (timeWindow.value?.from) params.from = timeWindow.value.from
+    if (timeWindow.value?.to) params.to = timeWindow.value.to
     const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params)
     items.value = res.data
     const p = res.pagination
@@ -113,6 +119,52 @@ function onAction(action: string, payload?: any) {
   }
 }
 
+async function onLoadMore() {
+  if (loading.value) return
+  if (pagination.value.page >= pagination.value.totalPages) return
+  const nextPage = pagination.value.page + 1
+  loading.value = true
+  try {
+    const url = new URL(window.location.href)
+    const search = url.searchParams.get('search') || undefined
+    const searchField = url.searchParams.get('searchField') || undefined
+    const sortParam = url.searchParams.get('sort') || undefined
+    const params: Record<string, any> = { page: nextPage, limit: pagination.value.limit }
+    if (search) params.search = search
+    if (searchField) params.searchFields = searchField
+    if (sortParam) params.sort = sortParam
+    if (timeWindow.value?.preset && timeWindow.value.preset !== 'all') params.preset = timeWindow.value.preset
+    if (timeWindow.value?.from) params.from = timeWindow.value.from
+    if (timeWindow.value?.to) params.to = timeWindow.value.to
+    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params)
+    items.value = items.value.concat(res.data)
+    const p = res.pagination
+    pagination.value = {
+      page: Number(p.page) || nextPage,
+      limit: Number(p.limit) || pagination.value.limit,
+      total: Number(p.total) || pagination.value.total,
+      totalPages: Number(p.totalPages) || pagination.value.totalPages
+    }
+  } catch (e: any) {
+    error.value = e?.message || 'Failed to load more'
+  } finally {
+    loading.value = false
+  }
+}
+
+function onFiltersChange(payload: { preset?: string; from?: string; to?: string }) {
+  timeWindow.value = { ...payload }
+  // Sync to URL for shareable state
+  try {
+    const url = new URL(window.location.href)
+    if (payload.preset) url.searchParams.set('preset', payload.preset); else url.searchParams.delete('preset')
+    if (payload.from) url.searchParams.set('from', payload.from); else url.searchParams.delete('from')
+    if (payload.to) url.searchParams.set('to', payload.to); else url.searchParams.delete('to')
+    history.replaceState(null, '', url.toString())
+  } catch {}
+  load(1)
+}
+
 async function onBulkDelete(ids: (string|number)[]) {
   if (!ids || ids.length === 0) return
   loading.value = true
@@ -129,6 +181,14 @@ async function onBulkDelete(ids: (string|number)[]) {
 
 onMounted(async () => {
   await loadUiConfig()
+  // Initialize time window from URL if present
+  try {
+    const url = new URL(window.location.href)
+    const preset = url.searchParams.get('preset') || undefined
+    const from = url.searchParams.get('from') || undefined
+    const to = url.searchParams.get('to') || undefined
+    timeWindow.value = { preset, from, to }
+  } catch {}
   await load(1)
 })
 

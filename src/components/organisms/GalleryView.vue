@@ -11,18 +11,58 @@
         </div>
       </div>
     </div>
+
+    <div ref="sentinelRef" v-if="hasMore" class="h-10 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
+      Loading more…
+    </div>
   </div>
   
 </template>
 
 <script setup lang="ts">
-interface Props { data: any[]; config: { imageField?: string; titleField: string; descriptionField?: string; actions?: any[] } }
-defineProps<Props>()
-const emit = defineEmits<{ action: [action:string, item?:any]; itemClick: [item:any] }>()
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+
+interface Props { data: any[]; config: { imageField?: string; titleField: string; descriptionField?: string; actions?: any[] }; hasMore?: boolean }
+const props = defineProps<Props>()
+const emit = defineEmits<{ action: [action:string, item?:any]; itemClick: [item:any]; loadMore: [] }>()
 
 // Removed unused handleAction to satisfy type checks
 const handleItemClick = (item:any) => emit('itemClick', item)
 const getInitials = (name:string) => !name ? '?' : name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)
+
+const sentinelRef = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
+
+function ensureObserver() {
+  if (observer) return
+  observer = new IntersectionObserver((entries) => {
+    const entry = entries[0]
+    if (entry && entry.isIntersecting && props.hasMore) {
+      emit('loadMore')
+    }
+  }, { root: null, rootMargin: '0px', threshold: 0.1 })
+}
+
+onMounted(() => {
+  ensureObserver()
+  if (observer && sentinelRef.value) observer.observe(sentinelRef.value)
+})
+
+onBeforeUnmount(() => {
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+})
+
+watch(() => props.hasMore, (v) => {
+  // Reconnect observer when hasMore toggles
+  if (!observer) ensureObserver()
+  if (observer) {
+    observer.disconnect()
+    if (v && sentinelRef.value) observer.observe(sentinelRef.value)
+  }
+})
 </script>
 
 

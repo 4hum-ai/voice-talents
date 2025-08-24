@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppBar :loading="checking || loadingCounts">
+    <AppBar :loading="loadingCounts">
       <template #title>
         Hi, {{ auth.user?.displayName || auth.user?.email || 'there' }}
       </template>
@@ -23,14 +23,28 @@
         </div>
       </template>
     </AppBar>
-    <div class="h-16"></div>
+    <div class="h-4"></div>
     <main class="p-6">
 
-    <section v-if="connectionStatus === 'disconnected'" class="mb-6 p-4 rounded-md border border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300">
-      Unable to reach the API. Verify your `.env` has `VITE_PUBLIC_API_URL` configured per the README and that the gateway is running.
+    <section v-if="isLoading" class="mt-6">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-for="i in 6"
+          :key="i"
+          class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+        >
+          <div class="animate-pulse flex items-start gap-3">
+            <div class="flex-none h-10 w-10 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div class="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section v-if="visibleModules.length === 0" class="mt-6">
+    <section v-else-if="visibleModules.length === 0" class="mt-6">
       <div class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
         <div class="mx-auto mb-2 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center dark:bg-gray-700">
           <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -72,18 +86,7 @@
         </router-link>
       </div>
     </section>
-    <div class="mt-4 flex items-center gap-2 text-sm w-full sm:w-auto">
-          <span
-            class="inline-block h-2.5 w-2.5 rounded-full"
-            :class="{
-              'bg-green-500': connectionStatus === 'connected',
-              'bg-red-500': connectionStatus === 'disconnected',
-              'bg-gray-300': connectionStatus === 'unknown'
-            }"
-          />
-          <span class="text-gray-700 capitalize dark:text-gray-300">{{ connectionStatus }}</span>
-          <span v-if="lastCheck" class="text-gray-500 dark:text-gray-400">· Last check: {{ lastCheck.toLocaleTimeString() }}</span>
-    </div>
+    
     </main>
   </div>
 </template>
@@ -93,7 +96,6 @@ import { onMounted, ref, computed } from 'vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
-import { useConnectionStatus } from '@/composables/useConnectionStatus'
 import { useMovieService, type AdminModuleInfo } from '@/composables/useMovieService'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
@@ -101,7 +103,7 @@ import { useTheme } from '@/composables/useTheme'
 
 // Intentionally not using router routes for modules; rely on admin-ui modules API
 
-const { connectionStatus, lastCheck, checking, checkConnection } = useConnectionStatus()
+// Connection health check removed as it's low value for UX
 const movie = useMovieService()
 const auth = useAuthStore()
 const router = useRouter()
@@ -110,7 +112,9 @@ const { isDark, toggleTheme } = useTheme()
 const counts = ref<Record<string, number | null>>({})
 const adminModules = ref<AdminModuleInfo[]>([])
 const loadingCounts = ref(false)
+const loadingModules = ref(true)
 const filter = ref('')
+const isLoading = computed(() => loadingModules.value || loadingCounts.value)
 
 const toTitle = (value: string): string => {
   const base = value.replace(/^\//, '').replace(/-/g, ' ')
@@ -169,21 +173,16 @@ const loadCounts = async () => {
   }
 }
 
-const onCheckConnection = async () => {
-  await checkConnection()
-}
+// No connection check
 
 const menuItems = computed(() => [
-  { key: 'check-connection', label: checking.value ? 'Checking…' : 'Check Connection' },
   { key: 'refresh-stats', label: loadingCounts.value ? 'Refreshing…' : 'Refresh Stats' },
   { key: 'toggle-theme', label: isDark.value ? 'Switch to Light' : 'Switch to Dark' },
   { key: 'logout', label: 'Logout' }
 ])
 
 const onMenuSelect = async (key: string) => {
-  if (key === 'check-connection') {
-    await onCheckConnection()
-  } else if (key === 'refresh-stats') {
+  if (key === 'refresh-stats') {
     await loadCounts()
   } else if (key === 'toggle-theme') {
     toggleTheme()
@@ -194,11 +193,13 @@ const onMenuSelect = async (key: string) => {
 }
 
 onMounted(async () => {
-  await onCheckConnection()
+  loadingModules.value = true
   try {
     adminModules.value = await movie.listAdminModules()
   } catch {
     adminModules.value = []
+  } finally {
+    loadingModules.value = false
   }
   await loadCounts()
 })

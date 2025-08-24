@@ -4,10 +4,10 @@
       <template #left>
         <template v-if="!isSearchOpen">
           <div class="min-w-0">
-            <div class="text-base font-semibold text-gray-900 truncate">
+            <div class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
               <slot name="title">{{ uiConfig?.displayName || moduleName }}</slot>
             </div>
-            <div class="text-xs text-gray-500 truncate">
+            <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
               <slot name="subtitle">{{ uiConfig?.description }}</slot>
             </div>
           </div>
@@ -15,17 +15,17 @@
         <template v-else>
           <div class="flex items-center gap-2 min-w-0 flex-1">
             <div class="min-w-0 flex-1">
-              <input ref="searchInputRef" v-model="searchQuery" @input="handleSearchInputDebounced" @keydown.esc.prevent="handleEscape" :placeholder="`Search ${moduleName}...`" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+              <input ref="searchInputRef" v-model="searchQuery" @input="handleSearchInputDebounced" @keydown.esc.prevent="handleEscape" :placeholder="`Search ${moduleName}...`" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
             </div>
             <div class="hidden sm:flex items-center gap-2">
-              <div class="inline-flex items-center gap-2 text-sm text-gray-600">
-                <label class="text-xs text-gray-500">Fields</label>
-                <select v-model="selectedSearchField" @change="handleSearchInput" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm">
+              <div class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
+                <select v-model="selectedSearchField" @change="handleSearchInput" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
                   <option value="all">All fields</option>
                   <option v-for="f in searchableFieldOptions" :key="f.key" :value="f.key">{{ f.label }}</option>
                 </select>
               </div>
-              <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">Filters</button>
+              <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900">Filters</button>
             </div>
           </div>
         </template>
@@ -37,19 +37,19 @@
             @click="handleAction('create')"
             class="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
-            + Add {{ displayNameSingular }}
+            + Add
           </button>
           <button
             v-if="hasCreateAction"
             @click="handleAction('create')"
-            class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9"
+            class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
           >
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z" />
             </svg>
           </button>
-          <button @click="openSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Search">
+          <button @click="openSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700" aria-label="Search">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" clip-rule="evenodd" />
             </svg>
@@ -63,7 +63,7 @@
           </ActionsMenu>
         </template>
         <template v-else>
-          <button @click="closeSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9" aria-label="Close search">
+          <button @click="closeSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700" aria-label="Close search">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z" clip-rule="evenodd" />
             </svg>
@@ -77,8 +77,8 @@
 
     <main class="p-4">
       <!-- Selection toolbar (only when some are selected) -->
-      <div v-if="currentView === 'list' && selectedIds.length > 0" class="mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
-        <div class="text-xs text-gray-600">{{ selectedIds.length }} selected</div>
+      <div v-if="currentView === 'list' && selectedIds.length > 0" class="mb-3 flex items-center gap-2 border-b border-gray-200 pb-2 dark:border-gray-700">
+        <div class="text-xs text-gray-600 dark:text-gray-300">{{ selectedIds.length }} selected</div>
         <button @click="handleBulkDelete" class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
       </div>
 
@@ -86,41 +86,41 @@
 
       <div :style="{ minHeight: contentMinHeight }">
         <div v-if="loading">
-          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-900 dark:border-gray-700">
             <div class="animate-pulse">
-              <div class="h-10 bg-gray-100 border-b border-gray-200"></div>
-              <div class="divide-y divide-gray-200">
-                <div v-for="n in skeletonRows" :key="n" class="h-12 bg-gray-50"></div>
+              <div class="h-10 bg-gray-100 border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"></div>
+              <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                <div v-for="n in skeletonRows" :key="n" class="h-12 bg-gray-50 dark:bg-gray-800"></div>
               </div>
             </div>
           </div>
         </div>
-        <div v-else-if="error" class="text-sm text-red-600">{{ error }}</div>
+        <div v-else-if="error" class="text-sm text-error-600 dark:text-error-400">{{ error }}</div>
         <div v-else>
           <TableView v-if="currentView === 'list' && uiConfig?.views?.list && filteredData.length > 0" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" @selection-change="onSelectionChange" />
-          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" />
-          <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" @action="handleAction" @item-click="handleItemClick" />
+          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" @filtersChange="handleKanbanFiltersChange" />
+          <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" :has-more="hasMore" @action="handleAction" @item-click="handleItemClick" @loadMore="handleLoadMore" />
           <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar && filteredData.length > 0" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" />
-          <div v-else-if="filteredData.length === 0" class="py-16 text-center border border-dashed border-gray-200 rounded-lg bg-white">
-            <div class="mx-auto h-12 w-12 text-gray-400" aria-hidden="true">
+          <div v-else-if="filteredData.length === 0" class="py-16 text-center border border-dashed border-gray-200 rounded-lg bg-white dark:border-gray-700 dark:bg-gray-900">
+            <div class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-12 w-12 mx-auto">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
             </div>
-            <h3 class="mt-4 text-sm font-semibold text-gray-900">{{ emptyTitle }}</h3>
-            <p class="mt-1 text-sm text-gray-500">{{ emptySubtitle }}</p>
+            <h3 class="mt-4 text-sm font-semibold text-gray-900 dark:text-gray-100">{{ emptyTitle }}</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ emptySubtitle }}</p>
             <div class="mt-6 flex items-center justify-center gap-3">
               <button
                 v-if="hasCreateAction && !searchQuery"
                 @click="handleAction('create')"
                 class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
-                Add {{ displayNameSingular }}
+                Add {{ uiConfig?.displayName }}
               </button>
               <button
                 v-if="searchQuery"
                 @click="clearSearch"
-                class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900"
               >
                 Clear search
               </button>
@@ -129,7 +129,7 @@
         </div>
       </div>
 
-      <div class="mt-4">
+      <div v-if="currentView === 'list'" class="mt-4">
         <Pagination :current-page="pagination.currentPage" :total-pages="pagination.totalPages" :total="pagination.total" :per-page="pagination.perPage" @page-change="handlePageChange" />
       </div>
     </main>
@@ -173,7 +173,7 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
 
-const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delete'])
+const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delete', 'load-more', 'filters-change'])
 
 const moduleName = computed(() => props.moduleName)
 const viewPrefKey = computed(() => `${moduleName.value}-list-view`)
@@ -233,6 +233,8 @@ const pagination = computed(() => {
 })
 
 const filteredData = computed(() => data.value)
+
+const hasMore = computed(() => pagination.value.currentPage < pagination.value.totalPages)
 
 const { updateModuleItem } = useMovieService()
 const { push } = useToast()
@@ -326,6 +328,8 @@ function goBack() {
 const handleSort = (field: string, direction: string) => emit('sort', field, direction)
 const handlePageChange = (page: number) => emit('page-change', page)
 const handleItemClick = (item: any) => emit('action', 'view', item)
+const handleLoadMore = () => emit('load-more')
+const handleKanbanFiltersChange = (payload: { from?: string; to?: string; preset?: string }) => emit('filters-change', payload)
 
 function onSelectionChange(ids: (string|number)[]) {
   selectedIds.value = ids
@@ -372,7 +376,6 @@ function handleEscape() {
 }
 
 // Empty-state helpers
-const displayNameSingular = computed(() => uiConfig.value?.displayName?.slice(0, -1) || 'Item')
 const hasCreateAction = computed(() => {
   const actions: any[] = uiConfig.value?.views?.list?.actions || []
   return actions.some((a: any) => a?.name === 'create')
@@ -384,7 +387,7 @@ const emptyTitle = computed(() => {
 })
 const emptySubtitle = computed(() => {
   if (searchQuery.value) return 'Try a different search or clear your query.'
-  return `Get started by adding your first ${displayNameSingular.value.toLowerCase()}.`
+  return `Get started by adding your first record.`
 })
 function clearSearch() {
   searchQuery.value = ''

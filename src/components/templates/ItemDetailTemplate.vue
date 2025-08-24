@@ -14,7 +14,7 @@
     </AppBar>
 
     <!-- Spacer to offset the fixed app bar height -->
-    <div class="h-16"></div>
+    <div class="h-4"></div>
 
     <!-- Breadcrumbs under the app bar -->
     <div class="px-4 py-2">
@@ -27,10 +27,10 @@
           <section
             v-for="(section, sIdx) in detailSections"
             :key="`skeleton-sec-${sIdx}`"
-            class="rounded-lg border border-gray-200 bg-white shadow-sm"
+            class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
           >
-            <div v-if="section.title" class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-              <div class="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+            <div v-if="section.title" class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg dark:border-gray-700 dark:bg-gray-800">
+              <div class="h-4 w-32 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
             </div>
             <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div
@@ -38,44 +38,44 @@
                 :key="`skeleton-field-${sIdx}-${i}`"
                 class="flex flex-col gap-2"
               >
-                <div class="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
-                <div class="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+                <div class="h-3 w-24 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
+                <div class="h-4 w-full bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
               </div>
             </div>
           </section>
         </div>
-        <div v-else class="bg-white border border-gray-200 rounded-lg p-4">
+        <div v-else class="bg-white border border-gray-200 rounded-lg p-4 dark:bg-gray-900 dark:border-gray-700">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
-              <div class="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
-              <div class="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
+              <div class="h-3 w-24 bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
+              <div class="h-4 w-full bg-gray-200 rounded animate-pulse dark:bg-gray-700"></div>
             </div>
           </div>
         </div>
       </div>
-      <div v-else-if="error" class="text-sm text-red-600">{{ error }}</div>
+      <div v-else-if="error" class="text-sm text-error-600 dark:text-error-400">{{ error }}</div>
       <div v-else>
         <slot name="details" :item="item">
           <!-- Use configured detailView when available -->
           <div v-if="detailSections && detailSections.length" class="space-y-6">
-            <section v-for="(section, sIdx) in detailSections" :key="`sec-${sIdx}`" class="rounded-lg border border-gray-200 bg-white shadow-sm">
-              <div v-if="section.title" class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-                <h3 class="text-sm font-semibold text-gray-900">{{ section.title }}</h3>
+            <section v-for="(section, sIdx) in detailSections" :key="`sec-${sIdx}`" class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+              <div v-if="section.title" class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg dark:border-gray-700 dark:bg-gray-800">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ section.title }}</h3>
               </div>
               <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div v-for="field in section.fields || []" :key="field.key" class="flex flex-col">
-                  <span class="text-xs text-gray-500">{{ field.label || formatKey(String(field.key)) }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ field.label || formatKey(String(field.key)) }}</span>
                   <FieldValue :value="item?.[field.key]" :type="field.type" :formatter="field.formatter" :currency-code="currencyCode(item)" :field-key="field.key" />
                 </div>
               </div>
             </section>
           </div>
           <!-- Fallback to naive key/value rendering in a single card -->
-          <div v-else class="bg-white border border-gray-200 rounded-lg p-4">
+          <div v-else class="bg-white border border-gray-200 rounded-lg p-4 dark:bg-gray-900 dark:border-gray-700">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div v-for="(value, key) in displayPairs" :key="String(key)" class="flex flex-col">
-                <span class="text-xs text-gray-500">{{ formatKey(String(key)) }}</span>
-                <span class="text-sm text-gray-900 break-all">{{ formatValue(value) }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatKey(String(key)) }}</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100 break-all">{{ formatValue(value) }}</span>
               </div>
             </div>
           </div>
