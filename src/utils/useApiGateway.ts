@@ -1,4 +1,5 @@
 import { getAuth } from "firebase/auth";
+import { useToast } from "@/composables/useToast";
 
 export interface ApiClientOptions {
   baseUrl: string;
@@ -12,6 +13,7 @@ export interface RequestOptions extends RequestInit {
 
 export interface ApiClient {
   request: (path: string, options?: RequestOptions) => Promise<Response>;
+  baseUrl: string;
 }
 
 function joinUrl(baseUrl: string, path: string): string {
@@ -49,7 +51,22 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       ? { signal: (opts.timeoutMs ?? timeoutMs) ? (AbortSignal as any).timeout(opts.timeoutMs ?? timeoutMs) : undefined }
       : {};
 
-    let response = await fetch(url, { ...opts, headers, ...controller });
+    const { push } = useToast();
+
+    let response: Response;
+    try {
+      response = await fetch(url, { ...opts, headers, ...controller });
+    } catch (error: any) {
+      push({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        type: "error",
+        position: "tr",
+        title: "Network error",
+        body: `${opts.method ?? "GET"} ${path}: ${error?.message ?? "Request failed"}`,
+        timeout: 6000,
+      });
+      throw error;
+    }
 
     if (response.status === 401) {
       try {
@@ -63,9 +80,31 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       }
     }
 
+    if (!response.ok) {
+      push({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        type: "error",
+        position: "tr",
+        title: `Request failed (${response.status})`,
+        body: `${opts.method ?? "GET"} ${path}: ${response.statusText || "Unexpected error"}`,
+        timeout: 6000,
+      });
+    }
+
     return response;
   };
 
-  return { request };
+  return { request, baseUrl };
 }
+
+let singletonClient: ApiClient | null = null;
+
+export function useApiGateway(): ApiClient {
+  if (singletonClient) return singletonClient;
+  const RAW_API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as string | undefined;
+  const base = RAW_API_BASE && /^https?:\/\//i.test(RAW_API_BASE) ? `${RAW_API_BASE.replace(/\/$/, '')}/movie` : '';
+  singletonClient = createApiClient({ baseUrl: base });
+  return singletonClient;
+}
+
 

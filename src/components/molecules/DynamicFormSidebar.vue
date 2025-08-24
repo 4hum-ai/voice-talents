@@ -10,18 +10,19 @@
           <div class="flex-1 overflow-y-auto bg-white">
             <form @submit.prevent="handleSubmit" class="px-6 py-6 space-y-6">
               <div class="space-y-4">
-                <div v-for="field in formConfig?.fields || []" :key="field.key" class="space-y-2">
+                <div v-for="field in resolvedForm.fields" :key="field.key" class="space-y-2">
                   <label :for="field.key" class="block text-sm font-medium text-gray-700">{{ field.label }}<span v-if="field.required" class="text-red-500">*</span></label>
-                  <input v-if="field.type==='text' || field.type==='email' || field.type==='url'" :id="field.key" v-model="formData[field.key]" :type="field.type" :placeholder="field.placeholder" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 border-gray-300 focus:ring-red-500 focus:border-red-500" />
-                  <input v-else-if="field.type==='number'" :id="field.key" v-model.number="formData[field.key]" type="number" :placeholder="field.placeholder" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 border-gray-300 focus:ring-red-500 focus:border-red-500" />
-                  <input v-else-if="field.type==='date'" :id="field.key" v-model="formData[field.key]" type="date" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 border-gray-300 focus:ring-red-500 focus:border-red-500" />
-                  <select v-else-if="field.type==='select'" :id="field.key" v-model="formData[field.key]" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 border-gray-300 focus:ring-red-500 focus:border-red-500">
+                  <input v-if="field.type==='text' || field.type==='email' || field.type==='url'" :id="field.key" v-model="formData[field.key]" :type="inputType(field)" :placeholder="field.placeholder" :class="inputClass(field)" @blur="onBlur(field)" @input="onInput(field)" />
+                  <input v-else-if="field.type==='number'" :id="field.key" v-model.number="formData[field.key]" type="number" :placeholder="field.placeholder" :class="inputClass(field)" @blur="onBlur(field)" @input="onInput(field)" />
+                  <input v-else-if="field.type==='date'" :id="field.key" v-model="formData[field.key]" type="date" :class="inputClass(field)" @blur="onBlur(field)" @input="onInput(field)" />
+                  <select v-else-if="field.type==='select'" :id="field.key" v-model="formData[field.key]" :class="inputClass(field)" @blur="onBlur(field)" @change="onInput(field)">
                     <option :value="undefined">{{ field.placeholder || `Select ${field.label.toLowerCase()}` }}</option>
-                    <option v-for="opt in field.options" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    <option v-for="opt in field.options || []" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                   </select>
-                  <textarea v-else-if="field.type==='textarea'" :id="field.key" v-model="formData[field.key]" :placeholder="field.placeholder" rows="3" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 border-gray-300 focus:ring-red-500 focus:border-red-500"></textarea>
-                  <div v-else-if="field.type==='boolean'" class="flex items-center"><input :id="field.key" v-model="formData[field.key]" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" /><label :for="field.key" class="ml-2 block text-sm text-gray-900">{{ field.label }}</label></div>
+                  <textarea v-else-if="field.type==='textarea'" :id="field.key" v-model="formData[field.key]" :placeholder="field.placeholder" rows="3" :class="textareaClass(field)" @blur="onBlur(field)" @input="onInput(field)"></textarea>
+                  <div v-else-if="field.type==='boolean'" class="flex items-center"><input :id="field.key" v-model="formData[field.key]" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" @change="onInput(field)" /><label :for="field.key" class="ml-2 block text-sm text-gray-900">{{ field.label }}</label></div>
                   <p v-if="field.helpText" class="text-xs text-gray-500">{{ field.helpText }}</p>
+                  <p v-if="shouldShowError(field)" class="text-xs text-red-600">{{ errors[field.key] }}</p>
                 </div>
               </div>
             </form>
@@ -29,7 +30,7 @@
           <div class="flex-shrink-0 px-6 py-4 border-t border-gray-200 bg-gray-50">
             <div class="flex justify-end space-x-3">
               <button type="button" @click="$emit('close')" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
-              <button type="submit" :disabled="loading" @click="handleSubmit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
+              <button type="submit" :disabled="loading || !isFormValid" @click="handleSubmit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50">
                 <span v-if="loading">{{ loadingText }}</span>
                 <span v-else>{{ submitText }}</span>
               </button>
@@ -42,7 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, computed, ref } from 'vue'
+import { countries } from '@/utils/countries'
 
 interface FormField { key: string; label: string; type: 'text'|'email'|'url'|'number'|'date'|'select'|'textarea'|'boolean'; required?: boolean; placeholder?: string; helpText?: string; options?: Array<{ value:string; label:string }> }
 interface FormConfig { fields: FormField[]; layout?: 'single'|'tabs'|'sections' }
@@ -51,8 +53,84 @@ const props = withDefaults(defineProps<{ title: string; formConfig?: FormConfig;
 const emit = defineEmits<{ close: []; submit: [data: Record<string, any>] }>()
 
 const formData = reactive<Record<string, any>>({ ...(props.initialData || {}) })
+const errors = reactive<Record<string, string | undefined>>({})
+
+const resolvedForm = computed<FormConfig>(() => {
+  const base: FormConfig = props.formConfig ? { ...props.formConfig, fields: [...(props.formConfig.fields || [])] } : { fields: [] }
+  base.fields = base.fields.map((f) => {
+    if (f.type === 'select' && f.key === 'country' && (!f.options || f.options.length === 0)) {
+      return {
+        ...f,
+        options: countries.map(c => ({ value: c.code, label: c.name })),
+        placeholder: f.placeholder || 'Select country'
+      }
+    }
+    return f
+  })
+  return base
+})
+
+const inputBase = 'block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2'
+const touched = reactive<Record<string, boolean>>({})
+const submitted = ref(false)
+const shouldShowError = (field: FormField) => (touched[field.key] || submitted.value) && !!errors[field.key]
+const inputClass = (field: FormField) => [inputBase, shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500']
+const textareaClass = (field: FormField) => [inputBase, 'min-h-[96px]', shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500']
+const inputType = (field: FormField) => {
+  if (field.type === 'text' && field.key === 'email') return 'email'
+  return field.type
+}
+
+const validators = {
+  required: (v: any) => !(v === undefined || v === null || v === ''),
+  email: (v: any) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v)),
+  url: (v: any) => !v || /^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(String(v)),
+  number: (v: any) => v === undefined || v === null || v === '' || !isNaN(Number(v)),
+  date: (v: any) => !v || !isNaN(new Date(v).getTime())
+}
+
+function validateField(field: FormField): string | undefined {
+  const v = formData[field.key]
+  if (field.required && !validators.required(v)) return 'This field is required.'
+  if ((field.type === 'email' || field.key === 'email') && !validators.email(v)) return 'Enter a valid email address.'
+  if (field.type === 'url' && !validators.url(v)) return 'Enter a valid URL.'
+  if (field.type === 'number' && !validators.number(v)) return 'Enter a valid number.'
+  if (field.type === 'date' && !validators.date(v)) return 'Enter a valid date.'
+  return undefined
+}
+
+function validateAll(): boolean {
+  let ok = true
+  errorsKeys().forEach(k => delete errors[k])
+  for (const f of resolvedForm.value.fields) {
+    const msg = validateField(f)
+    if (msg) { errors[f.key] = msg; ok = false }
+  }
+  return ok
+}
+
+const errorsKeys = () => Object.keys(errors)
+
+function setFieldError(field: FormField) {
+  const msg = validateField(field)
+  if (msg) errors[field.key] = msg
+  else delete errors[field.key]
+}
+
+function onBlur(field: FormField) {
+  touched[field.key] = true
+  setFieldError(field)
+}
+
+function onInput(field: FormField) {
+  if (touched[field.key] || submitted.value) setFieldError(field)
+}
+
+const isFormValid = computed(() => resolvedForm.value.fields.every(f => validateField(f) === undefined))
 
 const handleSubmit = () => {
+  submitted.value = true
+  if (!validateAll()) return
   emit('submit', { ...formData })
 }
 </script>

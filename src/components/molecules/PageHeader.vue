@@ -1,6 +1,9 @@
 <template>
   <div class="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
     <div>
+      <div class="mb-1">
+        <slot name="breadcrumbs" />
+      </div>
       <h3 class="text-lg font-semibold text-gray-900">
         <slot name="title" />
       </h3>

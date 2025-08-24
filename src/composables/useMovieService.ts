@@ -1,4 +1,4 @@
-import { useApiGateway } from './useApiGateway'
+import { useApiGateway } from '@/utils/useApiGateway'
 
 export interface PaginatedResponse<T> {
   data: T[]
@@ -35,9 +35,9 @@ export function useMovieService() {
         cache: 'no-store',
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          // 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          // 'Pragma': 'no-cache',
+          // 'Expires': '0'
         },
         signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(5000) : undefined
       })
@@ -116,6 +116,11 @@ export function useMovieService() {
     }
   }
 
+  const getModuleItem = async (module: string, id: string): Promise<any> => {
+    const payload = await get<any>(`/api/${module}/${id}`)
+    return payload?.data ?? payload
+  }
+
   const getModuleUiConfig = async (module: string, opts?: { force?: boolean }): Promise<any | null> => {
     if (!opts?.force && singletonUiConfig.has(module)) {
       return singletonUiConfig.get(module)
@@ -153,6 +158,7 @@ export function useMovieService() {
     checkConnection,
     listAdminModules,
     listModuleItems,
+    getModuleItem,
     getModuleUiConfig,
     createModuleItem,
     updateModuleItem,

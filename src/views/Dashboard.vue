@@ -21,6 +21,17 @@
             <span class="text-gray-700 capitalize">{{ connectionStatus }}</span>
             <span v-if="lastCheck" class="text-gray-500">· Last check: {{ lastCheck.toLocaleTimeString() }}</span>
           </div>
+
+          <div class="w-full sm:w-64">
+            <label class="sr-only" for="module-search">Search modules</label>
+            <input
+              id="module-search"
+              v-model="filter"
+              type="search"
+              placeholder="Search modules…"
+              class="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            />
+          </div>
           <ActionsMenu
             :items="[
               { key: 'check-connection', label: checking ? 'Checking…' : 'Check Connection' },
@@ -40,18 +51,37 @@
       Unable to reach the API. Verify your `.env` has `VITE_PUBLIC_API_URL` configured per the README and that the gateway is running.
     </section>
 
-    <section>
+    <section v-if="visibleModules.length === 0" class="mt-6">
+      <div class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600">
+        <div class="mx-auto mb-2 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m0-6.4a6.4 6.4 0 1 1-12.8 0 6.4 6.4 0 0 1 12.8 0Z"/>
+          </svg>
+        </div>
+        <div v-if="filter">No modules match “{{ filter }}”.</div>
+        <div v-else>No modules available.</div>
+      </div>
+    </section>
+
+    <section v-else>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <router-link
-          v-for="m in adminModules"
+          v-for="m in visibleModules"
           :key="m.name"
           :to="`/${m.name}`"
-          class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:shadow transition-shadow"
+          class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition hover:-translate-y-0.5"
         >
-          <div class="flex items-start justify-between">
-            <div>
-              <h3 class="text-base font-semibold text-gray-900">{{ m.displayName || toTitle(m.name) }}</h3>
-              <p v-if="m.description" class="mt-1 text-sm text-gray-500">{{ m.description }}</p>
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="flex-none overflow-hidden h-10 w-10">
+                <div class="h-full w-full grid place-items-center">
+                  <Avatar :label="m.displayName || toTitle(m.name)" :seed="m.name" shape="square" />
+                </div>
+              </div>
+              <div>
+                <h3 class="text-base font-semibold text-gray-900">{{ m.displayName || toTitle(m.name) }}</h3>
+                <p v-if="m.description" class="mt-1 text-sm text-gray-500">{{ m.description }}</p>
+              </div>
             </div>
             <div class="text-right">
               <div class="text-2xl font-bold text-gray-900">
@@ -67,9 +97,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import PageHeader from '@/components/molecules/PageHeader.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import Avatar from '@/components/atoms/Avatar.vue'
 import { useConnectionStatus } from '@/composables/useConnectionStatus'
 import { useMovieService, type AdminModuleInfo } from '@/composables/useMovieService'
 
@@ -81,6 +112,7 @@ const movie = useMovieService()
 const counts = ref<Record<string, number | null>>({})
 const adminModules = ref<AdminModuleInfo[]>([])
 const loadingCounts = ref(false)
+const filter = ref('')
 
 const toTitle = (value: string): string => {
   const base = value.replace(/^\//, '').replace(/-/g, ' ')
@@ -91,6 +123,23 @@ const formatCount = (n: number | null | undefined): string => {
   if (n === null || n === undefined) return '—'
   return new Intl.NumberFormat().format(n)
 }
+
+const visibleModules = computed(() => {
+  const q = filter.value.trim().toLowerCase()
+  const mods = q
+    ? adminModules.value.filter((m) => {
+        const name = (m.displayName || m.name).toLowerCase()
+        const desc = (m.description || '').toLowerCase()
+        return name.includes(q) || desc.includes(q)
+      })
+    : adminModules.value.slice()
+
+  return mods.sort((a, b) => {
+    const an = (a.displayName || a.name).toLowerCase()
+    const bn = (b.displayName || b.name).toLowerCase()
+    return an.localeCompare(bn)
+  })
+})
 
 const loadCounts = async () => {
   loadingCounts.value = true
@@ -143,6 +192,8 @@ onMounted(async () => {
   }
   await loadCounts()
 })
+
+// Visual helpers moved to Avatar atom
 </script>
 
 

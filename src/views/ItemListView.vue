@@ -1,5 +1,5 @@
 <template>
-  <ResourceViewTemplate
+  <ItemListTemplate
     :module-name="module"
     :ui-config="uiConfig"
     :data="items"
@@ -17,17 +17,16 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import ResourceViewTemplate from '@/components/templates/ResourceViewTemplate.vue'
+import { useRoute, useRouter } from 'vue-router'
+import ItemListTemplate from '@/components/templates/ItemListTemplate.vue'
 import { useMovieService, type PaginatedResponse } from '@/composables/useMovieService'
 const movie = useMovieService()
 
 const route = useRoute()
+const router = useRouter()
 const module = computed(() => {
-  // Prefer module from route meta if provided by resource routes
   const metaModule = route.meta?.module as string | undefined
   if (metaModule) return metaModule
-  // Fallback to query param to allow ad-hoc module access
   return String(route.query.module || 'organizations')
 })
 
@@ -43,12 +42,10 @@ async function loadUiConfig() {
     loading.value = true
     error.value = null
     const res = await movie.getModuleUiConfig(module.value)
-    // API returns { module, config } – use config
     uiConfig.value = res?.config ?? res ?? null
     if (!uiConfig.value) {
       throw new Error('UI configuration not available')
     }
-    // Apply page size from config if provided
     const pageSize = uiConfig.value?.views?.list?.pageSize
     if (pageSize && typeof pageSize === 'number') {
       pagination.value.limit = pageSize
@@ -65,7 +62,6 @@ async function load(page = 1) {
   loading.value = true
   error.value = null
   try {
-    // Ensure UI config is loaded first
     if (!uiConfig.value) {
       await loadUiConfig()
     }
@@ -87,10 +83,14 @@ async function load(page = 1) {
 
 function onAction(action: string, payload?: any) {
   if (action === 'create') {
-    // Quick create path; can be replaced with form mapping
     movie.createModuleItem(module.value, payload)
       .then(() => load(pagination.value.page))
       .catch((e: any) => error.value = e?.message || 'Create failed')
+    return
+  }
+  if (action === 'view' && payload) {
+    const id = String(payload.id ?? payload._id)
+    if (id) router.push({ path: `/${module.value}/${id}` })
   }
 }
 
@@ -114,15 +114,12 @@ onMounted(async () => {
 })
 
 watch(module, async () => {
-  // Reset when switching modules
   uiConfig.value = null
   items.value = []
   pagination.value = { page: 1, limit: 20, total: 0, totalPages: 1 }
   await loadUiConfig()
   await load(1)
 })
-
-// Removed local fallback; UI config must come from API
 </script>
 
 
