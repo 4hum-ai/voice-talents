@@ -1,0 +1,28 @@
+## Cursor Rules for Admin UI
+
+### Purpose
+This is a low‑code Vue 3 + TypeScript admin UI. Do not refactor architecture. 
+
+### Architecture map
+- Entry: `src/main.ts` (Pinia, Router, Theme init)
+- Routing: `src/router/index.ts`
+- State: `src/stores/auth.ts`
+- API gateway: `src/utils/useApiGateway.ts` (fetch + Firebase token)
+- Views: `src/views/ItemListView.vue`, `src/views/ItemDetailView.vue`
+- Shared components in atomic design: `src/components/{atoms,molecules,organisms,templates}`
+
+### Data contracts (do not change without backend)
+- UI config: `GET /api/admin-ui/modules/:module/config` with keys used by templates (list/kanban/gallery/calendar/detail/form). Keep keys stable.
+- Data: `/api/:module` list supports `page, limit, search, searchFields, sort, preset, from, to`. Detail at `/api/:module/:id`. CRUD returns `{ data }`.
+
+### Coding conventions
+- Language: TypeScript, Vue 3 SFC `<script setup lang="ts">`
+- State: Pinia stores under `src/stores/*`
+- Composables: `src/composables/*` return plain functions/objects and avoid side effects on import
+- Styling: Tailwind classes only; do not add global CSS unless in `src/assets/styles/main.css`
+- Errors: Surface via `useToast.push(...)` not `alert()`
+- Auth: Use `useAuthStore` and `useAuth` for any auth changes
+- API: Use `useMovieService` methods; do not fetch directly in components
+- Routing: Add or change routes only in `src/router/index.ts`
+- Indentation: match existing style; avoid reformatting unrelated code
+

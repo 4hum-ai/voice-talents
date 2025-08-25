@@ -19,11 +19,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/ItemDetailView.vue'),
     meta: { title: 'Detail', requiresAuth: true }
   },
-  {
-    path: '/module',
-    component: () => import('../views/ItemListView.vue'),
-    meta: { title: 'Module', requiresAuth: true }
-  },
   // Auth
   {
     path: '/auth',
@@ -67,20 +62,11 @@ router.beforeEach(async (to, _from, next) => {
 
   const maybeModule = to.params?.module as string | undefined
   if (maybeModule) {
-    try {
-      const modules = await movie.listAdminModules()
-      const match = modules.find(m => m.name === maybeModule)
-      if (!match) {
-        next('/not-found')
-        return
-      }
-      titleSuffix = to.meta.title ? `${match.displayName} - ${to.meta.title}` : match.displayName
-    } catch (_) {
-      // Ignore and proceed; view layer will surface any errors
-    }
+    // Avoid network calls in the guard; title will be refined in views.
+    titleSuffix = to.meta.title ? `${maybeModule} - ${to.meta.title}` : maybeModule
   }
 
-  document.title = `${titleSuffix} - Movie Dubie Admin`
+  document.title = `${titleSuffix} - Admin UI`
   next()
 })
 

@@ -1,5 +1,5 @@
 import { ref, readonly, computed } from "vue";
-import { initializeApp } from "firebase/app";
+import { initializeApp, type FirebaseApp } from "firebase/app";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -12,6 +12,7 @@ import {
   getAdditionalUserInfo,
   setPersistence,
   browserLocalPersistence,
+  browserSessionPersistence,
   type User as FirebaseUser,
 } from "firebase/auth";
 
@@ -31,9 +32,19 @@ const firebaseConfig = {
   appId: (import.meta as any).env?.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-void setPersistence(auth, browserLocalPersistence).catch(() => {});
+let app: FirebaseApp | null = null;
+let authInstance: ReturnType<typeof getAuth> | null = null;
+
+function ensureAuthInitialized() {
+  if (!app) {
+    app = initializeApp(firebaseConfig);
+  }
+  if (!authInstance) {
+    authInstance = getAuth(app);
+    void setPersistence(authInstance, browserLocalPersistence).catch(() => {});
+  }
+  return authInstance;
+}
 
 export function useAuth() {
   const isLoading = ref(true);
@@ -50,6 +61,7 @@ export function useAuth() {
   };
 
   const getCurrentUser = async (): Promise<AuthUser | null> => {
+    const auth = ensureAuthInitialized();
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
@@ -66,9 +78,21 @@ export function useAuth() {
     });
   };
 
+  const subscribe = (cb: (u: AuthUser | null) => void): (() => void) => {
+    const auth = ensureAuthInitialized();
+    const off = onAuthStateChanged(auth, (firebaseUser) => {
+      const converted = firebaseUser ? convertFirebaseUser(firebaseUser) : null;
+      user.value = converted;
+      cb(converted);
+      isLoading.value = false;
+    });
+    return off;
+  };
+
   const login = async (email: string, password: string): Promise<AuthUser> => {
     try {
       error.value = null;
+      const auth = ensureAuthInitialized();
       const cred = await signInWithEmailAndPassword(auth, email, password);
       const converted = convertFirebaseUser(cred.user);
       user.value = converted;
@@ -83,6 +107,7 @@ export function useAuth() {
   const loginWithGoogle = async (): Promise<{ user: AuthUser; newUser?: boolean }> => {
     try {
       error.value = null;
+      const auth = ensureAuthInitialized();
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const converted = convertFirebaseUser(result.user);
@@ -101,6 +126,7 @@ export function useAuth() {
   ): Promise<{ user: AuthUser; newUser?: boolean }> => {
     try {
       error.value = null;
+      const auth = ensureAuthInitialized();
       let providerInstance: GoogleAuthProvider | GithubAuthProvider | OAuthProvider;
       switch (providerName) {
         case 'google':
@@ -131,6 +157,7 @@ export function useAuth() {
   const logout = async (): Promise<void> => {
     try {
       error.value = null;
+      const auth = ensureAuthInitialized();
       await signOut(auth);
       user.value = null;
     } catch (err) {
@@ -142,16 +169,24 @@ export function useAuth() {
 
   const isAuthenticated = computed(() => !!user.value);
 
+  const setPersistenceMode = async (mode: 'local' | 'session') => {
+    const auth = ensureAuthInitialized();
+    const persistence = mode === 'local' ? browserLocalPersistence : browserSessionPersistence;
+    await setPersistence(auth, persistence).catch(() => {});
+  };
+
   return {
     user: readonly(user),
     isLoading: readonly(isLoading),
     error: readonly(error),
     isAuthenticated,
     getCurrentUser,
+    subscribe,
     login,
     loginWithGoogle,
     loginWithOAuth,
     logout,
+    setPersistenceMode,
   };
 }
 

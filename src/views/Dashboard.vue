@@ -158,16 +158,20 @@ const loadCounts = async () => {
     const seed: Record<string, number | null> = {}
     mods.forEach((m) => (seed[m] = null))
     counts.value = seed
-    await Promise.all(
-      mods.map(async (m) => {
+    // Limit concurrency to avoid overwhelming API if many modules
+    const queue = mods.slice()
+    const workers = Array.from({ length: 4 }).map(async () => {
+      while (queue.length) {
+        const mod = queue.shift()!
         try {
-          const res = await movie.listModuleItems(m, { page: 1, limit: 1 })
-          counts.value[m] = res.pagination.total
+          const res = await movie.listModuleItems(mod, { page: 1, limit: 1 })
+          counts.value[mod] = res.pagination.total
         } catch {
-          counts.value[m] = null
+          counts.value[mod] = null
         }
-      })
-    )
+      }
+    })
+    await Promise.all(workers)
   } finally {
     loadingCounts.value = false
   }

@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ItemListTemplate from '@/components/templates/ItemListTemplate.vue'
 import { useMovieService, type PaginatedResponse } from '@/composables/useMovieService'
@@ -42,12 +42,15 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
 const timeWindow = ref<{ preset?: string; from?: string; to?: string }>({})
+let currentAbort: AbortController | null = null
 
 async function loadUiConfig() {
   try {
     loading.value = true
     error.value = null
-    const res = await movie.getModuleUiConfig(module.value)
+    currentAbort?.abort()
+    currentAbort = new AbortController()
+    const res = await movie.getModuleUiConfig(module.value, { signal: currentAbort.signal })
     uiConfig.value = res?.config ?? res ?? null
     if (!uiConfig.value) {
       throw new Error('UI configuration not available')
@@ -71,10 +74,10 @@ async function load(page = 1) {
     if (!uiConfig.value) {
       await loadUiConfig()
     }
-    const url = new URL(window.location.href)
-    const search = url.searchParams.get('search') || undefined
-    const searchField = url.searchParams.get('searchField') || undefined
-    const sortParam = url.searchParams.get('sort') || undefined
+    const q = route.query
+    const search = (q.search as string) || undefined
+    const searchField = (q.searchFields as string) || (q.searchField as string) || undefined
+    const sortParam = (q.sort as string) || undefined
     const params: Record<string, any> = { page, limit: pagination.value.limit }
     if (search) params.search = search
     if (searchField) params.searchFields = searchField
@@ -82,7 +85,9 @@ async function load(page = 1) {
     if (timeWindow.value?.preset && timeWindow.value.preset !== 'all') params.preset = timeWindow.value.preset
     if (timeWindow.value?.from) params.from = timeWindow.value.from
     if (timeWindow.value?.to) params.to = timeWindow.value.to
-    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params)
+    currentAbort?.abort()
+    currentAbort = new AbortController()
+    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params, currentAbort.signal)
     items.value = res.data
     const p = res.pagination
     pagination.value = {
@@ -99,9 +104,7 @@ async function load(page = 1) {
 }
 function onSort(field: string, direction: string) {
   try {
-    const url = new URL(window.location.href)
-    url.searchParams.set('sort', `${field}:${direction}`)
-    history.replaceState(null, '', url.toString())
+    router.replace({ query: { ...route.query, sort: `${field}:${direction}` } })
   } catch {}
   load(1)
 }
@@ -125,10 +128,10 @@ async function onLoadMore() {
   const nextPage = pagination.value.page + 1
   loading.value = true
   try {
-    const url = new URL(window.location.href)
-    const search = url.searchParams.get('search') || undefined
-    const searchField = url.searchParams.get('searchField') || undefined
-    const sortParam = url.searchParams.get('sort') || undefined
+    const q = route.query
+    const search = (q.search as string) || undefined
+    const searchField = (q.searchFields as string) || (q.searchField as string) || undefined
+    const sortParam = (q.sort as string) || undefined
     const params: Record<string, any> = { page: nextPage, limit: pagination.value.limit }
     if (search) params.search = search
     if (searchField) params.searchFields = searchField
@@ -136,7 +139,9 @@ async function onLoadMore() {
     if (timeWindow.value?.preset && timeWindow.value.preset !== 'all') params.preset = timeWindow.value.preset
     if (timeWindow.value?.from) params.from = timeWindow.value.from
     if (timeWindow.value?.to) params.to = timeWindow.value.to
-    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params)
+    currentAbort?.abort()
+    currentAbort = new AbortController()
+    const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params, currentAbort.signal)
     items.value = items.value.concat(res.data)
     const p = res.pagination
     pagination.value = {
@@ -156,11 +161,11 @@ function onFiltersChange(payload: { preset?: string; from?: string; to?: string 
   timeWindow.value = { ...payload }
   // Sync to URL for shareable state
   try {
-    const url = new URL(window.location.href)
-    if (payload.preset) url.searchParams.set('preset', payload.preset); else url.searchParams.delete('preset')
-    if (payload.from) url.searchParams.set('from', payload.from); else url.searchParams.delete('from')
-    if (payload.to) url.searchParams.set('to', payload.to); else url.searchParams.delete('to')
-    history.replaceState(null, '', url.toString())
+    const nextQuery: Record<string, any> = { ...route.query }
+    if (payload.preset) nextQuery.preset = payload.preset; else delete nextQuery.preset
+    if (payload.from) nextQuery.from = payload.from; else delete nextQuery.from
+    if (payload.to) nextQuery.to = payload.to; else delete nextQuery.to
+    router.replace({ query: nextQuery })
   } catch {}
   load(1)
 }
@@ -183,10 +188,10 @@ onMounted(async () => {
   await loadUiConfig()
   // Initialize time window from URL if present
   try {
-    const url = new URL(window.location.href)
-    const preset = url.searchParams.get('preset') || undefined
-    const from = url.searchParams.get('from') || undefined
-    const to = url.searchParams.get('to') || undefined
+    const q = route.query
+    const preset = (q.preset as string) || undefined
+    const from = (q.from as string) || undefined
+    const to = (q.to as string) || undefined
     timeWindow.value = { preset, from, to }
   } catch {}
   await load(1)
@@ -199,6 +204,8 @@ watch(module, async () => {
   await loadUiConfig()
   await load(1)
 })
+
+onBeforeUnmount(() => { currentAbort?.abort(); })
 </script>
 
 

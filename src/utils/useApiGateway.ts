@@ -47,15 +47,18 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       ...(opts.headers as Record<string, string> | undefined),
     };
 
-    const controller = typeof AbortSignal !== "undefined" && (AbortSignal as any).timeout
-      ? { signal: (opts.timeoutMs ?? timeoutMs) ? (AbortSignal as any).timeout(opts.timeoutMs ?? timeoutMs) : undefined }
-      : {};
+    // Prefer caller-provided AbortSignal. If none, optionally create a timeout-based signal.
+    const computedSignal = opts.signal
+      ? opts.signal
+      : (typeof AbortSignal !== "undefined" && (AbortSignal as any).timeout
+          ? ((opts.timeoutMs ?? timeoutMs) ? (AbortSignal as any).timeout(opts.timeoutMs ?? timeoutMs) : undefined)
+          : undefined);
 
     const { push } = useToast();
 
     let response: Response;
     try {
-      response = await fetch(url, { ...opts, headers, ...controller });
+      response = await fetch(url, { ...opts, headers, signal: computedSignal });
     } catch (error: any) {
       push({
         id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -80,16 +83,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       }
     }
 
-    if (!response.ok) {
-      push({
-        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        type: "error",
-        position: "tr",
-        title: `Request failed (${response.status})`,
-        body: `${opts.method ?? "GET"} ${path}: ${response.statusText || "Unexpected error"}`,
-        timeout: 6000,
-      });
-    }
+    // Do not toast for HTTP error statuses here; let callers decide contextually.
 
     return response;
   };
@@ -102,7 +96,13 @@ let singletonClient: ApiClient | null = null;
 export function useApiGateway(): ApiClient {
   if (singletonClient) return singletonClient;
   const RAW_API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as string | undefined;
-  const base = RAW_API_BASE && /^https?:\/\//i.test(RAW_API_BASE) ? `${RAW_API_BASE.replace(/\/$/, '')}/movie` : '';
+  const RAW_API_BASE_PATH = (import.meta as any).env?.VITE_API_BASE_PATH as string | undefined;
+  let base = '';
+  if (RAW_API_BASE && /^https?:\/\//i.test(RAW_API_BASE)) {
+    const root = RAW_API_BASE.replace(/\/$/, '');
+    const suffix = RAW_API_BASE_PATH ? `/${RAW_API_BASE_PATH.replace(/^\//, '').replace(/\/$/, '')}` : '/movie';
+    base = `${root}${suffix}`;
+  }
   singletonClient = createApiClient({ baseUrl: base });
   return singletonClient;
 }

@@ -47,7 +47,7 @@ export function useMovieService() {
     }
   }
 
-  const request = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+  const request = async <T>(endpoint: string, options: RequestInit & { signal?: AbortSignal } = {}): Promise<T> => {
     try {
       const res = await client.request(endpoint, options)
       if (!res.ok) {
@@ -82,7 +82,7 @@ export function useMovieService() {
     }
   }
 
-  const get = <T>(endpoint: string, params?: Record<string, any>): Promise<T> => {
+  const get = <T>(endpoint: string, params?: Record<string, any>, signal?: AbortSignal): Promise<T> => {
     const search = new URLSearchParams()
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
@@ -96,15 +96,15 @@ export function useMovieService() {
     }
     const q = search.toString()
     const path = q ? `${endpoint}?${q}` : endpoint
-    return request<T>(path)
+    return request<T>(path, { signal })
   }
 
-  const post = <T>(endpoint: string, data?: any): Promise<T> => request<T>(endpoint, { method: 'POST', body: data ? JSON.stringify(data) : undefined })
-  const put = <T>(endpoint: string, data?: any): Promise<T> => request<T>(endpoint, { method: 'PUT', body: data ? JSON.stringify(data) : undefined })
-  const del = <T>(endpoint: string): Promise<T> => request<T>(endpoint, { method: 'DELETE' })
+  const post = <T>(endpoint: string, data?: any, signal?: AbortSignal): Promise<T> => request<T>(endpoint, { method: 'POST', body: data ? JSON.stringify(data) : undefined, signal })
+  const put = <T>(endpoint: string, data?: any, signal?: AbortSignal): Promise<T> => request<T>(endpoint, { method: 'PUT', body: data ? JSON.stringify(data) : undefined, signal })
+  const del = <T>(endpoint: string, signal?: AbortSignal): Promise<T> => request<T>(endpoint, { method: 'DELETE', signal })
 
-  const listModuleItems = async (module: string, params?: Record<string, any>): Promise<PaginatedResponse<any>> => {
-    const payload = await get<any>(`/api/${module}`, params)
+  const listModuleItems = async (module: string, params?: Record<string, any>, signal?: AbortSignal): Promise<PaginatedResponse<any>> => {
+    const payload = await get<any>(`/api/${module}`, params, signal)
     const pg = payload?.pagination ?? {}
     const page = Number(pg.page ?? payload.page ?? 1) || 1
     const limit = Number(pg.limit ?? payload.limit ?? 20) || 20
@@ -116,17 +116,17 @@ export function useMovieService() {
     }
   }
 
-  const getModuleItem = async (module: string, id: string): Promise<any> => {
-    const payload = await get<any>(`/api/${module}/${id}`)
+  const getModuleItem = async (module: string, id: string, signal?: AbortSignal): Promise<any> => {
+    const payload = await get<any>(`/api/${module}/${id}`, undefined, signal)
     return payload?.data ?? payload
   }
 
-  const getModuleUiConfig = async (module: string, opts?: { force?: boolean }): Promise<any | null> => {
+  const getModuleUiConfig = async (module: string, opts?: { force?: boolean, signal?: AbortSignal }): Promise<any | null> => {
     if (!opts?.force && singletonUiConfig.has(module)) {
       return singletonUiConfig.get(module)
     }
     try {
-      const data = await get<any>(`/api/admin-ui/modules/${module}/config`)
+      const data = await get<any>(`/api/admin-ui/modules/${module}/config`, undefined, opts?.signal)
       singletonUiConfig.set(module, data)
       return data
     } catch (_) {
@@ -135,12 +135,12 @@ export function useMovieService() {
     }
   }
 
-  const listAdminModules = async (opts?: { force?: boolean }): Promise<AdminModuleInfo[]> => {
+  const listAdminModules = async (opts?: { force?: boolean, signal?: AbortSignal }): Promise<AdminModuleInfo[]> => {
     if (!opts?.force && singletonAdminModules.data) {
       return singletonAdminModules.data
     }
     try {
-      const payload = await get<{ modules?: AdminModuleInfo[] }>(`/api/admin-ui/modules`)
+      const payload = await get<{ modules?: AdminModuleInfo[] }>(`/api/admin-ui/modules`, undefined, opts?.signal)
       const modules = Array.isArray(payload?.modules) ? payload.modules : []
       singletonAdminModules.data = modules
       return modules
@@ -150,9 +150,9 @@ export function useMovieService() {
     }
   }
 
-  const createModuleItem = async (module: string, data: any): Promise<any> => (await post<any>(`/api/${module}`, data)).data
-  const updateModuleItem = async (module: string, id: string, data: any): Promise<any> => (await put<any>(`/api/${module}/${id}`, data)).data
-  const deleteModuleItem = async (module: string, id: string): Promise<void> => { await del<void>(`/api/${module}/${id}`) }
+  const createModuleItem = async (module: string, data: any, signal?: AbortSignal): Promise<any> => (await post<any>(`/api/${module}`, data, signal)).data
+  const updateModuleItem = async (module: string, id: string, data: any, signal?: AbortSignal): Promise<any> => (await put<any>(`/api/${module}/${id}`, data, signal)).data
+  const deleteModuleItem = async (module: string, id: string, signal?: AbortSignal): Promise<void> => { await del<void>(`/api/${module}/${id}`, signal) }
 
   return {
     checkConnection,

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ItemDetailTemplate from '@/components/templates/ItemDetailTemplate.vue'
 import { useMovieService } from '@/composables/useMovieService'
@@ -29,16 +29,21 @@ const item = ref<Record<string, any> | null>(null)
 const uiConfig = ref<any | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+let currentAbort: AbortController | null = null
 
 async function load() {
   loading.value = true
   error.value = null
   try {
     if (!uiConfig.value) {
-      const cfg = await movie.getModuleUiConfig(module.value)
+      currentAbort?.abort()
+      currentAbort = new AbortController()
+      const cfg = await movie.getModuleUiConfig(module.value, { signal: currentAbort.signal })
       uiConfig.value = cfg?.config ?? cfg ?? null
     }
-    const res = await movie.getModuleItem(module.value, id.value)
+    currentAbort?.abort()
+    currentAbort = new AbortController()
+    const res = await movie.getModuleItem(module.value, id.value, currentAbort.signal)
     item.value = res
   } catch (e: any) {
     error.value = e?.message || 'Failed to load item'
@@ -61,7 +66,9 @@ async function onDelete() {
   loading.value = true
   error.value = null
   try {
-    await movie.deleteModuleItem(module.value, id.value)
+    currentAbort?.abort()
+    currentAbort = new AbortController()
+    await movie.deleteModuleItem(module.value, id.value, currentAbort.signal)
     router.push({ path: `/${module.value}` })
   } catch (e: any) {
     error.value = e?.message || 'Delete failed'
@@ -75,7 +82,9 @@ async function onUpdate(data: Record<string, any>) {
   loading.value = true
   error.value = null
   try {
-    await movie.updateModuleItem(module.value, id.value, data)
+    currentAbort?.abort()
+    currentAbort = new AbortController()
+    await movie.updateModuleItem(module.value, id.value, data, currentAbort.signal)
     await load()
   } catch (e: any) {
     error.value = e?.message || 'Update failed'
@@ -86,6 +95,7 @@ async function onUpdate(data: Record<string, any>) {
 
 onMounted(load)
 watch([module, id], () => { uiConfig.value = null; load() })
+onBeforeUnmount(() => { currentAbort?.abort(); })
 </script>
 
 

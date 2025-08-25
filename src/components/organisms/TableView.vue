@@ -95,17 +95,27 @@
         </tbody>
       </table>
     </div>
+    <div v-if="hasPagination" class="border-t border-gray-200 dark:border-gray-700">
+      <Pagination
+        :current-page="Number(currentPage) || 1"
+        :total-pages="Number(totalPages) || 1"
+        :total="Number(total) || 0"
+        :per-page="Number(perPage) || 10"
+        @page-change="onPageChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import Pagination from '@/components/molecules/Pagination.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import { getCountryByCode } from '@/utils/countries'
 
-type Props = { data: any[]; config: { columns: any[]; actions: any[] }; selectable?: boolean; rowIdKey?: string }
+type Props = { data: any[]; config: { columns: any[]; actions: any[] }; selectable?: boolean; rowIdKey?: string; currentPage?: number; totalPages?: number; total?: number; perPage?: number }
 const props = withDefaults(defineProps<Props>(), { selectable: true, rowIdKey: 'id' })
-const emit = defineEmits<{ action: [action:string, item?:any]; sort: [field:string, direction:'asc'|'desc']; itemClick: [item:any]; 'selection-change': [ids:(string|number)[]] }>()
+const emit = defineEmits<{ action: [action:string, item?:any]; sort: [field:string, direction:'asc'|'desc']; itemClick: [item:any]; 'selection-change': [ids:(string|number)[]]; 'page-change': [page:number] }>()
 
 const sortField = ref('')
 const sortDirection = ref<'asc'|'desc'>('asc')
@@ -133,6 +143,13 @@ const handleSort = (field:string) => {
 
 const handleAction = (action:string, item?:any) => emit('action', action, item)
 const handleRowClick = (item:any) => emit('itemClick', item)
+
+const hasPagination = computed(() => {
+  const total = Number(props.total)
+  const totalPages = Number(props.totalPages)
+  return !isNaN(total) && total > 0 && !isNaN(totalPages) && totalPages >= 1
+})
+const onPageChange = (page:number) => emit('page-change', page)
 
 const getRowId = (item:any): string|number => item?.[props.rowIdKey as string]
 const isSelected = (item:any): boolean => selectedIds.value.has(getRowId(item))

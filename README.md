@@ -1,57 +1,57 @@
-# Movie Dubie Admin UI
+## Admin UI
 
-Internal console to manage organizations/publishers, media administration, revenues, distributions, payouts, and users.
+A low‑code, schema‑driven admin interface. Modules, lists, details, forms, and alternative layouts (gallery, kanban, calendar) are rendered dynamically from backend‑provided configuration.
 
-## Scripts
+### Features
+- [x] Low‑code modules via server‑provided UI config
+- [x] Table, Gallery, Kanban (drag & drop), and Calendar views
+- [x] Detail view with configurable sections
+- [x] Dynamic Form Sidebar with basic validation
+- [x] URL‑synced search, sorting, pagination, and time filters
+- [x] Firebase Authentication (email/password + OAuth providers)
+- [x] Toast notifications and modern Tailwind UI
 
+### Tech stack
+- Vue 3, TypeScript, Vite
+- TailwindCSS, Headless UI
+- Pinia (state), Vue Router
+- Firebase Auth
+
+### Quick start
 ```bash
+# 1) Copy environment and fill values
+cp env.example .env
+# 2) Install dependencies
 pnpm install
+# 3) Start the dev server
 pnpm dev
+# 4) Build for production
 pnpm build
+# 5) Preview production build
 pnpm preview
 ```
 
-## Notes
-- Auth: use Firebase; restrict access to `admin` role via custom claims
-- Backend: call services via API Gateway
-- Configure API URL:
-  - Create `.env` in `apps/admin` with:
-    ```bash
-    VITE_PUBLIC_API_URL=https://<your-api-gateway-domain>
-    ```
-  - The app will call `${VITE_PUBLIC_API_URL}/movie/...` endpoints.
-- Low-code model: mirror Studio patterns for listing modules and forms over `movie-service`
-
-## UI Architecture (hybrid)
-- Behavior and a11y: Headless primitives + Floating UI
-  - `@headlessui/vue` for menus, popovers, listboxes, dialogs
-  - `@floating-ui/dom` for positioning (flip/shift/offset)
-- Styling: Tailwind utility classes; atomic folders: `src/components/{atoms,molecules,organisms,templates}`
-- Pattern:
-  - Create minimal atom wrappers that expose a simple API and enforce project tokens
-  - Example: `atoms/ActionsMenu.vue` wraps Headless UI `Menu` and uses Floating UI for placement
-- When to use headless primitives vs bespoke components:
-  - Headless: complex a11y widgets (menus, dialogs, listbox/combobox, tooltips)
-  - Bespoke: simple product-specific UI (cards, headers, banners)
-
-### ActionsMenu usage
-```vue
-<ActionsMenu
-  :items="[
-    { key: 'check-connection', label: 'Check connection' },
-    { key: 'refresh-stats', label: 'Refresh stats' }
-  ]"
-  size="sm"
-  @select="onSelect"
-/>
-```
-- Emits `select(key)` when an item is chosen.
-- Sizes: `sm | md | lg | xl`.
-- Items support optional `description` and `value` fields.
-
-### Implementation guidance
-- Prefer headless primitives for any interactive overlay or list selection.
-- Use `Floating UI` with `computePosition(..., { middleware: [offset(8), flip(), shift({ padding: 8 })] })`.
-- Keep wrappers small and typed; add tests for keyboard interactions where behavior is non-trivial.
+### Environment variables
+Defined in `.env` (see `env.example` for all keys):
+- VITE_PUBLIC_API_URL: Base URL for the API gateway.
+- VITE_FIREBASE_API_KEY
+- VITE_FIREBASE_AUTH_DOMAIN
+- VITE_FIREBASE_PROJECT_ID
+- VITE_FIREBASE_STORAGE_BUCKET
+- VITE_FIREBASE_MESSAGING_SENDER_ID
+- VITE_FIREBASE_APP_ID
 
 
+### How it works (low‑code flow)
+- Router: `/:module` → list, `/:module/:id` → detail. A guard fetches the module registry and blocks unknown modules.
+- UI config: Fetched from `GET /api/admin-ui/modules/:module/config` and used to render views and forms.
+- Data: CRUD via `/api/:module` endpoints with pagination and common filters.
+- Auth: Firebase client; ID token is attached as `Authorization: Bearer <token>` to API requests. Token refresh is retried on 401.
+
+
+### Project structure (high‑level)
+- `src/views` — Route pages
+- `src/components` — Shared components, organized as atomic design pattern
+- `src/composables` — Auth, theme, movie service, toast, preferences
+- `src/utils` — data fetch layer and other utility composables.
+- `src/stores` — Pinia stores

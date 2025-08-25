@@ -11,6 +11,8 @@ export const useAuthStore = defineStore("auth", () => {
   const error = ref<string | null>(null);
 
   const { login, loginWithGoogle, loginWithOAuth, logout, getCurrentUser } = useAuth();
+  // Keep in sync with Firebase auth state changes
+  let unsubscribe: (() => void) | null = null;
 
   const isAuthenticated = computed(() => !!user.value);
 
@@ -20,6 +22,9 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = null;
       const current = await getCurrentUser();
       if (current) user.value = current;
+      if (!unsubscribe) {
+        unsubscribe = useAuth().subscribe((u) => { user.value = u; });
+      }
     } finally {
       isLoading.value = false;
     }
@@ -76,6 +81,8 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = null;
       await logout();
       user.value = null;
+      // Clear listeners
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Logout failed";
       throw err;

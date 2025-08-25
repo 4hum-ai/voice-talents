@@ -72,8 +72,6 @@
       </template>
     </AppBar>
 
-    <!-- Spacer for fixed header -->
-    <div class="h-16"></div>
 
     <main class="p-4">
       <!-- Selection toolbar (only when some are selected) -->
@@ -97,9 +95,9 @@
         </div>
         <div v-else-if="error" class="text-sm text-error-600 dark:text-error-400">{{ error }}</div>
         <div v-else>
-          <TableView v-if="currentView === 'list' && uiConfig?.views?.list && filteredData.length > 0" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" @selection-change="onSelectionChange" />
-          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" @filtersChange="handleKanbanFiltersChange" />
-          <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" :has-more="hasMore" @action="handleAction" @item-click="handleItemClick" @loadMore="handleLoadMore" />
+          <TableView v-if="currentView === 'list' && uiConfig?.views?.list && filteredData.length > 0" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" :current-page="pagination.currentPage" :total-pages="pagination.totalPages" :total="pagination.total" :per-page="pagination.perPage" @page-change="handlePageChange" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" @selection-change="onSelectionChange" />
+          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" @filtersChange="handleKanbanFiltersChange" @sort="handleSort" />
+          <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" :has-more="hasMore" @action="handleAction" @item-click="handleItemClick" @loadMore="handleLoadMore" @sort="handleSort" />
           <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar && filteredData.length > 0" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" />
           <div v-else-if="filteredData.length === 0" class="py-16 text-center border border-dashed border-gray-200 rounded-lg bg-white dark:border-gray-700 dark:bg-gray-900">
             <div class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" aria-hidden="true">
@@ -129,9 +127,7 @@
         </div>
       </div>
 
-      <div v-if="currentView === 'list'" class="mt-4">
-        <Pagination :current-page="pagination.currentPage" :total-pages="pagination.totalPages" :total="pagination.total" :per-page="pagination.perPage" @page-change="handlePageChange" />
-      </div>
+      
     </main>
 
     <DynamicFormSidebar v-if="showFormSidebar" :title="formSidebarTitle" :form-config="uiConfig?.formView" :initial-data="formSidebarData" :loading="formSidebarLoading" :submit-text="formSidebarSubmitText" :loading-text="formSidebarLoadingText" @close="closeFormSidebar" @submit="handleFormSubmit" />
@@ -141,7 +137,6 @@
 <script setup lang="ts">
 import { ref, computed, unref, nextTick, defineAsyncComponent, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import Pagination from '@/components/molecules/Pagination.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 const TableView = defineAsyncComponent(() => import('@/components/organisms/TableView.vue'))
 import KanbanView from '@/components/organisms/KanbanView.vue'
