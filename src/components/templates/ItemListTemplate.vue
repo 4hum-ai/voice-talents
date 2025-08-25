@@ -14,9 +14,7 @@
         </template>
         <template v-else>
           <div class="flex items-center gap-2 min-w-0 flex-1">
-            <div class="min-w-0 flex-1">
-              <input ref="searchInputRef" v-model="searchQuery" @input="handleSearchInputDebounced" @keydown.esc.prevent="handleEscape" :placeholder="`Search ${moduleName}...`" class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
-            </div>
+            <SearchInput ref="searchInputRef" v-model="searchQuery" @update:modelValue="handleSearchInputDebounced" :placeholder="`Search ${moduleName}...`" />
             <div class="hidden sm:flex items-center gap-2">
               <div class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
@@ -99,15 +97,8 @@
           <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" @filtersChange="handleKanbanFiltersChange" @sort="handleSort" />
           <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" :has-more="hasMore" @action="handleAction" @item-click="handleItemClick" @loadMore="handleLoadMore" @sort="handleSort" />
           <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar && filteredData.length > 0" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" />
-          <div v-else-if="filteredData.length === 0" class="py-16 text-center border border-dashed border-gray-200 rounded-lg bg-white dark:border-gray-700 dark:bg-gray-900">
-            <div class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-12 w-12 mx-auto">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-              </svg>
-            </div>
-            <h3 class="mt-4 text-sm font-semibold text-gray-900 dark:text-gray-100">{{ emptyTitle }}</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ emptySubtitle }}</p>
-            <div class="mt-6 flex items-center justify-center gap-3">
+          <EmptyState v-else-if="filteredData.length === 0" :title="emptyTitle" :subtitle="emptySubtitle">
+            <template #actions>
               <button
                 v-if="hasCreateAction && !searchQuery"
                 @click="handleAction('create')"
@@ -122,8 +113,8 @@
               >
                 Clear search
               </button>
-            </div>
-          </div>
+            </template>
+          </EmptyState>
         </div>
       </div>
 
@@ -145,6 +136,8 @@ import CalendarView from '@/components/organisms/CalendarView.vue'
 import StatsView from '@/components/organisms/StatsView.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
+import SearchInput from '@/components/atoms/SearchInput.vue'
+import EmptyState from '@/components/molecules/EmptyState.vue'
 import { useMovieService } from '@/composables/useMovieService'
 import { useToast } from '@/composables/useToast'
 import { usePreference } from '@/composables/usePreference'
@@ -332,8 +325,7 @@ function onSelectionChange(ids: (string|number)[]) {
 
 function handleBulkDelete() {
   if (selectedIds.value.length === 0) return
-  const ok = window.confirm(`Delete ${selectedIds.value.length} selected item(s)? This cannot be undone.`)
-  if (!ok) return
+  // Emit up; parent view can show a confirmation modal for batch actions
   emit('bulk-delete', selectedIds.value)
 }
 

@@ -3,15 +3,9 @@
     <div class="pointer-events-none absolute inset-x-0 top-6 mx-auto h-32 w-32 rounded-full bg-primary-500/10 blur-3xl"></div>
 
     <div class="relative rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 p-6 shadow-2xl backdrop-blur">
-      <button
-        class="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:text-gray-900 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:text-white dark:hover:border-gray-700"
-        type="button"
-        @click="toggleTheme()"
-        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-      >
-        <svg v-if="!isDark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M12 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 17a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm9-7a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM5 12a1 1 0 0 1-1 1H3a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm12.657 6.657a1 1 0 0 1-1.414 0l-.707-.707a1 1 0 1 1 1.414-1.414l.707.707a1 1 0 0 1 0 1.414ZM7.464 7.464a1 1 0 0 1-1.414 0l-.707-.707A1 1 0 1 1 6.757 5.343l.707.707a1 1 0 0 1 0 1.414Zm11.192-2.828a1 1 0 0 1 0 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0ZM7.464 16.536a1 1 0 0 1 0 1.414l-.707.707a1 1 0 0 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0Z"/></svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
-      </button>
+      <div class="absolute right-4 top-4">
+        <ThemeToggle :isDark="isDark" @toggle="toggleTheme()" />
+      </div>
       <div class="mb-6 flex items-center gap-3">
         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white shadow">
           <span aria-hidden="true">🎬</span>
@@ -80,6 +74,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 
 const router = useRouter()
 const route = useRoute()

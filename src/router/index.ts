@@ -7,17 +7,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../views/Dashboard.vue'),
-    meta: { title: 'Admin Dashboard', requiresAuth: true }
+    meta: { title: 'Admin Dashboard', requiresAuth: true, keepAlive: true }
   },
   {
     path: '/:module',
     component: () => import('../views/ItemListView.vue'),
-    meta: { title: 'Module', requiresAuth: true }
+    meta: { title: 'Module', requiresAuth: true, keepAlive: true }
   },
   {
     path: '/:module/:id',
     component: () => import('../views/ItemDetailView.vue'),
-    meta: { title: 'Detail', requiresAuth: true }
+    meta: { title: 'Detail', requiresAuth: true, keepAlive: true }
   },
   // Auth
   {

@@ -11,13 +11,7 @@
         <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
           <div class="w-full sm:w-64">
             <label class="sr-only" for="module-search">Search modules</label>
-            <input
-              id="module-search"
-              v-model="filter"
-              type="search"
-              placeholder="Search modules…"
-              class="w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-sm focus:border-gray-300 dark:focus:border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700"
-            />
+            <SearchInput id="module-search" v-model="filter" placeholder="Search modules…" />
           </div>
           <ActionsMenu :items="menuItems" @select="onMenuSelect" />
         </div>
@@ -92,10 +86,12 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'Dashboard' })
 import { onMounted, ref, computed } from 'vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
+import SearchInput from '@/components/atoms/SearchInput.vue'
 import { useMovieService, type AdminModuleInfo } from '@/composables/useMovieService'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'

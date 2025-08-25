@@ -34,10 +34,7 @@ export function useMovieService() {
         method: 'GET',
         cache: 'no-store',
         headers: {
-          'Content-Type': 'application/json',
-          // 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          // 'Pragma': 'no-cache',
-          // 'Expires': '0'
+          'Content-Type': 'application/json'
         },
         signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(5000) : undefined
       })

@@ -112,6 +112,7 @@ import { computed, ref } from 'vue'
 import Pagination from '@/components/molecules/Pagination.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import { getCountryByCode } from '@/utils/countries'
+import { toDate } from '@/utils/date'
 
 type Props = { data: any[]; config: { columns: any[]; actions: any[] }; selectable?: boolean; rowIdKey?: string; currentPage?: number; totalPages?: number; total?: number; perPage?: number }
 const props = withDefaults(defineProps<Props>(), { selectable: true, rowIdKey: 'id' })
@@ -169,23 +170,6 @@ const toggleSelectAll = () => {
   emit('selection-change', Array.from(selectedIds.value))
 }
 
-const toDate = (v: any): Date | null => {
-  if (v instanceof Date) return v
-  if (typeof v === 'string' || typeof v === 'number') {
-    const d = new Date(v)
-    return isNaN(d.getTime()) ? null : d
-  }
-  if (v && typeof v === 'object') {
-    const seconds = (v._seconds ?? v.seconds)
-    const nanos = (v._nanoseconds ?? v.nanoseconds ?? 0)
-    if (typeof seconds === 'number') {
-      const ms = seconds * 1000 + Math.floor(nanos / 1e6)
-      const d = new Date(ms)
-      return isNaN(d.getTime()) ? null : d
-    }
-  }
-  return null
-}
 
 const formatCellValue = (value:any, column:any, item?: any) => {
   if (value === null || value === undefined) return '-'

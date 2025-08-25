@@ -47,6 +47,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { toDate } from '@/utils/date'
 
 interface Props { data:any[]; config:{ titleField:string; dateField?:string; actions?:any[] } }
 const props = defineProps<Props>()
@@ -64,24 +65,6 @@ function isToday(d: Date): boolean {
   return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate()
 }
 
-function toDate(value: any): Date | null {
-  if (!value) return null
-  if (value instanceof Date) return isNaN(value.getTime()) ? null : value
-  if (typeof value === 'string' || typeof value === 'number') {
-    const d = new Date(value)
-    return isNaN(d.getTime()) ? null : d
-  }
-  if (typeof value === 'object') {
-    const seconds = (value._seconds ?? value.seconds)
-    const nanos = (value._nanoseconds ?? value.nanoseconds ?? 0)
-    if (typeof seconds === 'number') {
-      const ms = seconds * 1000 + Math.floor(nanos / 1e6)
-      const d = new Date(ms)
-      return isNaN(d.getTime()) ? null : d
-    }
-  }
-  return null
-}
 
 const eventByDayKey = computed<Record<string, any[]>>(() => {
   const byKey: Record<string, any[]> = {}

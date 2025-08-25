@@ -4,13 +4,7 @@
       <div class="inline-flex items-center gap-1.5 align-middle">
         <span class="text-xs leading-5 text-gray-500 dark:text-gray-400">Total {{ totalCount }} records</span>
       </div>
-      <div class="inline-flex items-center gap-2">
-        <span class="hidden sm:inline text-xs text-gray-500 dark:text-gray-400">Sorted by</span>
-
-        <select v-model="sortValue" @change="handleSortChange" class="px-2 py-1.5 text-xs rounded-md border border-gray-300 dark:border-gray-700 bg-white text-gray-700 dark:bg-gray-800 dark:text-gray-200">
-          <option v-for="opt in sortMenuItems" :key="opt.key" :value="opt.key">{{ opt.label }}</option>
-        </select>
-      </div>
+      <SortDropdown :label="'Sorted by'" :options="sortMenuItems" v-model="sortValue" @update:modelValue="handleSortChange" />
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
       <div v-for="item in data" :key="item.id" class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-sm transition-shadow" @click="handleItemClick(item)">
@@ -44,6 +38,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import SortDropdown from '@/components/molecules/SortDropdown.vue'
 
 interface Props { data: any[]; config: { imageField?: string; titleField: string; descriptionField?: string; actions?: any[] }; hasMore?: boolean }
 const props = defineProps<Props>()

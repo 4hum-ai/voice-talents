@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'ItemListView' })
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ItemListTemplate from '@/components/templates/ItemListTemplate.vue'
