@@ -47,11 +47,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { toDate } from '@/utils/date'
+import { toDate, toISODate } from '@/utils/date'
 
 interface Props { data:any[]; config:{ titleField:string; dateField?:string; actions?:any[] } }
 const props = defineProps<Props>()
-const emit = defineEmits<{ action:[action:string, item?:any]; itemClick:[item:any] }>()
+const emit = defineEmits<{ action:[action:string, item?:any]; itemClick:[item:any]; filtersChange:[payload:{ from?: string; to?: string; preset?: string }] }>()
 
 const today = new Date()
 const currentMonth = ref<number>(today.getMonth())
@@ -127,15 +127,24 @@ function eventTitle(item: any): string {
 
 function goPrevMonth() {
   if (currentMonth.value === 0) { currentMonth.value = 11; currentYear.value -= 1 } else { currentMonth.value -= 1 }
+  emitMonthRange()
 }
 function goNextMonth() {
   if (currentMonth.value === 11) { currentMonth.value = 0; currentYear.value += 1 } else { currentMonth.value += 1 }
+  emitMonthRange()
 }
 function goToday() {
   currentMonth.value = today.getMonth(); currentYear.value = today.getFullYear()
+  emitMonthRange()
 }
 
 const handleItemClick = (item:any) => emit('itemClick', item)
+
+function emitMonthRange() {
+  const start = new Date(currentYear.value, currentMonth.value, 1)
+  const end = new Date(currentYear.value, currentMonth.value + 1, 0)
+  emit('filtersChange', { preset: 'custom', from: toISODate(start), to: toISODate(end) })
+}
 </script>
 
 

@@ -80,17 +80,32 @@ export function useMovieService() {
   }
 
   const get = <T>(endpoint: string, params?: Record<string, any>, signal?: AbortSignal): Promise<T> => {
-    const search = new URLSearchParams()
-    if (params) {
-      Object.entries(params).forEach(([k, v]) => {
-        if (v === undefined || v === null) return
-        if (typeof v === 'object' && !Array.isArray(v)) {
-          Object.entries(v).forEach(([nk, nv]) => nv !== undefined && nv !== null && search.append(nk, String(nv)))
+    const toSearchParams = (input: Record<string, any>): URLSearchParams => {
+      const search = new URLSearchParams()
+      const append = (key: string, value: any) => {
+        if (value === undefined || value === null) return
+        if (value instanceof Date) {
+          search.append(key, value.toISOString())
+        } else if (Array.isArray(value)) {
+          // Join arrays by comma for $in / $between and similar cases
+          search.append(key, value.map(v => String(v)).join(','))
         } else {
-          search.append(k, String(v))
+          search.append(key, String(value))
         }
-      })
+      }
+      const build = (prefix: string, value: any) => {
+        if (value === undefined || value === null) return
+        if (value instanceof Date || typeof value !== 'object' || Array.isArray(value)) {
+          append(prefix, value)
+          return
+        }
+        // Object: recurse with bracket notation e.g. filters[field][$gte]
+        Object.entries(value).forEach(([k, v]) => build(`${prefix}[${k}]`, v))
+      }
+      Object.entries(input).forEach(([k, v]) => build(k, v))
+      return search
     }
+    const search = params ? toSearchParams(params) : new URLSearchParams()
     const q = search.toString()
     const path = q ? `${endpoint}?${q}` : endpoint
     return request<T>(path, { signal })

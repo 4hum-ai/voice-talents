@@ -17,4 +17,20 @@ export function toDate(value: any): Date | null {
   return null
 }
 
+export function toISODate(d: Date): string {
+  return d.toISOString().slice(0, 10)
+}
 
+export function computeDateRange(preset?: string, from?: string, to?: string): { from?: string; to?: string } | undefined {
+  const today = new Date()
+  if (preset && preset !== 'all' && preset !== 'custom') {
+    const d = new Date(today)
+    const days = preset === '7d' ? 7 : preset === '30d' ? 30 : preset === '90d' ? 90 : 0
+    d.setDate(d.getDate() - days)
+    return { from: toISODate(d), to: toISODate(today) }
+  }
+  if (preset === 'custom' || (!preset && (from || to))) {
+    return { from, to }
+  }
+  return undefined
+}

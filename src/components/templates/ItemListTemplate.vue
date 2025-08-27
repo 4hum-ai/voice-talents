@@ -93,10 +93,19 @@
         </div>
         <div v-else-if="error" class="text-sm text-error-600 dark:text-error-400">{{ error }}</div>
         <div v-else>
+          <!-- Active filter chips -->
+          <div v-if="activeFilters && activeFilters.length > 0" class="mb-3 flex flex-wrap items-center gap-2">
+            <span v-for="chip in activeFilters" :key="chip.key" class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+              <span>{{ chip.label }}</span>
+              <button @click="$emit('clear-filter', chip.key)" class="rounded hover:bg-gray-100 dark:hover:bg-gray-700 px-1" aria-label="Remove filter">×</button>
+            </span>
+            <button @click="$emit('clear-all-filters')" class="text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Clear all</button>
+          </div>
+
           <TableView v-if="currentView === 'list' && uiConfig?.views?.list && filteredData.length > 0" :key="'view-list'" :data="filteredData" :config="uiConfig.views.list" :current-page="pagination.currentPage" :total-pages="pagination.totalPages" :total="pagination.total" :per-page="pagination.perPage" @page-change="handlePageChange" @action="handleAction" @sort="handleSort" @item-click="handleItemClick" @selection-change="onSelectionChange" />
-          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @statusChange="handleKanbanStatusChange" @filtersChange="handleKanbanFiltersChange" @sort="handleSort" />
-          <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" :has-more="hasMore" @action="handleAction" @item-click="handleItemClick" @loadMore="handleLoadMore" @sort="handleSort" />
-          <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar && filteredData.length > 0" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" />
+          <KanbanView v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban && filteredData.length > 0" :key="'view-kanban'" :data="filteredData" :config="uiConfig.views.kanban" @action="handleAction" @item-click="handleItemClick" @status-change="handleKanbanStatusChange" @filters-change="handleKanbanFiltersChange" @sort="handleSort" />
+          <GalleryView v-else-if="currentView === 'gallery' && uiConfig?.views?.gallery && filteredData.length > 0" :key="'view-gallery'" :data="filteredData" :config="uiConfig.views.gallery" :has-more="hasMore" @action="handleAction" @item-click="handleItemClick" @load-more="handleLoadMore" @sort="handleSort" />
+          <CalendarView v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar && filteredData.length > 0" :key="'view-calendar'" :data="filteredData" :config="uiConfig.views.calendar" @action="handleAction" @item-click="handleItemClick" @filters-change="handleCalendarFiltersChange" />
           <EmptyState v-else-if="filteredData.length === 0" :title="emptyTitle" :subtitle="emptySubtitle">
             <template #actions>
               <button
@@ -318,6 +327,7 @@ const handlePageChange = (page: number) => emit('page-change', page)
 const handleItemClick = (item: any) => emit('action', 'view', item)
 const handleLoadMore = () => emit('load-more')
 const handleKanbanFiltersChange = (payload: { from?: string; to?: string; preset?: string }) => emit('filters-change', payload)
+const handleCalendarFiltersChange = (payload: { from?: string; to?: string; preset?: string }) => emit('filters-change', payload)
 
 function onSelectionChange(ids: (string|number)[]) {
   selectedIds.value = ids

@@ -9,9 +9,12 @@
     :total-pages="pagination.totalPages"
     :total-items="pagination.total"
     :per-page="pagination.limit"
+    :active-filters="filterChips"
     @page-change="load"
     @load-more="onLoadMore"
     @filters-change="onFiltersChange"
+    @clear-filter="onClearFilter"
+    @clear-all-filters="onClearAllFilters"
     @sort="onSort"
     @action="onAction"
     @bulk-delete="onBulkDelete"
@@ -21,9 +24,11 @@
 <script setup lang="ts">
 defineOptions({ name: 'ItemListView' })
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
 import ItemListTemplate from '@/components/templates/ItemListTemplate.vue'
 import { useMovieService, type PaginatedResponse } from '@/composables/useMovieService'
+import { computeDateRange } from '@/utils/date'
 const movie = useMovieService()
 
 const route = useRoute()
@@ -33,7 +38,7 @@ const module = computed(() => {
   if (metaModule) return metaModule
   const paramModule = route.params?.module as string | undefined
   if (paramModule) return paramModule
-  return String(route.query.module || 'organizations')
+  return String(route.query.module)
 })
 
 const uiConfig = ref<any | null>(null)
@@ -44,6 +49,28 @@ const error = ref<string | null>(null)
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
 const timeWindow = ref<{ preset?: string; from?: string; to?: string }>({})
 let currentAbort: AbortController | null = null
+
+// Debounced reload when canonical query changes
+
+const filterChips = computed<{ key:string; label:string }[]>(() => {
+  const chips: { key:string; label:string }[] = []
+  const q = route.query
+  // Search
+  const search = (q.search as string) || ''
+  const searchField = (q.searchField as string) || (q.searchFields as string) || ''
+  if (search) chips.push({ key: 'search', label: searchField ? `Search ${searchField}: ${search}` : `Search: ${search}` })
+  // Date filters from backend-style
+  const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+  const betweenKey = `filters[${dateField}][$between]`
+  const gteKey = `filters[${dateField}][$gte]`
+  const lteKey = `filters[${dateField}][$lte]`
+  if (q[betweenKey]) chips.push({ key: betweenKey, label: `${dateField} between ${String(q[betweenKey])}` })
+  else {
+    if (q[gteKey]) chips.push({ key: gteKey, label: `${dateField} ≥ ${String(q[gteKey])}` })
+    if (q[lteKey]) chips.push({ key: lteKey, label: `${dateField} ≤ ${String(q[lteKey])}` })
+  }
+  return chips
+})
 
 async function loadUiConfig() {
   try {
@@ -83,9 +110,16 @@ async function load(page = 1) {
     if (search) params.search = search
     if (searchField) params.searchFields = searchField
     if (sortParam) params.sort = sortParam
-    if (timeWindow.value?.preset && timeWindow.value.preset !== 'all') params.preset = timeWindow.value.preset
-    if (timeWindow.value?.from) params.from = timeWindow.value.from
-    if (timeWindow.value?.to) params.to = timeWindow.value.to
+    // Map time window (preset/from/to) to bracketed date filters
+    const { preset, from, to } = timeWindow.value || {}
+    const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+    const range = computeDateRange(preset, from, to)
+    if (range) {
+      params.filters = params.filters || {}
+      if (range.from && range.to) params.filters[dateField] = { $between: [range.from, range.to] }
+      else if (range.from) params.filters[dateField] = { $gte: range.from }
+      else if (range.to) params.filters[dateField] = { $lte: range.to }
+    }
     currentAbort?.abort()
     currentAbort = new AbortController()
     const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params, currentAbort.signal)
@@ -105,9 +139,8 @@ async function load(page = 1) {
 }
 function onSort(field: string, direction: string) {
   try {
-    router.replace({ query: { ...route.query, sort: `${field}:${direction}` } })
+    router.replace({ query: { ...route.query, sort: `${field}:${direction}`, page: '1' } })
   } catch {}
-  load(1)
 }
 
 function onAction(action: string, payload?: any) {
@@ -137,9 +170,16 @@ async function onLoadMore() {
     if (search) params.search = search
     if (searchField) params.searchFields = searchField
     if (sortParam) params.sort = sortParam
-    if (timeWindow.value?.preset && timeWindow.value.preset !== 'all') params.preset = timeWindow.value.preset
-    if (timeWindow.value?.from) params.from = timeWindow.value.from
-    if (timeWindow.value?.to) params.to = timeWindow.value.to
+    // Map time window (preset/from/to) to bracketed date filters
+    const { preset, from, to } = timeWindow.value || {}
+    const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+    const range = computeDateRange(preset, from, to)
+    if (range) {
+      params.filters = params.filters || {}
+      if (range.from && range.to) params.filters[dateField] = { $between: [range.from, range.to] }
+      else if (range.from) params.filters[dateField] = { $gte: range.from }
+      else if (range.to) params.filters[dateField] = { $lte: range.to }
+    }
     currentAbort?.abort()
     currentAbort = new AbortController()
     const res: PaginatedResponse<any> = await movie.listModuleItems(module.value, params, currentAbort.signal)
@@ -163,12 +203,40 @@ function onFiltersChange(payload: { preset?: string; from?: string; to?: string 
   // Sync to URL for shareable state
   try {
     const nextQuery: Record<string, any> = { ...route.query }
-    if (payload.preset) nextQuery.preset = payload.preset; else delete nextQuery.preset
-    if (payload.from) nextQuery.from = payload.from; else delete nextQuery.from
-    if (payload.to) nextQuery.to = payload.to; else delete nextQuery.to
+    // Remove legacy params
+    delete nextQuery.preset; delete nextQuery.from; delete nextQuery.to
+    // Remove previous date filter keys for the target field
+    const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+    const keysToRemove: string[] = []
+    for (const k of Object.keys(nextQuery)) {
+      if (k === `filters[${dateField}][$between]` || k === `filters[${dateField}][$gte]` || k === `filters[${dateField}][$lte]`) keysToRemove.push(k)
+    }
+    for (const k of keysToRemove) delete nextQuery[k]
+    // Compute range and write backend-style filters into URL
+    const range = computeDateRange(payload.preset, payload.from, payload.to)
+    if (range?.from && range?.to) nextQuery[`filters[${dateField}][$between]`] = `${range.from},${range.to}`
+    else if (range?.from) nextQuery[`filters[${dateField}][$gte]`] = range.from
+    else if (range?.to) nextQuery[`filters[${dateField}][$lte]`] = range.to
     router.replace({ query: nextQuery })
   } catch {}
   load(1)
+}
+
+function onClearFilter(key: string) {
+  const nextQuery: Record<string, any> = { ...route.query }
+  delete nextQuery[key]
+  router.replace({ query: nextQuery })
+}
+
+function onClearAllFilters() {
+  const nextQuery: Record<string, any> = { ...route.query }
+  // Remove search and backend date filters
+  delete nextQuery.search; delete nextQuery.searchField; delete nextQuery.searchFields
+  const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+  delete nextQuery[`filters[${dateField}][$between]`]
+  delete nextQuery[`filters[${dateField}][$gte]`]
+  delete nextQuery[`filters[${dateField}][$lte]`]
+  router.replace({ query: nextQuery })
 }
 
 async function onBulkDelete(ids: (string|number)[]) {
@@ -190,13 +258,48 @@ onMounted(async () => {
   // Initialize time window from URL if present
   try {
     const q = route.query
-    const preset = (q.preset as string) || undefined
-    const from = (q.from as string) || undefined
-    const to = (q.to as string) || undefined
-    timeWindow.value = { preset, from, to }
+    const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+    const betweenKey = `filters[${dateField}][$between]`
+    const gteKey = `filters[${dateField}][$gte]`
+    const lteKey = `filters[${dateField}][$lte]`
+    let from: string | undefined
+    let to: string | undefined
+    if (q[betweenKey]) {
+      const val = String(q[betweenKey])
+      const [a, b] = val.split(',').map(s => s.trim())
+      from = a || undefined
+      to = b || undefined
+    } else {
+      if (q[gteKey]) from = String(q[gteKey])
+      if (q[lteKey]) to = String(q[lteKey])
+    }
+    timeWindow.value = { preset: 'custom', from, to }
   } catch {}
   await load(1)
 })
+
+// Canonical query watcher (single source of truth)
+const canonicalQueryString = computed(() => {
+  const q = route.query
+  const sort = String(q.sort || '')
+  const search = String(q.search || '')
+  const searchField = String(q.searchField || q.searchFields || '')
+  const dateField = uiConfig.value?.views?.calendar?.dateField || 'createdAt'
+  const betweenKey = `filters[${dateField}][$between]`
+  const gteKey = `filters[${dateField}][$gte]`
+  const lteKey = `filters[${dateField}][$lte]`
+  const between = q[betweenKey] ? String(q[betweenKey]) : ''
+  const gte = q[gteKey] ? String(q[gteKey]) : ''
+  const lte = q[lteKey] ? String(q[lteKey]) : ''
+  const mod = String(module.value)
+  return JSON.stringify({ mod, sort, search, searchField, between, gte, lte })
+})
+
+watchDebounced(
+  canonicalQueryString,
+  () => { if (uiConfig.value) load(1) },
+  { debounce: 120, maxWait: 300 }
+)
 
 watch(module, async () => {
   uiConfig.value = null

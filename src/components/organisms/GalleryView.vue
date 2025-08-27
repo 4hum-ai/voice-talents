@@ -38,10 +38,12 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import SortDropdown from '@/components/molecules/SortDropdown.vue'
 
 interface Props { data: any[]; config: { imageField?: string; titleField: string; descriptionField?: string; actions?: any[] }; hasMore?: boolean }
 const props = defineProps<Props>()
+const route = useRoute()
 const emit = defineEmits<{ action: [action:string, item?:any]; itemClick: [item:any]; loadMore: []; sort: [field:string, direction:'asc'|'desc'] }>()
 
 // Removed unused handleAction to satisfy type checks
@@ -64,6 +66,13 @@ function ensureObserver() {
 onMounted(() => {
   ensureObserver()
   if (observer && sentinelRef.value) observer.observe(sentinelRef.value)
+  // Initialize sort from URL query if provided and valid
+  try {
+    const initialSort = String(route.query.sort || '')
+    if (initialSort && sortMenuItems.value.some(i => i.key === initialSort)) {
+      sortValue.value = initialSort
+    }
+  } catch {}
 })
 
 onBeforeUnmount(() => {
@@ -85,8 +94,6 @@ watch(() => props.hasMore, (v) => {
 // Sorting header logic
 type Dir = 'asc' | 'desc'
 const initialField = computed(() => props.config.titleField || 'title')
-const sortKey = ref<string>(initialField.value)
-const sortDir = ref<Dir>('asc')
 const sortValue = ref<string>(`${initialField.value}:asc`)
 const totalCount = computed(() => Array.isArray(props.data) ? props.data.length : 0)
 const sortOptions = computed<{ key: string; label: string }[]>(() => {
@@ -103,21 +110,22 @@ const sortMenuItems = computed(() => {
   }
   return items
 })
-function handleSortChange() {
-  const [field, dir] = sortValue.value.split(':')
+function handleSortChange(newValue: string) {
+  const [field, dir] = newValue.split(':')
   const d = (dir === 'desc' ? 'desc' : 'asc') as Dir
-  sortKey.value = field
-  sortDir.value = d
+  // passthrough
   emit('sort', field, d)
 }
 
-const currentSortLabel = computed(() => {
-  const [field, dir] = sortValue.value.split(':')
-  const found = sortOptions.value.find(o => o.key === field)
-  const base = found?.label || field
-  return `${base} ${dir === 'asc' ? '(A→Z)' : '(Z→A)'}
-  `
+// Keep dropdown in sync if query.sort changes externally
+watch(() => route.query.sort, (nv) => {
+  const val = String(nv || '')
+  if (val && sortMenuItems.value.some(i => i.key === val)) {
+    sortValue.value = val
+  }
 })
+
+
 </script>
 
 
