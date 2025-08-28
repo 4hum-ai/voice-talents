@@ -19,6 +19,7 @@ import { ref, computed, watch, onBeforeUnmount, onActivated, onDeactivated } fro
 import { useRoute, useRouter } from 'vue-router'
 import ItemDetailTemplate from '@/components/templates/ItemDetailTemplate.vue'
 import { useMovieService } from '@/composables/useMovieService'
+import { useUiConfig } from '@/composables/useUiConfig'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 
 const movie = useMovieService()
@@ -32,6 +33,7 @@ const id = computed(() => {
 })
 
 const item = ref<Record<string, any> | null>(null)
+const { get: getUiConfig } = useUiConfig()
 const uiConfig = ref<any | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -45,11 +47,11 @@ async function load() {
   loading.value = true
   error.value = null
   try {
+    // Ensure UI config present using composable priority
     if (!uiConfig.value) {
       currentAbort?.abort()
       currentAbort = new AbortController()
-      const cfg = await movie.getModuleUiConfig(module.value, { signal: currentAbort.signal })
-      uiConfig.value = cfg?.config ?? cfg ?? null
+      uiConfig.value = await getUiConfig(module.value, { signal: currentAbort.signal })
     }
     currentAbort?.abort()
     currentAbort = new AbortController()
@@ -120,10 +122,9 @@ onDeactivated(() => {
   isActive.value = false
 })
 
-watch([module, id], ([newModule], [oldModule]) => {
+watch([module, id], () => {
   if (!isActive.value) return
   if (!id.value) return
-  if (newModule !== oldModule) uiConfig.value = null
   load()
 })
 

@@ -23,7 +23,7 @@
                   <option v-for="f in searchableFieldOptions" :key="f.key" :value="f.key">{{ f.label }}</option>
                 </select>
               </div>
-              <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900">Filters</button>
+              <button @click="openFilters" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900">Filters</button>
             </div>
           </div>
         </template>
@@ -95,10 +95,7 @@
         <div v-else>
           <!-- Active filter chips -->
           <div v-if="activeFilters && activeFilters.length > 0" class="mb-3 flex flex-wrap items-center gap-2">
-            <span v-for="chip in activeFilters" :key="chip.key" class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-              <span>{{ chip.label }}</span>
-              <button @click="$emit('clear-filter', chip.key)" class="rounded hover:bg-gray-100 dark:hover:bg-gray-700 px-1" aria-label="Remove filter">×</button>
-            </span>
+            <Chip v-for="chip in activeFilters" :key="chip.key" :label="chip.label" closable @close="$emit('clear-filter', chip.key)" />
             <button @click="$emit('clear-all-filters')" class="text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Clear all</button>
           </div>
 
@@ -131,6 +128,43 @@
     </main>
 
     <DynamicFormSidebar v-if="showFormSidebar" :title="formSidebarTitle" :form-config="uiConfig?.formView" :initial-data="formSidebarData" :loading="formSidebarLoading" :submit-text="formSidebarSubmitText" :loading-text="formSidebarLoadingText" @close="closeFormSidebar" @submit="handleFormSubmit" />
+
+    <FilterSidebar :show="showFilterSidebar" title="Filters" @close="closeFilters" @clear="clearFilters" @apply="applyFilters">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Time window</label>
+          <TimeWindowPicker :preset="filterPreset" :from="filterFrom" :to="filterTo" @change="onTimeWindowChange" />
+        </div>
+        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">{{ f.label }}</label>
+          <template v-if="f.type === 'number'">
+            <div class="flex items-center gap-2">
+              <input type="number" :value="localFilterValues[f.field]?.min ?? ''" @input="onLocalNumberChange(f.field, 'min', $event)" placeholder="Min" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+              <input type="number" :value="localFilterValues[f.field]?.max ?? ''" @input="onLocalNumberChange(f.field, 'max', $event)" placeholder="Max" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+            </div>
+          </template>
+          <template v-else-if="f.type === 'select'">
+            <select :value="localFilterValues[f.field]?.value ?? ''" @change="onLocalValueChange(f.field, $event)" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+              <option value="">Any</option>
+              <option v-for="opt in f.options || []" :key="String(opt.value)" :value="String(opt.value)">{{ opt.label }}</option>
+            </select>
+          </template>
+          <template v-else-if="f.type === 'boolean'">
+            <select :value="localFilterValues[f.field]?.value ?? ''" @change="onLocalValueChange(f.field, $event)" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+              <option value="">Any</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
+            </select>
+          </template>
+          <template v-else-if="f.type === 'date'">
+            <div class="flex items-center gap-2">
+              <input type="date" :value="localFilterValues[f.field]?.from ?? ''" @change="onLocalDateChange(f.field, 'from', $event)" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+              <input type="date" :value="localFilterValues[f.field]?.to ?? ''" @change="onLocalDateChange(f.field, 'to', $event)" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+            </div>
+          </template>
+        </div>
+      </div>
+    </FilterSidebar>
   </div>
 </template>
 
@@ -144,12 +178,16 @@ import GalleryView from '@/components/organisms/GalleryView.vue'
 import CalendarView from '@/components/organisms/CalendarView.vue'
 import StatsView from '@/components/organisms/StatsView.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import Chip from '@/components/atoms/Chip.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import EmptyState from '@/components/molecules/EmptyState.vue'
+import FilterSidebar from '@/components/molecules/FilterSidebar.vue'
+import TimeWindowPicker from '@/components/molecules/TimeWindowPicker.vue'
 import { useMovieService } from '@/composables/useMovieService'
 import { useToast } from '@/composables/useToast'
 import { usePreference } from '@/composables/usePreference'
+import type { FilterConfig } from '@/types/ui-config'
 const router = useRouter()
 
 interface Props {
@@ -193,6 +231,14 @@ const formSidebarData = ref<Record<string, any>>({})
 const formSidebarLoading = ref(false)
 const formSidebarSubmitText = ref('Create')
 const formSidebarLoadingText = ref('Creating...')
+
+// Filters sidebar state
+const showFilterSidebar = ref(false)
+const filterPreset = ref<'all'|'7d'|'30d'|'90d'|'custom'>('all')
+const filterFrom = ref<string | undefined>(undefined)
+const filterTo = ref<string | undefined>(undefined)
+const listFilters = computed<FilterConfig[]>(() => uiConfig.value?.views?.list?.defaultFilters || [])
+const localFilterValues = ref<Record<string, any>>({})
 
 // (Tabs removed in favor of layout menu)
 
@@ -243,6 +289,34 @@ onMounted(() => {
   if (saved === 'kanban' || saved === 'gallery' || saved === 'calendar' || saved === 'list') {
     currentView.value = saved as any
   }
+  // Initialize local filter UI from current URL
+  try {
+    const q = (router as any).currentRoute?.value?.query || {}
+    for (const f of listFilters.value as any[]) {
+      const base = `filters[${f.field}]`
+      const eq = q[base]
+      const b = q[`${base}[$between]`]
+      const gte = q[`${base}[$gte]`]
+      const lte = q[`${base}[$lte]`]
+      if (f.type === 'number') {
+        if (b) {
+          const [min, max] = String(b).split(',')
+          localFilterValues.value[f.field] = { min, max }
+        } else if (gte || lte) {
+          localFilterValues.value[f.field] = { min: gte || '', max: lte || '' }
+        }
+      } else if (f.type === 'select' || f.type === 'boolean') {
+        if (eq !== undefined) localFilterValues.value[f.field] = { value: String(eq) }
+      } else if (f.type === 'date') {
+        if (b) {
+          const [from, to] = String(b).split(',')
+          localFilterValues.value[f.field] = { from, to }
+        } else if (gte || lte) {
+          localFilterValues.value[f.field] = { from: gte || '', to: lte || '' }
+        }
+      }
+    }
+  } catch {}
 })
 
 watch(currentView, (v) => {
@@ -319,6 +393,69 @@ function closeSearch() {
   isSearchOpen.value = false
 }
 
+function openFilters() {
+  showFilterSidebar.value = true
+}
+function closeFilters() {
+  showFilterSidebar.value = false
+}
+function clearFilters() {
+  filterPreset.value = 'all'
+  filterFrom.value = undefined
+  filterTo.value = undefined
+  localFilterValues.value = {}
+}
+function onTimeWindowChange(payload: { preset?: string; from?: string; to?: string }) {
+  if (payload.preset) filterPreset.value = payload.preset as any
+  if (payload.from !== undefined) filterFrom.value = payload.from
+  if (payload.to !== undefined) filterTo.value = payload.to
+}
+function onLocalValueChange(field: string, e: Event) {
+  const value = (e.target as HTMLSelectElement).value
+  localFilterValues.value[field] = { ...(localFilterValues.value[field] || {}), value }
+}
+function onLocalNumberChange(field: string, key: 'min'|'max', e: Event) {
+  const value = (e.target as HTMLInputElement).value
+  localFilterValues.value[field] = { ...(localFilterValues.value[field] || {}), [key]: value }
+}
+function onLocalDateChange(field: string, key: 'from'|'to', e: Event) {
+  const value = (e.target as HTMLInputElement).value
+  localFilterValues.value[field] = { ...(localFilterValues.value[field] || {}), [key]: value }
+}
+function applyFilters() {
+  // Emit up; parent view wires to useQueryBuilder.setTimeWindow and reloads via watcher
+  const payload: Record<string, any> = { preset: filterPreset.value, from: filterFrom.value, to: filterTo.value }
+  // Translate localFilterValues into backend-friendly filters
+  const filters: Record<string, any> = {}
+  for (const f of listFilters.value as any[]) {
+    const v = localFilterValues.value[f.field]
+    if (!v) continue
+    if (f.type === 'number') {
+      const min = v.min !== '' && v.min !== undefined ? Number(v.min) : undefined
+      const max = v.max !== '' && v.max !== undefined ? Number(v.max) : undefined
+      if (typeof min === 'number' && !isNaN(min) && typeof max === 'number' && !isNaN(max)) filters[f.field] = { $between: [min, max] }
+      else if (typeof min === 'number' && !isNaN(min)) filters[f.field] = { $gte: min }
+      else if (typeof max === 'number' && !isNaN(max)) filters[f.field] = { $lte: max }
+    } else if (f.type === 'select') {
+      const value = v.value
+      if (value !== '' && value !== undefined) filters[f.field] = value
+    } else if (f.type === 'boolean') {
+      const value = v.value
+      if (value === 'true') filters[f.field] = true
+      if (value === 'false') filters[f.field] = false
+    } else if (f.type === 'date') {
+      const from = v.from || undefined
+      const to = v.to || undefined
+      if (from && to) filters[f.field] = { $between: [from, to] }
+      else if (from) filters[f.field] = { $gte: from }
+      else if (to) filters[f.field] = { $lte: to }
+    }
+  }
+  if (Object.keys(filters).length > 0) payload.filters = filters
+  emit('filters-change', payload as any)
+  closeFilters()
+}
+
 function goBack() {
   if (window.history.length > 1) router.back()
   else router.push('/')
@@ -354,11 +491,12 @@ function handleFormSubmit(data: Record<string, any>) {
 function handleSearchInput() {
   const search = searchQuery.value?.trim() || ''
   const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
-  emit('page-change', 1)
   try {
     const url = new URL(window.location.href)
     if (search) url.searchParams.set('search', search); else url.searchParams.delete('search')
     if (field) url.searchParams.set('searchField', field); else url.searchParams.delete('searchField')
+    // Reset page when search changes
+    url.searchParams.set('page', '1')
     history.replaceState(null, '', url.toString())
   } catch {}
 }
@@ -397,7 +535,3 @@ const approximateRowHeight = 56 // px
 const skeletonRows = computed(() => Math.max(4, Math.min(pagination.value.perPage || 10, 10)))
 const contentMinHeight = computed(() => `${approximateRowHeight * (skeletonRows.value + 1)}px`)
 </script>
-
-
-<style scoped>
-</style>

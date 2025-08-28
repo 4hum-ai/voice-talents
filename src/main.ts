@@ -12,12 +12,19 @@ app.use(router)
 // Initialize auth store before mount so guards have state
 import { useAuthStore } from './stores/auth'
 import { useTheme } from './composables/useTheme'
+import { useUiConfig } from './composables/useUiConfig'
 const authStore = useAuthStore()
 // Initialize theme before mounting to prevent FOUC
 const { initialize: initTheme } = useTheme()
 initTheme()
-authStore.initialize().finally(() => {
-  app.mount('#app')
-})
+app.mount('#app')
+
+authStore.initialize()
+  .then(() => {
+    // Mount first so the UI can show the boot overlay
+    // Kick off UI config initialization in the background
+    const { init } = useUiConfig()
+    init().catch(() => void 0)
+  })
 
 

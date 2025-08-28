@@ -1,0 +1,675 @@
+{
+    "displayName": "Organizations",
+    "description": "Manage publishers, partners, vendors and other organizations",
+    "icon": "building",
+    "views": {
+      "list": {
+        "columns": [
+          {
+            "key": "name",
+            "label": "Organization",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "searchable": true,
+            "width": "20%",
+            "titleField": "name",
+            "subtitleField": "email"
+          },
+          {
+            "key": "type",
+            "label": "Type",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "10%",
+            "align": "center",
+            "formatter": "badge"
+          },
+          {
+            "key": "country",
+            "label": "Country",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "10%",
+            "formatter": "country"
+          },
+          {
+            "key": "companySize",
+            "label": "Size",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "8%",
+            "align": "center",
+            "formatter": "badge"
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "10%",
+            "align": "center",
+            "formatter": "status"
+          },
+          {
+            "key": "totalRevenue",
+            "label": "Revenue",
+            "type": "number",
+            "sortable": true,
+            "width": "12%",
+            "align": "right",
+            "formatter": "currency"
+          },
+          {
+            "key": "totalMovies",
+            "label": "Movies",
+            "type": "number",
+            "sortable": true,
+            "width": "8%",
+            "align": "center"
+          },
+          {
+            "key": "totalViews",
+            "label": "Views",
+            "type": "number",
+            "sortable": true,
+            "width": "10%",
+            "align": "center",
+            "formatter": "number"
+          },
+          {
+            "key": "createdAt",
+            "label": "Created",
+            "type": "date",
+            "sortable": true,
+            "width": "10%",
+            "align": "center",
+            "formatter": "date"
+          }
+        ],
+        "defaultSort": {
+          "field": "totalRevenue",
+          "direction": "desc"
+        },
+        "defaultFilters": [
+          {
+            "field": "type",
+            "type": "select",
+            "label": "Type",
+            "options": [
+              {
+                "value": "publisher",
+                "label": "Publisher"
+              },
+              {
+                "value": "partner",
+                "label": "Partner"
+              },
+              {
+                "value": "vendor",
+                "label": "Vendor"
+              },
+              {
+                "value": "client",
+                "label": "Client"
+              },
+              {
+                "value": "affiliate",
+                "label": "Affiliate"
+              }
+            ]
+          },
+          {
+            "field": "status",
+            "type": "select",
+            "label": "Status",
+            "options": [
+              {
+                "value": "active",
+                "label": "Active"
+              },
+              {
+                "value": "pending",
+                "label": "Pending"
+              },
+              {
+                "value": "suspended",
+                "label": "Suspended"
+              },
+              {
+                "value": "inactive",
+                "label": "Inactive"
+              }
+            ]
+          },
+          {
+            "field": "companySize",
+            "type": "select",
+            "label": "Size",
+            "options": [
+              {
+                "value": "startup",
+                "label": "Startup"
+              },
+              {
+                "value": "small",
+                "label": "Small"
+              },
+              {
+                "value": "medium",
+                "label": "Medium"
+              },
+              {
+                "value": "large",
+                "label": "Large"
+              },
+              {
+                "value": "enterprise",
+                "label": "Enterprise"
+              }
+            ]
+          }
+        ],
+        "searchableFields": [
+          "name",
+          "email",
+          "industry"
+        ],
+        "pageSize": 20,
+        "actions": [
+          {
+            "name": "create",
+            "label": "Add Organization",
+            "type": "button",
+            "icon": "plus",
+            "variant": "primary",
+            "permission": "organizations:create"
+          },
+          {
+            "name": "view",
+            "label": "View",
+            "type": "button",
+            "icon": "eye",
+            "variant": "secondary",
+            "permission": "organizations:read"
+          },
+          {
+            "name": "edit",
+            "label": "Edit",
+            "type": "button",
+            "icon": "edit",
+            "variant": "secondary",
+            "permission": "organizations:update"
+          },
+          {
+            "name": "delete",
+            "label": "Delete",
+            "type": "button",
+            "icon": "trash",
+            "variant": "danger",
+            "permission": "organizations:delete"
+          }
+        ]
+      },
+      "kanban": {
+        "groupByField": "status",
+        "columns": [
+          {
+            "value": "active",
+            "label": "Active",
+            "color": "#22c55e"
+          },
+          {
+            "value": "pending",
+            "label": "Pending",
+            "color": "#fbbf24"
+          },
+          {
+            "value": "suspended",
+            "label": "Suspended",
+            "color": "#ef4444"
+          },
+          {
+            "value": "inactive",
+            "label": "Inactive",
+            "color": "#64748b"
+          }
+        ],
+        "cardTitleField": "name",
+        "cardDescriptionField": "type"
+      },
+      "gallery": {
+        "titleField": "name",
+        "descriptionField": "type",
+        "imageField": "logo"
+      },
+      "calendar": {
+        "dateField": "createdAt",
+        "titleField": "name",
+        "colorField": "type",
+        "descriptionField": "email"
+      }
+    },
+    "detailView": {
+      "sections": [
+        {
+          "title": "Basic Information",
+          "fields": [
+            {
+              "key": "name",
+              "label": "Name",
+              "type": "text"
+            },
+            {
+              "key": "type",
+              "label": "Type",
+              "type": "text",
+              "formatter": "badge"
+            },
+            {
+              "key": "status",
+              "label": "Status",
+              "type": "text",
+              "formatter": "status"
+            },
+            {
+              "key": "email",
+              "label": "Email",
+              "type": "text"
+            },
+            {
+              "key": "website",
+              "label": "Website",
+              "type": "url"
+            }
+          ]
+        },
+        {
+          "title": "Location",
+          "fields": [
+            {
+              "key": "country",
+              "label": "Country",
+              "type": "text",
+              "formatter": "country"
+            },
+            {
+              "key": "address",
+              "label": "Address",
+              "type": "text"
+            },
+            {
+              "key": "phone",
+              "label": "Phone",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "title": "Business",
+          "fields": [
+            {
+              "key": "companySize",
+              "label": "Company Size",
+              "type": "text",
+              "formatter": "badge"
+            },
+            {
+              "key": "industry",
+              "label": "Industry",
+              "type": "text"
+            },
+            {
+              "key": "annualRevenue",
+              "label": "Annual Revenue",
+              "type": "number",
+              "formatter": "currency"
+            },
+            {
+              "key": "currency",
+              "label": "Currency",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "title": "Legal",
+          "fields": [
+            {
+              "key": "legalEntityName",
+              "label": "Legal Entity",
+              "type": "text"
+            },
+            {
+              "key": "taxId",
+              "label": "Tax ID",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "title": "Performance",
+          "fields": [
+            {
+              "key": "totalRevenue",
+              "label": "Total Revenue",
+              "type": "number",
+              "formatter": "currency"
+            },
+            {
+              "key": "monthlyRevenue",
+              "label": "Monthly Revenue",
+              "type": "number",
+              "formatter": "currency"
+            },
+            {
+              "key": "totalMovies",
+              "label": "Total Movies",
+              "type": "number"
+            },
+            {
+              "key": "totalViews",
+              "label": "Total Views",
+              "type": "number",
+              "formatter": "number"
+            },
+            {
+              "key": "averageRating",
+              "label": "Average Rating",
+              "type": "number",
+              "formatter": "rating"
+            }
+          ]
+        },
+        {
+          "title": "Contract",
+          "fields": [
+            {
+              "key": "contractType",
+              "label": "Contract Type",
+              "type": "text"
+            },
+            {
+              "key": "serviceLevel",
+              "label": "Service Level",
+              "type": "text"
+            },
+            {
+              "key": "contractStartDate",
+              "label": "Start Date",
+              "type": "date",
+              "formatter": "date"
+            },
+            {
+              "key": "contractEndDate",
+              "label": "End Date",
+              "type": "date",
+              "formatter": "date"
+            }
+          ]
+        },
+        {
+          "title": "Timeline",
+          "fields": [
+            {
+              "key": "createdAt",
+              "label": "Created At",
+              "type": "date",
+              "formatter": "date"
+            },
+            {
+              "key": "updatedAt",
+              "label": "Updated At",
+              "type": "date",
+              "formatter": "date"
+            },
+            {
+              "key": "lastActivityDate",
+              "label": "Last Activity",
+              "type": "date",
+              "formatter": "date"
+            }
+          ]
+        }
+      ]
+    },
+    "formView": {
+      "fields": [
+        {
+          "key": "name",
+          "label": "Organization Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Enter organization name"
+        },
+        {
+          "key": "type",
+          "label": "Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            {
+              "value": "publisher",
+              "label": "Publisher"
+            },
+            {
+              "value": "partner",
+              "label": "Partner"
+            },
+            {
+              "value": "vendor",
+              "label": "Vendor"
+            },
+            {
+              "value": "client",
+              "label": "Client"
+            },
+            {
+              "value": "affiliate",
+              "label": "Affiliate"
+            }
+          ]
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            {
+              "value": "active",
+              "label": "Active"
+            },
+            {
+              "value": "pending",
+              "label": "Pending"
+            },
+            {
+              "value": "suspended",
+              "label": "Suspended"
+            },
+            {
+              "value": "inactive",
+              "label": "Inactive"
+            }
+          ]
+        },
+        {
+          "key": "email",
+          "label": "Email",
+          "type": "text",
+          "required": true,
+          "placeholder": "Enter email address"
+        },
+        {
+          "key": "website",
+          "label": "Website",
+          "type": "url",
+          "placeholder": "Enter website URL"
+        },
+        {
+          "key": "phone",
+          "label": "Phone",
+          "type": "text",
+          "placeholder": "Enter phone number"
+        },
+        {
+          "key": "country",
+          "label": "Country",
+          "type": "select",
+          "required": true,
+          "options": [],
+          "placeholder": "Select country"
+        },
+        {
+          "key": "address",
+          "label": "Address",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Enter full address"
+        },
+        {
+          "key": "companySize",
+          "label": "Company Size",
+          "type": "select",
+          "options": [
+            {
+              "value": "startup",
+              "label": "Startup"
+            },
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            },
+            {
+              "value": "enterprise",
+              "label": "Enterprise"
+            }
+          ]
+        },
+        {
+          "key": "industry",
+          "label": "Industry",
+          "type": "text",
+          "placeholder": "Enter industry"
+        },
+        {
+          "key": "annualRevenue",
+          "label": "Annual Revenue",
+          "type": "number",
+          "placeholder": "Enter annual revenue"
+        },
+        {
+          "key": "currency",
+          "label": "Currency",
+          "type": "select",
+          "options": [
+            {
+              "value": "USD",
+              "label": "USD"
+            },
+            {
+              "value": "EUR",
+              "label": "EUR"
+            },
+            {
+              "value": "JPY",
+              "label": "JPY"
+            },
+            {
+              "value": "KRW",
+              "label": "KRW"
+            },
+            {
+              "value": "CNY",
+              "label": "CNY"
+            },
+            {
+              "value": "INR",
+              "label": "INR"
+            }
+          ]
+        },
+        {
+          "key": "legalEntityName",
+          "label": "Legal Entity Name",
+          "type": "text",
+          "placeholder": "Enter legal entity name"
+        },
+        {
+          "key": "taxId",
+          "label": "Tax ID",
+          "type": "text",
+          "placeholder": "Enter tax ID"
+        },
+        {
+          "key": "contractType",
+          "label": "Contract Type",
+          "type": "select",
+          "options": [
+            {
+              "value": "monthly",
+              "label": "Monthly"
+            },
+            {
+              "value": "annual",
+              "label": "Annual"
+            },
+            {
+              "value": "enterprise",
+              "label": "Enterprise"
+            }
+          ]
+        },
+        {
+          "key": "serviceLevel",
+          "label": "Service Level",
+          "type": "select",
+          "options": [
+            {
+              "value": "basic",
+              "label": "Basic"
+            },
+            {
+              "value": "premium",
+              "label": "Premium"
+            },
+            {
+              "value": "enterprise",
+              "label": "Enterprise"
+            }
+          ]
+        },
+        {
+          "key": "contractStartDate",
+          "label": "Contract Start Date",
+          "type": "date",
+          "placeholder": "Select start date"
+        },
+        {
+          "key": "contractEndDate",
+          "label": "Contract End Date",
+          "type": "date",
+          "placeholder": "Select end date"
+        },
+        {
+          "key": "accountManagerId",
+          "label": "Account Manager",
+          "type": "select",
+          "options": [],
+          "placeholder": "Select account manager"
+        }
+      ]
+    }
+  }

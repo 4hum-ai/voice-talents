@@ -21,11 +21,13 @@ export class ConnectionError extends Error {
 }
 
 // Module-level singletons (persist across composable calls, per tab)
-const singletonUiConfig = new Map<string, any>()
-const singletonAdminModules: { data: AdminModuleInfo[] | null } = { data: null }
+// UI Config caching moved to useUiConfig
+// const singletonUiConfig = new Map<string, any>()
+// const singletonAdminModules: { data: AdminModuleInfo[] | null } = { data: null }
 
 export function useMovieService() {
   const client = useApiGateway()
+  // Keep service focused on API calls only; local UI config handling resides in useUiConfig
 
   const checkConnection = async (): Promise<boolean> => {
     try {
@@ -133,34 +135,8 @@ export function useMovieService() {
     return payload?.data ?? payload
   }
 
-  const getModuleUiConfig = async (module: string, opts?: { force?: boolean, signal?: AbortSignal }): Promise<any | null> => {
-    if (!opts?.force && singletonUiConfig.has(module)) {
-      return singletonUiConfig.get(module)
-    }
-    try {
-      const data = await get<any>(`/api/admin-ui/modules/${module}/config`, undefined, opts?.signal)
-      singletonUiConfig.set(module, data)
-      return data
-    } catch (_) {
-      // stale-on-error
-      return singletonUiConfig.get(module) ?? null
-    }
-  }
+  // getModuleUiConfig moved to useUiConfig
 
-  const listAdminModules = async (opts?: { force?: boolean, signal?: AbortSignal }): Promise<AdminModuleInfo[]> => {
-    if (!opts?.force && singletonAdminModules.data) {
-      return singletonAdminModules.data
-    }
-    try {
-      const payload = await get<{ modules?: AdminModuleInfo[] }>(`/api/admin-ui/modules`, undefined, opts?.signal)
-      const modules = Array.isArray(payload?.modules) ? payload.modules : []
-      singletonAdminModules.data = modules
-      return modules
-    } catch (_) {
-      // stale-on-error
-      return singletonAdminModules.data ?? []
-    }
-  }
 
   const createModuleItem = async (module: string, data: any, signal?: AbortSignal): Promise<any> => (await post<any>(`/api/${module}`, data, signal)).data
   const updateModuleItem = async (module: string, id: string, data: any, signal?: AbortSignal): Promise<any> => (await put<any>(`/api/${module}/${id}`, data, signal)).data
@@ -168,10 +144,8 @@ export function useMovieService() {
 
   return {
     checkConnection,
-    listAdminModules,
     listModuleItems,
     getModuleItem,
-    getModuleUiConfig,
     createModuleItem,
     updateModuleItem,
     deleteModuleItem

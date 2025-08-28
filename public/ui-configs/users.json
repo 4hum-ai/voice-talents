@@ -1,0 +1,432 @@
+{
+    "displayName": "Users",
+    "description": "Manage system users and permissions",
+    "icon": "users",
+    "views": {
+      "list": {
+        "columns": [
+          {
+            "key": "name",
+            "label": "Name",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "searchable": true,
+            "width": "20%",
+            "titleField": "name",
+            "subtitleField": "email"
+          },
+          {
+            "key": "email",
+            "label": "Email",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "searchable": true,
+            "width": "25%"
+          },
+          {
+            "key": "role",
+            "label": "Role",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "10%",
+            "align": "center",
+            "formatter": "badge"
+          },
+          {
+            "key": "status",
+            "label": "Status",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "10%",
+            "align": "center",
+            "formatter": "status"
+          },
+          {
+            "key": "organizationName",
+            "label": "Organization",
+            "type": "text",
+            "sortable": true,
+            "filterable": true,
+            "width": "15%"
+          },
+          {
+            "key": "lastLoginAt",
+            "label": "Last Login",
+            "type": "date",
+            "sortable": true,
+            "width": "12%",
+            "align": "center",
+            "formatter": "date"
+          },
+          {
+            "key": "loginCount",
+            "label": "Logins",
+            "type": "number",
+            "sortable": true,
+            "width": "8%",
+            "align": "center",
+            "formatter": "number"
+          }
+        ],
+        "defaultSort": {
+          "field": "createdAt",
+          "direction": "desc"
+        },
+        "defaultFilters": [
+          {
+            "field": "role",
+            "type": "select",
+            "label": "Role",
+            "options": [
+              {
+                "value": "admin",
+                "label": "Admin"
+              },
+              {
+                "value": "manager",
+                "label": "Manager"
+              },
+              {
+                "value": "user",
+                "label": "User"
+              },
+              {
+                "value": "viewer",
+                "label": "Viewer"
+              }
+            ]
+          },
+          {
+            "field": "status",
+            "type": "select",
+            "label": "Status",
+            "options": [
+              {
+                "value": "active",
+                "label": "Active"
+              },
+              {
+                "value": "inactive",
+                "label": "Inactive"
+              },
+              {
+                "value": "suspended",
+                "label": "Suspended"
+              }
+            ]
+          }
+        ],
+        "searchableFields": [
+          "name",
+          "email"
+        ],
+        "pageSize": 20,
+        "actions": [
+          {
+            "name": "create",
+            "label": "Add User",
+            "type": "button",
+            "icon": "plus",
+            "variant": "primary",
+            "permission": "users:create"
+          },
+          {
+            "name": "view",
+            "label": "View",
+            "type": "button",
+            "icon": "eye",
+            "variant": "secondary",
+            "permission": "users:read"
+          },
+          {
+            "name": "edit",
+            "label": "Edit",
+            "type": "button",
+            "icon": "edit",
+            "variant": "secondary",
+            "permission": "users:update"
+          },
+          {
+            "name": "delete",
+            "label": "Delete",
+            "type": "button",
+            "icon": "trash",
+            "variant": "danger",
+            "permission": "users:delete"
+          }
+        ]
+      },
+      "kanban": {
+        "groupByField": "status",
+        "columns": [
+          {
+            "value": "active",
+            "label": "Active",
+            "color": "#22c55e"
+          },
+          {
+            "value": "inactive",
+            "label": "Inactive",
+            "color": "#64748b"
+          },
+          {
+            "value": "suspended",
+            "label": "Suspended",
+            "color": "#ef4444"
+          }
+        ],
+        "cardTitleField": "name",
+        "cardDescriptionField": "email"
+      },
+      "gallery": {
+        "titleField": "name",
+        "descriptionField": "email",
+        "imageField": "avatar"
+      },
+      "calendar": {
+        "dateField": "lastLoginAt",
+        "titleField": "name",
+        "colorField": "role",
+        "descriptionField": "email"
+      }
+    },
+    "detailView": {
+      "sections": [
+        {
+          "title": "Basic Information",
+          "fields": [
+            {
+              "key": "name",
+              "label": "Name",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "label": "Email",
+              "type": "text"
+            },
+            {
+              "key": "role",
+              "label": "Role",
+              "type": "text",
+              "formatter": "badge"
+            },
+            {
+              "key": "status",
+              "label": "Status",
+              "type": "text",
+              "formatter": "status"
+            }
+          ]
+        },
+        {
+          "title": "Profile",
+          "fields": [
+            {
+              "key": "avatar",
+              "label": "Avatar",
+              "type": "image"
+            },
+            {
+              "key": "phone",
+              "label": "Phone",
+              "type": "text"
+            },
+            {
+              "key": "timezone",
+              "label": "Timezone",
+              "type": "text"
+            },
+            {
+              "key": "language",
+              "label": "Language",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "title": "Organization",
+          "fields": [
+            {
+              "key": "organizationName",
+              "label": "Organization",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "title": "Account",
+          "fields": [
+            {
+              "key": "lastLoginAt",
+              "label": "Last Login",
+              "type": "date",
+              "formatter": "date"
+            },
+            {
+              "key": "loginCount",
+              "label": "Login Count",
+              "type": "number",
+              "formatter": "number"
+            },
+            {
+              "key": "isEmailVerified",
+              "label": "Email Verified",
+              "type": "boolean"
+            }
+          ]
+        },
+        {
+          "title": "Timeline",
+          "fields": [
+            {
+              "key": "createdAt",
+              "label": "Created At",
+              "type": "date",
+              "formatter": "date"
+            },
+            {
+              "key": "updatedAt",
+              "label": "Updated At",
+              "type": "date",
+              "formatter": "date"
+            }
+          ]
+        }
+      ]
+    },
+    "formView": {
+      "fields": [
+        {
+          "key": "name",
+          "label": "Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Enter full name"
+        },
+        {
+          "key": "email",
+          "label": "Email",
+          "type": "text",
+          "required": true,
+          "placeholder": "Enter email address"
+        },
+        {
+          "key": "role",
+          "label": "Role",
+          "type": "select",
+          "options": [
+            {
+              "value": "admin",
+              "label": "Admin"
+            },
+            {
+              "value": "manager",
+              "label": "Manager"
+            },
+            {
+              "value": "user",
+              "label": "User"
+            },
+            {
+              "value": "viewer",
+              "label": "Viewer"
+            }
+          ]
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            {
+              "value": "active",
+              "label": "Active"
+            },
+            {
+              "value": "inactive",
+              "label": "Inactive"
+            },
+            {
+              "value": "suspended",
+              "label": "Suspended"
+            }
+          ]
+        },
+        {
+          "key": "avatar",
+          "label": "Avatar",
+          "type": "file",
+          "helpText": "Upload profile picture"
+        },
+        {
+          "key": "phone",
+          "label": "Phone",
+          "type": "text",
+          "placeholder": "Enter phone number"
+        },
+        {
+          "key": "timezone",
+          "label": "Timezone",
+          "type": "text",
+          "placeholder": "Enter timezone"
+        },
+        {
+          "key": "language",
+          "label": "Language",
+          "type": "select",
+          "options": [
+            {
+              "value": "en",
+              "label": "English"
+            },
+            {
+              "value": "es",
+              "label": "Spanish"
+            },
+            {
+              "value": "fr",
+              "label": "French"
+            },
+            {
+              "value": "de",
+              "label": "German"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese"
+            },
+            {
+              "value": "ko",
+              "label": "Korean"
+            },
+            {
+              "value": "zh",
+              "label": "Chinese"
+            },
+            {
+              "value": "hi",
+              "label": "Hindi"
+            }
+          ]
+        },
+        {
+          "key": "organizationId",
+          "label": "Organization",
+          "type": "select",
+          "options": [],
+          "placeholder": "Select organization"
+        },
+        {
+          "key": "isEmailVerified",
+          "label": "Email Verified",
+          "type": "boolean",
+          "helpText": "Mark if email is verified"
+        }
+      ]
+    }
+  }

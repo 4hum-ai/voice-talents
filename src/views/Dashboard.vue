@@ -93,6 +93,7 @@ import AppBar from '@/components/molecules/AppBar.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import { useMovieService, type AdminModuleInfo } from '@/composables/useMovieService'
+import { useUiConfig } from '@/composables/useUiConfig'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
@@ -101,6 +102,7 @@ import { useTheme } from '@/composables/useTheme'
 
 // Connection health check removed as it's low value for UX
 const movie = useMovieService()
+const uiConfig = useUiConfig()
 const auth = useAuthStore()
 const router = useRouter()
 const { isDark, toggleTheme } = useTheme()
@@ -144,7 +146,7 @@ const loadCounts = async () => {
   try {
     if (adminModules.value.length === 0) {
       try {
-        adminModules.value = await movie.listAdminModules()
+        adminModules.value = await uiConfig.listModules()
       } catch {
         adminModules.value = []
       }
@@ -195,7 +197,7 @@ const onMenuSelect = async (key: string) => {
 onMounted(async () => {
   loadingModules.value = true
   try {
-    adminModules.value = await movie.listAdminModules()
+    adminModules.value = await uiConfig.listModules()
   } catch {
     adminModules.value = []
   } finally {

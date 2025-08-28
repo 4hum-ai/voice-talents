@@ -1,4 +1,4 @@
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, watch, getCurrentInstance } from 'vue'
 import { usePreference } from './usePreference'
 
 export type ThemeMode = 'light' | 'dark'
@@ -37,8 +37,10 @@ export function useTheme() {
   // Keep DOM in sync when pref changes elsewhere
   watch(mode, (m) => applyTheme(m))
 
-  // Convenience for components using onMounted
-  onMounted(() => applyTheme())
+  // Convenience for components using onMounted (only if within a component setup)
+  if (getCurrentInstance()) {
+    onMounted(() => applyTheme())
+  }
 
   return {
     mode,
