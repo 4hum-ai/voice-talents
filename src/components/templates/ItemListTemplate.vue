@@ -163,14 +163,16 @@ interface Props {
   totalItems?: number
   perPage?: number
   customCreateHandler?: boolean
+  activeFilters?: { key: string; label: string }[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
-  loading: false
+  loading: false,
+  activeFilters: () => []
 })
 
-const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delete', 'load-more', 'filters-change'])
+const emit = defineEmits(['action', 'sort', 'page-change', 'create', 'bulk-delete', 'load-more', 'filters-change', 'clear-filter', 'clear-all-filters'])
 
 const moduleName = computed(() => props.moduleName)
 const viewPrefKey = computed(() => `${moduleName.value}-list-view`)

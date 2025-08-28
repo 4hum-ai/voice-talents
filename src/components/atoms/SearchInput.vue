@@ -1,6 +1,7 @@
 <template>
   <div class="min-w-0 flex-1">
     <input
+      ref="inputEl"
       :value="modelValue"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       :placeholder="placeholder"
@@ -11,8 +12,15 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 defineProps<{ modelValue: string; placeholder?: string }>()
 defineEmits(['update:modelValue'])
+
+const inputEl = ref<HTMLInputElement | null>(null)
+function focus() { inputEl.value?.focus() }
+
+defineExpose({ focus })
 </script>
 
 
