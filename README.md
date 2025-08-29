@@ -1,6 +1,6 @@
 ## Admin UI
 
-A low‑code, schema‑driven admin interface. Modules, lists, details, forms, and alternative layouts (gallery, kanban, calendar) are rendered dynamically from backend‑provided configuration.
+A low‑code, schema‑driven admin interface. Modules, lists, details, forms, and alternative layouts (gallery, kanban, calendar, table) are rendered dynamically from backend‑provided configuration.
 
 ### Features
 
