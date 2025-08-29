@@ -36,6 +36,7 @@
     "vue": "^3.3.4",
     "vue-chartjs": "^5.3.0",
     "vue-router": "^4.2.5",
+    "wrangler": "3.90.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
