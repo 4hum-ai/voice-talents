@@ -27,5 +27,3 @@ describe("countries utils", () => {
     expect(getCountryByAny("   ")).toBeUndefined();
   });
 });
-
-

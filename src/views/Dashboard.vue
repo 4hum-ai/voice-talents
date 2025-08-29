@@ -103,7 +103,10 @@
                 </div>
               </div>
               <div class="text-right">
-                <div v-if="countsLoading[m.name]" class="flex h-7 items-center justify-end">
+                <div
+                  v-if="countsLoading[m.name]"
+                  class="flex h-7 items-center justify-end"
+                >
                   <LoadingIcon
                     class="h-5 w-5 animate-spin text-gray-400 dark:text-gray-300"
                     aria-hidden="true"

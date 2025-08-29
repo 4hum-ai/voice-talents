@@ -55,19 +55,27 @@ describe("useApiGateway / createApiClient", () => {
     const fetchSpy = vi.fn(async () => new Response(null, { status: 200 }));
     globalThis.fetch = fetchSpy as any;
 
-    const api = createApiClient({ baseUrl: "https://api.example.com/", defaultHeaders: { "X-App": "admin" } });
+    const api = createApiClient({
+      baseUrl: "https://api.example.com/",
+      defaultHeaders: { "X-App": "admin" },
+    });
     await api.request("/health", { method: "GET" });
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     const [calledUrl, calledInit] = fetchSpy.mock.calls[0]!;
     expect(calledUrl).toBe("https://api.example.com/health");
-    expect((calledInit.headers as Record<string, string>)["Authorization"]).toBe("Bearer test-token");
-    expect((calledInit.headers as Record<string, string>)["X-App"]).toBe("admin");
+    expect(
+      (calledInit.headers as Record<string, string>)["Authorization"],
+    ).toBe("Bearer test-token");
+    expect((calledInit.headers as Record<string, string>)["X-App"]).toBe(
+      "admin",
+    );
   });
 
   it("retries once on 401 with refreshed token", async () => {
     const { getAuth } = await import("firebase/auth");
-    const getIdToken = vi.fn()
+    const getIdToken = vi
+      .fn()
       .mockResolvedValueOnce("old-token")
       .mockResolvedValueOnce("new-token");
     // For forced refresh path
@@ -77,7 +85,9 @@ describe("useApiGateway / createApiClient", () => {
         getIdToken,
       },
     });
-    (getAuth as any).mockImplementationOnce(() => ({ currentUser: { getIdToken: getIdTokenForce } }));
+    (getAuth as any).mockImplementationOnce(() => ({
+      currentUser: { getIdToken: getIdTokenForce },
+    }));
 
     const fetchSpy = vi
       .fn()
@@ -99,7 +109,10 @@ describe("useApiGateway / createApiClient", () => {
     const fetchSpy = vi.fn(async () => new Response(null, { status: 200 }));
     globalThis.fetch = fetchSpy as any;
 
-    const api = createApiClient({ baseUrl: "https://api.example.com", timeoutMs: 25 });
+    const api = createApiClient({
+      baseUrl: "https://api.example.com",
+      timeoutMs: 25,
+    });
     await api.request("/data", { signal });
 
     const calledInit = fetchSpy.mock.calls[0]![1];
@@ -124,5 +137,3 @@ describe("useApiGateway / createApiClient", () => {
     expect(client.baseUrl).toBe(expected);
   });
 });
-
-

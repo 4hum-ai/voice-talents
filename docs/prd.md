@@ -18,13 +18,11 @@ Primary users are internal operators and admins who need efficient CRUD, filteri
   - Public customer‑facing features (separate apps)
   - Complex role‑based authorization (planned; see Open Questions)
 
-
 ### 3) Personas
 
 - Studio Operator: triages content, updates statuses, edits metadata, manages relationships
 - Admin: manages users and organizations, configures modules, audits data quality
 - Engineer: extends modules declaratively, observes logs, validates API contracts
-
 
 ### 4) Frontend Functional Requirements
 
@@ -53,7 +51,6 @@ Primary users are internal operators and admins who need efficient CRUD, filteri
   - Network errors surfaced via `useToast.push(...)`
   - Non‑JSON responses raise actionable hints about incorrect base URL
 
-
 ### 5) Query & Filtering Contract (canonical)
 
 - Pagination: `page`, `limit` or `pagination[page]`, `pagination[pageSize]`
@@ -73,5 +70,3 @@ Primary users are internal operators and admins who need efficient CRUD, filteri
 - Security
   - Client sends Firebase ID tokens
   - Backend auth middleware is planned (see Open Questions); once enabled, validate tokens and map user claims to permissions
-
-
