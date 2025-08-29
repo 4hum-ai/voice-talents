@@ -292,19 +292,7 @@ function onClearFilter(key: string) { qb.clearFilter(key) }
 
 function onClearAllFilters() { qb.clearAllFilters() }
 
-async function onBulkDelete(ids: (string|number)[]) {
-  if (!ids || ids.length === 0) return
-  loading.value = true
-  error.value = null
-  try {
-    await Promise.all(ids.map((id) => movie.deleteModuleItem(module.value, String(id))))
-    await load(pagination.value.page)
-  } catch (e: any) {
-    error.value = e?.message || 'Delete failed'
-  } finally {
-    loading.value = false
-  }
-}
+// bulk delete not used in this view currently; remove to satisfy type-check
 
 onMounted(async () => {
   if (!module.value) return

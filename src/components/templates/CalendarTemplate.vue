@@ -232,16 +232,11 @@ function syncTimeWindowFromQuery(){
     const betweenKey = `filters[${dateField.value}][$between]`
     const gteKey = `filters[${dateField.value}][$gte]`
     const lteKey = `filters[${dateField.value}][$lte]`
-    let from: string | undefined
-    let to: string | undefined
     if (q[betweenKey]) {
-      const val = String(q[betweenKey])
-      const [a, b] = val.split(',').map(s => s.trim())
-      from = a || undefined
-      to = b || undefined
+      // no-op: calendar emits filters-change; kept for parity
     } else {
-      if (q[gteKey]) from = String(q[gteKey])
-      if (q[lteKey]) to = String(q[lteKey])
+      if (q[gteKey]) { /* no-op */ }
+      if (q[lteKey]) { /* no-op */ }
     }
     // The calendar emits filters-change rather than showing sidebar fields,
     // but keeping this for parity if a sidebar is shown in future.
