@@ -10,77 +10,118 @@
       <template #actions>
         <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
           <div class="w-full sm:w-64">
-            <label class="sr-only" for="module-search">Search modules</label>
-            <SearchInput id="module-search" v-model="filter" placeholder="Search modules…" />
+            <label
+              class="sr-only"
+              for="module-search"
+            >Search modules</label>
+            <SearchInput
+              id="module-search"
+              v-model="filter"
+              placeholder="Search modules…"
+            />
           </div>
-          <ActionsMenu :items="menuItems" @select="onMenuSelect" />
+          <ActionsMenu
+            :items="menuItems"
+            @select="onMenuSelect"
+          />
         </div>
       </template>
     </AppBar>
-    <div class="h-4"></div>
+    <div class="h-4" />
     <main class="p-6">
-
-    <section v-if="isLoading" class="mt-6">
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div
-          v-for="i in 6"
-          :key="i"
-          class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-        >
-          <div class="animate-pulse flex items-start gap-3">
-            <div class="flex-none h-10 w-10 rounded-md bg-gray-200 dark:bg-gray-700"></div>
-            <div class="flex-1 space-y-2">
-              <div class="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div class="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <section
+        v-if="isLoading"
+        class="mt-6"
+      >
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-for="i in 6"
+            :key="i"
+            class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+          >
+            <div class="animate-pulse flex items-start gap-3">
+              <div class="flex-none h-10 w-10 rounded-md bg-gray-200 dark:bg-gray-700" />
+              <div class="flex-1 space-y-2">
+                <div class="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
+                <div class="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section v-else-if="visibleModules.length === 0" class="mt-6">
-      <div class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-        <div class="mx-auto mb-2 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center dark:bg-gray-700">
-          <svg class="h-5 w-5 text-gray-400 dark:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m0-6.4a6.4 6.4 0 1 1-12.8 0 6.4 6.4 0 0 1 12.8 0Z"/>
-          </svg>
+      <section
+        v-else-if="visibleModules.length === 0"
+        class="mt-6"
+      >
+        <div class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+          <div class="mx-auto mb-2 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center dark:bg-gray-700">
+            <svg
+              class="h-5 w-5 text-gray-400 dark:text-gray-300"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m21 21-4.35-4.35m0-6.4a6.4 6.4 0 1 1-12.8 0 6.4 6.4 0 0 1 12.8 0Z"
+              />
+            </svg>
+          </div>
+          <div v-if="filter">
+            No modules match “{{ filter }}”.
+          </div>
+          <div v-else>
+            No modules available.
+          </div>
         </div>
-        <div v-if="filter">No modules match “{{ filter }}”.</div>
-        <div v-else>No modules available.</div>
-      </div>
-    </section>
+      </section>
 
-    <section v-else>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <router-link
-          v-for="m in visibleModules"
-          :key="m.name"
-          :to="`/${m.name}`"
-          class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition hover:-translate-y-0.5 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none dark:hover:shadow-md"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex items-start gap-3">
-              <div class="flex-none overflow-hidden h-10 w-10">
-                <div class="h-full w-full grid place-items-center">
-                  <Avatar :label="m.displayName || toTitle(m.name)" :seed="m.name" shape="square" />
+      <section v-else>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <router-link
+            v-for="m in visibleModules"
+            :key="m.name"
+            :to="`/${m.name}`"
+            class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition hover:-translate-y-0.5 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none dark:hover:shadow-md"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div class="flex-none overflow-hidden h-10 w-10">
+                  <div class="h-full w-full grid place-items-center">
+                    <Avatar
+                      :label="m.displayName || toTitle(m.name)"
+                      :seed="m.name"
+                      shape="square"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ m.displayName || toTitle(m.name) }}
+                  </h3>
+                  <p
+                    v-if="m.description"
+                    class="mt-1 text-sm text-gray-500 dark:text-gray-400"
+                  >
+                    {{ m.description }}
+                  </p>
                 </div>
               </div>
-              <div>
-                <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ m.displayName || toTitle(m.name) }}</h3>
-                <p v-if="m.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ m.description }}</p>
+              <div class="text-right">
+                <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {{ formatCount(counts[m.name]) }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                  Total
+                </div>
               </div>
             </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {{ formatCount(counts[m.name]) }}
-              </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
-            </div>
-          </div>
-        </router-link>
-      </div>
-    </section>
-    
+          </router-link>
+        </div>
+      </section>
     </main>
   </div>
 </template>

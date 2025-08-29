@@ -5,12 +5,19 @@
     :loading="loading"
     :error="error"
     :ui-config="uiConfig"
-    @update="onUpdate"
     :on-back="goBack"
+    @update="onUpdate"
     @edit="onEdit"
     @delete="onDelete"
   />
-  <ConfirmModal :open="confirmOpen" title="Delete item" message="Delete this item? This cannot be undone." confirm-label="Delete" @confirm="confirmDelete" @cancel="confirmOpen=false" />
+  <ConfirmModal
+    :open="confirmOpen"
+    title="Delete item"
+    message="Delete this item? This cannot be undone."
+    confirm-label="Delete"
+    @confirm="confirmDelete"
+    @cancel="confirmOpen=false"
+  />
 </template>
 
 <script setup lang="ts">

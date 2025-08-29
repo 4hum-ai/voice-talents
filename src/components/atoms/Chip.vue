@@ -5,9 +5,9 @@
     <button
       v-if="closable"
       type="button"
-      @click="$emit('close')"
       class="rounded hover:bg-gray-100 dark:hover:bg-gray-700 px-1"
       :aria-label="closeAriaLabel"
+      @click="$emit('close')"
     >
       ×
     </button>

@@ -32,7 +32,9 @@
         theme === 'dark' ? 'text-zinc-50' : 'text-zinc-900',
       ]"
     >
-      <h4 class="font-medium">{{ props.message.title }}</h4>
+      <h4 class="font-medium">
+        {{ props.message.title }}
+      </h4>
       <span>{{ props.message.body }}</span>
     </div>
 

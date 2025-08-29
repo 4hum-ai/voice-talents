@@ -7,12 +7,15 @@
       aria-live="polite"
     >
       <div class="mx-auto max-w-7xl px-4 py-2 flex items-center gap-2 justify-center">
-        <span class="inline-block h-2 w-2 rounded-full bg-white animate-pulse"></span>
+        <span class="inline-block h-2 w-2 rounded-full bg-white animate-pulse" />
         <span>You're offline. Some features are unavailable until connection is restored.</span>
       </div>
     </div>
   </transition>
-  <div class="h-0" aria-hidden="true"></div>
+  <div
+    class="h-0"
+    aria-hidden="true"
+  />
   <!-- spacer for overlayed banner; content stays clickable -->
 </template>
 

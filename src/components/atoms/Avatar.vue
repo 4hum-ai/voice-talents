@@ -11,8 +11,11 @@
       :alt="altAttr"
       class="h-full w-full object-cover"
       @error="onImgError"
-    />
-    <span v-else class="text-white font-medium">{{ initialChar }}</span>
+    >
+    <span
+      v-else
+      class="text-white font-medium"
+    >{{ initialChar }}</span>
   </div>
 </template>
 

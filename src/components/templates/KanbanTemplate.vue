@@ -1,6 +1,10 @@
 <template>
   <div class="min-h-screen">
-    <AppBar :loading="loading" :show-back="true" @back="router.back()">
+    <AppBar
+      :loading="loading"
+      :show-back="true"
+      @back="router.back()"
+    >
       <template #left>
         <div class="min-w-0">
           <div class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
@@ -15,29 +19,56 @@
         <template v-if="!isSearchOpen">
           <button
             v-if="hasCreateAction"
-            @click="openCreate()"
             class="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            @click="openCreate()"
           >
             + Add
           </button>
           <button
             v-if="hasCreateAction"
-            @click="openCreate()"
             class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
+            @click="openCreate()"
           >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
               <path d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z" />
             </svg>
           </button>
-          <button @click="openSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700" aria-label="Search">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" clip-rule="evenodd" />
+          <button
+            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            aria-label="Search"
+            @click="openSearch"
+          >
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
-          <ActionsMenu :items="layoutMenuItems" size="md" @select="handleLayoutSelect">
+          <ActionsMenu
+            :items="layoutMenuItems"
+            size="md"
+            @select="handleLayoutSelect"
+          >
             <template #label>
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
                 <path d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 0112 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0112 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0021 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z" />
               </svg>
             </template>
@@ -45,21 +76,56 @@
         </template>
         <template v-else>
           <div class="flex items-center gap-2 min-w-0 flex-1">
-            <SearchInput ref="searchInputRef" v-model="searchQuery" @update:modelValue="handleSearchInputDebounced" :placeholder="`Search ${moduleName}...`" />
+            <SearchInput
+              ref="searchInputRef"
+              v-model="searchQuery"
+              :placeholder="`Search ${moduleName}...`"
+              @update:model-value="handleSearchInputDebounced"
+            />
             <div class="hidden sm:flex items-center gap-2">
               <div class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
-                <select v-model="selectedSearchField" @change="handleSearchInput" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-                  <option value="all">All fields</option>
-                  <option v-for="f in searchableFieldOptions" :key="f.key" :value="f.key">{{ f.label }}</option>
+                <select
+                  v-model="selectedSearchField"
+                  class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  @change="handleSearchInput"
+                >
+                  <option value="all">
+                    All fields
+                  </option>
+                  <option
+                    v-for="f in searchableFieldOptions"
+                    :key="f.key"
+                    :value="f.key"
+                  >
+                    {{ f.label }}
+                  </option>
                 </select>
               </div>
-              <button @click="openFilters" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900">Filters</button>
+              <button
+                class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900"
+                @click="openFilters"
+              >
+                Filters
+              </button>
             </div>
           </div>
-          <button @click="closeSearch" class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700" aria-label="Close search">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z" clip-rule="evenodd" />
+          <button
+            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            aria-label="Close search"
+            @click="closeSearch"
+          >
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
         </template>
@@ -68,46 +134,90 @@
 
     <main class="p-4 space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div class="text-sm text-gray-600 dark:text-gray-300">Time window</div>
+        <div class="text-sm text-gray-600 dark:text-gray-300">
+          Time window
+        </div>
         <div class="flex items-center gap-2">
-          <TimeWindowPicker :preset="selectedPreset" :from="fromISO" :to="toISO" @change="onTimeWindowChange" />
+          <TimeWindowPicker
+            :preset="selectedPreset"
+            :from="fromISO"
+            :to="toISO"
+            @change="onTimeWindowChange"
+          />
         </div>
       </div>
 
-      <div v-if="activeFilters && activeFilters.length > 0" class="-mt-2 flex flex-wrap items-center gap-2">
-        <Chip v-for="chip in activeFilters" :key="chip.key" :label="chip.label" closable @close="() => emit('clear-filter', chip.key)" />
-        <button @click="emit('clear-all-filters')" class="text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Clear all</button>
+      <div
+        v-if="activeFilters && activeFilters.length > 0"
+        class="-mt-2 flex flex-wrap items-center gap-2"
+      >
+        <Chip
+          v-for="chip in activeFilters"
+          :key="chip.key"
+          :label="chip.label"
+          closable
+          @close="() => emit('clear-filter', chip.key)"
+        />
+        <button
+          class="text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          @click="emit('clear-all-filters')"
+        >
+          Clear all
+        </button>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
         <div
           v-for="column in config.columns"
           :key="column.value"
-          class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 min-h-[300px] border border-gray-200 dark:border-gray-700"
           :ref="el => setColumnRef(column.value, el as HTMLElement)"
+          class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 min-h-[300px] border border-gray-200 dark:border-gray-700"
         >
           <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-2">
-              <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: column.color || '#6b7280' }"></div>
-              <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ column.label }}</h3>
+              <div
+                class="w-3 h-3 rounded-full"
+                :style="{ backgroundColor: column.color || '#6b7280' }"
+              />
+              <h3 class="font-medium text-gray-900 dark:text-gray-100">
+                {{ column.label }}
+              </h3>
             </div>
             <span class="text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-2 py-1 rounded-full">{{ getKanbanCount(column.value) }}</span>
           </div>
           <div class="space-y-3">
-            <template v-for="item in getKanbanItems(column.value)" :key="item.id">
+            <template
+              v-for="item in getKanbanItems(column.value)"
+              :key="item.id"
+            >
               <div
+                :ref="el => setCardRef(item.id, el as HTMLElement)"
                 class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md cursor-grab active:cursor-grabbing select-none transition-all duration-200 touch-none will-change-transform"
                 :class="{ 'z-50 shadow-lg': draggingItemId === item.id }"
-                :ref="el => setCardRef(item.id, el as HTMLElement)"
                 :style="[baseDragStyleRefs[item.id], cardStyleRefs[item.id]]"
                 @click="handleItemClick(item)"
               >
-                <div class="font-medium text-sm text-gray-900 dark:text-gray-100 mb-1">{{ item[config.cardTitleField] }}</div>
-                <div v-if="config.cardDescriptionField" class="text-xs text-gray-500 dark:text-gray-400">{{ item[config.cardDescriptionField] }}</div>
+                <div class="font-medium text-sm text-gray-900 dark:text-gray-100 mb-1">
+                  {{ item[config.cardTitleField] }}
+                </div>
+                <div
+                  v-if="config.cardDescriptionField"
+                  class="text-xs text-gray-500 dark:text-gray-400"
+                >
+                  {{ item[config.cardDescriptionField] }}
+                </div>
               </div>
-              <div v-if="draggingItemId === item.id" :style="getPlaceholderStyle(item.id)"></div>
+              <div
+                v-if="draggingItemId === item.id"
+                :style="getPlaceholderStyle(item.id)"
+              />
             </template>
-            <div v-if="getKanbanItems(column.value).length === 0" class="text-center py-8 text-gray-400 dark:text-gray-500 text-sm">No items</div>
+            <div
+              v-if="getKanbanItems(column.value).length === 0"
+              class="text-center py-8 text-gray-400 dark:text-gray-500 text-sm"
+            >
+              No items
+            </div>
           </div>
         </div>
       </div>
@@ -125,37 +235,96 @@
       @submit="handleFormSubmit"
     />
 
-    <FilterSidebar :show="showFilterSidebar" title="Filters" @close="closeFilters" @clear="clearFilters" @apply="applyFilters">
+    <FilterSidebar
+      :show="showFilterSidebar"
+      title="Filters"
+      @close="closeFilters"
+      @clear="clearFilters"
+      @apply="applyFilters"
+    >
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Time window</label>
-          <TimeWindowPicker :preset="filterPreset" :from="filterFrom" :to="filterTo" @change="onTimeWindowChange" />
+          <TimeWindowPicker
+            :preset="filterPreset"
+            :from="filterFrom"
+            :to="filterTo"
+            @change="onTimeWindowChange"
+          />
         </div>
-        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
+        <div
+          v-for="f in listFilters"
+          :key="f.field"
+          class="space-y-1"
+        >
           <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">{{ f.label }}</label>
           <template v-if="f.type === 'number'">
             <div class="flex items-center gap-2">
-              <input type="number" :value="localFilterValues[f.field]?.min ?? ''" @input="onLocalNumberChange(f.field, 'min', $event)" placeholder="Min" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
-              <input type="number" :value="localFilterValues[f.field]?.max ?? ''" @input="onLocalNumberChange(f.field, 'max', $event)" placeholder="Max" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+              <input
+                type="number"
+                :value="localFilterValues[f.field]?.min ?? ''"
+                placeholder="Min"
+                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                @input="onLocalNumberChange(f.field, 'min', $event)"
+              >
+              <input
+                type="number"
+                :value="localFilterValues[f.field]?.max ?? ''"
+                placeholder="Max"
+                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                @input="onLocalNumberChange(f.field, 'max', $event)"
+              >
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
-            <select :value="localFilterValues[f.field]?.value ?? ''" @change="onLocalValueChange(f.field, $event)" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-              <option value="">Any</option>
-              <option v-for="opt in f.options || []" :key="String(opt.value)" :value="String(opt.value)">{{ opt.label }}</option>
+            <select
+              :value="localFilterValues[f.field]?.value ?? ''"
+              class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              @change="onLocalValueChange(f.field, $event)"
+            >
+              <option value="">
+                Any
+              </option>
+              <option
+                v-for="opt in f.options || []"
+                :key="String(opt.value)"
+                :value="String(opt.value)"
+              >
+                {{ opt.label }}
+              </option>
             </select>
           </template>
           <template v-else-if="f.type === 'boolean'">
-            <select :value="localFilterValues[f.field]?.value ?? ''" @change="onLocalValueChange(f.field, $event)" class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-              <option value="">Any</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+            <select
+              :value="localFilterValues[f.field]?.value ?? ''"
+              class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              @change="onLocalValueChange(f.field, $event)"
+            >
+              <option value="">
+                Any
+              </option>
+              <option value="true">
+                True
+              </option>
+              <option value="false">
+                False
+              </option>
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
             <div class="flex items-center gap-2">
-              <input type="date" :value="localFilterValues[f.field]?.from ?? ''" @change="onLocalDateChange(f.field, 'from', $event)" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
-              <input type="date" :value="localFilterValues[f.field]?.to ?? ''" @change="onLocalDateChange(f.field, 'to', $event)" class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+              <input
+                type="date"
+                :value="localFilterValues[f.field]?.from ?? ''"
+                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                @change="onLocalDateChange(f.field, 'from', $event)"
+              >
+              <input
+                type="date"
+                :value="localFilterValues[f.field]?.to ?? ''"
+                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                @change="onLocalDateChange(f.field, 'to', $event)"
+              >
             </div>
           </template>
         </div>
@@ -292,7 +461,7 @@ function syncTimeWindowFromQuery() {
     selectedPreset.value = (from || to) ? 'custom' : 'all'
     fromISO.value = from
     toISO.value = to
-  } catch {}
+  } catch { void 0 }
 }
 
 onMounted(() => {

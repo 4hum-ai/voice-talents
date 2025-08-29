@@ -8,22 +8,30 @@
         <label class="text-xs text-gray-500 dark:text-gray-400">Per page</label>
         <select
           :value="safePerPage"
-          @change="onPerPageChange"
           class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+          @change="onPerPageChange"
         >
-          <option v-for="opt in pageSizeOptionsComputed" :key="`size-${opt}`" :value="opt">{{ opt }}</option>
+          <option
+            v-for="opt in pageSizeOptionsComputed"
+            :key="`size-${opt}`"
+            :value="opt"
+          >
+            {{ opt }}
+          </option>
         </select>
       </div>
       <button
         class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="safeCurrentPage<=1"
-        @click="goToPage(1)">
+        @click="goToPage(1)"
+      >
         First
       </button>
       <button
         class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="safeCurrentPage<=1"
-        @click="goToPage(safeCurrentPage-1)">
+        @click="goToPage(safeCurrentPage-1)"
+      >
         Prev
       </button>
 
@@ -34,23 +42,26 @@
         :class="p.isEllipsis
           ? 'border-transparent text-gray-400 dark:text-gray-500 cursor-default'
           : (p.value===safeCurrentPage
-              ? 'border-primary-600 bg-primary-50 text-primary-700'
-              : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700')"
+            ? 'border-primary-600 bg-primary-50 text-primary-700'
+            : 'border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700')"
         :disabled="p.isEllipsis"
-        @click="!p.isEllipsis && goToPage(p.value)">
+        @click="!p.isEllipsis && goToPage(p.value)"
+      >
         {{ p.label }}
       </button>
 
       <button
         class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="safeCurrentPage>=safeTotalPages"
-        @click="goToPage(safeCurrentPage+1)">
+        @click="goToPage(safeCurrentPage+1)"
+      >
         Next
       </button>
       <button
         class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="safeCurrentPage>=safeTotalPages"
-        @click="goToPage(safeTotalPages)">
+        @click="goToPage(safeTotalPages)"
+      >
         Last
       </button>
     </div>

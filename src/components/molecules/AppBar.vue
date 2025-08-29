@@ -4,18 +4,33 @@
       <div class="flex items-center gap-3 min-w-0">
         <button
           v-if="showBack"
-          @click="$emit('back')"
           class="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9"
           aria-label="Go back"
+          @click="$emit('back')"
         >
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M12.78 15.53a.75.75 0 01-1.06 0l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 111.06 1.06L8.31 10l4.47 4.47a.75.75 0 010 1.06z" clip-rule="evenodd" />
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.78 15.53a.75.75 0 01-1.06 0l-5-5a.75.75 0 010-1.06l5-5a.75.75 0 111.06 1.06L8.31 10l4.47 4.47a.75.75 0 010 1.06z"
+              clip-rule="evenodd"
+            />
           </svg>
         </button>
-        <div v-if="hasLeftSlot" class="min-w-0">
+        <div
+          v-if="hasLeftSlot"
+          class="min-w-0"
+        >
           <slot name="left" />
         </div>
-        <div v-else class="min-w-0">
+        <div
+          v-else
+          class="min-w-0"
+        >
           <div class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
             <slot name="title" />
           </div>
@@ -28,8 +43,11 @@
         <slot name="actions" />
       </div>
     </div>
-    <div v-if="loading" class="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden">
-      <div class="absolute inset-y-0 w-2/5 bg-primary-600 dark:bg-primary-500 progress-bar"></div>
+    <div
+      v-if="loading"
+      class="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden"
+    >
+      <div class="absolute inset-y-0 w-2/5 bg-primary-600 dark:bg-primary-500 progress-bar" />
     </div>
   </div>
 </template>

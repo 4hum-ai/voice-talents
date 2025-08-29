@@ -1,14 +1,40 @@
 <template>
   <div class="flex items-center gap-2">
-    <select :value="preset" @change="onPresetChange($event)" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
-      <option value="all">All time</option>
-      <option value="7d">Last 7 days</option>
-      <option value="30d">Last 30 days</option>
-      <option value="90d">Last 90 days</option>
-      <option value="custom">Custom…</option>
+    <select
+      :value="preset"
+      class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+      @change="onPresetChange($event)"
+    >
+      <option value="all">
+        All time
+      </option>
+      <option value="7d">
+        Last 7 days
+      </option>
+      <option value="30d">
+        Last 30 days
+      </option>
+      <option value="90d">
+        Last 90 days
+      </option>
+      <option value="custom">
+        Custom…
+      </option>
     </select>
-    <input v-if="preset==='custom'" type="date" :value="from" @change="onDateChange('from', $event)" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
-    <input v-if="preset==='custom'" type="date" :value="to" @change="onDateChange('to', $event)" class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+    <input
+      v-if="preset==='custom'"
+      type="date"
+      :value="from"
+      class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+      @change="onDateChange('from', $event)"
+    >
+    <input
+      v-if="preset==='custom'"
+      type="date"
+      :value="to"
+      class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+      @change="onDateChange('to', $event)"
+    >
   </div>
 </template>
 

@@ -1,9 +1,22 @@
 <template>
-  <Menu as="div" ref="rootEl" class="relative inline-block text-left">
+  <Menu
+    ref="rootEl"
+    as="div"
+    class="relative inline-block text-left"
+  >
     <MenuButton as="template">
-      <button :class="triggerClass" ref="buttonEl" :aria-label="buttonAriaLabel">
+      <button
+        ref="buttonEl"
+        :class="triggerClass"
+        :aria-label="buttonAriaLabel"
+      >
         <slot name="label">
-          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
             <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
           </svg>
         </slot>
@@ -11,18 +24,53 @@
     </MenuButton>
 
     <!-- Popover (desktop) -->
-    <TransitionRoot appear as="template" enter="transition ease-out duration-100" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="transition ease-in duration-75" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
-      <MenuItems as="div" class="contents">
-        <div ref="itemsEl" :style="floatingStyles" class="z-50 min-w-[12rem] rounded-md border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white/10 focus:outline-none fixed">
-          <div class="py-1" role="none">
-            <HMenuItem v-for="item in items" :key="item.key" v-slot="{ active }">
-              <button type="button" :class="['group flex w-full items-start gap-3 text-left focus:outline-none', itemPadding, active ? 'bg-gray-50 dark:bg-gray-700' : '']" @click="onSelect(item)">
+    <TransitionRoot
+      appear
+      as="template"
+      enter="transition ease-out duration-100"
+      enter-from="opacity-0 scale-95"
+      enter-to="opacity-100 scale-100"
+      leave="transition ease-in duration-75"
+      leave-from="opacity-100 scale-100"
+      leave-to="opacity-0 scale-95"
+    >
+      <MenuItems
+        as="div"
+        class="contents"
+      >
+        <div
+          ref="itemsEl"
+          :style="floatingStyles"
+          class="z-50 min-w-[12rem] rounded-md border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white/10 focus:outline-none fixed"
+        >
+          <div
+            class="py-1"
+            role="none"
+          >
+            <HMenuItem
+              v-for="item in items"
+              :key="item.key"
+              v-slot="{ active }"
+            >
+              <button
+                type="button"
+                :class="['group flex w-full items-start gap-3 text-left focus:outline-none', itemPadding, active ? 'bg-gray-50 dark:bg-gray-700' : '']"
+                @click="onSelect(item)"
+              >
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between">
                     <span class="text-sm text-gray-800 dark:text-gray-100 truncate">{{ item.label }}</span>
-                    <span v-if="item.value" class="ml-4 shrink-0 text-xs text-gray-500 dark:text-gray-400">{{ item.value }}</span>
+                    <span
+                      v-if="item.value"
+                      class="ml-4 shrink-0 text-xs text-gray-500 dark:text-gray-400"
+                    >{{ item.value }}</span>
                   </div>
-                  <p v-if="item.description" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">{{ item.description }}</p>
+                  <p
+                    v-if="item.description"
+                    class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-snug line-clamp-2"
+                  >
+                    {{ item.description }}
+                  </p>
                 </div>
               </button>
             </HMenuItem>

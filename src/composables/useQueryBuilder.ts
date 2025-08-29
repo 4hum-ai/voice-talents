@@ -81,7 +81,7 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
     try {
       const nextQuery: Record<string, any> = { ...route.query, limit: String(next), page: '1' }
       router.replace({ query: nextQuery })
-    } catch {}
+    } catch { void 0 }
   }
 
   function setTimeWindow(payload: { preset?: string; from?: string; to?: string }) {
@@ -103,7 +103,7 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
       else if (range?.to) nextQuery[lteKey] = range.to
       nextQuery.page = '1'
       router.replace({ query: nextQuery })
-    } catch {}
+    } catch { void 0 }
   }
 
   function applyFilters(payload: { preset?: string; from?: string; to?: string; filters?: Record<string, any> }) {
@@ -149,7 +149,7 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
       // Reset page
       nextQuery.page = '1'
       router.replace({ query: nextQuery })
-    } catch {}
+    } catch { void 0 }
   }
 
   function setFilters(nextFilters: Record<string, any>) {
@@ -178,7 +178,7 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
       }
       nextQuery.page = '1'
       router.replace({ query: nextQuery })
-    } catch {}
+    } catch { void 0 }
   }
 
   function clearFilter(key: string) {
@@ -216,13 +216,13 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
   function setSort(field: string, direction: string) {
     try {
       router.replace({ query: { ...route.query, sort: `${field}:${direction}`, page: '1' } })
-    } catch {}
+    } catch { void 0 }
   }
 
   function setPage(page: number) {
     try {
       router.replace({ query: { ...route.query, page: String(page) } })
-    } catch {}
+    } catch { void 0 }
   }
 
   const canonicalQueryString = computed(() => {
@@ -259,7 +259,7 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
         if (q[lteKey]) to = String(q[lteKey])
       }
       timeWindow.value = { preset: 'custom', from, to }
-    } catch {}
+    } catch { void 0 }
   }
 
   watch(() => options.uiConfig(), (cfg) => {

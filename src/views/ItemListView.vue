@@ -1,5 +1,10 @@
 <template>
-  <div v-if="!uiConfig" class="p-6 text-sm text-gray-600 dark:text-gray-300">UI configuration not available.</div>
+  <div
+    v-if="!uiConfig"
+    class="p-6 text-sm text-gray-600 dark:text-gray-300"
+  >
+    UI configuration not available.
+  </div>
   <div v-else>
     <TableTemplate
       v-if="currentView==='list' && uiConfig?.views?.list"
@@ -61,7 +66,12 @@
       @item-click="(item: any) => onAction('view', item)"
       @filters-change="onFiltersChange"
     />
-    <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">Selected view not available for this module.</div>
+    <div
+      v-else
+      class="p-6 text-sm text-gray-600 dark:text-gray-300"
+    >
+      Selected view not available for this module.
+    </div>
   </div>
 </template>
 

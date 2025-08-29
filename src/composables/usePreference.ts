@@ -3,21 +3,19 @@ import { ref, watch } from 'vue'
 function safeGet(key: string): string | null {
   try {
     return window.localStorage.getItem(key)
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
 function safeSet(key: string, value: string): void {
   try {
     window.localStorage.setItem(key, value)
-  } catch {}
+  } catch { void 0 }
 }
 
 function safeRemove(key: string): void {
   try {
     window.localStorage.removeItem(key)
-  } catch {}
+  } catch { void 0 }
 }
 
 export function usePreference(key: string, defaultValue?: string) {
