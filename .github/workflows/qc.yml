@@ -15,10 +15,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        node-version: [20]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -28,7 +25,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
