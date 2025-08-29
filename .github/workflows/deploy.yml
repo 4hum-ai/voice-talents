@@ -1,0 +1,74 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - production
+          - staging
+          - preview
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run type checking
+        run: pnpm run type-check
+
+      - name: Run linting
+        run: pnpm run lint:check
+
+      - name: Build project
+        run: pnpm run build
+        env:
+          NODE_ENV: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+
+      - name: Setup Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Deploy to Cloudflare Pages
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # For manual workflow dispatch
+            if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+              wrangler pages deploy dist --project-name movie-dubie-studio
+            elif [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+              wrangler pages deploy dist --project-name movie-dubie-studio-staging
+            else
+              wrangler pages deploy dist --project-name movie-dubie-studio --branch preview
+            fi
+          else
+            # For tag releases, deploy to production
+            wrangler pages deploy dist --project-name movie-dubie-studio
+          fi

@@ -227,7 +227,6 @@ function onPageChange(page: number) { qb.setPage(page) }
 
 function onPerPageChange(perPage: number) {
   qb.setLimit(perPage)
-  qb.setPage(1)
 }
 
 function onAction(action: string, payload?: any) {
@@ -311,6 +310,15 @@ onMounted(async () => {
   if (!module.value) return
   await loadUiConfig()
   qb.initTimeWindowFromUrl()
+  // For calendar view, let the template emit initial filters which will update the route
+  // and trigger the watcher-driven load. Avoid duplicate initial fetch.
+  if (currentView.value === 'calendar') {
+    // Ensure the route reflects the chosen view for consistency
+    if (String(route.query.view || '') !== 'calendar') {
+      router.replace({ query: { ...route.query, view: 'calendar' } }).catch(() => {})
+    }
+    return
+  }
   await load(1)
 })
 
@@ -319,7 +327,7 @@ const canonicalQueryString = qb.canonicalQueryString
 
 watchDebounced(
   canonicalQueryString,
-  () => { if (uiConfig.value) load(1) },
+  () => { if (uiConfig.value) load(Number(route.query.page || 1) || 1) },
   { debounce: 120, maxWait: 300 }
 )
 
@@ -328,6 +336,13 @@ watch(module, async () => {
   items.value = []
   pagination.value = { page: 1, limit: 20, total: 0, totalPages: 1 }
   await loadUiConfig()
+  qb.initTimeWindowFromUrl()
+  if (currentView.value === 'calendar') {
+    if (String(route.query.view || '') !== 'calendar') {
+      router.replace({ query: { ...route.query, view: 'calendar' } }).catch(() => {})
+    }
+    return
+  }
   await load(1)
 })
 

@@ -24,10 +24,11 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
   const queryState = computed<QueryState>(() => {
     const q = route.query
     const page = Number(q.page || 1) || 1
+    const limitFromQuery = Number(q.limit || limit.value) || limit.value
     const search = (q.search as string) || undefined
     const searchField = (q.searchFields as string) || (q.searchField as string) || undefined
     const sort = (q.sort as string) || undefined
-    const params: QueryState = { page, limit: limit.value }
+    const params: QueryState = { page, limit: limitFromQuery }
     if (search) params.search = search
     if (searchField) params.searchField = searchField
     if (sort) params.sort = sort
@@ -75,7 +76,12 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
   // Note: chips are a presentation detail; compute them in views instead
 
   function setLimit(next: number) {
+    // Update local state and sync URL so it is shareable and triggers reloads
     limit.value = next
+    try {
+      const nextQuery: Record<string, any> = { ...route.query, limit: String(next), page: '1' }
+      router.replace({ query: nextQuery })
+    } catch {}
   }
 
   function setTimeWindow(payload: { preset?: string; from?: string; to?: string }) {
@@ -224,13 +230,15 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
     const sort = String(q.sort || '')
     const search = String(q.search || '')
     const searchField = String(q.searchField || q.searchFields || '')
+    const page = String(q.page || '1')
+    const limitStr = String(q.limit || String(limit.value))
     // Include all filters[*] params to trigger reloads when filters change
     const filterEntries = Object.keys(q)
       .filter(k => k.startsWith('filters['))
       .sort()
       .reduce<Record<string, string>>((acc, k) => { acc[k] = String(q[k]); return acc }, {})
     const mod = String(options.module())
-    return JSON.stringify({ mod, sort, search, searchField, filters: filterEntries })
+    return JSON.stringify({ mod, sort, search, searchField, page, limit: limitStr, filters: filterEntries })
   })
 
   function initTimeWindowFromUrl() {

@@ -60,14 +60,17 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     try {
       response = await fetch(url, { ...opts, headers, signal: computedSignal });
     } catch (error: any) {
-      push({
-        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        type: "error",
-        position: "tr",
-        title: "Network error",
-        body: `${opts.method ?? "GET"} ${path}: ${error?.message ?? "Request failed"}`,
-        timeout: 6000,
-      });
+      // Suppress toasts for intentional aborts
+      if (error?.name !== "AbortError") {
+        push({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          type: "error",
+          position: "tr",
+          title: "Network error",
+          body: `${opts.method ?? "GET"} ${path}: ${error?.message ?? "Request failed"}`,
+          timeout: 6000,
+        });
+      }
       throw error;
     }
 

@@ -157,7 +157,13 @@ const emitVisibleRange = () => {
   emit('filters-change', { preset: 'custom', from: toISODate(start), to: toISODate(end) })
 }
 
-emitVisibleRange()
+// Only emit initial range if no date filters exist in URL to avoid duplicate query updates
+try {
+  const q = route.query as Record<string, any>
+  const df = (props.uiConfig?.views?.calendar?.dateField || 'createdAt') as string
+  const hasDateFilter = Boolean(q[`filters[${df}][$between]`] || q[`filters[${df}][$gte]`] || q[`filters[${df}][$lte]`])
+  if (!hasDateFilter) emitVisibleRange()
+} catch {}
 
 function handleItemClick(item:any) {
   if (item) emit('item-click', item)

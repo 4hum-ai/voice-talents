@@ -69,7 +69,7 @@ type Props = {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  pageSizeOptions: () => [10, 20, 50, 100]
+  pageSizeOptions: () => [5, 10, 20, 50, 100]
 })
 const emit = defineEmits<{ (e:'page-change', page:number): void; (e:'per-page-change', perPage:number): void }>()
 
