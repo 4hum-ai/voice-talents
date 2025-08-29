@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Schedule X Calendar default theme */
+@import "@schedule-x/theme-default/dist/index.css"; 
+
 @theme {
   --color-gray-50: #f9fafb;
   --color-gray-100: #f3f4f6;
@@ -464,77 +467,3 @@
     @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
   }
 } 
-
-/* Toast notifications */
-.toast {
-  font-family: 'Inter Variable', system-ui, sans-serif;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border: none;
-  padding: 1rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.toast-success {
-  background-color: #f0fdf4;
-  color: #166534;
-  border-left: 4px solid #22c55e;
-}
-
-.toast-error {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border-left: 4px solid #ef4444;
-}
-
-.toast-warning {
-  background-color: #fffbeb;
-  color: #d97706;
-  border-left: 4px solid #f59e0b;
-}
-
-.toast-info {
-  background-color: #eff6ff;
-  color: #2563eb;
-  border-left: 4px solid #3b82f6;
-}
-
-/* Toast icons */
-.toast .Vue-Toastification__icon {
-  margin-right: 0.75rem;
-}
-
-/* Toast close button */
-.toast .Vue-Toastification__close-button {
-  color: #6b7280;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.toast .Vue-Toastification__close-button:hover {
-  opacity: 1;
-}
-
-/* Toast progress bar */
-.toast .Vue-Toastification__progress-bar {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.toast-success .Vue-Toastification__progress-bar {
-  background-color: #22c55e;
-}
-
-.toast-error .Vue-Toastification__progress-bar {
-  background-color: #ef4444;
-}
-
-.toast-warning .Vue-Toastification__progress-bar {
-  background-color: #f59e0b;
-}
-
-.toast-info .Vue-Toastification__progress-bar {
-  background-color: #3b82f6;
-}
-
-

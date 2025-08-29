@@ -1,26 +1,68 @@
 <template>
-  <ItemListTemplate
-    v-if="uiConfig"
-    :module-name="module"
-    :ui-config="uiConfig"
-    :data="items"
-    :loading="loading"
-    :error="error"
-    :current-page="pagination.page"
-    :total-pages="pagination.totalPages"
-    :total-items="pagination.total"
-    :per-page="pagination.limit"
-    :active-filters="filterChips"
-    @page-change="onPageChange"
-    @load-more="onLoadMore"
-    @filters-change="onFiltersChange"
-    @clear-filter="onClearFilter"
-    @clear-all-filters="onClearAllFilters"
-    @sort="onSort"
-    @action="onAction"
-    @bulk-delete="onBulkDelete"
-  />
-  <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">UI configuration not available.</div>
+  <div v-if="!uiConfig" class="p-6 text-sm text-gray-600 dark:text-gray-300">UI configuration not available.</div>
+  <div v-else>
+    <TableTemplate
+      v-if="currentView==='list' && uiConfig?.views?.list"
+      :data="items"
+      :config="uiConfig.views.list"
+      :current-page="pagination.page"
+      :total-pages="pagination.totalPages"
+      :total="pagination.total"
+      :per-page="pagination.limit"
+      :module-name="module"
+      :ui-config="uiConfig"
+      :loading="loading"
+      :active-filters="filterChips"
+      @page-change="onPageChange"
+      @per-page-change="onPerPageChange"
+      @sort="onSort"
+      @item-click="(item: any) => onAction('view', item)"
+      @filters-change="onFiltersChange"
+      @clear-filter="onClearFilter"
+      @clear-all-filters="onClearAllFilters"
+    />
+    <GalleryTemplate
+      v-else-if="currentView==='gallery' && uiConfig?.views?.gallery"
+      :data="items"
+      :config="uiConfig.views.gallery"
+      :has-more="hasMore"
+      :module-name="module"
+      :ui-config="uiConfig"
+      :loading="loading"
+      :active-filters="filterChips"
+      @load-more="onLoadMore"
+      @sort="onSort"
+      @item-click="(item: any) => onAction('view', item)"
+      @filters-change="onFiltersChange"
+      @clear-filter="onClearFilter"
+      @clear-all-filters="onClearAllFilters"
+    />
+    <KanbanTemplate
+      v-else-if="currentView==='kanban' && uiConfig?.views?.kanban"
+      :data="items"
+      :config="uiConfig.views.kanban"
+      :module-name="module"
+      :ui-config="uiConfig"
+      :loading="loading"
+      :active-filters="filterChips"
+      @item-click="(item: any) => onAction('view', item)"
+      @status-change="onKanbanStatusChange"
+      @filters-change="onFiltersChange"
+      @clear-filter="onClearFilter"
+      @clear-all-filters="onClearAllFilters"
+    />
+    <CalendarTemplate
+      v-else-if="currentView==='calendar' && uiConfig?.views?.calendar"
+      :data="items"
+      :config="uiConfig.views.calendar"
+      :module-name="module"
+      :ui-config="uiConfig"
+      :loading="loading"
+      @item-click="(item: any) => onAction('view', item)"
+      @filters-change="onFiltersChange"
+    />
+    <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">Selected view not available for this module.</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -28,11 +70,15 @@ defineOptions({ name: 'ItemListView' })
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { watchDebounced } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router'
-import ItemListTemplate from '@/components/templates/ItemListTemplate.vue'
+import TableTemplate from '@/components/templates/TableTemplate.vue'
+import GalleryTemplate from '@/components/templates/GalleryTemplate.vue'
+import KanbanTemplate from '@/components/templates/KanbanTemplate.vue'
+import CalendarTemplate from '@/components/templates/CalendarTemplate.vue'
 import { useMovieService, type PaginatedResponse } from '@/composables/useMovieService'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { useQueryBuilder } from '@/composables/useQueryBuilder'
 import type { UiConfig } from '@/types/ui-config'
+import { usePreference } from '@/composables/usePreference'
 const movie = useMovieService()
 
 const route = useRoute()
@@ -42,8 +88,11 @@ const module = computed(() => {
   if (metaModule) return metaModule
   const paramModule = route.params?.module as string | undefined
   if (paramModule) return paramModule
-  return String(route.query.module)
+  const queryModule = route.query.module as string | undefined
+  return queryModule ? String(queryModule) : ''
 })
+const viewPrefKey = computed(() => `${module.value}-list-view`)
+const viewPref = computed(() => usePreference(viewPrefKey.value))
 
 const { get: getUiConfig } = useUiConfig()
 const uiConfig = ref<UiConfig | null>(null)
@@ -53,6 +102,18 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
 let currentAbort: AbortController | null = null
+
+// View selection (from query ?view=list|gallery|kanban|calendar)
+const currentView = computed<'list'|'gallery'|'kanban'|'calendar'>(() => {
+  let v = String(route.query.view || '').toLowerCase()
+  if (!v) {
+    const saved = viewPref.value.get()
+    if (saved === 'gallery' || saved === 'kanban' || saved === 'calendar') v = saved
+  }
+  if (!v) v = 'list'
+  return (v === 'gallery' || v === 'kanban' || v === 'calendar') ? v as any : 'list'
+})
+const hasMore = computed(() => pagination.value.page < pagination.value.totalPages)
 
 // Debounced reload when canonical query changes
 
@@ -107,6 +168,7 @@ async function loadUiConfig() {
     currentAbort?.abort()
     currentAbort = new AbortController()
     // Use composable to resolve from store -> local -> backend
+    if (!module.value) return
     uiConfig.value = await getUiConfig(module.value, { signal: currentAbort.signal })
     if (!uiConfig.value) {
       throw new Error('UI configuration not available')
@@ -120,7 +182,6 @@ async function loadUiConfig() {
     // Do not rethrow to avoid breaking navigation/view rendering
   } finally {
     loading.value = false
-    console.log('uiConfig', uiConfig.value)
   }
 }
 
@@ -128,6 +189,7 @@ async function load(page = 1) {
   loading.value = true
   error.value = null
   try {
+    if (!module.value) return
     if (!uiConfig.value) {
       await loadUiConfig()
     }
@@ -154,9 +216,19 @@ async function load(page = 1) {
     loading.value = false
   }
 }
-function onSort(field: string, direction: string) { qb.setSort(field, direction) }
+function onSort(field: string, direction: string) {
+  const current = String((route.query.sort as string) || '')
+  const next = `${field}:${direction}`
+  if (current === next) return
+  qb.setSort(field, direction)
+}
 
 function onPageChange(page: number) { qb.setPage(page) }
+
+function onPerPageChange(perPage: number) {
+  qb.setLimit(perPage)
+  qb.setPage(1)
+}
 
 function onAction(action: string, payload?: any) {
   if (action === 'create') {
@@ -168,6 +240,18 @@ function onAction(action: string, payload?: any) {
   if (action === 'view' && payload) {
     const id = String(payload.id ?? payload._id)
     if (id) router.push({ path: `/${module.value}/${id}` })
+  }
+}
+
+async function onKanbanStatusChange(payload: { item: any; from: string; to: string }) {
+  try {
+    const groupByField = uiConfig.value?.views?.kanban?.groupByField
+    const id = String(payload?.item?.id ?? payload?.item?._id ?? '')
+    if (!groupByField || !id) return
+    await movie.updateModuleItem(module.value, id, { [groupByField]: payload.to })
+    await load(pagination.value.page)
+  } catch (e) {
+    // ignore; error surfaced by caller via existing error handling if needed
   }
 }
 
@@ -202,8 +286,7 @@ async function onLoadMore() {
 }
 
 function onFiltersChange(payload: { preset?: string; from?: string; to?: string; filters?: Record<string, any> }) {
-  if (payload && payload.filters) qb.setFilters(payload.filters)
-  qb.setTimeWindow(payload)
+  qb.applyFilters(payload)
 }
 
 function onClearFilter(key: string) { qb.clearFilter(key) }
@@ -225,6 +308,7 @@ async function onBulkDelete(ids: (string|number)[]) {
 }
 
 onMounted(async () => {
+  if (!module.value) return
   await loadUiConfig()
   qb.initTimeWindowFromUrl()
   await load(1)
@@ -245,6 +329,13 @@ watch(module, async () => {
   pagination.value = { page: 1, limit: 20, total: 0, totalPages: 1 }
   await loadUiConfig()
   await load(1)
+})
+
+watch(currentView, (v) => {
+  const pref = viewPref.value
+  const def = 'list'
+  if (!v || v === def) pref.remove()
+  else pref.set(v)
 })
 
 onBeforeUnmount(() => { currentAbort?.abort(); })

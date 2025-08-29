@@ -76,7 +76,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         const refreshed = await getAuth().currentUser?.getIdToken(true);
         if (refreshed) {
           const retryHeaders = { ...headers, Authorization: `Bearer ${refreshed}` };
-          response = await fetch(url, { ...opts, headers: retryHeaders, ...controller });
+          response = await fetch(url, { ...opts, headers: retryHeaders, signal: computedSignal });
         }
       } catch (_) {
         // Token refresh failed; return original unauthorized response

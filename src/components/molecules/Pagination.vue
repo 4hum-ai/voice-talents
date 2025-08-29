@@ -4,6 +4,16 @@
       Showing <span class="font-medium">{{ startItem }}</span> to <span class="font-medium">{{ endItem }}</span> of <span class="font-medium">{{ safeTotal }}</span> results
     </div>
     <div class="flex items-center gap-1">
+      <div class="hidden sm:flex items-center gap-2 mr-2">
+        <label class="text-xs text-gray-500 dark:text-gray-400">Per page</label>
+        <select
+          :value="safePerPage"
+          @change="onPerPageChange"
+          class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+        >
+          <option v-for="opt in pageSizeOptionsComputed" :key="`size-${opt}`" :value="opt">{{ opt }}</option>
+        </select>
+      </div>
       <button
         class="px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="safeCurrentPage<=1"
@@ -55,10 +65,13 @@ type Props = {
   totalPages: number
   total: number
   perPage: number
+  pageSizeOptions?: number[]
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<{ (e:'page-change', page:number): void }>()
+const props = withDefaults(defineProps<Props>(), {
+  pageSizeOptions: () => [10, 20, 50, 100]
+})
+const emit = defineEmits<{ (e:'page-change', page:number): void; (e:'per-page-change', perPage:number): void }>()
 
 const safeTotal = computed(() => Number(props.total) || 0)
 const safePerPage = computed(() => Math.max(1, Number(props.perPage) || 10))
@@ -96,8 +109,20 @@ const pages = computed(() => {
   return items
 })
 
+const pageSizeOptionsComputed = computed(() => {
+  const base = (props.pageSizeOptions || [10, 20, 50, 100]).filter(n => Number(n) > 0)
+  const withCurrent = base.includes(safePerPage.value) ? base : [...base, safePerPage.value]
+  const unique = Array.from(new Set(withCurrent)) as number[]
+  return unique.sort((a, b) => a - b)
+})
+
 const goToPage = (page:number) => {
   if (page >= 1 && page <= safeTotalPages.value && page !== safeCurrentPage.value) emit('page-change', page)
+}
+
+const onPerPageChange = (e: Event) => {
+  const next = Number((e.target as HTMLSelectElement).value) || safePerPage.value
+  if (next > 0 && next !== safePerPage.value) emit('per-page-change', next)
 }
 </script>
 

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useMovieService } from '@/composables/useMovieService'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -44,7 +43,6 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, _from, next) => {
-  const movie = useMovieService()
   let titleSuffix = String(to.meta.title || 'Admin')
   const authStore = useAuthStore()
   if (!authStore.user) {

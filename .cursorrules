@@ -1,7 +1,7 @@
 ## Cursor Rules for Admin UI
 
 ### Purpose
-This is a low‑code Vue 3 + TypeScript admin UI. Do not refactor architecture. 
+This is a low‑code Vue 3 + TypeScript admin UI. 
 
 ### Architecture map
 - Entry: `src/main.ts` (Pinia, Router, Theme init)
@@ -11,7 +11,7 @@ This is a low‑code Vue 3 + TypeScript admin UI. Do not refactor architecture.
 - Views: `src/views/ItemListView.vue`, `src/views/ItemDetailView.vue`
 - Shared components in atomic design: `src/components/{atoms,molecules,organisms,templates}`
 
-### Data contracts (do not change without backend)
+### Data contracts
 - UI config: `GET /api/admin-ui/modules/:module/config` with keys used by templates (list/kanban/gallery/calendar/detail/form). Keep keys stable.
 - Data: `/api/:module` list supports `page, limit, search, searchFields, sort, preset, from, to`. Detail at `/api/:module/:id`. CRUD returns `{ data }`.
 
@@ -26,3 +26,20 @@ This is a low‑code Vue 3 + TypeScript admin UI. Do not refactor architecture.
 - Routing: Add or change routes only in `src/router/index.ts`
 - Indentation: match existing style; avoid reformatting unrelated code
 
+
+### Icons
+- Default source: `unplugin-icons` with Iconify collections (configured in `vite.config.ts` via `Icons()`). Prefer `mdi` (`@iconify-json/mdi`) to match existing usage.
+- Import pattern (explicit, per-component):
+  - In `<script setup>`:
+    ```ts
+    import CheckIcon from "~icons/mdi/check-circle-outline"
+    ```
+  - In template:
+    ```vue
+    <CheckIcon class="w-5 h-5 text-green-600" aria-hidden="true" />
+    ```
+- Sizing & color: use Tailwind classes (`w-4 h-4`, `text-muted-foreground`, etc.). Avoid inline `width`/`height` unless required.
+- Accessibility: decorative icons must include `aria-hidden="true"`. If conveying meaning, add `role="img"` and `aria-label`.
+- Do not: use `<i-*>` shorthand components (not enabled). Do not fetch remote SVGs or embed external URLs.
+- Lucide: when needed, prefer Iconify path `~icons/lucide/{name}`. Only use `lucide-vue-next` direct imports if an icon is missing from Iconify, e.g. `import { ArrowRight } from "lucide-vue-next"` and register/use locally.
+- Adding new sets: add `@iconify-json/{collection}` as a devDependency, then import with `~icons/{collection}/{icon-name}`. Keep imports on-demand; no global icon registry.

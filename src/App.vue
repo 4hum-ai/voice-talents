@@ -3,7 +3,7 @@
   <ToastContainer />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
-      <component :is="Component" :key="route.fullPath" />
+      <component :is="Component" :key="route.path" />
     </KeepAlive>
     <div v-if="isBootLoading" class="fixed inset-0 z-50 grid place-items-center bg-white/80 dark:bg-gray-900/80">
     <div class="flex flex-col items-center gap-3">

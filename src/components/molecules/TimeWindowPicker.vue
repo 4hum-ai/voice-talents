@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ preset: 'all'|'7d'|'30d'|'90d'|'custom'; from?: string; to?: string }>()
+defineProps<{ preset: 'all'|'7d'|'30d'|'90d'|'custom'; from?: string; to?: string }>()
 const emit = defineEmits<{ change: [payload:{ preset?: string; from?: string; to?: string }] }>()
 
 function onPresetChange(e: Event) {

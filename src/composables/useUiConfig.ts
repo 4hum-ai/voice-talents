@@ -68,7 +68,6 @@ export function useUiConfig() {
   }
 
   const getConfig = (moduleName: string): UiConfig | null => {
-    console.log('getConfig', moduleName, state.configs[moduleName])
     return state.configs[moduleName] || null
   }
   const modules = computed(() => Object.keys(state.configs))
@@ -204,7 +203,6 @@ export function useUiConfig() {
       state.error = e?.message || 'Failed to initialize UI configs'
     } finally {
       state.loading = false
-      console.log('state.configs', state.configs)
     }
   }
 

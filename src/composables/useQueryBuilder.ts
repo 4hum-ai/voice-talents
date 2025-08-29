@@ -100,6 +100,52 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
     } catch {}
   }
 
+  function applyFilters(payload: { preset?: string; from?: string; to?: string; filters?: Record<string, any> }) {
+    try {
+      const nextQuery: Record<string, any> = { ...route.query }
+      // Remove any existing time window keys for the active dateField
+      const betweenKey = `filters[${dateField.value}][$between]`
+      const gteKey = `filters[${dateField.value}][$gte]`
+      const lteKey = `filters[${dateField.value}][$lte]`
+      delete nextQuery.preset; delete nextQuery.from; delete nextQuery.to
+      for (const k of [betweenKey, gteKey, lteKey]) delete nextQuery[k]
+
+      // Remove existing defaultFilters for this module from URL
+      const cfg = options.uiConfig()
+      const fields = (cfg?.views?.list?.defaultFilters || []).map((f: any) => f.field)
+      for (const k of Object.keys(nextQuery)) {
+        const m = k.match(/^filters\[(.+?)\]/)
+        if (m && fields.includes(m[1])) delete nextQuery[k]
+      }
+
+      // Add provided field filters
+      const nextFilters = payload?.filters || {}
+      for (const [field, value] of Object.entries(nextFilters)) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          if ('$between' in value && Array.isArray((value as any)['$between'])) {
+            const arr = (value as any)['$between'] as any[]
+            const asString = arr.map(v => String(v)).join(',')
+            nextQuery[`filters[${field}][$between]`] = asString
+          }
+          if ('$gte' in value) nextQuery[`filters[${field}][$gte]`] = String((value as any)['$gte'])
+          if ('$lte' in value) nextQuery[`filters[${field}][$lte]`] = String((value as any)['$lte'])
+        } else if (value !== undefined && value !== null && value !== '') {
+          nextQuery[`filters[${field}]`] = String(value)
+        }
+      }
+
+      // Add computed time window keys
+      const range = computeDateRange(payload?.preset, payload?.from, payload?.to)
+      if (range?.from && range?.to) nextQuery[betweenKey] = `${range.from},${range.to}`
+      else if (range?.from) nextQuery[gteKey] = range.from
+      else if (range?.to) nextQuery[lteKey] = range.to
+
+      // Reset page
+      nextQuery.page = '1'
+      router.replace({ query: nextQuery })
+    } catch {}
+  }
+
   function setFilters(nextFilters: Record<string, any>) {
     try {
       const nextQuery: Record<string, any> = { ...route.query }
@@ -223,6 +269,7 @@ export function useQueryBuilder(options: { module: () => string; uiConfig: () =>
     // actions
     setLimit,
     setTimeWindow,
+    applyFilters,
     setFilters,
     clearFilter,
     clearAllFilters,
