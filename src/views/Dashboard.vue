@@ -103,7 +103,14 @@
                 </div>
               </div>
               <div class="text-right">
+                <div v-if="countsLoading[m.name]" class="flex h-7 items-center justify-end">
+                  <LoadingIcon
+                    class="h-5 w-5 animate-spin text-gray-400 dark:text-gray-300"
+                    aria-hidden="true"
+                  />
+                </div>
                 <div
+                  v-else
                   class="text-2xl font-bold text-gray-900 dark:text-gray-100"
                 >
                   {{ formatCount(counts[m.name]) }}
@@ -135,6 +142,7 @@ import { useUiConfig } from "@/composables/useUiConfig";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { useTheme } from "@/composables/useTheme";
+import LoadingIcon from "~icons/mdi/loading";
 
 // Intentionally not using router routes for modules; rely on admin-ui modules API
 
@@ -146,11 +154,12 @@ const router = useRouter();
 const { isDark, toggleTheme } = useTheme();
 
 const counts = ref<Record<string, number | null>>({});
+const countsLoading = ref<Record<string, boolean>>({});
 const adminModules = ref<AdminModuleInfo[]>([]);
 const loadingCounts = ref(false);
 const loadingModules = ref(true);
 const filter = ref("");
-const isLoading = computed(() => loadingModules.value || loadingCounts.value);
+const isLoading = computed(() => loadingModules.value);
 
 const toTitle = (value: string): string => {
   const base = value.replace(/^\//, "").replace(/-/g, " ");
@@ -194,6 +203,9 @@ const loadCounts = async () => {
     const seed: Record<string, number | null> = {};
     mods.forEach((m) => (seed[m] = null));
     counts.value = seed;
+    const loadingSeed: Record<string, boolean> = {};
+    mods.forEach((m) => (loadingSeed[m] = true));
+    countsLoading.value = loadingSeed;
     // Limit concurrency to avoid overwhelming API if many modules
     const queue = mods.slice();
     const workers = Array.from({ length: 4 }).map(async () => {
@@ -204,6 +216,8 @@ const loadCounts = async () => {
           counts.value[mod] = res.pagination.total;
         } catch {
           counts.value[mod] = null;
+        } finally {
+          countsLoading.value[mod] = false;
         }
       }
     });

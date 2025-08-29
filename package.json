@@ -4,15 +4,16 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
-    "type-check": "vue-tsc --noEmit",
-    "lint": "eslint src",
-    "lint:check": "eslint src",
+    "deploy": "vite build && wrangler pages deploy dist",
+    "dev": "vite",
     "format:check": "prettier --check .",
+    "lint:check": "eslint src",
+    "lint": "eslint src",
+    "preview": "vite preview",
+    "test:coverage": "vitest run --coverage", 
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
