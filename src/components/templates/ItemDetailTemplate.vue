@@ -18,7 +18,7 @@
       <template #actions>
         <button
           v-if="enableEdit"
-          class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
           @click="handleEdit"
         >
           Edit
@@ -40,14 +40,8 @@
     </div>
 
     <main class="p-4">
-      <div
-        v-if="loading"
-        class="space-y-6"
-      >
-        <div
-          v-if="detailSections && detailSections.length"
-          class="space-y-6"
-        >
+      <div v-if="loading" class="space-y-6">
+        <div v-if="detailSections && detailSections.length" class="space-y-6">
           <section
             v-for="(section, sIdx) in detailSections"
             :key="`skeleton-sec-${sIdx}`"
@@ -55,54 +49,55 @@
           >
             <div
               v-if="section.title"
-              class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg dark:border-gray-700 dark:bg-gray-800"
+              class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
             >
-              <div class="h-4 w-32 bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
-            </div>
-            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div
-                v-for="i in (section.fields?.length || 4)"
+                class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              />
+            </div>
+            <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
+              <div
+                v-for="i in section.fields?.length || 4"
                 :key="`skeleton-field-${sIdx}-${i}`"
                 class="flex flex-col gap-2"
               >
-                <div class="h-3 w-24 bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
-                <div class="h-4 w-full bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
+                <div
+                  class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                />
+                <div
+                  class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+                />
               </div>
             </div>
           </section>
         </div>
         <div
           v-else
-          class="bg-white border border-gray-200 rounded-lg p-4 dark:bg-gray-900 dark:border-gray-700"
+          class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
         >
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div
               v-for="i in 8"
               :key="`skeleton-kv-${i}`"
               class="flex flex-col gap-2"
             >
-              <div class="h-3 w-24 bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
-              <div class="h-4 w-full bg-gray-200 rounded animate-pulse dark:bg-gray-700" />
+              <div
+                class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              />
+              <div
+                class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
+              />
             </div>
           </div>
         </div>
       </div>
-      <div
-        v-else-if="error"
-        class="text-sm text-error-600 dark:text-error-400"
-      >
+      <div v-else-if="error" class="text-error-600 dark:text-error-400 text-sm">
         {{ error }}
       </div>
       <div v-else>
-        <slot
-          name="details"
-          :item="item"
-        >
+        <slot name="details" :item="item">
           <!-- Use configured detailView when available -->
-          <div
-            v-if="detailSections && detailSections.length"
-            class="space-y-6"
-          >
+          <div v-if="detailSections && detailSections.length" class="space-y-6">
             <section
               v-for="(section, sIdx) in detailSections"
               :key="`sec-${sIdx}`"
@@ -110,19 +105,23 @@
             >
               <div
                 v-if="section.title"
-                class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg dark:border-gray-700 dark:bg-gray-800"
+                class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
               >
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <h3
+                  class="text-sm font-semibold text-gray-900 dark:text-gray-100"
+                >
                   {{ section.title }}
                 </h3>
               </div>
-              <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
                 <div
                   v-for="field in section.fields || []"
                   :key="field.key"
                   class="flex flex-col"
                 >
-                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ field.label || formatKey(String(field.key)) }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                    field.label || formatKey(String(field.key))
+                  }}</span>
                   <FieldValue
                     :value="item?.[field.key]"
                     :type="field.type"
@@ -137,16 +136,21 @@
           <!-- Fallback to naive key/value rendering in a single card -->
           <div
             v-else
-            class="bg-white border border-gray-200 rounded-lg p-4 dark:bg-gray-900 dark:border-gray-700"
+            class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
           >
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div
                 v-for="(value, key) in displayPairs"
                 :key="String(key)"
                 class="flex flex-col"
               >
-                <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatKey(String(key)) }}</span>
-                <span class="text-sm text-gray-900 dark:text-gray-100 break-all">{{ formatValue(value) }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{
+                  formatKey(String(key))
+                }}</span>
+                <span
+                  class="text-sm break-all text-gray-900 dark:text-gray-100"
+                  >{{ formatValue(value) }}</span
+                >
               </div>
             </div>
           </div>
@@ -168,23 +172,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import Breadcrumbs from '@/components/molecules/Breadcrumbs.vue'
-import FieldValue from '@/components/atoms/FieldValue.vue'
-import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
-import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
+import { computed, ref } from "vue";
+import Breadcrumbs from "@/components/molecules/Breadcrumbs.vue";
+import FieldValue from "@/components/atoms/FieldValue.vue";
+import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
+import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
+import AppBar from "@/components/molecules/AppBar.vue";
 
 interface Props {
-  moduleName: string
-  item?: Record<string, any> | null
-  loading?: boolean
-  error?: string | null
-  enableEdit?: boolean
-  enableDelete?: boolean
-  onBack?: () => void
-  uiConfig?: any
-  customEditHandler?: boolean
+  moduleName: string;
+  item?: Record<string, any> | null;
+  loading?: boolean;
+  error?: string | null;
+  enableEdit?: boolean;
+  enableDelete?: boolean;
+  onBack?: () => void;
+  uiConfig?: any;
+  customEditHandler?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -192,74 +196,82 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
   enableEdit: true,
-  enableDelete: true
-})
+  enableDelete: true,
+});
 
-const emit = defineEmits(['edit', 'delete', 'update'])
+const emit = defineEmits(["edit", "delete", "update"]);
 
-const title = computed(() => props.item?.name || props.item?.title || 'Details')
-const subtitle = computed(() => props.item?.id)
+const title = computed(
+  () => props.item?.name || props.item?.title || "Details",
+);
+const subtitle = computed(() => props.item?.id);
 
-const displayPairs = computed(() => props.item || {})
+const displayPairs = computed(() => props.item || {});
 
 const breadcrumbs = computed(() => [
-  { label: 'Dashboard', to: '/' },
+  { label: "Dashboard", to: "/" },
   { label: props.uiConfig?.displayName, to: `/${props.moduleName}` },
-  { label: String(title.value) }
-])
+  { label: String(title.value) },
+]);
 
-const formatKey = (k: string) => k.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, s => s.toUpperCase())
+const formatKey = (k: string) =>
+  k
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/^./, (s) => s.toUpperCase());
 const formatValue = (v: any) => {
-  if (v === null || v === undefined) return '-'
-  if (typeof v === 'object') return JSON.stringify(v)
-  return String(v)
-}
+  if (v === null || v === undefined) return "-";
+  if (typeof v === "object") return JSON.stringify(v);
+  return String(v);
+};
 
-const detailSections = computed(() => props.uiConfig?.detailView?.sections || [])
+const detailSections = computed(
+  () => props.uiConfig?.detailView?.sections || [],
+);
 const currencyCode = (obj: any): string | undefined => {
-  const code = obj?.currency
-  return typeof code === 'string' && code.length >= 3 ? code : undefined
-}
+  const code = obj?.currency;
+  return typeof code === "string" && code.length >= 3 ? code : undefined;
+};
 
 // Actions menu items (e.g., Delete lives here now)
-type ActionMenuItem = { key: string; label: string; description?: string }
+type ActionMenuItem = { key: string; label: string; description?: string };
 const actionMenuItems = computed<ActionMenuItem[]>(() => {
-  const items: ActionMenuItem[] = []
-  if (props.enableDelete) items.push({ key: 'delete', label: 'Delete' })
-  return items
-})
+  const items: ActionMenuItem[] = [];
+  if (props.enableDelete) items.push({ key: "delete", label: "Delete" });
+  return items;
+});
 
 // Edit sidebar state
-const showFormSidebar = ref(false)
-const formSidebarTitle = ref('')
-const formSidebarData = ref<Record<string, any>>({})
-const formSidebarLoading = ref(false)
-const formSidebarSubmitText = ref('Save changes')
-const formSidebarLoadingText = ref('Saving...')
+const showFormSidebar = ref(false);
+const formSidebarTitle = ref("");
+const formSidebarData = ref<Record<string, any>>({});
+const formSidebarLoading = ref(false);
+const formSidebarSubmitText = ref("Save changes");
+const formSidebarLoadingText = ref("Saving...");
 
 function handleEdit() {
   if (props.customEditHandler) {
-    emit('edit')
-    return
+    emit("edit");
+    return;
   }
-  formSidebarTitle.value = `Edit ${props.uiConfig?.displayName?.slice(0, -1) || 'Item'}`
-  formSidebarSubmitText.value = 'Save changes'
-  formSidebarLoadingText.value = 'Saving...'
-  formSidebarData.value = { ...(props.item || {}) }
-  showFormSidebar.value = true
+  formSidebarTitle.value = `Edit ${props.uiConfig?.displayName?.slice(0, -1) || "Item"}`;
+  formSidebarSubmitText.value = "Save changes";
+  formSidebarLoadingText.value = "Saving...";
+  formSidebarData.value = { ...(props.item || {}) };
+  showFormSidebar.value = true;
 }
 
 function closeFormSidebar() {
-  showFormSidebar.value = false
-  formSidebarData.value = {}
+  showFormSidebar.value = false;
+  formSidebarData.value = {};
 }
 
 function handleFormSubmit(data: Record<string, any>) {
-  emit('update', data)
-  closeFormSidebar()
+  emit("update", data);
+  closeFormSidebar();
 }
 
 function handleActionMenuSelect(key: string) {
-  if (key === 'delete') emit('delete')
+  if (key === "delete") emit("delete");
 }
 </script>

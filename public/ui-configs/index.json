@@ -1,18 +1,88 @@
 {
   "modules": [
-    { "name": "titles", "displayName": "Titles", "description": "Manage movies, series, episodes and documentaries", "icon": "film", "path": "/api/titles" },
-    { "name": "organizations", "displayName": "Organizations", "description": "Manage publishers, partners, vendors and other organizations", "icon": "building", "path": "/api/organizations" },
-    { "name": "users", "displayName": "Users", "description": "Manage system users and permissions", "icon": "users", "path": "/api/users" },
-    { "name": "contacts", "displayName": "Contacts", "description": "Manage contact information", "icon": "address-book", "path": "/api/contacts" },
-    { "name": "organization-contacts", "displayName": "Organization Contacts", "description": "Manage relationships between organizations and contacts", "icon": "users", "path": "/api/organization-contacts" },
-    { "name": "revenues", "displayName": "Revenues", "description": "Track and manage all revenue streams", "icon": "dollar-sign", "path": "/api/revenues" },
-    { "name": "revenue-distributions", "displayName": "Revenue Distributions", "description": "Track daily revenue distributions to publishers", "icon": "share-2", "path": "/api/revenue-distributions" },
-    { "name": "payouts", "displayName": "Payouts", "description": "Manage monthly publisher payouts", "icon": "credit-card", "path": "/api/payouts" },
-    { "name": "members", "displayName": "Members", "description": "Manage member subscriptions and engagement", "icon": "users", "path": "/api/members" },
-    { "name": "voice-library", "displayName": "Voice Library", "description": "Manage AI voice actors and their settings", "icon": "mic", "path": "/api/voice-library" },
-    { "name": "media", "displayName": "Media", "description": "Manage media files and assets", "icon": "image", "path": "/api/media" },
-    { "name": "media-relationships", "displayName": "Media Relationships", "description": "Manage relationships between media files and other entities", "icon": "link", "path": "/api/media-relationships" }
+    {
+      "name": "titles",
+      "displayName": "Titles",
+      "description": "Manage movies, series, episodes and documentaries",
+      "icon": "film",
+      "path": "/api/titles"
+    },
+    {
+      "name": "organizations",
+      "displayName": "Organizations",
+      "description": "Manage publishers, partners, vendors and other organizations",
+      "icon": "building",
+      "path": "/api/organizations"
+    },
+    {
+      "name": "users",
+      "displayName": "Users",
+      "description": "Manage system users and permissions",
+      "icon": "users",
+      "path": "/api/users"
+    },
+    {
+      "name": "contacts",
+      "displayName": "Contacts",
+      "description": "Manage contact information",
+      "icon": "address-book",
+      "path": "/api/contacts"
+    },
+    {
+      "name": "organization-contacts",
+      "displayName": "Organization Contacts",
+      "description": "Manage relationships between organizations and contacts",
+      "icon": "users",
+      "path": "/api/organization-contacts"
+    },
+    {
+      "name": "revenues",
+      "displayName": "Revenues",
+      "description": "Track and manage all revenue streams",
+      "icon": "dollar-sign",
+      "path": "/api/revenues"
+    },
+    {
+      "name": "revenue-distributions",
+      "displayName": "Revenue Distributions",
+      "description": "Track daily revenue distributions to publishers",
+      "icon": "share-2",
+      "path": "/api/revenue-distributions"
+    },
+    {
+      "name": "payouts",
+      "displayName": "Payouts",
+      "description": "Manage monthly publisher payouts",
+      "icon": "credit-card",
+      "path": "/api/payouts"
+    },
+    {
+      "name": "members",
+      "displayName": "Members",
+      "description": "Manage member subscriptions and engagement",
+      "icon": "users",
+      "path": "/api/members"
+    },
+    {
+      "name": "voice-library",
+      "displayName": "Voice Library",
+      "description": "Manage AI voice actors and their settings",
+      "icon": "mic",
+      "path": "/api/voice-library"
+    },
+    {
+      "name": "media",
+      "displayName": "Media",
+      "description": "Manage media files and assets",
+      "icon": "image",
+      "path": "/api/media"
+    },
+    {
+      "name": "media-relationships",
+      "displayName": "Media Relationships",
+      "description": "Manage relationships between media files and other entities",
+      "icon": "link",
+      "path": "/api/media-relationships"
+    }
   ]
 }
-
-

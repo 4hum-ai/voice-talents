@@ -1,5 +1,7 @@
 <template>
-  <div class="py-16 text-center border border-dashed border-gray-200 rounded-lg bg-white dark:border-gray-700 dark:bg-gray-900">
+  <div
+    class="rounded-lg border border-dashed border-gray-200 bg-white py-16 text-center dark:border-gray-700 dark:bg-gray-900"
+  >
     <div
       v-if="icon !== false"
       class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
@@ -12,7 +14,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="h-12 w-12 mx-auto"
+          class="mx-auto h-12 w-12"
         >
           <path
             stroke-linecap="round"
@@ -35,7 +37,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ title: string; subtitle?: string; icon?: boolean }>()
+defineProps<{ title: string; subtitle?: string; icon?: boolean }>();
 </script>
-
-

@@ -1,383 +1,84 @@
 {
-    "displayName": "Organization Contacts",
-    "description": "Manage relationships between organizations and contacts",
-    "icon": "users",
-    "views": {
-      "list": {
-        "columns": [
-          {
-            "key": "organizationName",
-            "label": "Organization",
-            "type": "text",
-            "sortable": true,
-            "filterable": true,
-            "searchable": true,
-            "width": "20%",
-            "titleField": "organizationName",
-            "subtitleField": "contactName"
-          },
-          {
-            "key": "contactName",
-            "label": "Contact",
-            "type": "text",
-            "sortable": true,
-            "filterable": true,
-            "searchable": true,
-            "width": "20%"
-          },
-          {
-            "key": "contactEmail",
-            "label": "Email",
-            "type": "text",
-            "sortable": true,
-            "searchable": true,
-            "width": "20%"
-          },
-          {
-            "key": "role",
-            "label": "Role",
-            "type": "text",
-            "sortable": true,
-            "filterable": true,
-            "width": "12%",
-            "formatter": "badge"
-          },
-          {
-            "key": "department",
-            "label": "Department",
-            "type": "text",
-            "sortable": true,
-            "filterable": true,
-            "width": "12%",
-            "formatter": "badge"
-          },
-          {
-            "key": "isPrimary",
-            "label": "Primary",
-            "type": "boolean",
-            "sortable": true,
-            "width": "8%",
-            "align": "center"
-          },
-          {
-            "key": "status",
-            "label": "Status",
-            "type": "text",
-            "sortable": true,
-            "filterable": true,
-            "width": "8%",
-            "align": "center",
-            "formatter": "status"
-          }
-        ],
-        "defaultSort": {
-          "field": "organizationName",
-          "direction": "asc"
-        },
-        "defaultFilters": [
-          {
-            "field": "status",
-            "type": "select",
-            "label": "Status",
-            "options": [
-              {
-                "value": "active",
-                "label": "Active"
-              },
-              {
-                "value": "inactive",
-                "label": "Inactive"
-              },
-              {
-                "value": "archived",
-                "label": "Archived"
-              }
-            ]
-          },
-          {
-            "field": "isPrimary",
-            "type": "select",
-            "label": "Primary Contact",
-            "options": [
-              {
-                "value": "true",
-                "label": "Primary"
-              },
-              {
-                "value": "false",
-                "label": "Secondary"
-              }
-            ]
-          },
-          {
-            "field": "isBillingContact",
-            "type": "select",
-            "label": "Billing Contact",
-            "options": [
-              {
-                "value": "true",
-                "label": "Billing"
-              },
-              {
-                "value": "false",
-                "label": "Not Billing"
-              }
-            ]
-          }
-        ],
-        "searchableFields": [
-          "organizationName",
-          "contactName",
-          "contactEmail",
-          "role",
-          "department"
-        ],
-        "pageSize": 20,
-        "actions": [
-          {
-            "name": "create",
-            "label": "Add Contact",
-            "type": "button",
-            "icon": "plus",
-            "variant": "primary",
-            "permission": "organization-contacts:create"
-          },
-          {
-            "name": "view",
-            "label": "View",
-            "type": "button",
-            "icon": "eye",
-            "variant": "secondary",
-            "permission": "organization-contacts:read"
-          },
-          {
-            "name": "edit",
-            "label": "Edit",
-            "type": "button",
-            "icon": "edit",
-            "variant": "secondary",
-            "permission": "organization-contacts:update"
-          },
-          {
-            "name": "delete",
-            "label": "Delete",
-            "type": "button",
-            "icon": "trash",
-            "variant": "danger",
-            "permission": "organization-contacts:delete"
-          }
-        ]
-      },
-      "kanban": {
-        "groupByField": "status",
-        "columns": [
-          {
-            "value": "active",
-            "label": "Active",
-            "color": "#22c55e"
-          },
-          {
-            "value": "inactive",
-            "label": "Inactive",
-            "color": "#64748b"
-          },
-          {
-            "value": "archived",
-            "label": "Archived",
-            "color": "#fbbf24"
-          }
-        ],
-        "cardTitleField": "contactName",
-        "cardDescriptionField": "organizationName"
-      },
-      "gallery": {
-        "titleField": "contactName",
-        "descriptionField": "organizationName",
-        "imageField": "contactAvatar"
-      },
-      "calendar": {
-        "dateField": "createdAt",
-        "titleField": "contactName",
-        "colorField": "status",
-        "descriptionField": "organizationName"
-      }
-    },
-    "detailView": {
-      "sections": [
+  "displayName": "Organization Contacts",
+  "description": "Manage relationships between organizations and contacts",
+  "icon": "users",
+  "views": {
+    "list": {
+      "columns": [
         {
-          "title": "Organization",
-          "fields": [
-            {
-              "key": "organizationName",
-              "label": "Organization",
-              "type": "text"
-            }
-          ]
-        },
-        {
-          "title": "Contact",
-          "fields": [
-            {
-              "key": "contactName",
-              "label": "Contact Name",
-              "type": "text"
-            },
-            {
-              "key": "contactEmail",
-              "label": "Email",
-              "type": "text"
-            }
-          ]
-        },
-        {
-          "title": "Relationship",
-          "fields": [
-            {
-              "key": "role",
-              "label": "Role",
-              "type": "text",
-              "formatter": "badge"
-            },
-            {
-              "key": "department",
-              "label": "Department",
-              "type": "text",
-              "formatter": "badge"
-            },
-            {
-              "key": "isPrimary",
-              "label": "Primary Contact",
-              "type": "boolean"
-            },
-            {
-              "key": "isBillingContact",
-              "label": "Billing Contact",
-              "type": "boolean"
-            },
-            {
-              "key": "isTechnicalContact",
-              "label": "Technical Contact",
-              "type": "boolean"
-            }
-          ]
-        },
-        {
-          "title": "Preferences",
-          "fields": [
-            {
-              "key": "preferredContactMethod",
-              "label": "Preferred Contact Method",
-              "type": "text",
-              "formatter": "badge"
-            },
-            {
-              "key": "notes",
-              "label": "Notes",
-              "type": "text"
-            }
-          ]
-        },
-        {
-          "title": "Status",
-          "fields": [
-            {
-              "key": "status",
-              "label": "Status",
-              "type": "text",
-              "formatter": "status"
-            }
-          ]
-        },
-        {
-          "title": "Timeline",
-          "fields": [
-            {
-              "key": "createdAt",
-              "label": "Created At",
-              "type": "date",
-              "formatter": "date"
-            },
-            {
-              "key": "updatedAt",
-              "label": "Updated At",
-              "type": "date",
-              "formatter": "date"
-            }
-          ]
-        }
-      ]
-    },
-    "formView": {
-      "fields": [
-        {
-          "key": "organizationId",
+          "key": "organizationName",
           "label": "Organization",
-          "type": "select",
-          "required": true,
-          "options": [],
-          "placeholder": "Select organization"
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "searchable": true,
+          "width": "20%",
+          "titleField": "organizationName",
+          "subtitleField": "contactName"
         },
         {
-          "key": "contactId",
+          "key": "contactName",
           "label": "Contact",
-          "type": "select",
-          "required": true,
-          "options": [],
-          "placeholder": "Select contact"
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "searchable": true,
+          "width": "20%"
+        },
+        {
+          "key": "contactEmail",
+          "label": "Email",
+          "type": "text",
+          "sortable": true,
+          "searchable": true,
+          "width": "20%"
         },
         {
           "key": "role",
           "label": "Role",
           "type": "text",
-          "placeholder": "Enter role or title"
+          "sortable": true,
+          "filterable": true,
+          "width": "12%",
+          "formatter": "badge"
         },
         {
           "key": "department",
           "label": "Department",
           "type": "text",
-          "placeholder": "Enter department"
+          "sortable": true,
+          "filterable": true,
+          "width": "12%",
+          "formatter": "badge"
         },
         {
           "key": "isPrimary",
-          "label": "Primary Contact",
+          "label": "Primary",
           "type": "boolean",
-          "helpText": "Mark as primary contact for this organization"
-        },
-        {
-          "key": "isBillingContact",
-          "label": "Billing Contact",
-          "type": "boolean",
-          "helpText": "Mark as billing contact"
-        },
-        {
-          "key": "isTechnicalContact",
-          "label": "Technical Contact",
-          "type": "boolean",
-          "helpText": "Mark as technical contact"
-        },
-        {
-          "key": "preferredContactMethod",
-          "label": "Preferred Contact Method",
-          "type": "select",
-          "options": [
-            {
-              "value": "email",
-              "label": "Email"
-            },
-            {
-              "value": "phone",
-              "label": "Phone"
-            },
-            {
-              "value": "sms",
-              "label": "SMS"
-            }
-          ]
+          "sortable": true,
+          "width": "8%",
+          "align": "center"
         },
         {
           "key": "status",
           "label": "Status",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "8%",
+          "align": "center",
+          "formatter": "status"
+        }
+      ],
+      "defaultSort": {
+        "field": "organizationName",
+        "direction": "asc"
+      },
+      "defaultFilters": [
+        {
+          "field": "status",
           "type": "select",
+          "label": "Status",
           "options": [
             {
               "value": "active",
@@ -394,11 +95,310 @@
           ]
         },
         {
-          "key": "notes",
-          "label": "Notes",
-          "type": "textarea",
-          "placeholder": "Enter additional notes"
+          "field": "isPrimary",
+          "type": "select",
+          "label": "Primary Contact",
+          "options": [
+            {
+              "value": "true",
+              "label": "Primary"
+            },
+            {
+              "value": "false",
+              "label": "Secondary"
+            }
+          ]
+        },
+        {
+          "field": "isBillingContact",
+          "type": "select",
+          "label": "Billing Contact",
+          "options": [
+            {
+              "value": "true",
+              "label": "Billing"
+            },
+            {
+              "value": "false",
+              "label": "Not Billing"
+            }
+          ]
+        }
+      ],
+      "searchableFields": [
+        "organizationName",
+        "contactName",
+        "contactEmail",
+        "role",
+        "department"
+      ],
+      "pageSize": 20,
+      "actions": [
+        {
+          "name": "create",
+          "label": "Add Contact",
+          "type": "button",
+          "icon": "plus",
+          "variant": "primary",
+          "permission": "organization-contacts:create"
+        },
+        {
+          "name": "view",
+          "label": "View",
+          "type": "button",
+          "icon": "eye",
+          "variant": "secondary",
+          "permission": "organization-contacts:read"
+        },
+        {
+          "name": "edit",
+          "label": "Edit",
+          "type": "button",
+          "icon": "edit",
+          "variant": "secondary",
+          "permission": "organization-contacts:update"
+        },
+        {
+          "name": "delete",
+          "label": "Delete",
+          "type": "button",
+          "icon": "trash",
+          "variant": "danger",
+          "permission": "organization-contacts:delete"
         }
       ]
+    },
+    "kanban": {
+      "groupByField": "status",
+      "columns": [
+        {
+          "value": "active",
+          "label": "Active",
+          "color": "#22c55e"
+        },
+        {
+          "value": "inactive",
+          "label": "Inactive",
+          "color": "#64748b"
+        },
+        {
+          "value": "archived",
+          "label": "Archived",
+          "color": "#fbbf24"
+        }
+      ],
+      "cardTitleField": "contactName",
+      "cardDescriptionField": "organizationName"
+    },
+    "gallery": {
+      "titleField": "contactName",
+      "descriptionField": "organizationName",
+      "imageField": "contactAvatar"
+    },
+    "calendar": {
+      "dateField": "createdAt",
+      "titleField": "contactName",
+      "colorField": "status",
+      "descriptionField": "organizationName"
     }
+  },
+  "detailView": {
+    "sections": [
+      {
+        "title": "Organization",
+        "fields": [
+          {
+            "key": "organizationName",
+            "label": "Organization",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "title": "Contact",
+        "fields": [
+          {
+            "key": "contactName",
+            "label": "Contact Name",
+            "type": "text"
+          },
+          {
+            "key": "contactEmail",
+            "label": "Email",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "title": "Relationship",
+        "fields": [
+          {
+            "key": "role",
+            "label": "Role",
+            "type": "text",
+            "formatter": "badge"
+          },
+          {
+            "key": "department",
+            "label": "Department",
+            "type": "text",
+            "formatter": "badge"
+          },
+          {
+            "key": "isPrimary",
+            "label": "Primary Contact",
+            "type": "boolean"
+          },
+          {
+            "key": "isBillingContact",
+            "label": "Billing Contact",
+            "type": "boolean"
+          },
+          {
+            "key": "isTechnicalContact",
+            "label": "Technical Contact",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "title": "Preferences",
+        "fields": [
+          {
+            "key": "preferredContactMethod",
+            "label": "Preferred Contact Method",
+            "type": "text",
+            "formatter": "badge"
+          },
+          {
+            "key": "notes",
+            "label": "Notes",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "title": "Status",
+        "fields": [
+          {
+            "key": "status",
+            "label": "Status",
+            "type": "text",
+            "formatter": "status"
+          }
+        ]
+      },
+      {
+        "title": "Timeline",
+        "fields": [
+          {
+            "key": "createdAt",
+            "label": "Created At",
+            "type": "date",
+            "formatter": "date"
+          },
+          {
+            "key": "updatedAt",
+            "label": "Updated At",
+            "type": "date",
+            "formatter": "date"
+          }
+        ]
+      }
+    ]
+  },
+  "formView": {
+    "fields": [
+      {
+        "key": "organizationId",
+        "label": "Organization",
+        "type": "select",
+        "required": true,
+        "options": [],
+        "placeholder": "Select organization"
+      },
+      {
+        "key": "contactId",
+        "label": "Contact",
+        "type": "select",
+        "required": true,
+        "options": [],
+        "placeholder": "Select contact"
+      },
+      {
+        "key": "role",
+        "label": "Role",
+        "type": "text",
+        "placeholder": "Enter role or title"
+      },
+      {
+        "key": "department",
+        "label": "Department",
+        "type": "text",
+        "placeholder": "Enter department"
+      },
+      {
+        "key": "isPrimary",
+        "label": "Primary Contact",
+        "type": "boolean",
+        "helpText": "Mark as primary contact for this organization"
+      },
+      {
+        "key": "isBillingContact",
+        "label": "Billing Contact",
+        "type": "boolean",
+        "helpText": "Mark as billing contact"
+      },
+      {
+        "key": "isTechnicalContact",
+        "label": "Technical Contact",
+        "type": "boolean",
+        "helpText": "Mark as technical contact"
+      },
+      {
+        "key": "preferredContactMethod",
+        "label": "Preferred Contact Method",
+        "type": "select",
+        "options": [
+          {
+            "value": "email",
+            "label": "Email"
+          },
+          {
+            "value": "phone",
+            "label": "Phone"
+          },
+          {
+            "value": "sms",
+            "label": "SMS"
+          }
+        ]
+      },
+      {
+        "key": "status",
+        "label": "Status",
+        "type": "select",
+        "options": [
+          {
+            "value": "active",
+            "label": "Active"
+          },
+          {
+            "value": "inactive",
+            "label": "Inactive"
+          },
+          {
+            "value": "archived",
+            "label": "Archived"
+          }
+        ]
+      },
+      {
+        "key": "notes",
+        "label": "Notes",
+        "type": "textarea",
+        "placeholder": "Enter additional notes"
+      }
+    ]
   }
+}

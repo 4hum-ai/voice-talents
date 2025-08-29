@@ -1,16 +1,14 @@
 <template>
   <div class="min-h-screen">
-    <AppBar
-      :loading="loading"
-      :show-back="true"
-      @back="router.back()"
-    >
+    <AppBar :loading="loading" :show-back="true" @back="router.back()">
       <template #left>
         <div class="min-w-0">
-          <div class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+          <div
+            class="truncate text-base font-semibold text-gray-900 dark:text-gray-100"
+          >
             {{ uiConfig?.displayName || moduleName }}
           </div>
-          <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+          <div class="truncate text-xs text-gray-500 dark:text-gray-400">
             {{ uiConfig?.description }}
           </div>
         </div>
@@ -19,14 +17,14 @@
         <template v-if="!isSearchOpen">
           <button
             v-if="hasCreateAction"
-            class="hidden sm:inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 hidden items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none sm:inline-flex"
             @click="openCreate()"
           >
             + Add
           </button>
           <button
             v-if="hasCreateAction"
-            class="sm:hidden inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -36,11 +34,13 @@
               fill="currentColor"
               aria-hidden="true"
             >
-              <path d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z" />
+              <path
+                d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
+              />
             </svg>
           </button>
           <button
-            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Search"
             @click="openSearch"
           >
@@ -69,30 +69,34 @@
                 fill="currentColor"
                 aria-hidden="true"
               >
-                <path d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 0112 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0112 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0021 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z" />
+                <path
+                  d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 0112 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0112 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0021 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z"
+                />
               </svg>
             </template>
           </ActionsMenu>
         </template>
         <template v-else>
-          <div class="flex items-center gap-2 min-w-0 flex-1">
+          <div class="flex min-w-0 flex-1 items-center gap-2">
             <SearchInput
               ref="searchInputRef"
               v-model="searchQuery"
               :placeholder="`Search ${moduleName}...`"
               @update:model-value="handleSearchInputDebounced"
             />
-            <div class="hidden sm:flex items-center gap-2">
-              <div class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
+            <div class="hidden items-center gap-2 sm:flex">
+              <div
+                class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"
+              >
+                <label class="text-xs text-gray-500 dark:text-gray-400"
+                  >Fields</label
+                >
                 <select
                   v-model="selectedSearchField"
-                  class="px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                   @change="handleSearchInput"
                 >
-                  <option value="all">
-                    All fields
-                  </option>
+                  <option value="all">All fields</option>
                   <option
                     v-for="f in searchableFieldOptions"
                     :key="f.key"
@@ -103,7 +107,7 @@
                 </select>
               </div>
               <button
-                class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900"
+                class="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 focus:outline-none dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-600 dark:focus:ring-offset-gray-900"
                 @click="openFilters"
               >
                 Filters
@@ -111,7 +115,7 @@
             </div>
           </div>
           <button
-            class="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Close search"
             @click="closeSearch"
           >
@@ -132,7 +136,7 @@
       </template>
     </AppBar>
 
-    <main class="p-4 space-y-6">
+    <main class="space-y-6 p-4">
       <div
         v-if="activeFilters && activeFilters.length > 0"
         class="mb-3 flex flex-wrap items-center gap-2"
@@ -145,7 +149,7 @@
           @close="() => emit('clear-filter', chip.key)"
         />
         <button
-          class="text-xs px-2 py-1 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          class="rounded-full border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           @click="emit('clear-all-filters')"
         >
           Clear all
@@ -154,7 +158,9 @@
 
       <div class="flex items-center justify-between">
         <div class="inline-flex items-center gap-1.5 align-middle">
-          <span class="text-xs leading-5 text-gray-500 dark:text-gray-400">Total {{ totalCount }} records</span>
+          <span class="text-xs leading-5 text-gray-500 dark:text-gray-400"
+            >Total {{ totalCount }} records</span
+          >
         </div>
         <SortDropdown
           v-model="sortValue"
@@ -163,18 +169,27 @@
           @update:model-value="handleSortChange"
         />
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+      <div
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4"
+      >
         <div
           v-for="item in data"
           :key="item.id"
-          class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden cursor-pointer hover:shadow-sm transition-shadow"
+          class="cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-sm dark:border-gray-700 dark:bg-gray-900"
           @click="handleItemClick(item)"
         >
-          <div class="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-            <span class="text-4xl text-gray-400 dark:text-gray-500 font-medium">{{ getInitials(item[titleField]) }}</span>
+          <div
+            class="flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
+          >
+            <span
+              class="text-4xl font-medium text-gray-400 dark:text-gray-500"
+              >{{ getInitials(item[titleField]) }}</span
+            >
           </div>
           <div class="p-4">
-            <h3 class="font-medium text-sm text-gray-900 dark:text-gray-100 mb-1">
+            <h3
+              class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100"
+            >
               {{ item[titleField] }}
             </h3>
             <p
@@ -186,40 +201,38 @@
           </div>
         </div>
       </div>
-      
-      <div
-        v-if="hasMore"
-        class="flex flex-col items-center gap-2"
-      >
+
+      <div v-if="hasMore" class="flex flex-col items-center gap-2">
         <button
-          class="px-3 py-1.5 text-sm rounded border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+          class="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           @click="emit('load-more')"
         >
           Load more
         </button>
         <div
           ref="sentinelRef"
-          class="h-8 w-full flex items-center justify-center text-xs text-gray-500 dark:text-gray-400"
+          class="flex h-8 w-full items-center justify-center text-xs text-gray-500 dark:text-gray-400"
           aria-hidden="true"
         >
           Loading more…
         </div>
       </div>
-      <div
-        v-else
-        class="py-6 flex items-center justify-center"
-      >
-        <span class="inline-flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-gray-800/60 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700">
+      <div v-else class="flex items-center justify-center py-6">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/60 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-400"
+        >
           <svg
             class="h-3.5 w-3.5"
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden="true"
-          ><path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM7.28 9.22a.75.75 0 011.06 0L10 10.94l1.66-1.72a.75.75 0 111.08 1.04l-2.2 2.28a.75.75 0 01-1.08 0L7.28 10.26a.75.75 0 010-1.04z"
-            clip-rule="evenodd"
-          /></svg>
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM7.28 9.22a.75.75 0 011.06 0L10 10.94l1.66-1.72a.75.75 0 111.08 1.04l-2.2 2.28a.75.75 0 01-1.08 0L7.28 10.26a.75.75 0 010-1.04z"
+              clip-rule="evenodd"
+            />
+          </svg>
           End of results
         </span>
       </div>
@@ -246,7 +259,10 @@
     >
       <div class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Time window</label>
+          <label
+            class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400"
+            >Time window</label
+          >
           <TimeWindowPicker
             :preset="filterPreset"
             :from="filterFrom"
@@ -254,39 +270,36 @@
             @change="onTimeWindowChange"
           />
         </div>
-        <div
-          v-for="f in listFilters"
-          :key="f.field"
-          class="space-y-1"
-        >
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">{{ f.label }}</label>
+        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
+          <label
+            class="block text-xs font-medium text-gray-500 dark:text-gray-400"
+            >{{ f.label }}</label
+          >
           <template v-if="f.type === 'number'">
             <div class="flex items-center gap-2">
               <input
                 type="number"
                 :value="localFilterValues[f.field]?.min ?? ''"
                 placeholder="Min"
-                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'min', $event)"
-              >
+              />
               <input
                 type="number"
                 :value="localFilterValues[f.field]?.max ?? ''"
                 placeholder="Max"
-                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'max', $event)"
-              >
+              />
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
             <select
               :value="localFilterValues[f.field]?.value ?? ''"
-              class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">
-                Any
-              </option>
+              <option value="">Any</option>
               <option
                 v-for="opt in f.options || []"
                 :key="String(opt.value)"
@@ -299,18 +312,12 @@
           <template v-else-if="f.type === 'boolean'">
             <select
               :value="localFilterValues[f.field]?.value ?? ''"
-              class="w-full px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">
-                Any
-              </option>
-              <option value="true">
-                True
-              </option>
-              <option value="false">
-                False
-              </option>
+              <option value="">Any</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
@@ -318,15 +325,15 @@
               <input
                 type="date"
                 :value="localFilterValues[f.field]?.from ?? ''"
-                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'from', $event)"
-              >
+              />
               <input
                 type="date"
                 :value="localFilterValues[f.field]?.to ?? ''"
-                class="w-1/2 px-2 py-1.5 border border-gray-300 rounded-md text-sm bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'to', $event)"
-              >
+              />
             </div>
           </template>
         </div>
@@ -336,277 +343,413 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import SortDropdown from '@/components/molecules/SortDropdown.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
-import Chip from '@/components/atoms/Chip.vue'
-import SearchInput from '@/components/atoms/SearchInput.vue'
-import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
-import FilterSidebar from '@/components/molecules/FilterSidebar.vue'
-import TimeWindowPicker from '@/components/molecules/TimeWindowPicker.vue'
-import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import SortDropdown from "@/components/molecules/SortDropdown.vue";
+import AppBar from "@/components/molecules/AppBar.vue";
+import Chip from "@/components/atoms/Chip.vue";
+import SearchInput from "@/components/atoms/SearchInput.vue";
+import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
+import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
+import TimeWindowPicker from "@/components/molecules/TimeWindowPicker.vue";
+import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 
 // props/emits
 
-type Props = { data: any[]; config: { imageField?: string; titleField?: string; descriptionField?: string; actions?: any[] }; hasMore?: boolean; moduleName?: string; uiConfig?: any; loading?: boolean; activeFilters?: { key: string; label: string }[] }
-const props = defineProps<Props>()
-const route = useRoute()
-const router = useRouter()
+type Props = {
+  data: any[];
+  config: {
+    imageField?: string;
+    titleField?: string;
+    descriptionField?: string;
+    actions?: any[];
+  };
+  hasMore?: boolean;
+  moduleName?: string;
+  uiConfig?: any;
+  loading?: boolean;
+  activeFilters?: { key: string; label: string }[];
+};
+const props = defineProps<Props>();
+const route = useRoute();
+const router = useRouter();
 const emit = defineEmits<{
-  (e: 'action', action: string, item?: any): void
-  (e: 'item-click', item: any): void
-  (e: 'load-more'): void
-  (e: 'sort', field: string, direction: 'asc' | 'desc'): void
-  (e: 'clear-filter', key: string): void
-  (e: 'clear-all-filters'): void
-  (e: 'filters-change', payload: { preset?: string; from?: string; to?: string; filters?: Record<string, any> }): void
-}>()
+  (e: "action", action: string, item?: any): void;
+  (e: "item-click", item: any): void;
+  (e: "load-more"): void;
+  (e: "sort", field: string, direction: "asc" | "desc"): void;
+  (e: "clear-filter", key: string): void;
+  (e: "clear-all-filters"): void;
+  (
+    e: "filters-change",
+    payload: {
+      preset?: string;
+      from?: string;
+      to?: string;
+      filters?: Record<string, any>;
+    },
+  ): void;
+}>();
 
 // search/layout/create UI state
-const isSearchOpen = ref(false)
-const searchQuery = ref('')
-const selectedSearchField = ref<'all' | string>('all')
-const searchInputRef = ref<HTMLInputElement | null>(null)
-function openSearch(){ isSearchOpen.value = true; setTimeout(() => searchInputRef.value?.focus(), 0) }
-function closeSearch(){ isSearchOpen.value = false }
-function handleSearchInput(){
-  const search = searchQuery.value?.trim() || ''
-  const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
-  const nextQuery: Record<string, any> = { ...route.query, page: '1' }
-  if (search) nextQuery.search = search; else delete nextQuery.search
-  if (field) nextQuery.searchField = field; else delete nextQuery.searchField
-  router.replace({ query: nextQuery }).catch(() => {})
+const isSearchOpen = ref(false);
+const searchQuery = ref("");
+const selectedSearchField = ref<"all" | string>("all");
+const searchInputRef = ref<HTMLInputElement | null>(null);
+function openSearch() {
+  isSearchOpen.value = true;
+  setTimeout(() => searchInputRef.value?.focus(), 0);
 }
-let searchDebounceTimer: number | undefined
-function handleSearchInputDebounced(){ if (searchDebounceTimer) window.clearTimeout(searchDebounceTimer); searchDebounceTimer = window.setTimeout(() => handleSearchInput(), 300) }
+function closeSearch() {
+  isSearchOpen.value = false;
+}
+function handleSearchInput() {
+  const search = searchQuery.value?.trim() || "";
+  const field =
+    selectedSearchField.value !== "all" ? selectedSearchField.value : undefined;
+  const nextQuery: Record<string, any> = { ...route.query, page: "1" };
+  if (search) nextQuery.search = search;
+  else delete nextQuery.search;
+  if (field) nextQuery.searchField = field;
+  else delete nextQuery.searchField;
+  router.replace({ query: nextQuery }).catch(() => {});
+}
+let searchDebounceTimer: number | undefined;
+function handleSearchInputDebounced() {
+  if (searchDebounceTimer) window.clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = window.setTimeout(() => handleSearchInput(), 300);
+}
 
-const moduleName = computed(() => props.moduleName || '')
-const uiConfig = computed(() => props.uiConfig)
-const dateField = computed(() => uiConfig.value?.views?.calendar?.dateField || 'createdAt')
-const loading = computed(() => !!props.loading)
-const activeFilters = computed(() => props.activeFilters || [])
+const moduleName = computed(() => props.moduleName || "");
+const uiConfig = computed(() => props.uiConfig);
+const dateField = computed(
+  () => uiConfig.value?.views?.calendar?.dateField || "createdAt",
+);
+const loading = computed(() => !!props.loading);
+const activeFilters = computed(() => props.activeFilters || []);
 
-const hasCreateAction = computed(() => Array.isArray(props.config?.actions) && (props.config.actions as any[]).some(a => a?.name === 'create'))
-const searchableFieldOptions = computed<{ key: string, label: string }[]>(() => {
-  const cfg = uiConfig.value
-  if (!cfg?.views?.list) return []
-  const explicit = cfg.views.list.searchableFields as string[] | undefined
-  const columns = (cfg.views.list.columns || []) as any[]
-  const fromColumns = columns
-    .filter(c => (c?.type === 'text' || c?.type === 'url' || c?.type === 'email' || c?.searchable === true))
-    .map(c => ({ key: String(c.key), label: String(c.label || c.key) }))
-  const fromExplicit = (explicit || [])
-    .map(k => {
-      const col = columns.find(c => c.key === k)
-      return { key: String(k), label: String(col?.label || k) }
-    })
-  const merged: Record<string, { key: string, label: string }> = {}
-  for (const f of [...fromColumns, ...fromExplicit]) merged[f.key] = f
-  return Object.values(merged)
-})
+const hasCreateAction = computed(
+  () =>
+    Array.isArray(props.config?.actions) &&
+    (props.config.actions as any[]).some((a) => a?.name === "create"),
+);
+const searchableFieldOptions = computed<{ key: string; label: string }[]>(
+  () => {
+    const cfg = uiConfig.value;
+    if (!cfg?.views?.list) return [];
+    const explicit = cfg.views.list.searchableFields as string[] | undefined;
+    const columns = (cfg.views.list.columns || []) as any[];
+    const fromColumns = columns
+      .filter(
+        (c) =>
+          c?.type === "text" ||
+          c?.type === "url" ||
+          c?.type === "email" ||
+          c?.searchable === true,
+      )
+      .map((c) => ({ key: String(c.key), label: String(c.label || c.key) }));
+    const fromExplicit = (explicit || []).map((k) => {
+      const col = columns.find((c) => c.key === k);
+      return { key: String(k), label: String(col?.label || k) };
+    });
+    const merged: Record<string, { key: string; label: string }> = {};
+    for (const f of [...fromColumns, ...fromExplicit]) merged[f.key] = f;
+    return Object.values(merged);
+  },
+);
 
 // create form sidebar
-const showFormSidebar = ref(false)
-const formSidebarTitle = ref('Add New')
-const formSidebarData = ref<Record<string, any>>({})
-const formSidebarLoading = ref(false)
-const formSidebarSubmitText = ref('Create')
-const formSidebarLoadingText = ref('Creating...')
-function openCreate(){ showFormSidebar.value = true }
-function closeFormSidebar(){ showFormSidebar.value = false; formSidebarData.value = {} }
-function handleFormSubmit(data: Record<string, any>){ emit('action', 'create', data); closeFormSidebar() }
+const showFormSidebar = ref(false);
+const formSidebarTitle = ref("Add New");
+const formSidebarData = ref<Record<string, any>>({});
+const formSidebarLoading = ref(false);
+const formSidebarSubmitText = ref("Create");
+const formSidebarLoadingText = ref("Creating...");
+function openCreate() {
+  showFormSidebar.value = true;
+}
+function closeFormSidebar() {
+  showFormSidebar.value = false;
+  formSidebarData.value = {};
+}
+function handleFormSubmit(data: Record<string, any>) {
+  emit("action", "create", data);
+  closeFormSidebar();
+}
 
 // layout selector
 const layoutMenuItems = computed(() => [
-  { key: 'list', label: 'Table' },
-  { key: 'gallery', label: 'Gallery' },
-  { key: 'calendar', label: 'Calendar' },
-  { key: 'kanban', label: 'Kanban' }
-])
-function handleLayoutSelect(key: string){
-  if(!['list','gallery','calendar','kanban'].includes(key)) return
-  const nextQuery: Record<string, any> = { view: key }
-  router.replace({ query: nextQuery }).catch(() => {})
+  { key: "list", label: "Table" },
+  { key: "gallery", label: "Gallery" },
+  { key: "calendar", label: "Calendar" },
+  { key: "kanban", label: "Kanban" },
+]);
+function handleLayoutSelect(key: string) {
+  if (!["list", "gallery", "calendar", "kanban"].includes(key)) return;
+  const nextQuery: Record<string, any> = { view: key };
+  router.replace({ query: nextQuery }).catch(() => {});
 }
 
 // filters sidebar
-const showFilterSidebar = ref(false)
-const filterPreset = ref<'all'|'7d'|'30d'|'90d'|'custom'>('all')
-const filterFrom = ref<string | undefined>(undefined)
-const filterTo = ref<string | undefined>(undefined)
-function syncFiltersFromQuery(){
+const showFilterSidebar = ref(false);
+const filterPreset = ref<"all" | "7d" | "30d" | "90d" | "custom">("all");
+const filterFrom = ref<string | undefined>(undefined);
+const filterTo = ref<string | undefined>(undefined);
+function syncFiltersFromQuery() {
   try {
-    const q = route.query
+    const q = route.query;
     // sync time window from URL
-    const betweenKey = `filters[${dateField.value}][$between]`
-    const gteKey = `filters[${dateField.value}][$gte]`
-    const lteKey = `filters[${dateField.value}][$lte]`
-    let from: string | undefined
-    let to: string | undefined
+    const betweenKey = `filters[${dateField.value}][$between]`;
+    const gteKey = `filters[${dateField.value}][$gte]`;
+    const lteKey = `filters[${dateField.value}][$lte]`;
+    let from: string | undefined;
+    let to: string | undefined;
     if (q[betweenKey]) {
-      const val = String(q[betweenKey])
-      const [a, b] = val.split(',').map(s => s.trim())
-      from = a || undefined
-      to = b || undefined
+      const val = String(q[betweenKey]);
+      const [a, b] = val.split(",").map((s) => s.trim());
+      from = a || undefined;
+      to = b || undefined;
     } else {
-      if (q[gteKey]) from = String(q[gteKey])
-      if (q[lteKey]) to = String(q[lteKey])
+      if (q[gteKey]) from = String(q[gteKey]);
+      if (q[lteKey]) to = String(q[lteKey]);
     }
-    filterPreset.value = (from || to) ? 'custom' : 'all'
-    filterFrom.value = from
-    filterTo.value = to
+    filterPreset.value = from || to ? "custom" : "all";
+    filterFrom.value = from;
+    filterTo.value = to;
 
     // sync default field filters from URL
-    const next: Record<string, any> = {}
+    const next: Record<string, any> = {};
     for (const f of listFilters.value as any[]) {
-      const base = `filters[${f.field}]`
-      const eq = q[base]
-      const b = q[`${base}[$between]`]
-      const gte = q[`${base}[$gte]`]
-      const lte = q[`${base}[$lte]`]
-      if (f.type === 'number') {
+      const base = `filters[${f.field}]`;
+      const eq = q[base];
+      const b = q[`${base}[$between]`];
+      const gte = q[`${base}[$gte]`];
+      const lte = q[`${base}[$lte]`];
+      if (f.type === "number") {
         if (b) {
-          const [min, max] = String(b).split(',')
-          next[f.field] = { min: min !== undefined ? Number(min) : undefined, max: max !== undefined ? Number(max) : undefined }
+          const [min, max] = String(b).split(",");
+          next[f.field] = {
+            min: min !== undefined ? Number(min) : undefined,
+            max: max !== undefined ? Number(max) : undefined,
+          };
         } else if (gte || lte) {
-          next[f.field] = { min: gte !== undefined ? Number(gte) : undefined, max: lte !== undefined ? Number(lte) : undefined }
+          next[f.field] = {
+            min: gte !== undefined ? Number(gte) : undefined,
+            max: lte !== undefined ? Number(lte) : undefined,
+          };
         }
-      } else if (f.type === 'select' || f.type === 'boolean') {
-        if (eq !== undefined) next[f.field] = { value: String(eq) }
-      } else if (f.type === 'date') {
+      } else if (f.type === "select" || f.type === "boolean") {
+        if (eq !== undefined) next[f.field] = { value: String(eq) };
+      } else if (f.type === "date") {
         if (b) {
-          const [fromD, toD] = String(b).split(',')
-          next[f.field] = { from: fromD, to: toD }
+          const [fromD, toD] = String(b).split(",");
+          next[f.field] = { from: fromD, to: toD };
         } else if (gte || lte) {
-          next[f.field] = { from: gte || '', to: lte || '' }
+          next[f.field] = { from: gte || "", to: lte || "" };
         }
       }
     }
-    localFilterValues.value = next
-  } catch { void 0 }
+    localFilterValues.value = next;
+  } catch {
+    void 0;
+  }
 }
-function openFilters(){ syncFiltersFromQuery(); showFilterSidebar.value = true }
-function closeFilters(){ showFilterSidebar.value = false }
-function clearFilters(){ filterPreset.value='all'; filterFrom.value=undefined; filterTo.value=undefined }
-function onTimeWindowChange(payload: { preset?: string; from?: string; to?: string }){ if (payload.preset) filterPreset.value = payload.preset as any; if (payload.from !== undefined) filterFrom.value = payload.from; if (payload.to !== undefined) filterTo.value = payload.to }
-function applyFilters(){
-  const payload: Record<string, any> = { preset: filterPreset.value, from: filterFrom.value, to: filterTo.value }
+function openFilters() {
+  syncFiltersFromQuery();
+  showFilterSidebar.value = true;
+}
+function closeFilters() {
+  showFilterSidebar.value = false;
+}
+function clearFilters() {
+  filterPreset.value = "all";
+  filterFrom.value = undefined;
+  filterTo.value = undefined;
+}
+function onTimeWindowChange(payload: {
+  preset?: string;
+  from?: string;
+  to?: string;
+}) {
+  if (payload.preset) filterPreset.value = payload.preset as any;
+  if (payload.from !== undefined) filterFrom.value = payload.from;
+  if (payload.to !== undefined) filterTo.value = payload.to;
+}
+function applyFilters() {
+  const payload: Record<string, any> = {
+    preset: filterPreset.value,
+    from: filterFrom.value,
+    to: filterTo.value,
+  };
   // Translate localFilterValues into backend-friendly filters
-  const filters: Record<string, any> = {}
+  const filters: Record<string, any> = {};
   for (const f of listFilters.value as any[]) {
-    const v = localFilterValues.value[f.field]
-    if (!v) continue
-    if (f.type === 'number') {
-      const min = v.min
-      const max = v.max
-      if (typeof min === 'number' && !isNaN(min) && typeof max === 'number' && !isNaN(max)) filters[f.field] = { $between: [min, max] }
-      else if (typeof min === 'number' && !isNaN(min)) filters[f.field] = { $gte: min }
-      else if (typeof max === 'number' && !isNaN(max)) filters[f.field] = { $lte: max }
-    } else if (f.type === 'select') {
-      const value = v.value
-      if (value !== '' && value !== undefined) filters[f.field] = value
-    } else if (f.type === 'boolean') {
-      const value = v.value
-      if (value === 'true') filters[f.field] = true
-      if (value === 'false') filters[f.field] = false
-    } else if (f.type === 'date') {
-      const from = v.from || undefined
-      const to = v.to || undefined
-      if (from && to) filters[f.field] = { $between: [from, to] }
-      else if (from) filters[f.field] = { $gte: from }
-      else if (to) filters[f.field] = { $lte: to }
+    const v = localFilterValues.value[f.field];
+    if (!v) continue;
+    if (f.type === "number") {
+      const min = v.min;
+      const max = v.max;
+      if (
+        typeof min === "number" &&
+        !isNaN(min) &&
+        typeof max === "number" &&
+        !isNaN(max)
+      )
+        filters[f.field] = { $between: [min, max] };
+      else if (typeof min === "number" && !isNaN(min))
+        filters[f.field] = { $gte: min };
+      else if (typeof max === "number" && !isNaN(max))
+        filters[f.field] = { $lte: max };
+    } else if (f.type === "select") {
+      const value = v.value;
+      if (value !== "" && value !== undefined) filters[f.field] = value;
+    } else if (f.type === "boolean") {
+      const value = v.value;
+      if (value === "true") filters[f.field] = true;
+      if (value === "false") filters[f.field] = false;
+    } else if (f.type === "date") {
+      const from = v.from || undefined;
+      const to = v.to || undefined;
+      if (from && to) filters[f.field] = { $between: [from, to] };
+      else if (from) filters[f.field] = { $gte: from };
+      else if (to) filters[f.field] = { $lte: to };
     }
   }
-  if (Object.keys(filters).length > 0) payload.filters = filters
-  emit('filters-change', payload as any)
-  closeFilters()
+  if (Object.keys(filters).length > 0) payload.filters = filters;
+  emit("filters-change", payload as any);
+  closeFilters();
 }
 
-const listFilters = computed<any[]>(() => uiConfig.value?.views?.list?.defaultFilters || [])
-const localFilterValues = ref<Record<string, any>>({})
-function onLocalValueChange(field: string, e: Event){ const value=(e.target as HTMLSelectElement).value; localFilterValues.value[field] = { ...(localFilterValues.value[field] || {}), value } }
-function onLocalNumberChange(field: string, key: 'min'|'max', e: Event){ const raw=(e.target as HTMLInputElement).value; const value = raw === '' ? undefined : Number(raw); localFilterValues.value[field] = { ...(localFilterValues.value[field] || {}), [key]: value } }
-function onLocalDateChange(field: string, key: 'from'|'to', e: Event){ const value=(e.target as HTMLInputElement).value; localFilterValues.value[field] = { ...(localFilterValues.value[field] || {}), [key]: value } }
+const listFilters = computed<any[]>(
+  () => uiConfig.value?.views?.list?.defaultFilters || [],
+);
+const localFilterValues = ref<Record<string, any>>({});
+function onLocalValueChange(field: string, e: Event) {
+  const value = (e.target as HTMLSelectElement).value;
+  localFilterValues.value[field] = {
+    ...(localFilterValues.value[field] || {}),
+    value,
+  };
+}
+function onLocalNumberChange(field: string, key: "min" | "max", e: Event) {
+  const raw = (e.target as HTMLInputElement).value;
+  const value = raw === "" ? undefined : Number(raw);
+  localFilterValues.value[field] = {
+    ...(localFilterValues.value[field] || {}),
+    [key]: value,
+  };
+}
+function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
+  const value = (e.target as HTMLInputElement).value;
+  localFilterValues.value[field] = {
+    ...(localFilterValues.value[field] || {}),
+    [key]: value,
+  };
+}
 
 // existing gallery logic below (unchanged)
 
 // Removed unused handleAction to satisfy type checks
-const handleItemClick = (item:any) => emit('item-click', item)
-const getInitials = (name:string) => !name ? '?' : name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)
+const handleItemClick = (item: any) => emit("item-click", item);
+const getInitials = (name: string) =>
+  !name
+    ? "?"
+    : name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
 
-const sentinelRef = ref<HTMLElement | null>(null)
-let observer: IntersectionObserver | null = null
+const sentinelRef = ref<HTMLElement | null>(null);
+let observer: IntersectionObserver | null = null;
 
 function ensureObserver() {
-  if (observer) return
-  observer = new IntersectionObserver((entries) => {
-    const entry = entries[0]
-    if (entry && entry.isIntersecting && props.hasMore) {
-      emit('load-more')
-    }
-  }, { root: null, rootMargin: '0px', threshold: 0.1 })
+  if (observer) return;
+  observer = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting && props.hasMore) {
+        emit("load-more");
+      }
+    },
+    { root: null, rootMargin: "0px", threshold: 0.1 },
+  );
 }
 
 onMounted(() => {
-  ensureObserver()
-  if (observer && sentinelRef.value) observer.observe(sentinelRef.value)
-  syncFiltersFromQuery()
+  ensureObserver();
+  if (observer && sentinelRef.value) observer.observe(sentinelRef.value);
+  syncFiltersFromQuery();
   try {
-    const initialSort = String(route.query.sort || '')
-    if (initialSort && sortMenuItems.value.some(i => i.key === initialSort)) {
-      sortValue.value = initialSort
+    const initialSort = String(route.query.sort || "");
+    if (initialSort && sortMenuItems.value.some((i) => i.key === initialSort)) {
+      sortValue.value = initialSort;
     }
-  } catch { void 0 }
-})
+  } catch {
+    void 0;
+  }
+});
 
 onBeforeUnmount(() => {
   if (observer) {
-    observer.disconnect()
-    observer = null
+    observer.disconnect();
+    observer = null;
   }
-})
+});
 
-watch(() => route.query, () => { syncFiltersFromQuery() })
+watch(
+  () => route.query,
+  () => {
+    syncFiltersFromQuery();
+  },
+);
 
-watch(() => props.hasMore, (v) => {
-  if (!observer) ensureObserver()
-  if (observer) {
-    observer.disconnect()
-    if (v && sentinelRef.value) observer.observe(sentinelRef.value)
-  }
-})
+watch(
+  () => props.hasMore,
+  (v) => {
+    if (!observer) ensureObserver();
+    if (observer) {
+      observer.disconnect();
+      if (v && sentinelRef.value) observer.observe(sentinelRef.value);
+    }
+  },
+);
 
-type Dir = 'asc' | 'desc'
-const titleField = computed<string>(() => props.config.titleField || 'title')
-const sortValue = ref<string>(`${titleField.value}:asc`)
-const totalCount = computed(() => Array.isArray(props.data) ? props.data.length : 0)
+type Dir = "asc" | "desc";
+const titleField = computed<string>(() => props.config.titleField || "title");
+const sortValue = ref<string>(`${titleField.value}:asc`);
+const totalCount = computed(() =>
+  Array.isArray(props.data) ? props.data.length : 0,
+);
 const sortOptions = computed<{ key: string; label: string }[]>(() => {
-  const options: { key: string; label: string }[] = []
-  if (titleField.value) options.push({ key: titleField.value, label: 'Title' })
-  if (props.config.descriptionField) options.push({ key: props.config.descriptionField, label: 'Description' })
-  return options
-})
+  const options: { key: string; label: string }[] = [];
+  if (titleField.value) options.push({ key: titleField.value, label: "Title" });
+  if (props.config.descriptionField)
+    options.push({ key: props.config.descriptionField, label: "Description" });
+  return options;
+});
 const sortMenuItems = computed(() => {
-  const items: { key: string; label: string }[] = []
+  const items: { key: string; label: string }[] = [];
   for (const opt of sortOptions.value) {
-    items.push({ key: `${opt.key}:asc`, label: `${opt.label} (A→Z)` })
-    items.push({ key: `${opt.key}:desc`, label: `${opt.label} (Z→A)` })
+    items.push({ key: `${opt.key}:asc`, label: `${opt.label} (A→Z)` });
+    items.push({ key: `${opt.key}:desc`, label: `${opt.label} (Z→A)` });
   }
-  return items
-})
+  return items;
+});
 function handleSortChange(newValue: string) {
-  const [field, dir] = newValue.split(':')
-  const d = (dir === 'desc' ? 'desc' : 'asc') as Dir
-  emit('sort', field, d)
+  const [field, dir] = newValue.split(":");
+  const d = (dir === "desc" ? "desc" : "asc") as Dir;
+  emit("sort", field, d);
 }
 
-watch(() => route.query.sort, (nv) => {
-  const val = String(nv || '')
-  if (val && sortMenuItems.value.some(i => i.key === val)) {
-    sortValue.value = val
-  }
-})
+watch(
+  () => route.query.sort,
+  (nv) => {
+    const val = String(nv || "");
+    if (val && sortMenuItems.value.some((i) => i.key === val)) {
+      sortValue.value = val;
+    }
+  },
+);
 </script>
-
-

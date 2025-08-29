@@ -1,10 +1,12 @@
 <template>
-  <div class="fixed top-0 inset-x-0 z-40 bg-white/90 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800 relative">
-    <div class="px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3 min-w-0">
+  <div
+    class="fixed relative inset-x-0 top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80"
+  >
+    <div class="flex items-center justify-between px-4 py-3">
+      <div class="flex min-w-0 items-center gap-3">
         <button
           v-if="showBack"
-          class="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 h-9 w-9"
+          class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           aria-label="Go back"
           @click="$emit('back')"
         >
@@ -21,20 +23,16 @@
             />
           </svg>
         </button>
-        <div
-          v-if="hasLeftSlot"
-          class="min-w-0"
-        >
+        <div v-if="hasLeftSlot" class="min-w-0">
           <slot name="left" />
         </div>
-        <div
-          v-else
-          class="min-w-0"
-        >
-          <div class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+        <div v-else class="min-w-0">
+          <div
+            class="truncate text-base font-semibold text-gray-900 dark:text-gray-100"
+          >
             <slot name="title" />
           </div>
-          <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+          <div class="truncate text-xs text-gray-500 dark:text-gray-400">
             <slot name="subtitle" />
           </div>
         </div>
@@ -47,28 +45,30 @@
       v-if="loading"
       class="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden"
     >
-      <div class="absolute inset-y-0 w-2/5 bg-primary-600 dark:bg-primary-500 progress-bar" />
+      <div
+        class="bg-primary-600 dark:bg-primary-500 progress-bar absolute inset-y-0 w-2/5"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import { computed, useSlots } from "vue";
 
 interface Props {
-  loading?: boolean
-  showBack?: boolean
+  loading?: boolean;
+  showBack?: boolean;
 }
 
 withDefaults(defineProps<Props>(), {
   loading: false,
-  showBack: false
-})
+  showBack: false,
+});
 
-defineEmits(['back'])
+defineEmits(["back"]);
 
-const slots = useSlots()
-const hasLeftSlot = computed(() => Boolean(slots.left))
+const slots = useSlots();
+const hasLeftSlot = computed(() => Boolean(slots.left));
 </script>
 
 <style scoped>
@@ -87,5 +87,3 @@ const hasLeftSlot = computed(() => Boolean(slots.left))
   animation: indeterminate-slide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 </style>
-
-

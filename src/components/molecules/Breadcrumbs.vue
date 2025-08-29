@@ -9,10 +9,9 @@
         :key="index"
         class="inline-flex items-center"
       >
-        <span
-          v-if="index > 0"
-          class="mx-1 text-gray-400 dark:text-gray-500"
-        >/</span>
+        <span v-if="index > 0" class="mx-1 text-gray-400 dark:text-gray-500"
+          >/</span
+        >
         <RouterLink
           v-if="crumb.to && index < items.length - 1"
           :to="crumb.to"
@@ -20,24 +19,21 @@
         >
           {{ crumb.label }}
         </RouterLink>
-        <span
-          v-else
-          class="text-gray-900 dark:text-gray-100 font-medium"
-        >{{ crumb.label }}</span>
+        <span v-else class="font-medium text-gray-900 dark:text-gray-100">{{
+          crumb.label
+        }}</span>
       </li>
     </ol>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink } from "vue-router";
 
 export interface BreadcrumbItem {
-  label: string
-  to?: string | Record<string, any>
+  label: string;
+  to?: string | Record<string, any>;
 }
 
-defineProps<{ items: BreadcrumbItem[] }>()
+defineProps<{ items: BreadcrumbItem[] }>();
 </script>
-
-

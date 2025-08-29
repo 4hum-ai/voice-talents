@@ -2,15 +2,24 @@ import { defineStore } from "pinia";
 import { ref, computed, type Ref } from "vue";
 import { useAuth } from "@/composables/useAuth";
 
-export interface LoginCredentials { email: string; password: string }
-export interface AuthUser { id: string; email: string; displayName?: string; photoURL?: string }
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+export interface AuthUser {
+  id: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+}
 
 export const useAuthStore = defineStore("auth", () => {
   const user: Ref<AuthUser | null> = ref(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const { login, loginWithGoogle, loginWithOAuth, logout, getCurrentUser } = useAuth();
+  const { login, loginWithGoogle, loginWithOAuth, logout, getCurrentUser } =
+    useAuth();
   // Keep in sync with Firebase auth state changes
   let unsubscribe: (() => void) | null = null;
 
@@ -23,7 +32,9 @@ export const useAuthStore = defineStore("auth", () => {
       const current = await getCurrentUser();
       if (current) user.value = current;
       if (!unsubscribe) {
-        unsubscribe = useAuth().subscribe((u) => { user.value = u; });
+        unsubscribe = useAuth().subscribe((u) => {
+          user.value = u;
+        });
       }
     } finally {
       isLoading.value = false;
@@ -60,7 +71,9 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  const loginWithProvider = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
+  const loginWithProvider = async (
+    provider: "google" | "github" | "microsoft" | "apple",
+  ) => {
     try {
       isLoading.value = true;
       error.value = null;
@@ -82,7 +95,10 @@ export const useAuthStore = defineStore("auth", () => {
       await logout();
       user.value = null;
       // Clear listeners
-      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Logout failed";
       throw err;
@@ -91,9 +107,20 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  const clearError = () => { error.value = null };
+  const clearError = () => {
+    error.value = null;
+  };
 
-  return { user, isLoading, error, isAuthenticated, initialize, loginUser, loginWithGoogleUser, loginWithProvider, logoutUser, clearError };
+  return {
+    user,
+    isLoading,
+    error,
+    isAuthenticated,
+    initialize,
+    loginUser,
+    loginWithGoogleUser,
+    loginWithProvider,
+    logoutUser,
+    clearError,
+  };
 });
-
-

@@ -3,10 +3,7 @@
   <ToastContainer />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
-      <component
-        :is="Component"
-        :key="route.path"
-      />
+      <component :is="Component" :key="route.path" />
     </KeepAlive>
     <div
       v-if="isBootLoading"
@@ -41,13 +38,12 @@
 </template>
 
 <script setup lang="ts">
-import ToastContainer from '@/components/organisms/ToastContainer.vue';
-import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue';
-import { computed } from 'vue'
-import { useUiConfig } from '@/composables/useUiConfig'
-const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
+import ToastContainer from "@/components/organisms/ToastContainer.vue";
+import NetworkStatusBar from "@/components/organisms/NetworkStatusBar.vue";
+import { computed } from "vue";
+import { useUiConfig } from "@/composables/useUiConfig";
+const cachedViews = ["Dashboard", "ItemListView", "ItemDetailView"];
 
-const { state: uiState } = useUiConfig()
-const isBootLoading = computed(() => !uiState.initialized || uiState.loading)
-
+const { state: uiState } = useUiConfig();
+const isBootLoading = computed(() => !uiState.initialized || uiState.loading);
 </script>

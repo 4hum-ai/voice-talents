@@ -1,12 +1,12 @@
 <template>
   <div
     v-if="stats.length > 0"
-    class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"
+    class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4"
   >
     <div
       v-for="stat in stats"
       :key="stat.key"
-      class="rounded border p-4 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+      class="rounded border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
     >
       <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
         {{ getStatValue(stat) }}
@@ -19,8 +19,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ stats:any[]; data:any[] }>()
-const getStatValue = (stat: any) => stat.computed ? props.data?.length || 0 : (stat.value || 0)
+const props = defineProps<{ stats: any[]; data: any[] }>();
+const getStatValue = (stat: any) =>
+  stat.computed ? props.data?.length || 0 : stat.value || 0;
 </script>
-
-
