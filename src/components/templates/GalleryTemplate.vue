@@ -178,24 +178,32 @@
           class="cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-sm dark:border-gray-700 dark:bg-gray-900"
           @click="handleItemClick(item)"
         >
-          <div
-            class="flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
-          >
-            <span
-              class="text-4xl font-medium text-gray-400 dark:text-gray-500"
-              >{{ getInitials(item[titleField]) }}</span
-            >
+          <div class="flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800">
+            <template v-if="previewUrl(item)">
+              <img
+                v-if="isImage(previewUrl(item) || '')"
+                :src="previewUrl(item) || undefined"
+                alt=""
+                class="h-full w-full object-cover"
+              />
+              <video
+                v-else
+                :src="previewUrl(item) || undefined"
+                class="h-full w-full object-cover"
+                muted
+              />
+            </template>
+            <template v-else>
+              <span class="text-4xl font-medium text-gray-400 dark:text-gray-500">
+                {{ getInitials(item[titleField]) }}
+              </span>
+            </template>
           </div>
           <div class="p-4">
-            <h3
-              class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100"
-            >
+            <h3 class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
               {{ item[titleField] }}
             </h3>
-            <p
-              v-if="config.descriptionField"
-              class="text-xs text-gray-500 dark:text-gray-400"
-            >
+            <p v-if="config.descriptionField" class="text-xs text-gray-500 dark:text-gray-400">
               {{ item[config.descriptionField] }}
             </p>
           </div>
@@ -742,6 +750,18 @@ function handleSortChange(newValue: string) {
   const d = (dir === "desc" ? "desc" : "asc") as Dir;
   emit("sort", field, d);
 }
+
+// Media preview helpers
+const previewUrl = (item: any): string | null => {
+  const key = (props.config as any)?.imageField || "thumbnailUrl";
+  const value = item?.[key];
+  if (!value) return null;
+  return String(value);
+};
+const isImage = (url: string): boolean => {
+  const u = url.toLowerCase();
+  return u.endsWith(".png") || u.endsWith(".jpg") || u.endsWith(".jpeg") || u.endsWith(".webp") || u.endsWith(".gif") || u.includes("image=");
+};
 
 watch(
   () => route.query.sort,

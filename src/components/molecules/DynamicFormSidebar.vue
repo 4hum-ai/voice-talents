@@ -101,6 +101,23 @@
                     @blur="onBlur(field)"
                     @input="onInput(field)"
                   />
+                  <div v-else-if="field.type === 'file'" class="space-y-2">
+                    <input
+                      :id="field.key"
+                      type="file"
+                      :class="inputClass(field)"
+                      @change="onFileSelected(field, $event)"
+                    />
+                    <div v-if="uploading[field.key]" class="text-xs text-gray-500">
+                      Uploading...
+                    </div>
+                    <div
+                      v-else-if="formData[field.key] && typeof formData[field.key] === 'string'"
+                      class="text-xs break-all text-gray-500"
+                    >
+                      {{ formData[field.key] }}
+                    </div>
+                  </div>
                   <div
                     v-else-if="field.type === 'boolean'"
                     class="flex items-center"
@@ -173,6 +190,7 @@ interface FormField {
     | "date"
     | "select"
     | "textarea"
+    | "file"
     | "boolean";
   required?: boolean;
   placeholder?: string;
@@ -313,4 +331,41 @@ const handleSubmit = () => {
   if (!validateAll()) return;
   emit("submit", { ...formData });
 };
+
+import { useMedia } from "@/composables/useMedia";
+import { useToast } from "@/composables/useToast";
+const { uploadViaMediaModule } = useMedia();
+const { push } = useToast();
+const uploading = reactive<Record<string, boolean>>({});
+
+async function onFileSelected(field: FormField, e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files && input.files[0];
+  if (!file) return;
+  try {
+    uploading[field.key] = true;
+    const result = await uploadViaMediaModule(file, { type: "poster" });
+    formData[field.key] = result.fileUrl;
+    setFieldError(field);
+    push({
+      id: `${Date.now()}-${field.key}` as any,
+      type: "success",
+      title: "Upload complete",
+      body: `${file.name} uploaded`,
+      position: "tr",
+      timeout: 4000,
+    });
+  } catch (err: any) {
+    push({
+      id: `${Date.now()}-${field.key}-err` as any,
+      type: "error",
+      title: "Upload failed",
+      body: err?.message || "Unable to upload file",
+      position: "tr",
+      timeout: 6000,
+    });
+  } finally {
+    uploading[field.key] = false;
+  }
+}
 </script>

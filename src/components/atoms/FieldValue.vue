@@ -132,6 +132,13 @@
       class="h-10 w-10 rounded bg-gray-100 object-cover dark:bg-gray-800"
     />
   </span>
+  <span v-else-if="displayKind === 'video'" class="inline-flex items-center">
+    <video
+      :src="String(value)"
+      class="h-16 w-24 rounded bg-gray-100 object-cover dark:bg-gray-800"
+      controls
+    />
+  </span>
   <span
     v-else-if="displayKind === 'country'"
     class="inline-flex items-center gap-2"
@@ -169,6 +176,7 @@ interface Props {
     | "date"
     | "boolean"
     | "image"
+    | "video"
     | "url"
     | "array"
     | "object"
@@ -199,7 +207,11 @@ const displayKind = computed(() => {
   const looksPhone = key.includes("phone") || /^\+?[0-9()\-\s]{7,}$/.test(val);
   if (looksEmail) return "email";
   if (looksPhone) return "phone";
-  return props.type || "text";
+  if (props.type) return props.type;
+  // basic heuristic: show video if URL ends with a known extension
+  const v = String(props.value || "").toLowerCase();
+  if (v.endsWith('.mp4') || v.endsWith('.webm') || v.endsWith('.mov') || v.includes('video=')) return 'video';
+  return "text";
 });
 
 const textValue = computed(() => {
