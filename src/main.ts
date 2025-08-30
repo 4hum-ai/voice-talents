@@ -13,6 +13,7 @@ app.use(router);
 import { useAuthStore } from "./stores/auth";
 import { useTheme } from "./composables/useTheme";
 import { useUiConfig } from "./composables/useUiConfig";
+import { useActivity } from "./composables/useActivity";
 const authStore = useAuthStore();
 // Initialize theme before mounting to prevent FOUC
 const { initialize: initTheme } = useTheme();
@@ -24,4 +25,8 @@ authStore.initialize().then(() => {
   // Kick off UI config initialization in the background
   const { init } = useUiConfig();
   init().catch(() => void 0);
+  try {
+    const { start } = useActivity();
+    start();
+  } catch {}
 });

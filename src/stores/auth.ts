@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed, type Ref } from "vue";
 import { useAuth } from "@/composables/useAuth";
+import { useActivity } from "@/composables/useActivity";
 
 export interface LoginCredentials {
   email: string;
@@ -94,6 +95,11 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = null;
       await logout();
       user.value = null;
+      try {
+        const { clearAll, stop } = useActivity();
+        clearAll();
+        stop();
+      } catch {}
       // Clear listeners
       if (unsubscribe) {
         unsubscribe();

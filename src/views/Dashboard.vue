@@ -126,6 +126,41 @@
           </router-link>
         </div>
       </section>
+
+      <section class="mt-10 space-y-6">
+        <div class="grid gap-4 lg:grid-cols-2">
+          <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Recent visits</h2>
+            <div v-if="recentVisits.length === 0" class="text-sm text-gray-500 dark:text-gray-400">No recent visits yet.</div>
+            <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
+              <li v-for="v in recentVisits" :key="`${v.module}:${v.id}`" class="flex items-center justify-between gap-3 py-2">
+                <div class="min-w-0">
+                  <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ labelFor(v.module, v.data) }}</div>
+                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">{{ v.module }} • {{ formatTimeAgo(v.lastVisited) }} • {{ v.count }}×</div>
+                </div>
+                <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700" @click="openItem(v.module, v.id)">Open</button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Recent activities</h2>
+            <div v-if="recentActivities.length === 0" class="text-sm text-gray-500 dark:text-gray-400">No recent activities yet.</div>
+            <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
+              <li v-for="a in recentActivities" :key="`${a.module}:${a.id}:${a.at}`" class="flex items-center justify-between gap-3 py-2">
+                <div class="min-w-0">
+                  <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <span :class="['mr-2 inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium', actionBadgeClass(a.action)]">{{ a.action }}</span>
+                    {{ labelFor(a.module, a.afterData || a.beforeData) }}
+                  </div>
+                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">{{ a.module }} • {{ formatTimeAgo(a.at) }}</div>
+                </div>
+                <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700" @click="onRevert(a)">Revert</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </template>
@@ -146,6 +181,8 @@ import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { useTheme } from "@/composables/useTheme";
 import LoadingIcon from "~icons/mdi/loading";
+import { useActivity } from "@/composables/useActivity";
+import { useEventBus } from "@/composables/useEventBus";
 
 // Intentionally not using router routes for modules; rely on admin-ui modules API
 
@@ -155,6 +192,8 @@ const uiConfig = useUiConfig();
 const auth = useAuthStore();
 const router = useRouter();
 const { isDark, toggleTheme } = useTheme();
+const activity = useActivity();
+const { on: onBus } = useEventBus();
 
 const counts = ref<Record<string, number | null>>({});
 const countsLoading = ref<Record<string, boolean>>({});
@@ -265,7 +304,79 @@ onMounted(async () => {
     loadingModules.value = false;
   }
   await loadCounts();
+  refreshActivityLists();
+  try {
+    onBus("visits:updated", () => refreshActivityLists());
+    onBus("activities:updated", () => refreshActivityLists());
+  } catch {}
 });
 
 // Visual helpers moved to Avatar atom
+// Activity and label helpers
+const recentVisits = ref<any[]>([]);
+const recentActivities = ref<any[]>([]);
+const limit = Number((import.meta as any).env?.VITE_DASHBOARD_ACTIVITY_LIMIT) || 10;
+
+function refreshActivityLists() {
+  try {
+    recentVisits.value = activity.getRecentVisits(limit);
+    recentActivities.value = activity.getRecentActivities(limit);
+  } catch {
+    recentVisits.value = [];
+    recentActivities.value = [];
+  }
+}
+
+function openItem(module: string, id: string) {
+  router.push({ path: `/${module}/${id}` }).catch(() => {});
+}
+
+function formatTimeAgo(ts: number): string {
+  const diff = Date.now() - ts;
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+}
+
+function actionBadgeClass(action: string): string {
+  if (action === "create") return "bg-green-50 text-green-700 border border-green-200";
+  if (action === "update") return "bg-yellow-50 text-yellow-700 border border-yellow-200";
+  if (action === "delete") return "bg-red-50 text-red-700 border border-red-200";
+  return "bg-gray-50 text-gray-700 border border-gray-200";
+}
+
+async function onRevert(a: any) {
+  try {
+    await activity.revert(a);
+    refreshActivityLists();
+  } catch {}
+}
+
+function labelFor(moduleName: string, data: any): string {
+  if (!data || typeof data !== "object") return String(data ?? "-");
+  const cfg = (useUiConfig() as any).state?.configs?.[moduleName] as any;
+  const pick = (key?: string) => (key && data[key] ? String(data[key]) : "");
+  // Try known config keys
+  const fromGallery = pick(cfg?.views?.gallery?.titleField);
+  if (fromGallery) return fromGallery;
+  const fromKanban = pick(cfg?.views?.kanban?.cardTitleField);
+  if (fromKanban) return fromKanban;
+  const fromCalendar = pick(cfg?.views?.calendar?.titleField);
+  if (fromCalendar) return fromCalendar;
+  // Try list column with titleField set
+  const columns = (cfg?.views?.list?.columns || []) as any[];
+  for (const c of columns) {
+    const t = pick(c?.titleField) || pick(c?.key);
+    if (t) return t;
+  }
+  // Common fallbacks
+  return (
+    data.name || data.title || data.displayName || data.email || data.id || data._id || "-"
+  );
+}
 </script>

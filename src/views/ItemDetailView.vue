@@ -35,8 +35,10 @@ import ItemDetailTemplate from "@/components/templates/ItemDetailTemplate.vue";
 import { useMovieService } from "@/composables/useMovieService";
 import { useUiConfig } from "@/composables/useUiConfig";
 import ConfirmModal from "@/components/molecules/ConfirmModal.vue";
+import { useActivity } from "@/composables/useActivity";
 
 const movie = useMovieService();
+const activity = useActivity();
 const route = useRoute();
 const router = useRouter();
 
@@ -85,6 +87,9 @@ async function load() {
     );
     item.value = res;
     lastLoadedId.value = id.value;
+    try {
+      activity.recordVisit({ module: module.value, id: id.value, data: res });
+    } catch {}
   } catch (e: any) {
     error.value = e?.message || "Failed to load item";
   } finally {

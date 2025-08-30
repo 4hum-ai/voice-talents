@@ -1,4 +1,5 @@
 import { useApiGateway } from "@/utils/useApiGateway";
+import { useEventBus, type CrudEventPayload } from "./useEventBus";
 
 export interface PaginatedResponse<T> {
   data: T[];
@@ -35,6 +36,7 @@ export class ConnectionError extends Error {
 
 export function useMovieService() {
   const client = useApiGateway();
+  const bus = useEventBus();
   // Keep service focused on API calls only; local UI config handling resides in useUiConfig
 
   const checkConnection = async (): Promise<boolean> => {
@@ -202,20 +204,64 @@ export function useMovieService() {
     module: string,
     data: any,
     signal?: AbortSignal,
-  ): Promise<any> => (await post<any>(`/api/${module}`, data, signal)).data;
+  ): Promise<any> => {
+    const result = (await post<any>(`/api/${module}`, data, signal)).data;
+    try {
+      const payload: CrudEventPayload = {
+        module,
+        id: String(result?.id ?? result?._id ?? ""),
+        action: "create",
+        afterData: result,
+        at: Date.now(),
+      };
+      bus.emit("crud", payload);
+    } catch {}
+    return result;
+  };
   const updateModuleItem = async (
     module: string,
     id: string,
     data: any,
     signal?: AbortSignal,
-  ): Promise<any> =>
-    (await put<any>(`/api/${module}/${id}`, data, signal)).data;
+  ): Promise<any> => {
+    let beforeData: any = null;
+    try {
+      beforeData = await getModuleItem(module, id, signal);
+    } catch {}
+    const result = (await put<any>(`/api/${module}/${id}`, data, signal)).data;
+    try {
+      const payload: CrudEventPayload = {
+        module,
+        id: String(id),
+        action: "update",
+        beforeData,
+        afterData: result,
+        at: Date.now(),
+      };
+      bus.emit("crud", payload);
+    } catch {}
+    return result;
+  };
   const deleteModuleItem = async (
     module: string,
     id: string,
     signal?: AbortSignal,
   ): Promise<void> => {
+    let beforeData: any = null;
+    try {
+      beforeData = await getModuleItem(module, id, signal);
+    } catch {}
     await del<void>(`/api/${module}/${id}`, signal);
+    try {
+      const payload: CrudEventPayload = {
+        module,
+        id: String(id),
+        action: "delete",
+        beforeData,
+        at: Date.now(),
+      };
+      bus.emit("crud", payload);
+    } catch {}
   };
 
   return {

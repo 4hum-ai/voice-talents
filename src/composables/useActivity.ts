@@ -1,0 +1,206 @@
+import { ref } from "vue";
+import { useEventBus, type CrudEventPayload } from "./useEventBus";
+import { useToast } from "./useToast";
+import { useMovieService } from "./useMovieService";
+
+type VisitEntry = {
+  module: string;
+  id: string;
+  data: any;
+  lastVisited: number;
+  count: number;
+};
+
+type ActivityEntry = {
+  module: string;
+  id: string;
+  action: "create" | "update" | "delete";
+  at: number;
+  beforeData?: any;
+  afterData?: any;
+};
+
+const VISITS_KEY = "md_admin_recent_visits";
+const ACTIVITIES_KEY = "md_admin_recent_activities";
+
+const started = ref(false);
+let offCrud: (() => void) | null = null;
+
+function readJson<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return (parsed as T) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJson<T>(key: string, value: T) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* ignore */
+  }
+}
+
+function getLimit(): number {
+  const env: any = (import.meta as any).env || {};
+  const n = Number(env?.VITE_DASHBOARD_ACTIVITY_LIMIT);
+  return Number.isFinite(n) && n > 0 ? n : 10;
+}
+
+export function useActivity() {
+  const { emit, on } = useEventBus();
+  const toast = useToast();
+  const service = useMovieService();
+
+  const start = () => {
+    if (started.value) return;
+    started.value = true;
+    offCrud = on<CrudEventPayload>("crud", (evt) => {
+      try {
+        logActivityFromEvent(evt);
+      } catch {
+        /* ignore */
+      }
+    });
+  };
+
+  const stop = () => {
+    if (offCrud) offCrud();
+    offCrud = null;
+    started.value = false;
+  };
+
+  const recordVisit = (entry: { module: string; id: string; data: any }) => {
+    const limit = getLimit();
+    const list = readJson<VisitEntry[]>(VISITS_KEY, []);
+    const idx = list.findIndex(
+      (v) => v.module === entry.module && v.id === String(entry.id),
+    );
+    const now = Date.now();
+    if (idx >= 0) {
+      const cur = list[idx];
+      list[idx] = {
+        ...cur,
+        data: entry.data ?? cur.data,
+        count: (cur.count || 0) + 1,
+        lastVisited: now,
+      };
+    } else {
+      list.push({
+        module: entry.module,
+        id: String(entry.id),
+        data: entry.data,
+        lastVisited: now,
+        count: 1,
+      });
+    }
+    // Sort and cap
+    list.sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      return b.lastVisited - a.lastVisited;
+    });
+    writeJson(VISITS_KEY, list.slice(0, limit));
+    emit("visits:updated", null);
+  };
+
+  const getRecentVisits = (limit?: number): VisitEntry[] => {
+    const list = readJson<VisitEntry[]>(VISITS_KEY, []);
+    const cap = limit ?? getLimit();
+    return list.slice(0, cap);
+  };
+
+  function logActivityFromEvent(evt: CrudEventPayload) {
+    const limit = getLimit();
+    const list = readJson<ActivityEntry[]>(ACTIVITIES_KEY, []);
+    list.unshift({
+      module: evt.module,
+      id: String(evt.id),
+      action: evt.action,
+      at: evt.at,
+      beforeData: evt.beforeData,
+      afterData: evt.afterData,
+    });
+    // Cap
+    writeJson(ACTIVITIES_KEY, list.slice(0, limit));
+    emit("activities:updated", null);
+  }
+
+  const getRecentActivities = (limit?: number): ActivityEntry[] => {
+    const list = readJson<ActivityEntry[]>(ACTIVITIES_KEY, []);
+    const cap = limit ?? getLimit();
+    return list
+      .slice()
+      .sort((a, b) => b.at - a.at)
+      .slice(0, cap);
+  };
+
+  const revert = async (entry: ActivityEntry) => {
+    try {
+      if (entry.action === "create") {
+        await service.deleteModuleItem(entry.module, entry.id);
+        toast.push({
+          id: Math.random().toString(36).slice(2),
+          type: "success" as any,
+          title: "Reverted creation",
+          position: "tr",
+          body: `${entry.module} ${entry.id} deleted`,
+        });
+      } else if (entry.action === "update") {
+        await service.updateModuleItem(entry.module, entry.id, entry.beforeData);
+        toast.push({
+          id: Math.random().toString(36).slice(2),
+          type: "success" as any,
+          title: "Reverted update",
+          position: "tr",
+          body: `${entry.module} ${entry.id} restored`,
+        });
+      } else if (entry.action === "delete") {
+        await service.createModuleItem(entry.module, entry.beforeData);
+        toast.push({
+          id: Math.random().toString(36).slice(2),
+          type: "success" as any,
+          title: "Reverted deletion",
+          position: "tr",
+          body: `${entry.module} ${entry.id} recreated`,
+        });
+      }
+    } catch (e: any) {
+      toast.push({
+        id: Math.random().toString(36).slice(2),
+        type: "error" as any,
+        title: "Revert failed",
+        position: "tr",
+        body: e?.message || "Operation failed",
+      });
+      throw e;
+    }
+  };
+
+  const clearAll = () => {
+    try {
+      localStorage.removeItem(VISITS_KEY);
+      localStorage.removeItem(ACTIVITIES_KEY);
+    } catch {
+      /* ignore */
+    }
+    emit("visits:updated", null);
+    emit("activities:updated", null);
+  };
+
+  return {
+    start,
+    stop,
+    recordVisit,
+    getRecentVisits,
+    getRecentActivities,
+    revert,
+    clearAll,
+  };
+}
+
+
+
