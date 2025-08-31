@@ -1,40 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-
+import type { RouteRecordRaw } from "vue-router";
+import { genericRoutes } from "./generic";
+import { customRoutes } from "./custom";
 const routes: RouteRecordRaw[] = [
-  {
-    path: "/",
-    component: () => import("../views/Dashboard.vue"),
-    meta: { title: "Admin Dashboard", requiresAuth: true, keepAlive: true },
-  },
-  {
-    path: "/:module",
-    component: () => import("../views/ItemListView.vue"),
-    meta: { title: "Module", requiresAuth: true, keepAlive: true },
-  },
-  {
-    path: "/:module/:id",
-    component: () => import("../views/ItemDetailView.vue"),
-    meta: { title: "Detail", requiresAuth: true, keepAlive: true },
-  },
-  // Auth
-  {
-    path: "/auth",
-    name: "Auth",
-    component: () => import("../views/Auth.vue"),
-    meta: { title: "Sign In" },
-  },
-  {
-    path: "/not-found",
-    component: () => import("../views/NotFound.vue"),
-    meta: { title: "Not Found" },
-  },
-  {
-    path: "/:pathMatch(.*)*",
-    component: () => import("../views/NotFound.vue"),
-    meta: { title: "Not Found" },
-  },
+  ...genericRoutes,
+  ...customRoutes,
 ];
 
 const router = createRouter({
