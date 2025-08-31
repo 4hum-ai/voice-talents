@@ -125,18 +125,28 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   return { request, baseUrl };
 }
 
-let singletonClient: ApiClient | null = null;
+const clientsByBase: Record<string, ApiClient> = {};
 
-export function useApiGateway(base: string = "movie/api"): ApiClient {
-  if (singletonClient) return singletonClient;
+export function useApiGateway(base: string = "movie"): ApiClient {
+  // Allow env override for base path when provided
+  const envBasePath = (import.meta as any).env?.VITE_API_BASE_PATH as
+    | string
+    | undefined;
+  const normalizedBase =
+    envBasePath && envBasePath.length > 0
+      ? envBasePath.replace(/^\/+/, "").replace(/\/+$/, "")
+      : base.replace(/^\/+/, "").replace(/\/+$/, "");
+
+  if (clientsByBase[normalizedBase]) return clientsByBase[normalizedBase];
   const API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as
     | string
     | undefined;
   let baseUrl = "";
   if (API_BASE && /^https?:\/\//i.test(API_BASE)) {
     const root = API_BASE.replace(/\/$/, "");
-    baseUrl = `${root}/${base.replace(/^\//, "")}`;
+    baseUrl = `${root}/${normalizedBase}`;
   }
-  singletonClient = createApiClient({ baseUrl });
-  return singletonClient;
+  const client = createApiClient({ baseUrl });
+  clientsByBase[normalizedBase] = client;
+  return client;
 }
