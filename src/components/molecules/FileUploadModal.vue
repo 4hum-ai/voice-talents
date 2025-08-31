@@ -57,19 +57,13 @@
                 :accept="accept"
                 :multiple="true"
                 @change="onPick"
-              >
+              />
             </div>
           </div>
 
-          <div
-            v-else
-            class="overflow-y-auto sm:h-full"
-          >
+          <div v-else class="overflow-y-auto sm:h-full">
             <!-- Single file preview -->
-            <div
-              v-if="previews.length === 1"
-              class="space-y-3"
-            >
+            <div v-if="previews.length === 1" class="space-y-3">
               <div
                 class="overflow-hidden rounded-lg border bg-black/5 dark:bg-white/5"
               >
@@ -78,7 +72,7 @@
                   :src="previews[0].url"
                   alt="preview"
                   class="h-auto w-full"
-                >
+                />
                 <video
                   v-else-if="previews[0].kind === 'video'"
                   :src="previews[0].url"
@@ -110,8 +104,10 @@
                     </div>
                     <div>
                       Size: {{ prettySize(previews[0].size) }}
-                      <span v-if="previews[0].duration !== undefined">• Duration:
-                        {{ prettyDuration(previews[0].duration) }}</span>
+                      <span v-if="previews[0].duration !== undefined"
+                        >• Duration:
+                        {{ prettyDuration(previews[0].duration) }}</span
+                      >
                     </div>
                   </div>
                   <button
@@ -125,10 +121,7 @@
             </div>
 
             <!-- Multi file list -->
-            <div
-              v-else
-              class="space-y-3"
-            >
+            <div v-else class="space-y-3">
               <div class="flex items-center justify-between">
                 <div
                   class="text-sm font-medium text-gray-900 dark:text-gray-100"
@@ -156,7 +149,9 @@
                     </div>
                     <div class="text-[11px] text-gray-500 dark:text-gray-400">
                       {{ p.format.toUpperCase() }} • {{ prettySize(p.size) }}
-                      <span v-if="p.duration !== undefined">• {{ prettyDuration(p.duration) }}</span>
+                      <span v-if="p.duration !== undefined"
+                        >• {{ prettyDuration(p.duration) }}</span
+                      >
                     </div>
                   </div>
                   <button
@@ -176,75 +171,57 @@
         <div class="col-span-1 overflow-y-auto p-4 sm:col-span-2 sm:p-6">
           <div class="space-y-3">
             <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Type</label>
+              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400"
+                >Type</label
+              >
               <select
                 v-model="form.type"
                 class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               >
-                <option value="original">
-                  Original
-                </option>
-                <option value="dubbed">
-                  Dubbed
-                </option>
-                <option value="trailer">
-                  Trailer
-                </option>
-                <option value="voice_over">
-                  Voice Over
-                </option>
-                <option value="subtitle">
-                  Subtitle
-                </option>
+                <option value="original">Original</option>
+                <option value="dubbed">Dubbed</option>
+                <option value="trailer">Trailer</option>
+                <option value="voice_over">Voice Over</option>
+                <option value="subtitle">Subtitle</option>
               </select>
             </div>
 
             <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Language</label>
+              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400"
+                >Language</label
+              >
               <select
                 v-model="form.language"
                 class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               >
-                <option value="en">
-                  English
-                </option>
-                <option value="es">
-                  Spanish
-                </option>
-                <option value="fr">
-                  French
-                </option>
-                <option value="de">
-                  German
-                </option>
-                <option value="ja">
-                  Japanese
-                </option>
-                <option value="ko">
-                  Korean
-                </option>
-                <option value="zh">
-                  Chinese
-                </option>
-                <option value="hi">
-                  Hindi
-                </option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="zh">Chinese</option>
+                <option value="hi">Hindi</option>
               </select>
             </div>
             <div
               v-if="previews.length === 1 && previews[0].duration !== undefined"
             >
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Duration</label>
+              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400"
+                >Duration</label
+              >
               <input
                 :value="prettyDuration(previews[0].duration as number)"
                 type="text"
                 readonly
                 disabled
                 class="w-full cursor-not-allowed rounded-md border bg-gray-50 px-2 py-1.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
-              >
+              />
             </div>
             <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Description</label>
+              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400"
+                >Description</label
+              >
               <textarea
                 v-model="form.description"
                 rows="4"
@@ -252,7 +229,9 @@
               />
             </div>
             <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Tags</label>
+              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400"
+                >Tags</label
+              >
               <TagInput
                 v-model="form.tags"
                 placeholder="Add tag and press Enter"

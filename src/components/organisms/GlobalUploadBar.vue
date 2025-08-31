@@ -10,11 +10,7 @@
         Uploads ({{ items.length }})
       </div>
       <ul class="max-h-[240px] divide-y overflow-y-auto dark:divide-gray-800">
-        <li
-          v-for="it in items"
-          :key="it.id"
-          class="px-3 py-2 text-xs"
-        >
+        <li v-for="it in items" :key="it.id" class="px-3 py-2 text-xs">
           <div class="truncate text-gray-900 dark:text-gray-100">
             {{ it.fileName }}
           </div>
@@ -27,14 +23,12 @@
             </div>
             <span
               class="w-10 text-right text-gray-600 tabular-nums dark:text-gray-300"
-            >{{ it.progress }}%</span>
+              >{{ it.progress }}%</span
+            >
           </div>
           <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
             {{ it.status }} • {{ prettySize(it.size) }}
-            <span
-              v-if="it.error"
-              class="text-red-600"
-            > • {{ it.error }}</span>
+            <span v-if="it.error" class="text-red-600"> • {{ it.error }}</span>
           </div>
         </li>
       </ul>

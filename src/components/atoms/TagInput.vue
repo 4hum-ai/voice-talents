@@ -21,7 +21,7 @@
       @keydown.enter.prevent="commit"
       @keydown="onKeydown"
       @blur="commit"
-    >
+    />
   </div>
 </template>
 
