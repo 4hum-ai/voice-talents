@@ -23,10 +23,16 @@
             />
           </svg>
         </button>
-        <div v-if="hasLeftSlot" class="min-w-0">
+        <div
+          v-if="hasLeftSlot"
+          class="min-w-0"
+        >
           <slot name="left" />
         </div>
-        <div v-else class="min-w-0">
+        <div
+          v-else
+          class="min-w-0"
+        >
           <div
             class="truncate text-base font-semibold text-gray-900 dark:text-gray-100"
           >

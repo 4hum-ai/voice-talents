@@ -2,41 +2,34 @@
   <span
     v-if="displayKind === 'text'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ textValue }}</span
-  >
+  >{{ textValue }}</span>
   <span
     v-else-if="displayKind === 'boolean'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ value ? "Yes" : "No" }}</span
-  >
+  >{{ value ? "Yes" : "No" }}</span>
   <span
     v-else-if="displayKind === 'date'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ dateValue }}</span
-  >
+  >{{ dateValue }}</span>
   <span
     v-else-if="displayKind === 'number'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ numberValue }}</span
-  >
+  >{{ numberValue }}</span>
   <span
     v-else-if="displayKind === 'currency'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ currencyValue }}</span
-  >
+  >{{ currencyValue }}</span>
   <span
     v-else-if="displayKind === 'rating'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ ratingValue }}</span
-  >
+  >{{ ratingValue }}</span>
   <span
     v-else-if="displayKind === 'badge'"
     :class="[
       'inline-flex items-center rounded px-2 py-0.5 text-xs font-medium',
       badgeClass,
     ]"
-    >{{ textValue }}</span
-  >
+  >{{ textValue }}</span>
   <span
     v-else-if="displayKind === 'status'"
     class="inline-flex items-center gap-2"
@@ -44,8 +37,7 @@
     <span :class="['h-2 w-2 rounded-full', statusDotClass]" />
     <span
       :class="['rounded px-2 py-0.5 text-xs font-medium', statusBadgeClass]"
-      >{{ textValue }}</span
-    >
+    >{{ textValue }}</span>
   </span>
   <span
     v-else-if="displayKind === 'color'"
@@ -68,8 +60,7 @@
       target="_blank"
       rel="noopener noreferrer"
       class="text-primary-600 dark:text-primary-400 break-all hover:underline"
-      >{{ String(value) }}</a
-    >
+    >{{ String(value) }}</a>
     <button
       type="button"
       class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
@@ -86,8 +77,7 @@
     <a
       :href="`mailto:${String(value)}`"
       class="text-primary-600 dark:text-primary-400 break-words hover:underline"
-      >{{ String(value) }}</a
-    >
+    >{{ String(value) }}</a>
     <button
       type="button"
       class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
@@ -104,8 +94,7 @@
     <a
       :href="`tel:${String(value)}`"
       class="text-primary-600 dark:text-primary-400 break-words hover:underline"
-      >{{ String(value) }}</a
-    >
+    >{{ String(value) }}</a>
     <button
       type="button"
       class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
@@ -118,21 +107,25 @@
   <span
     v-else-if="displayKind === 'array'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ Array.isArray(value) ? value.join(", ") : textValue }}</span
-  >
+  >{{ Array.isArray(value) ? value.join(", ") : textValue }}</span>
   <span
     v-else-if="displayKind === 'object'"
     class="text-sm text-gray-900 dark:text-gray-100"
-    >{{ objectValue }}</span
+  >{{ objectValue }}</span>
+  <span
+    v-else-if="displayKind === 'image'"
+    class="inline-flex items-center"
   >
-  <span v-else-if="displayKind === 'image'" class="inline-flex items-center">
     <img
       :src="String(value)"
       alt=""
       class="h-10 w-10 rounded bg-gray-100 object-cover dark:bg-gray-800"
-    />
+    >
   </span>
-  <span v-else-if="displayKind === 'video'" class="inline-flex items-center">
+  <span
+    v-else-if="displayKind === 'video'"
+    class="inline-flex items-center"
+  >
     <video
       :src="String(value)"
       class="h-16 w-24 rounded bg-gray-100 object-cover dark:bg-gray-800"
@@ -143,19 +136,22 @@
     v-else-if="displayKind === 'country'"
     class="inline-flex items-center gap-2"
   >
-    <span v-if="country.code" class="shrink-0">
+    <span
+      v-if="country.code"
+      class="shrink-0"
+    >
       <picture>
         <source
           :srcset="`https://flagcdn.com/${country.code}.svg`"
           type="image/svg+xml"
-        />
+        >
         <img
           :src="`https://flagcdn.com/24x18/${country.code}.png`"
           alt=""
           width="24"
           height="18"
           class="rounded-sm"
-        />
+        >
       </picture>
     </span>
     <span class="text-sm text-gray-900 dark:text-gray-100">{{

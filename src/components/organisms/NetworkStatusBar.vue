@@ -12,14 +12,15 @@
         <span
           class="inline-block h-2 w-2 animate-pulse rounded-full bg-white"
         />
-        <span
-          >You're offline. Some features are unavailable until connection is
-          restored.</span
-        >
+        <span>You're offline. Some features are unavailable until connection is
+          restored.</span>
       </div>
     </div>
   </transition>
-  <div class="h-0" aria-hidden="true" />
+  <div
+    class="h-0"
+    aria-hidden="true"
+  />
   <!-- spacer for overlayed banner; content stays clickable -->
 </template>
 

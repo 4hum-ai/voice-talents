@@ -3,8 +3,7 @@
     <span
       v-if="label"
       class="hidden text-xs text-gray-500 sm:inline dark:text-gray-400"
-      >{{ label }}</span
-    >
+    >{{ label }}</span>
     <div class="relative">
       <select
         :id="id"
@@ -22,10 +21,18 @@
         ]"
         @change="onChange"
       >
-        <option v-if="placeholder" disabled value="">
+        <option
+          v-if="placeholder"
+          disabled
+          value=""
+        >
           {{ placeholder }}
         </option>
-        <option v-for="opt in options" :key="opt.key" :value="opt.key">
+        <option
+          v-for="opt in options"
+          :key="opt.key"
+          :value="opt.key"
+        >
           {{ opt.key === modelValue ? "✓ " + opt.label : opt.label }}
         </option>
       </select>

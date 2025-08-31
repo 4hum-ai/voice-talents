@@ -10,20 +10,29 @@
       <template #actions>
         <div class="flex flex-wrap items-center gap-3 sm:flex-nowrap">
           <div class="w-full sm:w-64">
-            <label class="sr-only" for="module-search">Search modules</label>
+            <label
+              class="sr-only"
+              for="module-search"
+            >Search modules</label>
             <SearchInput
               id="module-search"
               v-model="filter"
               placeholder="Search modules…"
             />
           </div>
-          <ActionsMenu :items="menuItems" @select="onMenuSelect" />
+          <ActionsMenu
+            :items="menuItems"
+            @select="onMenuSelect"
+          />
         </div>
       </template>
     </AppBar>
     <div class="h-4" />
     <main class="p-6">
-      <section v-if="isLoading" class="mt-6">
+      <section
+        v-if="isLoading"
+        class="mt-6"
+      >
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div
             v-for="i in 6"
@@ -43,7 +52,10 @@
         </div>
       </section>
 
-      <section v-else-if="visibleModules.length === 0" class="mt-6">
+      <section
+        v-else-if="visibleModules.length === 0"
+        class="mt-6"
+      >
         <div
           class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
         >
@@ -64,8 +76,12 @@
               />
             </svg>
           </div>
-          <div v-if="filter">No modules match “{{ filter }}”.</div>
-          <div v-else>No modules available.</div>
+          <div v-if="filter">
+            No modules match “{{ filter }}”.
+          </div>
+          <div v-else>
+            No modules available.
+          </div>
         </div>
       </section>
 
@@ -130,32 +146,76 @@
       <section class="mt-10 space-y-6">
         <div class="grid gap-4 lg:grid-cols-2">
           <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Recent visits</h2>
-            <div v-if="recentVisits.length === 0" class="text-sm text-gray-500 dark:text-gray-400">No recent visits yet.</div>
-            <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
-              <li v-for="v in recentVisits" :key="`${v.module}:${v.id}`" class="flex items-center justify-between gap-3 py-2">
+            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Recent visits
+            </h2>
+            <div
+              v-if="recentVisits.length === 0"
+              class="text-sm text-gray-500 dark:text-gray-400"
+            >
+              No recent visits yet.
+            </div>
+            <ul
+              v-else
+              class="divide-y divide-gray-200 dark:divide-gray-700"
+            >
+              <li
+                v-for="v in recentVisits"
+                :key="`${v.module}:${v.id}`"
+                class="flex items-center justify-between gap-3 py-2"
+              >
                 <div class="min-w-0">
-                  <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ labelFor(v.module, v.data) }}</div>
-                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">{{ v.module }} • {{ formatTimeAgo(v.lastVisited) }} • {{ v.count }}×</div>
+                  <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ labelFor(v.module, v.data) }}
+                  </div>
+                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">
+                    {{ v.module }} • {{ formatTimeAgo(v.lastVisited) }} • {{ v.count }}×
+                  </div>
                 </div>
-                <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700" @click="openItem(v.module, v.id)">Open</button>
+                <button
+                  class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700"
+                  @click="openItem(v.module, v.id)"
+                >
+                  Open
+                </button>
               </li>
             </ul>
           </div>
 
           <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Recent activities</h2>
-            <div v-if="recentActivities.length === 0" class="text-sm text-gray-500 dark:text-gray-400">No recent activities yet.</div>
-            <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
-              <li v-for="a in recentActivities" :key="`${a.module}:${a.id}:${a.at}`" class="flex items-center justify-between gap-3 py-2">
+            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Recent activities
+            </h2>
+            <div
+              v-if="recentActivities.length === 0"
+              class="text-sm text-gray-500 dark:text-gray-400"
+            >
+              No recent activities yet.
+            </div>
+            <ul
+              v-else
+              class="divide-y divide-gray-200 dark:divide-gray-700"
+            >
+              <li
+                v-for="a in recentActivities"
+                :key="`${a.module}:${a.id}:${a.at}`"
+                class="flex items-center justify-between gap-3 py-2"
+              >
                 <div class="min-w-0">
                   <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
                     <span :class="['mr-2 inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium', actionBadgeClass(a.action)]">{{ a.action }}</span>
                     {{ labelFor(a.module, a.afterData || a.beforeData) }}
                   </div>
-                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">{{ a.module }} • {{ formatTimeAgo(a.at) }}</div>
+                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">
+                    {{ a.module }} • {{ formatTimeAgo(a.at) }}
+                  </div>
                 </div>
-                <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700" @click="onRevert(a)">Revert</button>
+                <button
+                  class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700"
+                  @click="onRevert(a)"
+                >
+                  Revert
+                </button>
               </li>
             </ul>
           </div>
@@ -308,7 +368,7 @@ onMounted(async () => {
   try {
     onBus("visits:updated", () => refreshActivityLists());
     onBus("activities:updated", () => refreshActivityLists());
-  } catch {}
+  } catch { /* ignore */ }
 });
 
 // Visual helpers moved to Avatar atom
@@ -354,7 +414,7 @@ async function onRevert(a: any) {
   try {
     await activity.revert(a);
     refreshActivityLists();
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 function labelFor(moduleName: string, data: any): string {

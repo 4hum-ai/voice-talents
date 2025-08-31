@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!uiConfig" class="p-6 text-sm text-gray-600 dark:text-gray-300">
+  <div
+    v-if="!uiConfig"
+    class="p-6 text-sm text-gray-600 dark:text-gray-300"
+  >
     UI configuration not available.
   </div>
   <div v-else>
@@ -63,7 +66,10 @@
       @item-click="(item: any) => onAction('view', item)"
       @filters-change="onFiltersChange"
     />
-    <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">
+    <div
+      v-else
+      class="p-6 text-sm text-gray-600 dark:text-gray-300"
+    >
       Selected view not available for this module.
     </div>
   </div>
@@ -311,7 +317,7 @@ async function onKanbanStatusChange(payload: {
       [groupByField]: payload.to,
     });
     await load(pagination.value.page);
-  } catch (e) {
+  } catch (_e) {
     // ignore; error surfaced by caller via existing error handling if needed
   }
 }

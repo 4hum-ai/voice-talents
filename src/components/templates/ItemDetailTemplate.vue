@@ -40,8 +40,14 @@
     </div>
 
     <main class="p-4">
-      <div v-if="loading" class="space-y-6">
-        <div v-if="detailSections && detailSections.length" class="space-y-6">
+      <div
+        v-if="loading"
+        class="space-y-6"
+      >
+        <div
+          v-if="detailSections && detailSections.length"
+          class="space-y-6"
+        >
           <section
             v-for="(section, sIdx) in detailSections"
             :key="`skeleton-sec-${sIdx}`"
@@ -91,13 +97,22 @@
           </div>
         </div>
       </div>
-      <div v-else-if="error" class="text-error-600 dark:text-error-400 text-sm">
+      <div
+        v-else-if="error"
+        class="text-error-600 dark:text-error-400 text-sm"
+      >
         {{ error }}
       </div>
       <div v-else>
-        <slot name="details" :item="item">
+        <slot
+          name="details"
+          :item="item"
+        >
           <!-- Use configured detailView when available -->
-          <div v-if="detailSections && detailSections.length" class="space-y-6">
+          <div
+            v-if="detailSections && detailSections.length"
+            class="space-y-6"
+          >
             <section
               v-for="(section, sIdx) in detailSections"
               :key="`sec-${sIdx}`"
@@ -149,8 +164,7 @@
                 }}</span>
                 <span
                   class="text-sm break-all text-gray-900 dark:text-gray-100"
-                  >{{ formatValue(value) }}</span
-                >
+                >{{ formatValue(value) }}</span>
               </div>
             </div>
           </div>

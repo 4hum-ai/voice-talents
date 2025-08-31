@@ -5,7 +5,10 @@
   <GlobalMediaPlayer />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
-      <component :is="Component" :key="route.path" />
+      <component
+        :is="Component"
+        :key="route.path"
+      />
     </KeepAlive>
     <div
       v-if="isBootLoading"

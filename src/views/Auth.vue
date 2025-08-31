@@ -10,7 +10,10 @@
       class="relative rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur dark:border-gray-800 dark:bg-gray-900/60"
     >
       <div class="absolute top-4 right-4">
-        <ThemeToggle :is-dark="isDark" @toggle="toggleTheme()" />
+        <ThemeToggle
+          :is-dark="isDark"
+          @toggle="toggleTheme()"
+        />
       </div>
       <div class="mb-6 flex items-center gap-3">
         <div
@@ -30,7 +33,10 @@
         </div>
       </div>
 
-      <form class="space-y-4" @submit.prevent="handleEmailLogin">
+      <form
+        class="space-y-4"
+        @submit.prevent="handleEmailLogin"
+      >
         <div class="relative">
           <span
             class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-gray-500"
@@ -55,7 +61,7 @@
             placeholder="Email"
             class="focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-600 dark:focus:ring-primary-600 w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-3 pl-10 text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
             required
-          />
+          >
         </div>
 
         <div class="relative">
@@ -79,7 +85,7 @@
             placeholder="Password"
             class="focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-600 dark:focus:ring-primary-600 w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-10 pl-10 text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
             required
-          />
+          >
           <button
             type="button"
             class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
@@ -123,14 +129,13 @@
               v-model="remember"
               type="checkbox"
               class="text-primary-600 focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900"
-            />
+            >
             <span>Remember me</span>
           </label>
           <a
             href="#"
             class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >Forgot password?</a
-          >
+          >Forgot password?</a>
         </div>
 
         <button
@@ -138,7 +143,10 @@
           class="btn-primary h-11 w-full disabled:cursor-not-allowed disabled:opacity-60"
         >
           <span v-if="!isLoading">Sign In</span>
-          <span v-else class="inline-flex items-center justify-center gap-2">
+          <span
+            v-else
+            class="inline-flex items-center justify-center gap-2"
+          >
             <span
               class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-transparent dark:border-gray-500"
             />
@@ -148,11 +156,10 @@
       </form>
 
       <div class="relative my-6">
-        <hr class="border-gray-200 dark:border-gray-800" />
+        <hr class="border-gray-200 dark:border-gray-800">
         <span
           class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/80 px-2 text-xs tracking-wide text-gray-500 uppercase dark:bg-gray-900/60 dark:text-gray-400"
-          >Or</span
-        >
+        >Or</span>
       </div>
 
       <button
@@ -190,7 +197,10 @@
         <span class="font-medium">Continue with Google</span>
       </button>
 
-      <p v-if="error" class="text-error-600 dark:text-error-300 mt-4 text-sm">
+      <p
+        v-if="error"
+        class="text-error-600 dark:text-error-300 mt-4 text-sm"
+      >
         {{ error }}
       </p>
     </div>

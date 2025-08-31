@@ -89,7 +89,7 @@ async function load() {
     lastLoadedId.value = id.value;
     try {
       activity.recordVisit({ module: module.value, id: id.value, data: res });
-    } catch {}
+    } catch { /* ignore */ }
   } catch (e: any) {
     error.value = e?.message || "Failed to load item";
   } finally {
@@ -101,7 +101,7 @@ function goBack() {
   router.back();
 }
 
-function onEdit() {}
+function onEdit() { /* no-op: handled by parent template */ }
 
 async function onDelete() {
   if (!id.value) return;

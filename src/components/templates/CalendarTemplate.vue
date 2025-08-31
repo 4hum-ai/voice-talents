@@ -1,6 +1,10 @@
 <template>
   <div class="min-h-screen">
-    <AppBar :loading="loading" :show-back="true" @back="router.back()">
+    <AppBar
+      :loading="loading"
+      :show-back="true"
+      @back="router.back()"
+    >
       <template #left>
         <div class="min-w-0">
           <div
@@ -88,15 +92,15 @@
               <div
                 class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"
               >
-                <label class="text-xs text-gray-500 dark:text-gray-400"
-                  >Fields</label
-                >
+                <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
                 <select
                   v-model="selectedSearchField"
                   class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                   @change="handleSearchInput"
                 >
-                  <option value="all">All fields</option>
+                  <option value="all">
+                    All fields
+                  </option>
                   <option
                     v-for="f in searchableFieldOptions"
                     :key="f.key"

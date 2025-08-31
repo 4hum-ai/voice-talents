@@ -99,7 +99,7 @@ export const useAuthStore = defineStore("auth", () => {
         const { clearAll, stop } = useActivity();
         clearAll();
         stop();
-      } catch {}
+      } catch { /* ignore */ }
       // Clear listeners
       if (unsubscribe) {
         unsubscribe();
