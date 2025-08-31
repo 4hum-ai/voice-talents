@@ -1,5 +1,11 @@
 import { ref } from "vue";
-import { useEventBus, type CrudEventPayload } from "./useEventBus";
+import { useEventBus } from "@vueuse/core";
+import {
+  EVENT_CRUD,
+  EVENT_ACTIVITIES_UPDATED,
+  EVENT_VISITS_UPDATED,
+  type CrudEventPayload,
+} from "@/types/events";
 import { useToast } from "./useToast";
 import { useMovieService } from "./useMovieService";
 
@@ -52,14 +58,16 @@ function getLimit(): number {
 }
 
 export function useActivity() {
-  const { emit, on } = useEventBus();
+  const crudBus = useEventBus<CrudEventPayload>(EVENT_CRUD);
+  const visitsBus = useEventBus<null>(EVENT_VISITS_UPDATED);
+  const activitiesBus = useEventBus<null>(EVENT_ACTIVITIES_UPDATED);
   const toast = useToast();
   const service = useMovieService();
 
   const start = () => {
     if (started.value) return;
     started.value = true;
-    offCrud = on<CrudEventPayload>("crud", (evt) => {
+    offCrud = crudBus.on((evt: CrudEventPayload) => {
       try {
         logActivityFromEvent(evt);
       } catch {
@@ -104,7 +112,7 @@ export function useActivity() {
       return b.lastVisited - a.lastVisited;
     });
     writeJson(VISITS_KEY, list.slice(0, limit));
-    emit("visits:updated", null);
+    visitsBus.emit(null);
   };
 
   const getRecentVisits = (limit?: number): VisitEntry[] => {
@@ -126,7 +134,7 @@ export function useActivity() {
     });
     // Cap
     writeJson(ACTIVITIES_KEY, list.slice(0, limit));
-    emit("activities:updated", null);
+    activitiesBus.emit(null);
   }
 
   const getRecentActivities = (limit?: number): ActivityEntry[] => {
@@ -191,8 +199,8 @@ export function useActivity() {
     } catch {
       /* ignore */
     }
-    emit("visits:updated", null);
-    emit("activities:updated", null);
+    visitsBus.emit(null);
+    activitiesBus.emit(null);
   };
 
   return {

@@ -1,6 +1,11 @@
 import { getAuth } from "firebase/auth";
-import { useToast } from "@/composables/useToast";
-import { useEventBus } from "@/composables/useEventBus";
+import { useEventBus } from "@vueuse/core";
+import {
+  EVENT_HTTP_ACTIVE,
+  EVENT_HTTP_ERROR,
+  type HttpActivePayload,
+  type HttpErrorPayload,
+} from "@/types/events";
 
 export interface ApiClientOptions {
   baseUrl: string;
@@ -37,7 +42,8 @@ async function buildAuthHeader(): Promise<Record<string, string>> {
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
   const { baseUrl, defaultHeaders = {}, timeoutMs } = options;
-  const { emit } = useEventBus();
+  const activeBus = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE);
+  const errorBus = useEventBus<HttpErrorPayload>(EVENT_HTTP_ERROR);
   let activeRequests = 0;
 
   const request = async (
@@ -62,31 +68,26 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
           : undefined
         : undefined;
 
-    const { push } = useToast();
-
     let response: Response;
     // mark start
     activeRequests += 1;
-    emit("http:active", { active: activeRequests });
+    activeBus.emit({ active: activeRequests });
     try {
       response = await fetch(url, { ...opts, headers, signal: computedSignal });
     } catch (error: any) {
       // Suppress toasts for intentional aborts
       if (error?.name !== "AbortError") {
-        push({
-          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          type: "error",
-          position: "tr",
-          title: "Network error",
-          body: `${opts.method ?? "GET"} ${path}: ${error?.message ?? "Request failed"}`,
-          timeout: 6000,
+        errorBus.emit({
+          method: String(opts.method ?? "GET"),
+          path,
+          message: String(error?.message ?? "Request failed"),
         });
       }
       throw error;
     } finally {
       // mark end
       activeRequests = Math.max(0, activeRequests - 1);
-      emit("http:active", { active: activeRequests });
+      activeBus.emit({ active: activeRequests });
     }
 
     if (response.status === 401) {
@@ -99,7 +100,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
           };
           // mark start for retry
           activeRequests += 1;
-          emit("http:active", { active: activeRequests });
+          activeBus.emit({ active: activeRequests });
           try {
             response = await fetch(url, {
               ...opts,
@@ -108,7 +109,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
             });
           } finally {
             activeRequests = Math.max(0, activeRequests - 1);
-            emit("http:active", { active: activeRequests });
+            activeBus.emit({ active: activeRequests });
           }
         }
       } catch (_) {

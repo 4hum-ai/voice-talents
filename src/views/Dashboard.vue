@@ -228,7 +228,7 @@
 
 <script setup lang="ts">
 defineOptions({ name: "Dashboard" });
-import { onMounted, ref, computed } from "vue";
+import { onMounted, onBeforeUnmount, ref, computed } from "vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 import AppBar from "@/components/molecules/AppBar.vue";
 import Avatar from "@/components/atoms/Avatar.vue";
@@ -243,7 +243,8 @@ import { useRouter } from "vue-router";
 import { useTheme } from "@/composables/useTheme";
 import LoadingIcon from "~icons/mdi/loading";
 import { useActivity } from "@/composables/useActivity";
-import { useEventBus } from "@/composables/useEventBus";
+import { useEventBus } from "@vueuse/core";
+import { EVENT_ACTIVITIES_UPDATED, EVENT_VISITS_UPDATED } from "@/types/events";
 
 // Intentionally not using router routes for modules; rely on admin-ui modules API
 
@@ -254,7 +255,10 @@ const auth = useAuthStore();
 const router = useRouter();
 const { isDark, toggleTheme } = useTheme();
 const activity = useActivity();
-const { on: onBus } = useEventBus();
+const visitsBus = useEventBus<null>(EVENT_VISITS_UPDATED);
+const activitiesBus = useEventBus<null>(EVENT_ACTIVITIES_UPDATED);
+let offVisits: (() => void) | null = null;
+let offActivities: (() => void) | null = null;
 
 const counts = ref<Record<string, number | null>>({});
 const countsLoading = ref<Record<string, boolean>>({});
@@ -367,11 +371,16 @@ onMounted(async () => {
   await loadCounts();
   refreshActivityLists();
   try {
-    onBus("visits:updated", () => refreshActivityLists());
-    onBus("activities:updated", () => refreshActivityLists());
+    offVisits = visitsBus.on(() => refreshActivityLists());
+    offActivities = activitiesBus.on(() => refreshActivityLists());
   } catch {
     /* ignore */
   }
+});
+
+onBeforeUnmount(() => {
+  if (offVisits) offVisits();
+  if (offActivities) offActivities();
 });
 
 // Visual helpers moved to Avatar atom

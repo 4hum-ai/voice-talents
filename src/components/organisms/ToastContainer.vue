@@ -64,9 +64,14 @@
 import { computed } from "vue";
 import ToastMessage from "../molecules/ToastMessage.vue";
 import { useToast } from "@/composables/useToast";
+import { onMounted, onBeforeUnmount } from "vue";
+import { useEventBus } from "@vueuse/core";
+import { EVENT_HTTP_ERROR, type HttpErrorPayload } from "@/types/events";
 
 // Composables
 const { messages, remove } = useToast();
+const errorBus = useEventBus<HttpErrorPayload>(EVENT_HTTP_ERROR);
+let offHttpError: (() => void) | null = null;
 
 // Computed properties for each position
 const trMessages = computed(() =>
@@ -84,6 +89,24 @@ const brMessages = computed(() =>
 const blMessages = computed(() =>
   messages.value.filter((msg) => msg.position === "bl"),
 );
+
+onMounted(() => {
+  offHttpError = errorBus.on(({ method, path, message }) => {
+    const { push } = useToast();
+    push({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      type: "error",
+      position: "tr",
+      title: "Network error",
+      body: `${method} ${path}: ${message}`,
+      timeout: 6000,
+    });
+  });
+});
+
+onBeforeUnmount(() => {
+  if (offHttpError) offHttpError();
+});
 </script>
 
 <style scoped>
