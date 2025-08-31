@@ -181,7 +181,9 @@
           <div
             class="relative flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
           >
-            <template v-if="mediaKind(item) === 'image' && mediaSrc(item)">
+            <template
+              v-if="mediaKind(mediaSrc(item)) === 'image' && mediaSrc(item)"
+            >
               <img
                 :src="mediaSrc(item) || undefined"
                 alt=""
@@ -189,7 +191,9 @@
               />
             </template>
 
-            <template v-else-if="mediaKind(item) === 'video'">
+            <template
+              v-else-if="mediaKind(primaryMediaValue(item)) === 'video'"
+            >
               <template v-if="posterUrl(item)">
                 <img
                   :src="posterUrl(item) || undefined"
@@ -217,7 +221,9 @@
               </span>
             </template>
 
-            <template v-else-if="mediaKind(item) === 'audio'">
+            <template
+              v-else-if="mediaKind(primaryMediaValue(item)) === 'audio'"
+            >
               <div
                 class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700"
               >
@@ -856,21 +862,30 @@ const mediaFormat = (item: any): string => {
   return ext ? ext.toUpperCase() : "";
 };
 
-const mediaKind = (item: any): MediaKind => {
-  const ct = String(item?.contentType || "").toLowerCase();
-  if (ct.startsWith("image/")) return "image";
-  if (ct.startsWith("video/")) return "video";
-  if (ct.startsWith("audio/")) return "audio";
-  const fmt = String(item?.format || "").toLowerCase();
-  if (imageExts.has(fmt)) return "image";
-  if (videoExts.has(fmt)) return "video";
-  if (audioExts.has(fmt)) return "audio";
-  const url = String(item?.fileUrl || item?.url || "");
-  const ext = getFileExtension(url);
+const mediaKind = (value: string | null | undefined): MediaKind => {
+  const raw = (value ?? "").trim();
+  if (!raw) return "other";
+  const lower = raw.toLowerCase();
+  // Handle MIME-like content type strings
+  if (lower.startsWith("image/")) return "image";
+  if (lower.startsWith("video/")) return "video";
+  if (lower.startsWith("audio/")) return "audio";
+
+  // Handle explicit format or URLs by extension
+  const ext = getFileExtension(lower);
   if (imageExts.has(ext)) return "image";
   if (videoExts.has(ext)) return "video";
   if (audioExts.has(ext)) return "audio";
   return "other";
+};
+
+const primaryMediaValue = (item: any): string | null => {
+  const ct = String(item?.contentType || "");
+  if (ct) return ct;
+  const fmt = String(item?.format || "");
+  if (fmt) return fmt;
+  const url = String(item?.fileUrl || item?.url || previewUrl(item) || "");
+  return url || null;
 };
 
 const mediaSrc = (item: any): string | null => {
@@ -880,7 +895,7 @@ const mediaSrc = (item: any): string | null => {
   const thumb = String(item?.thumbnailUrl || "");
   if (thumb) return thumb;
   const file = String(item?.fileUrl || "");
-  if (file && (isImage(file) || mediaKind(item) === "image")) return file;
+  if (file && (isImage(file) || mediaKind(file) === "image")) return file;
   return null;
 };
 
