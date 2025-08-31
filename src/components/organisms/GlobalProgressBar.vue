@@ -18,13 +18,15 @@
 <script setup lang="ts">
 // @ts-nocheck
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useEventBus } from "@/composables/useEventBus";
+import { useEventBus } from "@vueuse/core";
+import { EVENT_HTTP_ACTIVE, type HttpActivePayload } from "@/types/events";
 
 const isActive = ref(false);
 let active = 0;
 let showTimer: number | null = null;
 
-const { on, off } = useEventBus();
+const { on } = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE);
+let offActive: (() => void) | null = null;
 
 function handleActive(payload: { active: number }) {
   active = Math.max(0, Number(payload?.active || 0));
@@ -40,10 +42,10 @@ function handleActive(payload: { active: number }) {
 }
 
 onMounted(() => {
-  on("http:active", handleActive);
+  offActive = on(handleActive);
 });
 onBeforeUnmount(() => {
-  off("http:active", handleActive as any);
+  if (offActive) offActive();
 });
 </script>
 

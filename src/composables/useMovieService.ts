@@ -1,5 +1,6 @@
 import { useApiGateway } from "@/utils/useApiGateway";
-import { useEventBus, type CrudEventPayload } from "./useEventBus";
+import { useEventBus } from "@vueuse/core";
+import { EVENT_CRUD, type CrudEventPayload } from "@/types/events";
 
 export interface PaginatedResponse<T> {
   data: T[];
@@ -29,34 +30,9 @@ export class ConnectionError extends Error {
   }
 }
 
-// Module-level singletons (persist across composable calls, per tab)
-// UI Config caching moved to useUiConfig
-// const singletonUiConfig = new Map<string, any>()
-// const singletonAdminModules: { data: AdminModuleInfo[] | null } = { data: null }
-
 export function useMovieService() {
   const client = useApiGateway();
-  const bus = useEventBus();
-  // Keep service focused on API calls only; local UI config handling resides in useUiConfig
-
-  const checkConnection = async (): Promise<boolean> => {
-    try {
-      const base = (client as any).baseUrl as string | undefined;
-      const response = await fetch(`${base}/health`, {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        signal: (AbortSignal as any).timeout
-          ? (AbortSignal as any).timeout(5000)
-          : undefined,
-      });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
+  const bus = useEventBus<CrudEventPayload>(EVENT_CRUD);
 
   const request = async <T>(
     endpoint: string,
@@ -214,7 +190,7 @@ export function useMovieService() {
         afterData: result,
         at: Date.now(),
       };
-      bus.emit("crud", payload);
+      bus.emit(payload);
     } catch {
       /* ignore */
     }
@@ -242,7 +218,7 @@ export function useMovieService() {
         afterData: result,
         at: Date.now(),
       };
-      bus.emit("crud", payload);
+      bus.emit(payload);
     } catch {
       /* ignore */
     }
@@ -268,14 +244,13 @@ export function useMovieService() {
         beforeData,
         at: Date.now(),
       };
-      bus.emit("crud", payload);
+      bus.emit(payload);
     } catch {
       /* ignore */
     }
   };
 
   return {
-    checkConnection,
     listModuleItems,
     getModuleItem,
     createModuleItem,
