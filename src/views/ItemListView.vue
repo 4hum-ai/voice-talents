@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!uiConfig" class="p-6 text-sm text-gray-600 dark:text-gray-300">
+  <div
+    v-if="!uiConfig"
+    class="p-6 text-sm text-gray-600 dark:text-gray-300"
+  >
     UI configuration not available.
   </div>
   <div v-else>
@@ -63,7 +66,10 @@
       @item-click="(item: any) => onAction('view', item)"
       @filters-change="onFiltersChange"
     />
-    <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">
+    <div
+      v-else
+      class="p-6 text-sm text-gray-600 dark:text-gray-300"
+    >
       Selected view not available for this module.
     </div>
   </div>
@@ -71,7 +77,14 @@
 
 <script setup lang="ts">
 defineOptions({ name: "ItemListView" });
-import { ref, onMounted, computed, watch, onBeforeUnmount } from "vue";
+import {
+  ref,
+  onMounted,
+  computed,
+  watch,
+  onBeforeUnmount,
+  onActivated,
+} from "vue";
 import { watchDebounced } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 import TableTemplate from "@/components/templates/TableTemplate.vue";
@@ -86,10 +99,12 @@ import { useUiConfig } from "@/composables/useUiConfig";
 import { useQueryBuilder } from "@/composables/useQueryBuilder";
 import type { UiConfig } from "@/types/ui-config";
 import { usePreference } from "@/composables/usePreference";
+import { useStaleStore } from "@/stores/stale";
 const movie = useMovieService();
 
 const route = useRoute();
 const router = useRouter();
+const stale = useStaleStore();
 const module = computed(() => {
   const metaModule = route.meta?.module as string | undefined;
   if (metaModule) return metaModule;
@@ -427,5 +442,18 @@ watch(currentView, (v) => {
 
 onBeforeUnmount(() => {
   currentAbort?.abort();
+});
+
+// Refresh hook for keep-alive: when returning from detail after delete/update
+onActivated(async () => {
+  const targetKey = `path:/${module.value}`;
+  const isStale = stale.isStale(targetKey);
+  if (!isStale) return;
+  try {
+    if (!uiConfig.value) await loadUiConfig();
+    await load(Number(route.query.page || 1) || 1);
+  } finally {
+    stale.consume(targetKey);
+  }
 });
 </script>

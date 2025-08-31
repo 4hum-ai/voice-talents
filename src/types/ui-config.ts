@@ -136,6 +136,8 @@ export interface FormField {
 export interface FormViewConfig {
   fields: FormField[];
   layout?: "single" | "tabs" | "sections";
+  // Frontend extension: when set to 'upload', DynamicFormSidebar shows FileUploadModal instead of form
+  mode?: "form" | "upload";
 }
 
 export interface ViewsConfig {

@@ -1,6 +1,14 @@
 <template>
   <div class="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+    <FileUploadModal
+      v-if="isUploadMode"
+      class="pointer-events-auto"
+      title="Upload Media"
+      @close="$emit('close')"
+      @uploaded="onUploaded"
+    />
     <div
+      v-else
       class="pointer-events-auto fixed inset-y-0 right-0 flex max-w-full pl-10"
     >
       <div class="w-screen max-w-md">
@@ -21,7 +29,10 @@
             </button>
           </div>
           <div class="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
-            <form class="space-y-6 px-6 py-6" @submit.prevent="handleSubmit">
+            <form
+              class="space-y-6 px-6 py-6"
+              @submit.prevent="handleSubmit"
+            >
               <div class="space-y-4">
                 <div
                   v-for="field in resolvedForm.fields"
@@ -31,16 +42,16 @@
                   <label
                     :for="field.key"
                     class="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                    >{{ field.label
-                    }}<span v-if="field.required" class="text-red-500"
-                      >*</span
-                    ></label
-                  >
+                  >{{ field.label
+                  }}<span
+                    v-if="field.required"
+                    class="text-red-500"
+                  >*</span></label>
                   <input
                     v-if="
                       field.type === 'text' ||
-                      field.type === 'email' ||
-                      field.type === 'url'
+                        field.type === 'email' ||
+                        field.type === 'url'
                     "
                     :id="field.key"
                     v-model="formData[field.key]"
@@ -49,7 +60,7 @@
                     :class="inputClass(field)"
                     @blur="onBlur(field)"
                     @input="onInput(field)"
-                  />
+                  >
                   <input
                     v-else-if="field.type === 'number'"
                     :id="field.key"
@@ -59,7 +70,7 @@
                     :class="inputClass(field)"
                     @blur="onBlur(field)"
                     @input="onInput(field)"
-                  />
+                  >
                   <input
                     v-else-if="field.type === 'date'"
                     :id="field.key"
@@ -68,7 +79,7 @@
                     :class="inputClass(field)"
                     @blur="onBlur(field)"
                     @input="onInput(field)"
-                  />
+                  >
                   <select
                     v-else-if="field.type === 'select'"
                     :id="field.key"
@@ -80,7 +91,7 @@
                     <option :value="undefined">
                       {{
                         field.placeholder ||
-                        `Select ${field.label.toLowerCase()}`
+                          `Select ${field.label.toLowerCase()}`
                       }}
                     </option>
                     <option
@@ -101,13 +112,16 @@
                     @blur="onBlur(field)"
                     @input="onInput(field)"
                   />
-                  <div v-else-if="field.type === 'file'" class="space-y-2">
+                  <div
+                    v-else-if="field.type === 'file'"
+                    class="space-y-2"
+                  >
                     <input
                       :id="field.key"
                       type="file"
                       :class="inputClass(field)"
                       @change="onFileSelected(field, $event)"
-                    />
+                    >
                     <div
                       v-if="uploading[field.key]"
                       class="text-xs text-gray-500"
@@ -117,7 +131,7 @@
                     <div
                       v-else-if="
                         formData[field.key] &&
-                        typeof formData[field.key] === 'string'
+                          typeof formData[field.key] === 'string'
                       "
                       class="text-xs break-all text-gray-500"
                     >
@@ -134,11 +148,10 @@
                       type="checkbox"
                       class="h-4 w-4 rounded border-gray-300 bg-white text-red-600 focus:ring-red-500 dark:border-gray-700 dark:bg-gray-800"
                       @change="onInput(field)"
-                    /><label
+                    ><label
                       :for="field.key"
                       class="ml-2 block text-sm text-gray-900 dark:text-gray-100"
-                      >{{ field.label }}</label
-                    >
+                    >{{ field.label }}</label>
                   </div>
                   <p
                     v-if="field.helpText"
@@ -146,7 +159,10 @@
                   >
                     {{ field.helpText }}
                   </p>
-                  <p v-if="shouldShowError(field)" class="text-xs text-red-600">
+                  <p
+                    v-if="shouldShowError(field)"
+                    class="text-xs text-red-600"
+                  >
                     {{ errors[field.key] }}
                   </p>
                 </div>
@@ -184,6 +200,7 @@
 <script setup lang="ts">
 import { reactive, computed, ref } from "vue";
 import { countries } from "@/utils/countries";
+import FileUploadModal from "@/components/molecules/FileUploadModal.vue";
 
 interface FormField {
   key: string;
@@ -206,6 +223,7 @@ interface FormField {
 interface FormConfig {
   fields: FormField[];
   layout?: "single" | "tabs" | "sections";
+  mode?: "form" | "upload";
 }
 
 const props = withDefaults(
@@ -221,6 +239,11 @@ const props = withDefaults(
 );
 const emit = defineEmits<{ close: []; submit: [data: Record<string, any>] }>();
 
+const isUploadMode = computed(() => props.formConfig?.mode === "upload");
+function onUploaded() {
+  emit("submit", {} as any);
+}
+
 const formData = reactive<Record<string, any>>({
   ...(props.initialData || {}),
 });
@@ -230,7 +253,7 @@ const resolvedForm = computed<FormConfig>(() => {
   const base: FormConfig = props.formConfig
     ? { ...props.formConfig, fields: [...(props.formConfig.fields || [])] }
     : { fields: [] };
-  base.fields = base.fields.map((f) => {
+  base.fields = base.fields.map((f: FormField) => {
     if (
       f.type === "select" &&
       f.key === "country" &&

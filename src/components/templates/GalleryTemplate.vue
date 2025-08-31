@@ -1,6 +1,10 @@
 <template>
   <div class="min-h-screen">
-    <AppBar :loading="loading" :show-back="true" @back="router.back()">
+    <AppBar
+      :loading="loading"
+      :show-back="true"
+      @back="router.back()"
+    >
       <template #left>
         <div class="min-w-0">
           <div
@@ -88,15 +92,15 @@
               <div
                 class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"
               >
-                <label class="text-xs text-gray-500 dark:text-gray-400"
-                  >Fields</label
-                >
+                <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
                 <select
                   v-model="selectedSearchField"
                   class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                   @change="handleSearchInput"
                 >
-                  <option value="all">All fields</option>
+                  <option value="all">
+                    All fields
+                  </option>
                   <option
                     v-for="f in searchableFieldOptions"
                     :key="f.key"
@@ -158,9 +162,7 @@
 
       <div class="flex items-center justify-between">
         <div class="inline-flex items-center gap-1.5 align-middle">
-          <span class="text-xs leading-5 text-gray-500 dark:text-gray-400"
-            >Total {{ totalCount }} records</span
-          >
+          <span class="text-xs leading-5 text-gray-500 dark:text-gray-400">Total {{ totalCount }} records</span>
         </div>
         <SortDropdown
           v-model="sortValue"
@@ -179,27 +181,81 @@
           @click="handleItemClick(item)"
         >
           <div
-            class="flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
+            class="relative flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
           >
-            <template v-if="previewUrl(item)">
+            <template v-if="mediaKind(item) === 'image' && mediaSrc(item)">
               <img
-                v-if="isImage(previewUrl(item) || '')"
-                :src="previewUrl(item) || undefined"
+                :src="mediaSrc(item) || undefined"
                 alt=""
                 class="h-full w-full object-cover"
-              />
-              <video
-                v-else
-                :src="previewUrl(item) || undefined"
-                class="h-full w-full object-cover"
-                muted
-              />
+              >
             </template>
+
+            <template v-else-if="mediaKind(item) === 'video'">
+              <template v-if="posterUrl(item)">
+                <img
+                  :src="posterUrl(item) || undefined"
+                  alt=""
+                  class="h-full w-full object-cover"
+                >
+              </template>
+              <template v-else>
+                <div class="h-full w-full bg-gray-200 dark:bg-gray-700" />
+              </template>
+              <button
+                type="button"
+                class="absolute inset-0 grid place-items-center"
+                aria-label="Play video"
+              >
+                <PlayIcon
+                  class="h-12 w-12 text-white/90 drop-shadow"
+                  aria-hidden="true"
+                />
+              </button>
+              <span
+                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+              >
+                {{ mediaFormat(item) }}
+              </span>
+            </template>
+
+            <template v-else-if="mediaKind(item) === 'audio'">
+              <div
+                class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700"
+              >
+                <MusicIcon
+                  class="h-10 w-10 text-gray-600 dark:text-gray-300"
+                  aria-hidden="true"
+                />
+              </div>
+              <button
+                type="button"
+                class="absolute inset-0 grid place-items-center"
+                aria-label="Play audio"
+              >
+                <PlayIcon
+                  class="h-12 w-12 text-white/90 drop-shadow"
+                  aria-hidden="true"
+                />
+              </button>
+              <span
+                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+              >
+                {{ mediaFormat(item) }}
+              </span>
+            </template>
+
             <template v-else>
               <span
                 class="text-4xl font-medium text-gray-400 dark:text-gray-500"
               >
                 {{ getInitials(item[titleField]) }}
+              </span>
+              <span
+                v-if="mediaFormat(item)"
+                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+              >
+                {{ mediaFormat(item) }}
               </span>
             </template>
           </div>
@@ -219,7 +275,10 @@
         </div>
       </div>
 
-      <div v-if="hasMore" class="flex flex-col items-center gap-2">
+      <div
+        v-if="hasMore"
+        class="flex flex-col items-center gap-2"
+      >
         <button
           class="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           @click="emit('load-more')"
@@ -234,7 +293,10 @@
           Loading more…
         </div>
       </div>
-      <div v-else class="flex items-center justify-center py-6">
+      <div
+        v-else
+        class="flex items-center justify-center py-6"
+      >
         <span
           class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/60 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-400"
         >
@@ -278,8 +340,7 @@
         <div>
           <label
             class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400"
-            >Time window</label
-          >
+          >Time window</label>
           <TimeWindowPicker
             :preset="filterPreset"
             :from="filterFrom"
@@ -287,11 +348,14 @@
             @change="onTimeWindowChange"
           />
         </div>
-        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
+        <div
+          v-for="f in listFilters"
+          :key="f.field"
+          class="space-y-1"
+        >
           <label
             class="block text-xs font-medium text-gray-500 dark:text-gray-400"
-            >{{ f.label }}</label
-          >
+          >{{ f.label }}</label>
           <template v-if="f.type === 'number'">
             <div class="flex items-center gap-2">
               <input
@@ -300,14 +364,14 @@
                 placeholder="Min"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'min', $event)"
-              />
+              >
               <input
                 type="number"
                 :value="localFilterValues[f.field]?.max ?? ''"
                 placeholder="Max"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'max', $event)"
-              />
+              >
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
@@ -316,7 +380,9 @@
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">Any</option>
+              <option value="">
+                Any
+              </option>
               <option
                 v-for="opt in f.options || []"
                 :key="String(opt.value)"
@@ -332,9 +398,15 @@
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">Any</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
+              <option value="">
+                Any
+              </option>
+              <option value="true">
+                True
+              </option>
+              <option value="false">
+                False
+              </option>
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
@@ -344,13 +416,13 @@
                 :value="localFilterValues[f.field]?.from ?? ''"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'from', $event)"
-              />
+              >
               <input
                 type="date"
                 :value="localFilterValues[f.field]?.to ?? ''"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'to', $event)"
-              />
+              >
             </div>
           </template>
         </div>
@@ -370,6 +442,8 @@ import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
 import TimeWindowPicker from "@/components/molecules/TimeWindowPicker.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
+import PlayIcon from "~icons/mdi/play-circle-outline";
+import MusicIcon from "~icons/mdi/music-note-outline";
 
 // props/emits
 
@@ -777,6 +851,63 @@ const isImage = (url: string): boolean => {
     u.endsWith(".gif") ||
     u.includes("image=")
   );
+};
+
+// Media helpers for kind/format/source selection
+type MediaKind = "image" | "video" | "audio" | "other";
+const imageExts = new Set(["png", "jpg", "jpeg", "webp", "gif"]);
+const videoExts = new Set(["mp4", "avi", "mov", "mkv", "webm", "m3u8"]);
+const audioExts = new Set(["mp3", "wav", "aac", "flac"]);
+
+const getFileExtension = (url: string | undefined): string => {
+  if (!url) return "";
+  const u = url.split("?")[0];
+  const last = u.split(".").pop() || "";
+  return last.toLowerCase();
+};
+
+const mediaFormat = (item: any): string => {
+  const fmt = String(item?.format || "").toLowerCase();
+  if (fmt) return fmt.toUpperCase();
+  const url = String(item?.fileUrl || item?.url || previewUrl(item) || "");
+  const ext = getFileExtension(url);
+  return ext ? ext.toUpperCase() : "";
+};
+
+const mediaKind = (item: any): MediaKind => {
+  const ct = String(item?.contentType || "").toLowerCase();
+  if (ct.startsWith("image/")) return "image";
+  if (ct.startsWith("video/")) return "video";
+  if (ct.startsWith("audio/")) return "audio";
+  const fmt = String(item?.format || "").toLowerCase();
+  if (imageExts.has(fmt)) return "image";
+  if (videoExts.has(fmt)) return "video";
+  if (audioExts.has(fmt)) return "audio";
+  const url = String(item?.fileUrl || item?.url || "");
+  const ext = getFileExtension(url);
+  if (imageExts.has(ext)) return "image";
+  if (videoExts.has(ext)) return "video";
+  if (audioExts.has(ext)) return "audio";
+  return "other";
+};
+
+const mediaSrc = (item: any): string | null => {
+  // Prefer explicit preview/thumbnail for images, else fileUrl
+  const p = previewUrl(item);
+  if (p && isImage(p)) return p;
+  const thumb = String(item?.thumbnailUrl || "");
+  if (thumb) return thumb;
+  const file = String(item?.fileUrl || "");
+  if (file && (isImage(file) || mediaKind(item) === "image")) return file;
+  return null;
+};
+
+const posterUrl = (item: any): string | null => {
+  const thumb = String(item?.thumbnailUrl || "");
+  if (thumb) return thumb;
+  const p = previewUrl(item);
+  if (p && isImage(p)) return p;
+  return null;
 };
 
 watch(

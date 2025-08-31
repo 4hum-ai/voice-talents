@@ -19,6 +19,7 @@ export interface MediaItem {
   fileUrl: string;
   fileName: string;
   fileSize?: number;
+  duration?: number;
   contentType: string;
   status?: string;
   language?: string;
@@ -109,6 +110,7 @@ export function useMedia() {
     fileName: string;
     contentType: string;
     fileSize?: number;
+    duration?: number;
     type: string; // domain-specific (e.g., poster, trailer, dubbed)
     format: string; // extension-like (e.g., mp4, png)
     language?: string;
@@ -152,6 +154,7 @@ export function useMedia() {
       tags?: string[];
       relationships?: string[];
       metadata?: Record<string, any>;
+      duration?: number;
       markCompleted?: boolean;
     } = {},
   ): Promise<{ media: MediaItem; fileUrl: string }> {
@@ -164,6 +167,7 @@ export function useMedia() {
       fileName: file.name,
       contentType,
       fileSize: file.size,
+      duration: opts.duration,
       type,
       format,
       language: opts.language,

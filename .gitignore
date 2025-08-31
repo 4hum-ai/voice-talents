@@ -167,6 +167,4 @@ storybook-static/
 
 # PWA
 sw.js
-workbox-*.js 
-node_modules
-node_modules
+workbox-*.js

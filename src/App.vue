@@ -2,10 +2,14 @@
   <NetworkStatusBar />
   <GlobalProgressBar />
   <ToastContainer />
+  <GlobalUploadBar />
   <GlobalMediaPlayer />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
-      <component :is="Component" :key="route.path" />
+      <component
+        :is="Component"
+        :key="route.path"
+      />
     </KeepAlive>
     <div
       v-if="isBootLoading"
@@ -43,6 +47,7 @@
 import ToastContainer from "@/components/organisms/ToastContainer.vue";
 import NetworkStatusBar from "@/components/organisms/NetworkStatusBar.vue";
 import GlobalProgressBar from "@/components/organisms/GlobalProgressBar.vue";
+import GlobalUploadBar from "@/components/organisms/GlobalUploadBar.vue";
 import GlobalMediaPlayer from "@/components/organisms/GlobalMediaPlayer.vue";
 import { computed } from "vue";
 import { useUiConfig } from "@/composables/useUiConfig";
