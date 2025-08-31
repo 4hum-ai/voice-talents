@@ -22,7 +22,7 @@ export class ConnectionError extends Error {
   }
 }
 
-export function useResourceService(base: string = "movie") {
+export function useResourceService(base: string = "movie/api") {
   const client = useApiGateway(base);
   const crudBus = useEventBus<CrudEventPayload>(EVENT_CRUD);
 
@@ -74,11 +74,13 @@ export function useResourceService(base: string = "movie") {
     }
   };
 
-  const get = <T>(
-    endpoint: string,
+  // Removed helper methods (get/post/put/del) in favor of direct request usage
+
+  const list = async (
+    resource: string,
     query?: Record<string, any>,
     signal?: AbortSignal,
-  ): Promise<T> => {
+  ): Promise<PaginatedResult<any>> => {
     const toSearchParams = (input: Record<string, any>): URLSearchParams => {
       const search = new URLSearchParams();
       const append = (key: string, value: any) => {
@@ -108,39 +110,8 @@ export function useResourceService(base: string = "movie") {
     };
     const search = query ? toSearchParams(query) : new URLSearchParams();
     const q = search.toString();
-    const path = q ? `${endpoint}?${q}` : endpoint;
-    return request<T>(path, { signal });
-  };
-
-  const post = <T>(
-    endpoint: string,
-    body?: any,
-    signal?: AbortSignal,
-  ): Promise<T> =>
-    request<T>(endpoint, {
-      method: "POST",
-      body: body ? JSON.stringify(body) : undefined,
-      signal,
-    });
-  const put = <T>(
-    endpoint: string,
-    body?: any,
-    signal?: AbortSignal,
-  ): Promise<T> =>
-    request<T>(endpoint, {
-      method: "PUT",
-      body: body ? JSON.stringify(body) : undefined,
-      signal,
-    });
-  const del = <T>(endpoint: string, signal?: AbortSignal): Promise<T> =>
-    request<T>(endpoint, { method: "DELETE", signal });
-
-  const list = async (
-    resource: string,
-    query?: Record<string, any>,
-    signal?: AbortSignal,
-  ): Promise<PaginatedResult<any>> => {
-    const payload = await get<any>(`/api/${resource}`, query, signal);
+    const path = q ? `/${resource}?${q}` : `/${resource}`;
+    const payload = await request<any>(path, { signal });
     const pg = payload?.pagination ?? {};
     const page = Number(pg.page ?? payload.page ?? 1) || 1;
     const limit = Number(pg.limit ?? payload.limit ?? 20) || 20;
@@ -160,7 +131,7 @@ export function useResourceService(base: string = "movie") {
     id: string,
     signal?: AbortSignal,
   ): Promise<any> => {
-    const payload = await get<any>(`/api/${resource}/${id}`, undefined, signal);
+    const payload = await request<any>(`/${resource}/${id}`, { signal });
     return payload?.data ?? payload;
   };
 
@@ -169,7 +140,12 @@ export function useResourceService(base: string = "movie") {
     body: any,
     signal?: AbortSignal,
   ): Promise<any> => {
-    const result = (await post<any>(`/api/${resource}`, body, signal)).data;
+    const payload = await request<any>(`/${resource}`, {
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+      signal,
+    });
+    const result = payload.data;
     try {
       crudBus.emit({
         resource,
@@ -196,8 +172,12 @@ export function useResourceService(base: string = "movie") {
     } catch {
       /* ignore */
     }
-    const result = (await put<any>(`/api/${resource}/${id}`, body, signal))
-      .data;
+    const payload = await request<any>(`/${resource}/${id}`, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+      signal,
+    });
+    const result = payload.data;
     try {
       crudBus.emit({
         resource,
@@ -224,7 +204,10 @@ export function useResourceService(base: string = "movie") {
     } catch {
       /* ignore */
     }
-    await del<void>(`/api/${resource}/${id}`, signal);
+    await request<void>(`/${resource}/${id}`, {
+      method: "DELETE",
+      signal,
+    });
     try {
       crudBus.emit({
         resource,

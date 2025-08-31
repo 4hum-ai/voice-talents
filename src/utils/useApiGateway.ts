@@ -127,7 +127,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
 
 let singletonClient: ApiClient | null = null;
 
-export function useApiGateway(base: string = "movie"): ApiClient {
+export function useApiGateway(base: string = "movie/api"): ApiClient {
   if (singletonClient) return singletonClient;
   const API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as
     | string
@@ -135,7 +135,7 @@ export function useApiGateway(base: string = "movie"): ApiClient {
   let baseUrl = "";
   if (API_BASE && /^https?:\/\//i.test(API_BASE)) {
     const root = API_BASE.replace(/\/$/, "");
-    baseUrl = `${root}/${base}`;
+    baseUrl = `${root}/${base.replace(/^\//, "")}`;
   }
   singletonClient = createApiClient({ baseUrl });
   return singletonClient;
