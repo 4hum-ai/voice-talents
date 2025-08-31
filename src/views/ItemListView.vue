@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="!uiConfig"
-    class="p-6 text-sm text-gray-600 dark:text-gray-300"
-  >
+  <div v-if="!uiConfig" class="p-6 text-sm text-gray-600 dark:text-gray-300">
     UI configuration not available.
   </div>
   <div v-else>
@@ -66,10 +63,7 @@
       @item-click="(item: any) => onAction('view', item)"
       @filters-change="onFiltersChange"
     />
-    <div
-      v-else
-      class="p-6 text-sm text-gray-600 dark:text-gray-300"
-    >
+    <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">
       Selected view not available for this module.
     </div>
   </div>

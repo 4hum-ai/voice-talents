@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <AppBar
-      :loading="loading"
-      :show-back="true"
-      @back="router.back()"
-    >
+    <AppBar :loading="loading" :show-back="true" @back="router.back()">
       <template #left>
         <div class="min-w-0">
           <div
@@ -92,15 +88,15 @@
               <div
                 class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"
               >
-                <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
+                <label class="text-xs text-gray-500 dark:text-gray-400"
+                  >Fields</label
+                >
                 <select
                   v-model="selectedSearchField"
                   class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                   @change="handleSearchInput"
                 >
-                  <option value="all">
-                    All fields
-                  </option>
+                  <option value="all">All fields</option>
                   <option
                     v-for="f in searchableFieldOptions"
                     :key="f.key"
@@ -144,9 +140,7 @@
       <div
         class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
       >
-        <div class="text-sm text-gray-600 dark:text-gray-300">
-          Time window
-        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-300">Time window</div>
         <div class="flex items-center gap-2">
           <TimeWindowPicker
             :preset="selectedPreset"
@@ -199,7 +193,8 @@
             </div>
             <span
               class="rounded-full bg-white px-2 py-1 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400"
-            >{{ getKanbanCount(column.value) }}</span>
+              >{{ getKanbanCount(column.value) }}</span
+            >
           </div>
           <div class="space-y-3">
             <template
@@ -264,7 +259,8 @@
         <div>
           <label
             class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400"
-          >Time window</label>
+            >Time window</label
+          >
           <TimeWindowPicker
             :preset="filterPreset"
             :from="filterFrom"
@@ -272,14 +268,11 @@
             @change="onTimeWindowChange"
           />
         </div>
-        <div
-          v-for="f in listFilters"
-          :key="f.field"
-          class="space-y-1"
-        >
+        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
           <label
             class="block text-xs font-medium text-gray-500 dark:text-gray-400"
-          >{{ f.label }}</label>
+            >{{ f.label }}</label
+          >
           <template v-if="f.type === 'number'">
             <div class="flex items-center gap-2">
               <input
@@ -288,14 +281,14 @@
                 placeholder="Min"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'min', $event)"
-              >
+              />
               <input
                 type="number"
                 :value="localFilterValues[f.field]?.max ?? ''"
                 placeholder="Max"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'max', $event)"
-              >
+              />
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
@@ -304,9 +297,7 @@
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">
-                Any
-              </option>
+              <option value="">Any</option>
               <option
                 v-for="opt in f.options || []"
                 :key="String(opt.value)"
@@ -322,15 +313,9 @@
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">
-                Any
-              </option>
-              <option value="true">
-                True
-              </option>
-              <option value="false">
-                False
-              </option>
+              <option value="">Any</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
@@ -340,13 +325,13 @@
                 :value="localFilterValues[f.field]?.from ?? ''"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'from', $event)"
-              >
+              />
               <input
                 type="date"
                 :value="localFilterValues[f.field]?.to ?? ''"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'to', $event)"
-              >
+              />
             </div>
           </template>
         </div>

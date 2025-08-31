@@ -5,21 +5,11 @@
       class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
       @change="onPresetChange($event)"
     >
-      <option value="all">
-        All time
-      </option>
-      <option value="7d">
-        Last 7 days
-      </option>
-      <option value="30d">
-        Last 30 days
-      </option>
-      <option value="90d">
-        Last 90 days
-      </option>
-      <option value="custom">
-        Custom…
-      </option>
+      <option value="all">All time</option>
+      <option value="7d">Last 7 days</option>
+      <option value="30d">Last 30 days</option>
+      <option value="90d">Last 90 days</option>
+      <option value="custom">Custom…</option>
     </select>
     <input
       v-if="preset === 'custom'"
@@ -27,14 +17,14 @@
       :value="from"
       class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
       @change="onDateChange('from', $event)"
-    >
+    />
     <input
       v-if="preset === 'custom'"
       type="date"
       :value="to"
       class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
       @change="onDateChange('to', $event)"
-    >
+    />
   </div>
 </template>
 

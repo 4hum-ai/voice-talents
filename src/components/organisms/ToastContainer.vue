@@ -1,11 +1,7 @@
 <template>
   <!-- Top Right -->
   <div class="fixed top-4 right-4 z-50 flex flex-col gap-4">
-    <TransitionGroup
-      name="toast-tr"
-      tag="div"
-      class="flex flex-col gap-4"
-    >
+    <TransitionGroup name="toast-tr" tag="div" class="flex flex-col gap-4">
       <ToastMessage
         v-for="message in trMessages"
         :key="message.id"
@@ -18,11 +14,7 @@
 
   <!-- Top Left -->
   <div class="fixed top-4 left-4 z-50 flex flex-col gap-4">
-    <TransitionGroup
-      name="toast-tl"
-      tag="div"
-      class="flex flex-col gap-4"
-    >
+    <TransitionGroup name="toast-tl" tag="div" class="flex flex-col gap-4">
       <ToastMessage
         v-for="message in tlMessages"
         :key="message.id"

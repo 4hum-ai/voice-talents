@@ -2,7 +2,9 @@
   <div
     class="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
   >
-    <span v-if="label"><slot>{{ label }}</slot></span>
+    <span v-if="label"
+      ><slot>{{ label }}</slot></span
+    >
     <slot v-else />
     <button
       v-if="closable"

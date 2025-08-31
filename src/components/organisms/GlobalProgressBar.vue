@@ -7,7 +7,7 @@
       aria-atomic="true"
     >
       <div
-        class="h-0.5 bg-primary-600 origin-left animate-progressbar"
+        class="bg-primary-600 animate-progressbar h-0.5 origin-left"
         role="progressbar"
         aria-busy="true"
       />
@@ -72,5 +72,3 @@ onBeforeUnmount(() => {
   animation: progress-indeterminate 1.2s ease-in-out infinite;
 }
 </style>
-
-

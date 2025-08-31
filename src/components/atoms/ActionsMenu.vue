@@ -1,9 +1,5 @@
 <template>
-  <Menu
-    ref="rootEl"
-    as="div"
-    class="relative inline-block text-left"
-  >
+  <Menu ref="rootEl" as="div" class="relative inline-block text-left">
     <MenuButton as="template">
       <button
         ref="buttonEl"
@@ -36,19 +32,13 @@
       leave-from="opacity-100 scale-100"
       leave-to="opacity-0 scale-95"
     >
-      <MenuItems
-        as="div"
-        class="contents"
-      >
+      <MenuItems as="div" class="contents">
         <div
           ref="itemsEl"
           :style="floatingStyles"
           class="ring-opacity-5 fixed z-50 min-w-[12rem] rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
         >
-          <div
-            class="py-1"
-            role="none"
-          >
+          <div class="py-1" role="none">
             <HMenuItem
               v-for="item in items"
               :key="item.key"
@@ -67,11 +57,13 @@
                   <div class="flex items-center justify-between">
                     <span
                       class="truncate text-sm text-gray-800 dark:text-gray-100"
-                    >{{ item.label }}</span>
+                      >{{ item.label }}</span
+                    >
                     <span
                       v-if="item.value"
                       class="ml-4 shrink-0 text-xs text-gray-500 dark:text-gray-400"
-                    >{{ item.value }}</span>
+                      >{{ item.value }}</span
+                    >
                   </div>
                   <p
                     v-if="item.description"

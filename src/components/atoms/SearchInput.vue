@@ -8,7 +8,7 @@
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
-    >
+    />
   </div>
 </template>
 

@@ -50,8 +50,10 @@ export function useEventBus() {
     return off;
   };
 
-  const off = (event: string, handler: EventHandler) => bus!.off(event, handler);
-  const emit = <T = any>(event: string, payload: T) => bus!.emit<T>(event, payload);
+  const off = (event: string, handler: EventHandler) =>
+    bus!.off(event, handler);
+  const emit = <T = any>(event: string, payload: T) =>
+    bus!.emit<T>(event, payload);
 
   return { on, off, emit };
 }
@@ -66,6 +68,3 @@ export interface CrudEventPayload {
   afterData?: any;
   at: number;
 }
-
-
-

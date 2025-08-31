@@ -4,7 +4,12 @@ import { useToast } from "@/composables/useToast";
 
 export interface PaginatedResponse<T> {
   data: T[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface MediaItem {
@@ -29,8 +34,9 @@ function transformPaginatedResponse<T>(response: any): PaginatedResponse<T> {
   const limit = Number(pg.limit ?? response?.limit ?? 20) || 20;
   const total = Number(pg.total ?? response?.total ?? 0) || 0;
   const totalPages =
-    Number(pg.totalPages ?? response?.totalPages ?? Math.ceil(total / (limit || 1))) ||
-    Math.max(1, Math.ceil(total / (limit || 1)));
+    Number(
+      pg.totalPages ?? response?.totalPages ?? Math.ceil(total / (limit || 1)),
+    ) || Math.max(1, Math.ceil(total / (limit || 1)));
   return {
     data: (response?.data || []) as T[],
     pagination: { page, limit, total, totalPages },
@@ -38,7 +44,8 @@ function transformPaginatedResponse<T>(response: any): PaginatedResponse<T> {
 }
 
 export function useMedia() {
-  const { listModuleItems, createModuleItem, updateModuleItem } = useMovieService();
+  const { listModuleItems, createModuleItem, updateModuleItem } =
+    useMovieService();
   const { push } = useToast();
 
   const media = ref<MediaItem[]>([]);
@@ -51,16 +58,23 @@ export function useMedia() {
   const isFirstPage = computed(() => currentPage.value <= 1);
   const isLastPage = computed(() => currentPage.value >= totalPages.value);
 
-  const fetchMedia = async (options?: { search?: string; filters?: Record<string, any> }) => {
+  const fetchMedia = async (options?: {
+    search?: string;
+    filters?: Record<string, any>;
+  }) => {
     try {
       loading.value = true;
       error.value = null;
-      const params: Record<string, any> = { page: currentPage.value, limit: 20 };
+      const params: Record<string, any> = {
+        page: currentPage.value,
+        limit: 20,
+      };
       if (options?.search) params.search = options.search;
       if (options?.filters) Object.assign(params, options.filters);
 
       const raw = await listModuleItems("media", params);
-      const result: PaginatedResponse<MediaItem> = transformPaginatedResponse<MediaItem>(raw);
+      const result: PaginatedResponse<MediaItem> =
+        transformPaginatedResponse<MediaItem>(raw);
       media.value = result.data as MediaItem[];
       totalPages.value = result.pagination.totalPages;
     } catch (err: any) {
@@ -128,16 +142,19 @@ export function useMedia() {
     });
   }
 
-  async function uploadViaMediaModule(file: File, opts: {
-    type?: string;
-    format?: string;
-    language?: string;
-    description?: string;
-    tags?: string[];
-    relationships?: string[];
-    metadata?: Record<string, any>;
-    markCompleted?: boolean;
-  } = {}): Promise<{ media: MediaItem; fileUrl: string }> {
+  async function uploadViaMediaModule(
+    file: File,
+    opts: {
+      type?: string;
+      format?: string;
+      language?: string;
+      description?: string;
+      tags?: string[];
+      relationships?: string[];
+      metadata?: Record<string, any>;
+      markCompleted?: boolean;
+    } = {},
+  ): Promise<{ media: MediaItem; fileUrl: string }> {
     const type = opts.type || "poster";
     const extension = (file.name.split(".").pop() || "").toLowerCase();
     const format = (opts.format || extension || "bin").toLowerCase();
@@ -208,5 +225,3 @@ export function useMedia() {
     uploadViaMediaModule,
   };
 }
-
-

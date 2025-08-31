@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <AppBar
-      :loading="loading"
-      :show-back="true"
-      @back="router.back()"
-    >
+    <AppBar :loading="loading" :show-back="true" @back="router.back()">
       <template #left>
         <div class="min-w-0">
           <div
@@ -92,15 +88,15 @@
               <div
                 class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300"
               >
-                <label class="text-xs text-gray-500 dark:text-gray-400">Fields</label>
+                <label class="text-xs text-gray-500 dark:text-gray-400"
+                  >Fields</label
+                >
                 <select
                   v-model="selectedSearchField"
                   class="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                   @change="handleSearchInput"
                 >
-                  <option value="all">
-                    All fields
-                  </option>
+                  <option value="all">All fields</option>
                   <option
                     v-for="f in searchableFieldOptions"
                     :key="f.key"
@@ -169,15 +165,12 @@
           >
             <thead class="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th
-                  v-if="selectable"
-                  class="px-6 py-3"
-                >
+                <th v-if="selectable" class="px-6 py-3">
                   <input
                     type="checkbox"
                     :checked="allSelected"
                     @change="toggleSelectAll"
-                  >
+                  />
                 </th>
                 <th
                   v-for="column in visibleColumns"
@@ -250,7 +243,7 @@
                     type="checkbox"
                     :checked="isSelected(item)"
                     @change="toggleSelectRow(item)"
-                  >
+                  />
                 </td>
                 <td
                   v-for="column in visibleColumns"
@@ -305,14 +298,14 @@
                           <source
                             :srcset="`https://flagcdn.com/${countryCode(item[column.key])}.svg`"
                             type="image/svg+xml"
-                          >
+                          />
                           <img
                             :src="`https://flagcdn.com/24x18/${countryCode(item[column.key])}.png`"
                             alt=""
                             width="24"
                             height="18"
                             class="rounded-sm"
-                          >
+                          />
                         </picture>
                       </div>
                       <span class="text-sm text-gray-900 dark:text-gray-100">{{
@@ -327,7 +320,7 @@
                         :src="item[column.key]"
                         alt=""
                         class="h-8 w-8 rounded bg-gray-100 object-cover dark:bg-gray-800"
-                      >
+                      />
                     </div>
                     <div v-else-if="column.type === 'url'">
                       <a
@@ -335,7 +328,8 @@
                         target="_blank"
                         rel="noopener"
                         class="text-primary-600 dark:text-primary-400 hover:underline"
-                      >{{ item[column.key] }}</a>
+                        >{{ item[column.key] }}</a
+                      >
                     </div>
                     <div
                       v-else-if="column.type === 'color'"
@@ -359,7 +353,8 @@
                           'inline-flex items-center rounded px-2 py-0.5 text-xs font-medium',
                           badgeClass(item[column.key]),
                         ]"
-                      >{{ item[column.key] ?? "-" }}</span>
+                        >{{ item[column.key] ?? "-" }}</span
+                      >
                     </div>
                     <div
                       v-else-if="column.formatter === 'status'"
@@ -376,12 +371,10 @@
                           'rounded px-2 py-0.5 text-xs font-medium',
                           statusBadgeClass(item[column.key]),
                         ]"
-                      >{{ item[column.key] ?? "-" }}</span>
+                        >{{ item[column.key] ?? "-" }}</span
+                      >
                     </div>
-                    <div
-                      v-else
-                      class="text-gray-900 dark:text-gray-100"
-                    >
+                    <div v-else class="text-gray-900 dark:text-gray-100">
                       {{ formatCellValue(item[column.key], column, item) }}
                     </div>
                   </div>
@@ -430,7 +423,8 @@
         <div>
           <label
             class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400"
-          >Time window</label>
+            >Time window</label
+          >
           <TimeWindowPicker
             :preset="filterPreset"
             :from="filterFrom"
@@ -438,14 +432,11 @@
             @change="onTimeWindowChange"
           />
         </div>
-        <div
-          v-for="f in listFilters"
-          :key="f.field"
-          class="space-y-1"
-        >
+        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
           <label
             class="block text-xs font-medium text-gray-500 dark:text-gray-400"
-          >{{ f.label }}</label>
+            >{{ f.label }}</label
+          >
           <template v-if="f.type === 'number'">
             <div class="flex items-center gap-2">
               <input
@@ -454,14 +445,14 @@
                 placeholder="Min"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'min', $event)"
-              >
+              />
               <input
                 type="number"
                 :value="localFilterValues[f.field]?.max ?? ''"
                 placeholder="Max"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'max', $event)"
-              >
+              />
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
@@ -470,9 +461,7 @@
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">
-                Any
-              </option>
+              <option value="">Any</option>
               <option
                 v-for="opt in f.options || []"
                 :key="String(opt.value)"
@@ -488,15 +477,9 @@
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
-              <option value="">
-                Any
-              </option>
-              <option value="true">
-                True
-              </option>
-              <option value="false">
-                False
-              </option>
+              <option value="">Any</option>
+              <option value="true">True</option>
+              <option value="false">False</option>
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
@@ -506,13 +489,13 @@
                 :value="localFilterValues[f.field]?.from ?? ''"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'from', $event)"
-              >
+              />
               <input
                 type="date"
                 :value="localFilterValues[f.field]?.to ?? ''"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @change="onLocalDateChange(f.field, 'to', $event)"
-              >
+              />
             </div>
           </template>
         </div>

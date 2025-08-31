@@ -10,29 +10,20 @@
       <template #actions>
         <div class="flex flex-wrap items-center gap-3 sm:flex-nowrap">
           <div class="w-full sm:w-64">
-            <label
-              class="sr-only"
-              for="module-search"
-            >Search modules</label>
+            <label class="sr-only" for="module-search">Search modules</label>
             <SearchInput
               id="module-search"
               v-model="filter"
               placeholder="Search modules…"
             />
           </div>
-          <ActionsMenu
-            :items="menuItems"
-            @select="onMenuSelect"
-          />
+          <ActionsMenu :items="menuItems" @select="onMenuSelect" />
         </div>
       </template>
     </AppBar>
     <div class="h-4" />
     <main class="p-6">
-      <section
-        v-if="isLoading"
-        class="mt-6"
-      >
+      <section v-if="isLoading" class="mt-6">
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div
             v-for="i in 6"
@@ -52,10 +43,7 @@
         </div>
       </section>
 
-      <section
-        v-else-if="visibleModules.length === 0"
-        class="mt-6"
-      >
+      <section v-else-if="visibleModules.length === 0" class="mt-6">
         <div
           class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
         >
@@ -76,12 +64,8 @@
               />
             </svg>
           </div>
-          <div v-if="filter">
-            No modules match “{{ filter }}”.
-          </div>
-          <div v-else>
-            No modules available.
-          </div>
+          <div v-if="filter">No modules match “{{ filter }}”.</div>
+          <div v-else>No modules available.</div>
         </div>
       </section>
 
@@ -145,8 +129,12 @@
 
       <section class="mt-10 space-y-6">
         <div class="grid gap-4 lg:grid-cols-2">
-          <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <div
+            class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+          >
+            <h2
+              class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100"
+            >
               Recent visits
             </h2>
             <div
@@ -155,21 +143,23 @@
             >
               No recent visits yet.
             </div>
-            <ul
-              v-else
-              class="divide-y divide-gray-200 dark:divide-gray-700"
-            >
+            <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
               <li
                 v-for="v in recentVisits"
                 :key="`${v.module}:${v.id}`"
                 class="flex items-center justify-between gap-3 py-2"
               >
                 <div class="min-w-0">
-                  <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <div
+                    class="truncate text-sm font-medium text-gray-900 dark:text-gray-100"
+                  >
                     {{ labelFor(v.module, v.data) }}
                   </div>
-                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">
-                    {{ v.module }} • {{ formatTimeAgo(v.lastVisited) }} • {{ v.count }}×
+                  <div
+                    class="truncate text-xs text-gray-500 dark:text-gray-400"
+                  >
+                    {{ v.module }} • {{ formatTimeAgo(v.lastVisited) }} •
+                    {{ v.count }}×
                   </div>
                 </div>
                 <button
@@ -182,8 +172,12 @@
             </ul>
           </div>
 
-          <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-            <h2 class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
+          <div
+            class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+          >
+            <h2
+              class="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100"
+            >
               Recent activities
             </h2>
             <div
@@ -192,21 +186,28 @@
             >
               No recent activities yet.
             </div>
-            <ul
-              v-else
-              class="divide-y divide-gray-200 dark:divide-gray-700"
-            >
+            <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
               <li
                 v-for="a in recentActivities"
                 :key="`${a.module}:${a.id}:${a.at}`"
                 class="flex items-center justify-between gap-3 py-2"
               >
                 <div class="min-w-0">
-                  <div class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-                    <span :class="['mr-2 inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium', actionBadgeClass(a.action)]">{{ a.action }}</span>
+                  <div
+                    class="truncate text-sm font-medium text-gray-900 dark:text-gray-100"
+                  >
+                    <span
+                      :class="[
+                        'mr-2 inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium',
+                        actionBadgeClass(a.action),
+                      ]"
+                      >{{ a.action }}</span
+                    >
                     {{ labelFor(a.module, a.afterData || a.beforeData) }}
                   </div>
-                  <div class="truncate text-xs text-gray-500 dark:text-gray-400">
+                  <div
+                    class="truncate text-xs text-gray-500 dark:text-gray-400"
+                  >
                     {{ a.module }} • {{ formatTimeAgo(a.at) }}
                   </div>
                 </div>
@@ -368,14 +369,17 @@ onMounted(async () => {
   try {
     onBus("visits:updated", () => refreshActivityLists());
     onBus("activities:updated", () => refreshActivityLists());
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 });
 
 // Visual helpers moved to Avatar atom
 // Activity and label helpers
 const recentVisits = ref<any[]>([]);
 const recentActivities = ref<any[]>([]);
-const limit = Number((import.meta as any).env?.VITE_DASHBOARD_ACTIVITY_LIMIT) || 10;
+const limit =
+  Number((import.meta as any).env?.VITE_DASHBOARD_ACTIVITY_LIMIT) || 10;
 
 function refreshActivityLists() {
   try {
@@ -404,9 +408,12 @@ function formatTimeAgo(ts: number): string {
 }
 
 function actionBadgeClass(action: string): string {
-  if (action === "create") return "bg-green-50 text-green-700 border border-green-200";
-  if (action === "update") return "bg-yellow-50 text-yellow-700 border border-yellow-200";
-  if (action === "delete") return "bg-red-50 text-red-700 border border-red-200";
+  if (action === "create")
+    return "bg-green-50 text-green-700 border border-green-200";
+  if (action === "update")
+    return "bg-yellow-50 text-yellow-700 border border-yellow-200";
+  if (action === "delete")
+    return "bg-red-50 text-red-700 border border-red-200";
   return "bg-gray-50 text-gray-700 border border-gray-200";
 }
 
@@ -414,7 +421,9 @@ async function onRevert(a: any) {
   try {
     await activity.revert(a);
     refreshActivityLists();
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 function labelFor(moduleName: string, data: any): string {
@@ -436,7 +445,13 @@ function labelFor(moduleName: string, data: any): string {
   }
   // Common fallbacks
   return (
-    data.name || data.title || data.displayName || data.email || data.id || data._id || "-"
+    data.name ||
+    data.title ||
+    data.displayName ||
+    data.email ||
+    data.id ||
+    data._id ||
+    "-"
   );
 }
 </script>

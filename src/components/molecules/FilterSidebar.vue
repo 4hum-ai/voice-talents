@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 z-50 flex justify-end"
-  >
+  <div v-if="show" class="fixed inset-0 z-50 flex justify-end">
     <div
       class="flex h-full w-[380px] flex-col border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
     >
