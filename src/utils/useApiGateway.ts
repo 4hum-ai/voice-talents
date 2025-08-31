@@ -1,5 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { useToast } from "@/composables/useToast";
+import { useEventBus } from "@/composables/useEventBus";
 
 export interface ApiClientOptions {
   baseUrl: string;
@@ -36,6 +37,8 @@ async function buildAuthHeader(): Promise<Record<string, string>> {
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
   const { baseUrl, defaultHeaders = {}, timeoutMs } = options;
+  const { emit } = useEventBus();
+  let activeRequests = 0;
 
   const request = async (
     path: string,
@@ -62,6 +65,9 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     const { push } = useToast();
 
     let response: Response;
+    // mark start
+    activeRequests += 1;
+    emit("http:active", { active: activeRequests });
     try {
       response = await fetch(url, { ...opts, headers, signal: computedSignal });
     } catch (error: any) {
@@ -77,6 +83,10 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         });
       }
       throw error;
+    } finally {
+      // mark end
+      activeRequests = Math.max(0, activeRequests - 1);
+      emit("http:active", { active: activeRequests });
     }
 
     if (response.status === 401) {
@@ -87,11 +97,19 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
             ...headers,
             Authorization: `Bearer ${refreshed}`,
           };
-          response = await fetch(url, {
-            ...opts,
-            headers: retryHeaders,
-            signal: computedSignal,
-          });
+          // mark start for retry
+          activeRequests += 1;
+          emit("http:active", { active: activeRequests });
+          try {
+            response = await fetch(url, {
+              ...opts,
+              headers: retryHeaders,
+              signal: computedSignal,
+            });
+          } finally {
+            activeRequests = Math.max(0, activeRequests - 1);
+            emit("http:active", { active: activeRequests });
+          }
         }
       } catch (_) {
         // Token refresh failed; return original unauthorized response

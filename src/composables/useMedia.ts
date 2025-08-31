@@ -170,15 +170,23 @@ export function useMedia() {
       throw new Error(`Upload failed (${res.status}): ${text.slice(0, 160)}`);
     }
 
-    if (opts.markCompleted) {
-      try {
-        await updateModuleItem("media", mediaRecord.id, {
-          status: "completed",
-          fileSize: file.size,
-        });
-      } catch (_) {
-        // Non-fatal
-      }
+    // Always try to complete the upload to finalize metadata
+    try {
+      await updateModuleItem("media", mediaRecord.id, {
+        status: "completed",
+        fileSize: file.size,
+      });
+    } catch (err: any) {
+      const message = err?.message || "Failed to complete upload";
+      push({
+        id: `${Date.now()}-media-complete` as any,
+        type: "error",
+        title: "Upload completion failed",
+        body: message,
+        position: "tr",
+        timeout: 6000,
+      });
+      // Do not throw to avoid breaking the caller; metadata can be retried later
     }
 
     return { media: mediaRecord, fileUrl: mediaRecord.fileUrl };
