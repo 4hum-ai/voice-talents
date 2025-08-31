@@ -7,10 +7,10 @@ import {
   type CrudEventPayload,
 } from "@/types/events";
 import { useToast } from "./useToast";
-import { useMovieService } from "./useMovieService";
+import { useResourceService } from "./useResourceService";
 
 type VisitEntry = {
-  module: string;
+  resource: string;
   id: string;
   data: any;
   lastVisited: number;
@@ -18,7 +18,7 @@ type VisitEntry = {
 };
 
 type ActivityEntry = {
-  module: string;
+  resource: string;
   id: string;
   action: "create" | "update" | "delete";
   at: number;
@@ -62,7 +62,7 @@ export function useActivity() {
   const visitsBus = useEventBus<null>(EVENT_VISITS_UPDATED);
   const activitiesBus = useEventBus<null>(EVENT_ACTIVITIES_UPDATED);
   const toast = useToast();
-  const service = useMovieService();
+  const service = useResourceService();
 
   const start = () => {
     if (started.value) return;
@@ -82,11 +82,11 @@ export function useActivity() {
     started.value = false;
   };
 
-  const recordVisit = (entry: { module: string; id: string; data: any }) => {
+  const recordVisit = (entry: { resource: string; id: string; data: any }) => {
     const limit = getLimit();
     const list = readJson<VisitEntry[]>(VISITS_KEY, []);
     const idx = list.findIndex(
-      (v) => v.module === entry.module && v.id === String(entry.id),
+      (v) => v.resource === entry.resource && v.id === String(entry.id),
     );
     const now = Date.now();
     if (idx >= 0) {
@@ -99,7 +99,7 @@ export function useActivity() {
       };
     } else {
       list.push({
-        module: entry.module,
+        resource: entry.resource,
         id: String(entry.id),
         data: entry.data,
         lastVisited: now,
@@ -125,7 +125,7 @@ export function useActivity() {
     const limit = getLimit();
     const list = readJson<ActivityEntry[]>(ACTIVITIES_KEY, []);
     list.unshift({
-      module: evt.module,
+      resource: evt.resource,
       id: String(evt.id),
       action: evt.action,
       at: evt.at,
@@ -149,35 +149,31 @@ export function useActivity() {
   const revert = async (entry: ActivityEntry) => {
     try {
       if (entry.action === "create") {
-        await service.deleteModuleItem(entry.module, entry.id);
+        await service.remove(entry.resource, entry.id);
         toast.push({
           id: Math.random().toString(36).slice(2),
           type: "success" as any,
           title: "Reverted creation",
           position: "tr",
-          body: `${entry.module} ${entry.id} deleted`,
+          body: `${entry.resource} ${entry.id} deleted`,
         });
       } else if (entry.action === "update") {
-        await service.updateModuleItem(
-          entry.module,
-          entry.id,
-          entry.beforeData,
-        );
+        await service.update(entry.resource, entry.id, entry.beforeData);
         toast.push({
           id: Math.random().toString(36).slice(2),
           type: "success" as any,
           title: "Reverted update",
           position: "tr",
-          body: `${entry.module} ${entry.id} restored`,
+          body: `${entry.resource} ${entry.id} restored`,
         });
       } else if (entry.action === "delete") {
-        await service.createModuleItem(entry.module, entry.beforeData);
+        await service.create(entry.resource, entry.beforeData);
         toast.push({
           id: Math.random().toString(36).slice(2),
           type: "success" as any,
           title: "Reverted deletion",
           position: "tr",
-          body: `${entry.module} ${entry.id} recreated`,
+          body: `${entry.resource} ${entry.id} recreated`,
         });
       }
     } catch (e: any) {

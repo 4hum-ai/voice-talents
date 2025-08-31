@@ -10,11 +10,13 @@
       <template #actions>
         <div class="flex flex-wrap items-center gap-3 sm:flex-nowrap">
           <div class="w-full sm:w-64">
-            <label class="sr-only" for="module-search">Search modules</label>
+            <label class="sr-only" for="resource-search"
+              >Search resources</label
+            >
             <SearchInput
-              id="module-search"
+              id="resource-search"
               v-model="filter"
-              placeholder="Search modules…"
+              placeholder="Search resources…"
             />
           </div>
           <ActionsMenu :items="menuItems" @select="onMenuSelect" />
@@ -43,7 +45,7 @@
         </div>
       </section>
 
-      <section v-else-if="visibleModules.length === 0" class="mt-6">
+      <section v-else-if="visibleResources.length === 0" class="mt-6">
         <div
           class="rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
         >
@@ -64,15 +66,15 @@
               />
             </svg>
           </div>
-          <div v-if="filter">No modules match “{{ filter }}”.</div>
-          <div v-else>No modules available.</div>
+          <div v-if="filter">No resources match “{{ filter }}”.</div>
+          <div v-else>No resources available.</div>
         </div>
       </section>
 
       <section v-else>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <router-link
-            v-for="m in visibleModules"
+            v-for="m in visibleResources"
             :key="m.name"
             :to="`/${m.name}`"
             class="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:shadow-none dark:hover:shadow-md"
@@ -146,25 +148,25 @@
             <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
               <li
                 v-for="v in recentVisits"
-                :key="`${v.module}:${v.id}`"
+                :key="`${v.resource}:${v.id}`"
                 class="flex items-center justify-between gap-3 py-2"
               >
                 <div class="min-w-0">
                   <div
                     class="truncate text-sm font-medium text-gray-900 dark:text-gray-100"
                   >
-                    {{ labelFor(v.module, v.data) }}
+                    {{ labelFor(v.resource, v.data) }}
                   </div>
                   <div
                     class="truncate text-xs text-gray-500 dark:text-gray-400"
                   >
-                    {{ v.module }} • {{ formatTimeAgo(v.lastVisited) }} •
+                    {{ v.resource }} • {{ formatTimeAgo(v.lastVisited) }} •
                     {{ v.count }}×
                   </div>
                 </div>
                 <button
                   class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-700"
-                  @click="openItem(v.module, v.id)"
+                  @click="openItem(v.resource, v.id)"
                 >
                   Open
                 </button>
@@ -189,7 +191,7 @@
             <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
               <li
                 v-for="a in recentActivities"
-                :key="`${a.module}:${a.id}:${a.at}`"
+                :key="`${a.resource}:${a.id}:${a.at}`"
                 class="flex items-center justify-between gap-3 py-2"
               >
                 <div class="min-w-0">
@@ -203,12 +205,12 @@
                       ]"
                       >{{ a.action }}</span
                     >
-                    {{ labelFor(a.module, a.afterData || a.beforeData) }}
+                    {{ labelFor(a.resource, a.afterData || a.beforeData) }}
                   </div>
                   <div
                     class="truncate text-xs text-gray-500 dark:text-gray-400"
                   >
-                    {{ a.module }} • {{ formatTimeAgo(a.at) }}
+                    {{ a.resource }} • {{ formatTimeAgo(a.at) }}
                   </div>
                 </div>
                 <button
@@ -233,11 +235,8 @@ import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 import AppBar from "@/components/molecules/AppBar.vue";
 import Avatar from "@/components/atoms/Avatar.vue";
 import SearchInput from "@/components/atoms/SearchInput.vue";
-import {
-  useMovieService,
-  type AdminModuleInfo,
-} from "@/composables/useMovieService";
-import { useUiConfig } from "@/composables/useUiConfig";
+import { useResourceService } from "@/composables/useResourceService";
+import { useUiConfig, type AdminResourceInfo } from "@/composables/useUiConfig";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { useTheme } from "@/composables/useTheme";
@@ -246,10 +245,8 @@ import { useActivity } from "@/composables/useActivity";
 import { useEventBus } from "@vueuse/core";
 import { EVENT_ACTIVITIES_UPDATED, EVENT_VISITS_UPDATED } from "@/types/events";
 
-// Intentionally not using router routes for modules; rely on admin-ui modules API
-
 // Connection health check removed as it's low value for UX
-const movie = useMovieService();
+const api = useResourceService();
 const uiConfig = useUiConfig();
 const auth = useAuthStore();
 const router = useRouter();
@@ -262,11 +259,11 @@ let offActivities: (() => void) | null = null;
 
 const counts = ref<Record<string, number | null>>({});
 const countsLoading = ref<Record<string, boolean>>({});
-const adminModules = ref<AdminModuleInfo[]>([]);
+const adminResources = ref<AdminResourceInfo[]>([]);
 const loadingCounts = ref(false);
-const loadingModules = ref(true);
+const loadingResources = ref(true);
 const filter = ref("");
-const isLoading = computed(() => loadingModules.value);
+const isLoading = computed(() => loadingResources.value);
 
 const toTitle = (value: string): string => {
   const base = value.replace(/^\//, "").replace(/-/g, " ");
@@ -278,15 +275,15 @@ const formatCount = (n: number | null | undefined): string => {
   return new Intl.NumberFormat().format(n);
 };
 
-const visibleModules = computed(() => {
+const visibleResources = computed(() => {
   const q = filter.value.trim().toLowerCase();
   const mods = q
-    ? adminModules.value.filter((m) => {
+    ? adminResources.value.filter((m) => {
         const name = (m.displayName || m.name).toLowerCase();
         const desc = (m.description || "").toLowerCase();
         return name.includes(q) || desc.includes(q);
       })
-    : adminModules.value.slice();
+    : adminResources.value.slice();
 
   return mods.sort((a, b) => {
     const an = (a.displayName || a.name).toLowerCase();
@@ -298,14 +295,14 @@ const visibleModules = computed(() => {
 const loadCounts = async () => {
   loadingCounts.value = true;
   try {
-    if (adminModules.value.length === 0) {
+    if (adminResources.value.length === 0) {
       try {
-        adminModules.value = await uiConfig.listModules();
+        adminResources.value = await uiConfig.listResources();
       } catch {
-        adminModules.value = [];
+        adminResources.value = [];
       }
     }
-    const mods = adminModules.value.map((m) => m.name);
+    const mods = adminResources.value.map((m) => m.name);
     // Prime placeholders
     const seed: Record<string, number | null> = {};
     mods.forEach((m) => (seed[m] = null));
@@ -319,7 +316,7 @@ const loadCounts = async () => {
       while (queue.length) {
         const mod = queue.shift()!;
         try {
-          const res = await movie.listModuleItems(mod, { page: 1, limit: 1 });
+          const res = await api.list(mod, { page: 1, limit: 1 });
           counts.value[mod] = res.pagination.total;
         } catch {
           counts.value[mod] = null;
@@ -360,13 +357,13 @@ const onMenuSelect = async (key: string) => {
 };
 
 onMounted(async () => {
-  loadingModules.value = true;
+  loadingResources.value = true;
   try {
-    adminModules.value = await uiConfig.listModules();
+    adminResources.value = await uiConfig.listResources();
   } catch {
-    adminModules.value = [];
+    adminResources.value = [];
   } finally {
-    loadingModules.value = false;
+    loadingResources.value = false;
   }
   await loadCounts();
   refreshActivityLists();
@@ -435,9 +432,9 @@ async function onRevert(a: any) {
   }
 }
 
-function labelFor(moduleName: string, data: any): string {
+function labelFor(resourceName: string, data: any): string {
   if (!data || typeof data !== "object") return String(data ?? "-");
-  const cfg = (useUiConfig() as any).state?.configs?.[moduleName] as any;
+  const cfg = (useUiConfig() as any).state?.configs?.[resourceName] as any;
   const pick = (key?: string) => (key && data[key] ? String(data[key]) : "");
   // Try known config keys
   const fromGallery = pick(cfg?.views?.gallery?.titleField);

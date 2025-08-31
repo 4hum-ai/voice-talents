@@ -11,7 +11,7 @@
       :total-pages="pagination.totalPages"
       :total="pagination.total"
       :per-page="pagination.limit"
-      :module-name="module"
+      :resource-name="resource"
       :ui-config="uiConfig"
       :loading="loading"
       :active-filters="filterChips"
@@ -28,7 +28,7 @@
       :data="items"
       :config="uiConfig.views.gallery"
       :has-more="hasMore"
-      :module-name="module"
+      :resource-name="resource"
       :ui-config="uiConfig"
       :loading="loading"
       :active-filters="filterChips"
@@ -43,7 +43,7 @@
       v-else-if="currentView === 'kanban' && uiConfig?.views?.kanban"
       :data="items"
       :config="uiConfig.views.kanban"
-      :module-name="module"
+      :resource-name="resource"
       :ui-config="uiConfig"
       :loading="loading"
       :active-filters="filterChips"
@@ -57,14 +57,14 @@
       v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar"
       :data="items"
       :config="uiConfig.views.calendar"
-      :module-name="module"
+      :resource-name="resource"
       :ui-config="uiConfig"
       :loading="loading"
       @item-click="(item: any) => onAction('view', item)"
       @filters-change="onFiltersChange"
     />
     <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">
-      Selected view not available for this module.
+      Selected view not available for this resource.
     </div>
   </div>
 </template>
@@ -86,28 +86,28 @@ import GalleryTemplate from "@/components/templates/GalleryTemplate.vue";
 import KanbanTemplate from "@/components/templates/KanbanTemplate.vue";
 import CalendarTemplate from "@/components/templates/CalendarTemplate.vue";
 import {
-  useMovieService,
-  type PaginatedResponse,
-} from "@/composables/useMovieService";
+  useResourceService,
+  type PaginatedResult,
+} from "@/composables/useResourceService";
 import { useUiConfig } from "@/composables/useUiConfig";
 import { useQueryBuilder } from "@/composables/useQueryBuilder";
 import type { UiConfig } from "@/types/ui-config";
 import { usePreference } from "@/composables/usePreference";
 import { useStaleStore } from "@/stores/stale";
-const movie = useMovieService();
+const api = useResourceService();
 
 const route = useRoute();
 const router = useRouter();
 const stale = useStaleStore();
-const module = computed(() => {
-  const metaModule = route.meta?.module as string | undefined;
-  if (metaModule) return metaModule;
-  const paramModule = route.params?.module as string | undefined;
-  if (paramModule) return paramModule;
-  const queryModule = route.query.module as string | undefined;
-  return queryModule ? String(queryModule) : "";
+const resource = computed(() => {
+  const metaResource = route.meta?.module as string | undefined;
+  if (metaResource) return metaResource;
+  const paramResource = route.params?.module as string | undefined;
+  if (paramResource) return paramResource;
+  const queryResource = route.query.module as string | undefined;
+  return queryResource ? String(queryResource) : "";
 });
-const viewPrefKey = computed(() => `${module.value}-list-view`);
+const viewPrefKey = computed(() => `${resource.value}-list-view`);
 const viewPref = computed(() => usePreference(viewPrefKey.value));
 
 const { get: getUiConfig } = useUiConfig();
@@ -140,7 +140,7 @@ const hasMore = computed(
 
 // Query builder (search, sort, pagination, date filters)
 const qb = useQueryBuilder({
-  module: () => String(module.value),
+  resource: () => String(resource.value),
   uiConfig: () => uiConfig.value,
   defaultLimit: 20,
 });
@@ -219,8 +219,8 @@ async function loadUiConfig() {
     currentAbort?.abort();
     currentAbort = new AbortController();
     // Use composable to resolve from store -> local -> backend
-    if (!module.value) return;
-    uiConfig.value = await getUiConfig(module.value, {
+    if (!resource.value) return;
+    uiConfig.value = await getUiConfig(resource.value, {
       signal: currentAbort.signal,
     });
     if (!uiConfig.value) {
@@ -242,7 +242,7 @@ async function load(page = 1) {
   loading.value = true;
   error.value = null;
   try {
-    if (!module.value) return;
+    if (!resource.value) return;
     if (!uiConfig.value) {
       await loadUiConfig();
     }
@@ -257,8 +257,8 @@ async function load(page = 1) {
     if (qs.filters) params.filters = qs.filters;
     currentAbort?.abort();
     currentAbort = new AbortController();
-    const res: PaginatedResponse<any> = await movie.listModuleItems(
-      module.value,
+    const res: PaginatedResult<any> = await api.list(
+      resource.value,
       params,
       currentAbort.signal,
     );
@@ -295,15 +295,15 @@ function onPerPageChange(perPage: number) {
 
 function onAction(action: string, payload?: any) {
   if (action === "create") {
-    movie
-      .createModuleItem(module.value, payload)
+    api
+      .create(resource.value, payload)
       .then(() => load(pagination.value.page))
       .catch((e: any) => (error.value = e?.message || "Create failed"));
     return;
   }
   if (action === "view" && payload) {
     const id = String(payload.id ?? payload._id);
-    if (id) router.push({ path: `/${module.value}/${id}` });
+    if (id) router.push({ path: `/${resource.value}/${id}` });
   }
 }
 
@@ -316,7 +316,7 @@ async function onKanbanStatusChange(payload: {
     const groupByField = uiConfig.value?.views?.kanban?.groupByField;
     const id = String(payload?.item?.id ?? payload?.item?._id ?? "");
     if (!groupByField || !id) return;
-    await movie.updateModuleItem(module.value, id, {
+    await api.update(resource.value, id, {
       [groupByField]: payload.to,
     });
     await load(pagination.value.page);
@@ -342,8 +342,8 @@ async function onLoadMore() {
     if (qs.filters) params.filters = qs.filters;
     currentAbort?.abort();
     currentAbort = new AbortController();
-    const res: PaginatedResponse<any> = await movie.listModuleItems(
-      module.value,
+    const res: PaginatedResult<any> = await api.list(
+      resource.value,
       params,
       currentAbort.signal,
     );
@@ -382,7 +382,7 @@ function onClearAllFilters() {
 // bulk delete not used in this view currently; remove to satisfy type-check
 
 onMounted(async () => {
-  if (!module.value) return;
+  if (!resource.value) return;
   await loadUiConfig();
   qb.initTimeWindowFromUrl();
   // For calendar view, let the template emit initial filters which will update the route
@@ -410,7 +410,7 @@ watchDebounced(
   { debounce: 120, maxWait: 300 },
 );
 
-watch(module, async () => {
+watch(resource, async () => {
   uiConfig.value = null;
   items.value = [];
   pagination.value = { page: 1, limit: 20, total: 0, totalPages: 1 };
@@ -440,7 +440,7 @@ onBeforeUnmount(() => {
 
 // Refresh hook for keep-alive: when returning from detail after delete/update
 onActivated(async () => {
-  const targetKey = `path:/${module.value}`;
+  const targetKey = `path:/${resource.value}`;
   const isStale = stale.isStale(targetKey);
   if (!isStale) return;
   try {

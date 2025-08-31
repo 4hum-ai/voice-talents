@@ -127,22 +127,16 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
 
 let singletonClient: ApiClient | null = null;
 
-export function useApiGateway(): ApiClient {
+export function useApiGateway(base: string = "movie"): ApiClient {
   if (singletonClient) return singletonClient;
-  const RAW_API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as
+  const API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as
     | string
     | undefined;
-  const RAW_API_BASE_PATH = (import.meta as any).env?.VITE_API_BASE_PATH as
-    | string
-    | undefined;
-  let base = "";
-  if (RAW_API_BASE && /^https?:\/\//i.test(RAW_API_BASE)) {
-    const root = RAW_API_BASE.replace(/\/$/, "");
-    const suffix = RAW_API_BASE_PATH
-      ? `/${RAW_API_BASE_PATH.replace(/^\//, "").replace(/\/$/, "")}`
-      : "/movie";
-    base = `${root}${suffix}`;
+  let baseUrl = "";
+  if (API_BASE && /^https?:\/\//i.test(API_BASE)) {
+    const root = API_BASE.replace(/\/$/, "");
+    baseUrl = `${root}/${base}`;
   }
-  singletonClient = createApiClient({ baseUrl: base });
+  singletonClient = createApiClient({ baseUrl });
   return singletonClient;
 }

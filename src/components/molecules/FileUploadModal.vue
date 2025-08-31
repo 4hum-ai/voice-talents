@@ -334,7 +334,7 @@ const formatOptions = [
   "webp",
 ];
 
-const { uploadViaMediaModule } = useMedia();
+const { uploadViaMediaResource } = useMedia();
 const uploader = useGlobalUpload();
 
 function pick() {
@@ -423,7 +423,7 @@ async function upload() {
 
 async function doUpload(id: string, f: File) {
   uploader.update(id, { status: "uploading", progress: 5 });
-  await uploadViaMediaModule(f, {
+  await uploadViaMediaResource(f, {
     type: form.value.type,
     format: form.value.format,
     language: form.value.language,

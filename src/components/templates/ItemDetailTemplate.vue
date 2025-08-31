@@ -180,7 +180,7 @@ import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 import AppBar from "@/components/molecules/AppBar.vue";
 
 interface Props {
-  moduleName: string;
+  resourceName: string;
   item?: Record<string, any> | null;
   loading?: boolean;
   error?: string | null;
@@ -210,7 +210,7 @@ const displayPairs = computed(() => props.item || {});
 
 const breadcrumbs = computed(() => [
   { label: "Dashboard", to: "/" },
-  { label: props.uiConfig?.displayName, to: `/${props.moduleName}` },
+  { label: props.uiConfig?.displayName, to: `/${props.resourceName}` },
   { label: String(title.value) },
 ]);
 

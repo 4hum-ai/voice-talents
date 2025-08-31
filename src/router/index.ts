@@ -26,12 +26,12 @@ router.beforeEach(async (to, _from, next) => {
     return;
   }
 
-  const maybeModule = to.params?.module as string | undefined;
-  if (maybeModule) {
+  const maybeResource = to.params?.module as string | undefined;
+  if (maybeResource) {
     // Avoid network calls in the guard; title will be refined in views.
     titleSuffix = to.meta.title
-      ? `${maybeModule} - ${to.meta.title}`
-      : maybeModule;
+      ? `${maybeResource} - ${to.meta.title}`
+      : maybeResource;
   }
 
   document.title = `${titleSuffix} - Admin UI`;
