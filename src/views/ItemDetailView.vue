@@ -36,11 +36,13 @@ import { useMovieService } from "@/composables/useMovieService";
 import { useUiConfig } from "@/composables/useUiConfig";
 import ConfirmModal from "@/components/molecules/ConfirmModal.vue";
 import { useActivity } from "@/composables/useActivity";
+import { useStaleStore } from "@/stores/stale";
 
 const movie = useMovieService();
 const activity = useActivity();
 const route = useRoute();
 const router = useRouter();
+const stale = useStaleStore();
 
 const module = computed(() =>
   String(
@@ -89,7 +91,9 @@ async function load() {
     lastLoadedId.value = id.value;
     try {
       activity.recordVisit({ module: module.value, id: id.value, data: res });
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   } catch (e: any) {
     error.value = e?.message || "Failed to load item";
   } finally {
@@ -101,7 +105,9 @@ function goBack() {
   router.back();
 }
 
-function onEdit() {}
+function onEdit() {
+  /* no-op: handled by parent template */
+}
 
 async function onDelete() {
   if (!id.value) return;
@@ -116,6 +122,8 @@ async function confirmDelete() {
     currentAbort?.abort();
     currentAbort = new AbortController();
     await movie.deleteModuleItem(module.value, id.value, currentAbort.signal);
+    // mark the list route as stale so keep-alive list refreshes on activation
+    stale.mark(`path:/${module.value}`);
     router.push({ path: `/${module.value}` });
   } catch (e: any) {
     error.value = e?.message || "Delete failed";
@@ -138,6 +146,8 @@ async function onUpdate(data: Record<string, any>) {
       data,
       currentAbort.signal,
     );
+    // mark the list route as stale so it refreshes on activation
+    stale.mark(`path:/${module.value}`);
     await load();
   } catch (e: any) {
     error.value = e?.message || "Update failed";

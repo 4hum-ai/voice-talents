@@ -9,5 +9,3 @@ export const customRoutes: RouteRecordRaw[] = [
   //   meta: { title: "Dubbing Editor", requiresAuth: true },
   // },
 ];
-
-

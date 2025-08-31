@@ -150,7 +150,11 @@ export function useActivity() {
           body: `${entry.module} ${entry.id} deleted`,
         });
       } else if (entry.action === "update") {
-        await service.updateModuleItem(entry.module, entry.id, entry.beforeData);
+        await service.updateModuleItem(
+          entry.module,
+          entry.id,
+          entry.beforeData,
+        );
         toast.push({
           id: Math.random().toString(36).slice(2),
           type: "success" as any,
@@ -201,6 +205,3 @@ export function useActivity() {
     clearAll,
   };
 }
-
-
-

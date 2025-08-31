@@ -1,13 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import type { RouteRecordRaw } from "vue-router";
 import { genericRoutes } from "./generic";
 import { customRoutes } from "./custom";
-const routes: RouteRecordRaw[] = [
-  ...genericRoutes,
-  ...customRoutes,
-];
+const routes: RouteRecordRaw[] = [...genericRoutes, ...customRoutes];
 
 const router = createRouter({
   history: createWebHistory(),

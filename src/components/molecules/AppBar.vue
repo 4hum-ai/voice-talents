@@ -41,14 +41,6 @@
         <slot name="actions" />
       </div>
     </div>
-    <div
-      v-if="loading"
-      class="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden"
-    >
-      <div
-        class="bg-primary-600 dark:bg-primary-500 progress-bar absolute inset-y-0 w-2/5"
-      />
-    </div>
   </div>
 </template>
 
@@ -71,19 +63,4 @@ const slots = useSlots();
 const hasLeftSlot = computed(() => Boolean(slots.left));
 </script>
 
-<style scoped>
-@keyframes indeterminate-slide {
-  0% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(20%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-.progress-bar {
-  animation: indeterminate-slide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-</style>
+<style scoped></style>

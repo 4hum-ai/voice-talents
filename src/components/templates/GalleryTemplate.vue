@@ -178,32 +178,95 @@
           class="cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-sm dark:border-gray-700 dark:bg-gray-900"
           @click="handleItemClick(item)"
         >
-          <div class="flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800">
-            <template v-if="previewUrl(item)">
+          <div
+            class="relative flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
+          >
+            <template v-if="mediaKind(item) === 'image' && mediaSrc(item)">
               <img
-                v-if="isImage(previewUrl(item) || '')"
-                :src="previewUrl(item) || undefined"
+                :src="mediaSrc(item) || undefined"
                 alt=""
                 class="h-full w-full object-cover"
               />
-              <video
-                v-else
-                :src="previewUrl(item) || undefined"
-                class="h-full w-full object-cover"
-                muted
-              />
             </template>
+
+            <template v-else-if="mediaKind(item) === 'video'">
+              <template v-if="posterUrl(item)">
+                <img
+                  :src="posterUrl(item) || undefined"
+                  alt=""
+                  class="h-full w-full object-cover"
+                />
+              </template>
+              <template v-else>
+                <div class="h-full w-full bg-gray-200 dark:bg-gray-700" />
+              </template>
+              <button
+                type="button"
+                class="absolute inset-0 grid place-items-center"
+                aria-label="Play video"
+              >
+                <PlayIcon
+                  class="h-12 w-12 text-white/90 drop-shadow"
+                  aria-hidden="true"
+                />
+              </button>
+              <span
+                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+              >
+                {{ mediaFormat(item) }}
+              </span>
+            </template>
+
+            <template v-else-if="mediaKind(item) === 'audio'">
+              <div
+                class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700"
+              >
+                <MusicIcon
+                  class="h-10 w-10 text-gray-600 dark:text-gray-300"
+                  aria-hidden="true"
+                />
+              </div>
+              <button
+                type="button"
+                class="absolute inset-0 grid place-items-center"
+                aria-label="Play audio"
+              >
+                <PlayIcon
+                  class="h-12 w-12 text-white/90 drop-shadow"
+                  aria-hidden="true"
+                />
+              </button>
+              <span
+                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+              >
+                {{ mediaFormat(item) }}
+              </span>
+            </template>
+
             <template v-else>
-              <span class="text-4xl font-medium text-gray-400 dark:text-gray-500">
+              <span
+                class="text-4xl font-medium text-gray-400 dark:text-gray-500"
+              >
                 {{ getInitials(item[titleField]) }}
+              </span>
+              <span
+                v-if="mediaFormat(item)"
+                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+              >
+                {{ mediaFormat(item) }}
               </span>
             </template>
           </div>
           <div class="p-4">
-            <h3 class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <h3
+              class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100"
+            >
               {{ item[titleField] }}
             </h3>
-            <p v-if="config.descriptionField" class="text-xs text-gray-500 dark:text-gray-400">
+            <p
+              v-if="config.descriptionField"
+              class="text-xs text-gray-500 dark:text-gray-400"
+            >
               {{ item[config.descriptionField] }}
             </p>
           </div>
@@ -361,6 +424,8 @@ import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
 import TimeWindowPicker from "@/components/molecules/TimeWindowPicker.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
+import PlayIcon from "~icons/mdi/play-circle-outline";
+import MusicIcon from "~icons/mdi/music-note-outline";
 
 // props/emits
 
@@ -760,7 +825,71 @@ const previewUrl = (item: any): string | null => {
 };
 const isImage = (url: string): boolean => {
   const u = url.toLowerCase();
-  return u.endsWith(".png") || u.endsWith(".jpg") || u.endsWith(".jpeg") || u.endsWith(".webp") || u.endsWith(".gif") || u.includes("image=");
+  return (
+    u.endsWith(".png") ||
+    u.endsWith(".jpg") ||
+    u.endsWith(".jpeg") ||
+    u.endsWith(".webp") ||
+    u.endsWith(".gif") ||
+    u.includes("image=")
+  );
+};
+
+// Media helpers for kind/format/source selection
+type MediaKind = "image" | "video" | "audio" | "other";
+const imageExts = new Set(["png", "jpg", "jpeg", "webp", "gif"]);
+const videoExts = new Set(["mp4", "avi", "mov", "mkv", "webm", "m3u8"]);
+const audioExts = new Set(["mp3", "wav", "aac", "flac"]);
+
+const getFileExtension = (url: string | undefined): string => {
+  if (!url) return "";
+  const u = url.split("?")[0];
+  const last = u.split(".").pop() || "";
+  return last.toLowerCase();
+};
+
+const mediaFormat = (item: any): string => {
+  const fmt = String(item?.format || "").toLowerCase();
+  if (fmt) return fmt.toUpperCase();
+  const url = String(item?.fileUrl || item?.url || previewUrl(item) || "");
+  const ext = getFileExtension(url);
+  return ext ? ext.toUpperCase() : "";
+};
+
+const mediaKind = (item: any): MediaKind => {
+  const ct = String(item?.contentType || "").toLowerCase();
+  if (ct.startsWith("image/")) return "image";
+  if (ct.startsWith("video/")) return "video";
+  if (ct.startsWith("audio/")) return "audio";
+  const fmt = String(item?.format || "").toLowerCase();
+  if (imageExts.has(fmt)) return "image";
+  if (videoExts.has(fmt)) return "video";
+  if (audioExts.has(fmt)) return "audio";
+  const url = String(item?.fileUrl || item?.url || "");
+  const ext = getFileExtension(url);
+  if (imageExts.has(ext)) return "image";
+  if (videoExts.has(ext)) return "video";
+  if (audioExts.has(ext)) return "audio";
+  return "other";
+};
+
+const mediaSrc = (item: any): string | null => {
+  // Prefer explicit preview/thumbnail for images, else fileUrl
+  const p = previewUrl(item);
+  if (p && isImage(p)) return p;
+  const thumb = String(item?.thumbnailUrl || "");
+  if (thumb) return thumb;
+  const file = String(item?.fileUrl || "");
+  if (file && (isImage(file) || mediaKind(item) === "image")) return file;
+  return null;
+};
+
+const posterUrl = (item: any): string | null => {
+  const thumb = String(item?.thumbnailUrl || "");
+  if (thumb) return thumb;
+  const p = previewUrl(item);
+  if (p && isImage(p)) return p;
+  return null;
 };
 
 watch(

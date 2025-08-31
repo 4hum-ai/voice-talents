@@ -28,5 +28,7 @@ authStore.initialize().then(() => {
   try {
     const { start } = useActivity();
     start();
-  } catch {}
+  } catch {
+    /* ignore */
+  }
 });

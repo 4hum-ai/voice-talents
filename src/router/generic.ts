@@ -34,5 +34,3 @@ export const genericRoutes: RouteRecordRaw[] = [
     meta: { title: "Not Found" },
   },
 ];
-
-

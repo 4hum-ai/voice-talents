@@ -210,7 +210,13 @@ const displayKind = computed(() => {
   if (props.type) return props.type;
   // basic heuristic: show video if URL ends with a known extension
   const v = String(props.value || "").toLowerCase();
-  if (v.endsWith('.mp4') || v.endsWith('.webm') || v.endsWith('.mov') || v.includes('video=')) return 'video';
+  if (
+    v.endsWith(".mp4") ||
+    v.endsWith(".webm") ||
+    v.endsWith(".mov") ||
+    v.includes("video=")
+  )
+    return "video";
   return "text";
 });
 

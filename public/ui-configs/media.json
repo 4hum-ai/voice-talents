@@ -86,11 +86,12 @@
       "actions": [
         {
           "name": "create",
-          "label": "Add Media",
+          "label": "Upload",
           "type": "button",
           "icon": "plus",
           "variant": "primary",
-          "permission": "media:create"
+          "permission": "media:create",
+          "mode": "upload"
         },
         {
           "name": "view",
@@ -276,6 +277,7 @@
     ]
   },
   "formView": {
+    "mode": "upload",
     "fields": [
       {
         "key": "fileName",

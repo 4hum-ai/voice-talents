@@ -215,7 +215,9 @@ export function useMovieService() {
         at: Date.now(),
       };
       bus.emit("crud", payload);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     return result;
   };
   const updateModuleItem = async (
@@ -227,7 +229,9 @@ export function useMovieService() {
     let beforeData: any = null;
     try {
       beforeData = await getModuleItem(module, id, signal);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     const result = (await put<any>(`/api/${module}/${id}`, data, signal)).data;
     try {
       const payload: CrudEventPayload = {
@@ -239,7 +243,9 @@ export function useMovieService() {
         at: Date.now(),
       };
       bus.emit("crud", payload);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     return result;
   };
   const deleteModuleItem = async (
@@ -250,7 +256,9 @@ export function useMovieService() {
     let beforeData: any = null;
     try {
       beforeData = await getModuleItem(module, id, signal);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     await del<void>(`/api/${module}/${id}`, signal);
     try {
       const payload: CrudEventPayload = {
@@ -261,7 +269,9 @@ export function useMovieService() {
         at: Date.now(),
       };
       bus.emit("crud", payload);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   };
 
   return {
