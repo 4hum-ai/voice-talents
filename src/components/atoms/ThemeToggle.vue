@@ -1,7 +1,5 @@
 <template>
-  <button
-    class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-    type="button"
+  <IconButton
     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
     @click="$emit('toggle')"
   >
@@ -27,10 +25,12 @@
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
       </svg>
     </slot>
-  </button>
+  </IconButton>
 </template>
 
 <script setup lang="ts">
+import IconButton from "@/components/atoms/IconButton.vue";
+
 defineProps<{ isDark: boolean }>();
 defineEmits<{ toggle: [] }>();
 </script>

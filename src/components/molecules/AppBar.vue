@@ -4,12 +4,7 @@
   >
     <div class="flex items-center justify-between px-4 py-3">
       <div class="flex min-w-0 items-center gap-3">
-        <button
-          v-if="showBack"
-          class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-          aria-label="Go back"
-          @click="$emit('back')"
-        >
+        <IconButton v-if="showBack" aria-label="Go back" @click="$emit('back')">
           <svg
             class="h-5 w-5"
             viewBox="0 0 20 20"
@@ -22,7 +17,7 @@
               clip-rule="evenodd"
             />
           </svg>
-        </button>
+        </IconButton>
         <div v-if="hasLeftSlot" class="min-w-0">
           <slot name="left" />
         </div>
@@ -46,6 +41,7 @@
 
 <script setup lang="ts">
 import { computed, useSlots } from "vue";
+import IconButton from "@/components/atoms/IconButton.vue";
 
 interface Props {
   loading?: boolean;

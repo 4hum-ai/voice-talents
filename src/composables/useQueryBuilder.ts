@@ -2,7 +2,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { computeDateRange } from "@/utils/date";
 import type { UiConfig } from "@/types/ui-config";
-import type { ResourceQuery, FieldFilter } from "@/types/query";
+import type { FieldFilter } from "@/types/query";
 
 export interface QueryState {
   page: number;

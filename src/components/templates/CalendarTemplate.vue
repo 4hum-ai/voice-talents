@@ -22,9 +22,8 @@
           >
             + Add
           </button>
-          <button
+          <IconButton
             v-if="hasCreateAction"
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -38,12 +37,8 @@
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
               />
             </svg>
-          </button>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Search"
-            @click="openSearch"
-          >
+          </IconButton>
+          <IconButton aria-label="Search" @click="openSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -56,7 +51,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
           <ActionsMenu
             :items="layoutMenuItems"
             size="md"
@@ -162,6 +157,7 @@ import "temporal-polyfill/global";
 import AppBar from "@/components/molecules/AppBar.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 import SearchInput from "@/components/atoms/SearchInput.vue";
+import IconButton from "@/components/atoms/IconButton.vue";
 
 // calendar core
 

@@ -42,10 +42,10 @@
     <main class="p-4">
       <div v-if="loading" class="space-y-6">
         <div v-if="detailSections && detailSections.length" class="space-y-6">
-          <section
+          <Card
             v-for="(section, sIdx) in detailSections"
             :key="`skeleton-sec-${sIdx}`"
-            class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
+            variant="elevated"
           >
             <div
               v-if="section.title"
@@ -69,12 +69,9 @@
                 />
               </div>
             </div>
-          </section>
+          </Card>
         </div>
-        <div
-          v-else
-          class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
-        >
+        <Card v-else padding="md">
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div
               v-for="i in 8"
@@ -89,7 +86,7 @@
               />
             </div>
           </div>
-        </div>
+        </Card>
       </div>
       <div v-else-if="error" class="text-error-600 dark:text-error-400 text-sm">
         {{ error }}
@@ -98,10 +95,10 @@
         <slot name="details" :item="item">
           <!-- Use configured detailView when available -->
           <div v-if="detailSections && detailSections.length" class="space-y-6">
-            <section
+            <Card
               v-for="(section, sIdx) in detailSections"
               :key="`sec-${sIdx}`"
-              class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
+              variant="elevated"
             >
               <div
                 v-if="section.title"
@@ -131,13 +128,10 @@
                   />
                 </div>
               </div>
-            </section>
+            </Card>
           </div>
           <!-- Fallback to naive key/value rendering in a single card -->
-          <div
-            v-else
-            class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
-          >
+          <Card v-else padding="md">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div
                 v-for="(value, key) in displayPairs"
@@ -153,7 +147,7 @@
                 >
               </div>
             </div>
-          </div>
+          </Card>
         </slot>
       </div>
     </main>
@@ -178,6 +172,7 @@ import FieldValue from "@/components/atoms/FieldValue.vue";
 import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 import AppBar from "@/components/molecules/AppBar.vue";
+import Card from "@/components/atoms/Card.vue";
 
 interface Props {
   resourceName: string;

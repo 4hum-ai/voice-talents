@@ -22,9 +22,8 @@
           >
             + Add
           </button>
-          <button
+          <IconButton
             v-if="hasCreateAction"
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -38,12 +37,8 @@
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
               />
             </svg>
-          </button>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Search"
-            @click="openSearch"
-          >
+          </IconButton>
+          <IconButton aria-label="Search" @click="openSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -56,7 +51,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
           <ActionsMenu
             :items="layoutMenuItems"
             size="md"
@@ -319,20 +314,14 @@
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
-            <div class="flex items-center gap-2">
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.from ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'from', $event)"
-              />
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.to ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'to', $event)"
-              />
-            </div>
+            <DateRangeInput
+              :from="localFilterValues[f.field]?.from ?? ''"
+              :to="localFilterValues[f.field]?.to ?? ''"
+              @update:from="
+                (value) => onLocalDateChange(f.field, 'from', value)
+              "
+              @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
+            />
           </template>
         </div>
       </div>
@@ -351,6 +340,8 @@ import SearchInput from "@/components/atoms/SearchInput.vue";
 import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
+import IconButton from "@/components/atoms/IconButton.vue";
+import DateRangeInput from "@/components/atoms/DateRangeInput.vue";
 
 interface Props {
   data: any[];
@@ -477,8 +468,7 @@ function onLocalNumberChange(field: string, key: "min" | "max", e: Event) {
     [key]: value,
   };
 }
-function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
-  const value = (e.target as HTMLInputElement).value;
+function onLocalDateChange(field: string, key: "from" | "to", value: string) {
   localFilterValues.value[field] = {
     ...(localFilterValues.value[field] || {}),
     [key]: value,

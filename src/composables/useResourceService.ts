@@ -2,21 +2,34 @@ import { useApiGateway } from "@/utils/useApiGateway";
 import { useEventBus } from "@vueuse/core";
 import { EVENT_CRUD, type CrudEventPayload } from "@/types/events";
 import type { ResourceQuery } from "@/types/query";
-import { ref, computed } from "vue";
+import { ref, computed, type Ref, type ComputedRef } from "vue";
 
+/**
+ * Represents a paginated result from an API response
+ */
 export interface PaginatedResult<T> {
+  /** Array of items returned from the API */
   data: T[];
+  /** Pagination metadata */
   pagination: {
+    /** Current page number */
     page: number;
+    /** Number of items per page */
     limit: number;
+    /** Total number of items available */
     total: number;
+    /** Total number of pages */
     totalPages: number;
   };
 }
 
+/**
+ * Custom error class for connection-related errors
+ */
 export class ConnectionError extends Error {
   constructor(
     message: string,
+    /** The original error that caused this connection error */
     public originalError?: Error,
   ) {
     super(message);
@@ -24,9 +37,100 @@ export class ConnectionError extends Error {
   }
 }
 
-// Common resource types - extend this as needed
+/**
+ * Supported resource types for the API
+ * Extend this type as new resources are added
+ */
 export type ResourceType = "titles" | "organizations" | string; // Allow custom resources
 
+/**
+ * Resource service interface providing CRUD operations with reactive state management
+ */
+export interface ResourceService<T = any> {
+  /** Fetch a paginated list of items */
+  list: (
+    resource: ResourceType,
+    query?: ResourceQuery,
+    signal?: AbortSignal,
+  ) => Promise<PaginatedResult<T>>;
+  /** Fetch a single item by ID */
+  getById: (
+    resource: ResourceType,
+    id: string,
+    signal?: AbortSignal,
+  ) => Promise<T>;
+  /** Create a new item */
+  create: (
+    resource: ResourceType,
+    body: any,
+    signal?: AbortSignal,
+  ) => Promise<T>;
+  /** Update an existing item */
+  update: (
+    resource: ResourceType,
+    id: string,
+    body: any,
+    signal?: AbortSignal,
+  ) => Promise<T>;
+  /** Delete an item */
+  remove: (
+    resource: ResourceType,
+    id: string,
+    signal?: AbortSignal,
+  ) => Promise<void>;
+
+  /** Reactive boolean indicating if any operation is currently loading */
+  isLoading: Ref<boolean>;
+  /** Check if a specific operation is loading */
+  isOperationLoading: (operation: string) => boolean;
+
+  /** Reactive array of items from list operations */
+  items: Ref<T[]>;
+  /** Reactive single item from getById operations */
+  item: Ref<T | null>;
+  /** Reactive pagination information */
+  pagination: Ref<{
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  }>;
+  /** Reactive error message */
+  error: Ref<string | null>;
+
+  /** Computed boolean indicating if there are items */
+  hasItems: ComputedRef<boolean>;
+  /** Computed boolean indicating if no items and not loading */
+  isEmpty: ComputedRef<boolean>;
+  /** Computed boolean indicating if there's an error */
+  hasError: ComputedRef<boolean>;
+
+  /** Clear the current error */
+  clearError: () => void;
+  /** Reset all data to initial state */
+  clearData: () => void;
+}
+
+/**
+ * Creates a resource service instance with CRUD operations, loading states, and reactive data management
+ *
+ * @param base - API base path, defaults to "movie/api"
+ * @returns Resource service instance with methods and reactive data
+ *
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const api = useResourceService();
+ * await api.list("titles", { page: 1, limit: 20 });
+ *
+ * // With custom base path
+ * const api = useResourceService("custom/api");
+ *
+ * // Type-safe usage
+ * interface Title { id: string; title: string; }
+ * const api = useResourceService<Title>();
+ * ```
+ */
 export function useResourceService(base: string = "movie/api") {
   const client = useApiGateway(base);
   const crudBus = useEventBus<CrudEventPayload>(EVENT_CRUD);
@@ -34,10 +138,18 @@ export function useResourceService(base: string = "movie/api") {
   // Loading state management
   const loadingStates = ref<Record<string, boolean>>({});
 
+  /**
+   * Computed property indicating if any operation is currently loading
+   */
   const isLoading = computed(() =>
     Object.values(loadingStates.value).some(Boolean),
   );
 
+  /**
+   * Set loading state for a specific operation
+   * @param operation - Operation identifier (e.g., "list:titles", "create:titles")
+   * @param loading - Whether the operation is loading
+   */
   const setLoading = (operation: string, loading: boolean) => {
     if (loading) {
       loadingStates.value[operation] = true;
@@ -46,6 +158,18 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
+  /**
+   * Check if a specific operation is currently loading
+   * @param operation - Operation identifier
+   * @returns True if the operation is loading
+   *
+   * @example
+   * ```typescript
+   * const isSearching = api.isOperationLoading("list:titles");
+   * const isCreating = api.isOperationLoading("create:titles");
+   * const isUpdating = api.isOperationLoading("update:titles:123");
+   * ```
+   */
   const isOperationLoading = (operation: string) =>
     loadingStates.value[operation] || false;
 
@@ -66,10 +190,29 @@ export function useResourceService(base: string = "movie/api") {
   const error = ref<string | null>(null);
 
   // Computed helpers
+  /**
+   * Computed boolean indicating if there are items in the list
+   */
   const hasItems = computed(() => items.value.length > 0);
+
+  /**
+   * Computed boolean indicating if there are no items and not currently loading
+   */
   const isEmpty = computed(() => !isLoading.value && items.value.length === 0);
+
+  /**
+   * Computed boolean indicating if there's an error
+   */
   const hasError = computed(() => error.value !== null);
 
+  /**
+   * Internal request method with error handling and connection error detection
+   * @param endpoint - API endpoint path
+   * @param options - Fetch options
+   * @returns Parsed JSON response
+   * @throws {ConnectionError} When network connectivity issues occur
+   * @throws {Error} When API returns an error response
+   */
   const request = async <T>(
     endpoint: string,
     options: RequestInit & { signal?: AbortSignal } = {},
@@ -118,8 +261,37 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
-  // Removed helper methods (get/post/put/del) in favor of direct request usage
-
+  /**
+   * Fetch a paginated list of items with search, filtering, and pagination support
+   *
+   * @param resource - Resource type to fetch (e.g., "titles", "organizations")
+   * @param query - Optional query parameters for search, filtering, and pagination
+   * @param signal - Optional AbortSignal for request cancellation
+   * @returns Promise resolving to paginated result
+   *
+   * @example
+   * ```typescript
+   * // Basic list
+   * const result = await api.list("titles", { page: 1, limit: 20 });
+   *
+   * // With search
+   * const result = await api.list("titles", {
+   *   search: "action movie",
+   *   page: 1,
+   *   limit: 20
+   * });
+   *
+   * // With advanced filtering
+   * const result = await api.list("titles", {
+   *   search: "action",
+   *   searchFields: ["title", "description"],
+   *   filters: { year: 2024, genre: "action" },
+   *   sort: "title:asc",
+   *   page: 1,
+   *   limit: 20
+   * });
+   * ```
+   */
   const list = async (
     resource: ResourceType,
     query?: ResourceQuery,
@@ -191,6 +363,20 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
+  /**
+   * Fetch a single item by its ID
+   *
+   * @param resource - Resource type (e.g., "titles", "organizations")
+   * @param id - Item ID to fetch
+   * @param signal - Optional AbortSignal for request cancellation
+   * @returns Promise resolving to the item
+   *
+   * @example
+   * ```typescript
+   * const title = await api.getById("titles", "123");
+   * console.log(title.title); // "Movie Title"
+   * ```
+   */
   const getById = async (
     resource: ResourceType,
     id: string,
@@ -215,6 +401,24 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
+  /**
+   * Create a new item
+   *
+   * @param resource - Resource type (e.g., "titles", "organizations")
+   * @param body - Item data to create
+   * @param signal - Optional AbortSignal for request cancellation
+   * @returns Promise resolving to the created item
+   *
+   * @example
+   * ```typescript
+   * const newTitle = await api.create("titles", {
+   *   title: "New Movie",
+   *   description: "A great movie",
+   *   year: 2024
+   * });
+   * // items.value is automatically updated with the new item
+   * ```
+   */
   const create = async (
     resource: ResourceType,
     body: any,
@@ -255,6 +459,23 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
+  /**
+   * Update an existing item
+   *
+   * @param resource - Resource type (e.g., "titles", "organizations")
+   * @param id - Item ID to update
+   * @param body - Updated item data
+   * @param signal - Optional AbortSignal for request cancellation
+   * @returns Promise resolving to the updated item
+   *
+   * @example
+   * ```typescript
+   * const updatedTitle = await api.update("titles", "123", {
+   *   title: "Updated Title"
+   * });
+   * // Both item.value and items.value are automatically updated
+   * ```
+   */
   const update = async (
     resource: ResourceType,
     id: string,
@@ -312,6 +533,20 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
+  /**
+   * Delete an item
+   *
+   * @param resource - Resource type (e.g., "titles", "organizations")
+   * @param id - Item ID to delete
+   * @param signal - Optional AbortSignal for request cancellation
+   * @returns Promise that resolves when deletion is complete
+   *
+   * @example
+   * ```typescript
+   * await api.remove("titles", "123");
+   * // Item is automatically removed from items.value
+   * ```
+   */
   const remove = async (
     resource: ResourceType,
     id: string,
@@ -365,11 +600,31 @@ export function useResourceService(base: string = "movie/api") {
     }
   };
 
-  // Utility methods for data management
+  /**
+   * Clear the current error state
+   *
+   * @example
+   * ```typescript
+   * api.clearError();
+   * ```
+   */
   const clearError = () => {
     error.value = null;
   };
 
+  /**
+   * Reset all data to initial state
+   * Useful when component unmounts or when you want to clear all data
+   *
+   * @example
+   * ```typescript
+   * import { onUnmounted } from 'vue';
+   *
+   * onUnmounted(() => {
+   *   api.clearData();
+   * });
+   * ```
+   */
   const clearData = () => {
     items.value = [];
     item.value = null;
