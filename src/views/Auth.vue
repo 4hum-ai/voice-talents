@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="relative mx-auto flex max-w-[32rem] flex-col justify-center px-4 py-12"
-  >
+  <div class="relative mx-auto flex max-w-[32rem] flex-col justify-center px-4 py-12">
     <div
       class="bg-primary-500/10 pointer-events-none absolute inset-x-0 top-6 mx-auto h-32 w-32 rounded-full blur-3xl"
     />
@@ -19,14 +17,10 @@
           <span aria-hidden="true">🎬</span>
         </div>
         <div>
-          <h1
-            class="text-xl leading-6 font-semibold text-gray-900 dark:text-gray-100"
-          >
+          <h1 class="text-xl leading-6 font-semibold text-gray-900 dark:text-gray-100">
             Sign in to Admin
           </h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Access your workspace and tools
-          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Access your workspace and tools</p>
         </div>
       </div>
 
@@ -116,9 +110,7 @@
         </div>
 
         <div class="flex items-center justify-between text-sm">
-          <label
-            class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400"
-          >
+          <label class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <input
               v-model="remember"
               type="checkbox"
@@ -160,15 +152,8 @@
         :disabled="isLoading"
         @click="handleProvider('google')"
       >
-        <span
-          aria-hidden="true"
-          class="inline-flex h-5 w-5 items-center justify-center"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 48 48"
-            class="h-5 w-5"
-          >
+        <span aria-hidden="true" class="inline-flex h-5 w-5 items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5">
             <path
               fill="#FFC107"
               d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C33.643,6.053,29.083,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
@@ -198,69 +183,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
-import { useTheme } from "@/composables/useTheme";
-import ThemeToggle from "@/components/atoms/ThemeToggle.vue";
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useTheme } from '@/composables/useTheme'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 
-const router = useRouter();
-const route = useRoute();
-const authStore = useAuthStore();
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
 
-const email = ref("");
-const password = ref("");
-const isLoading = ref(false);
-const error = ref("");
-const showPassword = ref(false);
-const { toggleTheme, isDark } = useTheme();
-const remember = ref(true);
+const email = ref('')
+const password = ref('')
+const isLoading = ref(false)
+const error = ref('')
+const showPassword = ref(false)
+const { toggleTheme, isDark } = useTheme()
+const remember = ref(true)
 
-const handleProvider = async (
-  provider: "google" | "github" | "microsoft" | "apple",
-) => {
+const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
   try {
-    isLoading.value = true;
-    error.value = "";
-    await authStore.loginWithProvider(provider);
-    const redirectPath = (route.query.redirect as string) || "/";
-    router.push(redirectPath);
+    isLoading.value = true
+    error.value = ''
+    await authStore.loginWithProvider(provider)
+    const redirectPath = (route.query.redirect as string) || '/'
+    router.push(redirectPath)
   } catch (err) {
-    error.value = err instanceof Error ? err.message : "Login failed";
+    error.value = err instanceof Error ? err.message : 'Login failed'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const handleEmailLogin = async () => {
   try {
-    isLoading.value = true;
-    error.value = "";
-    await authStore.initialize();
-    await authStore.clearError();
+    isLoading.value = true
+    error.value = ''
+    await authStore.initialize()
+    await authStore.clearError()
     // switch persistence based on remember
     try {
-      (await import("@/composables/useAuth"))
+      ;(await import('@/composables/useAuth'))
         .useAuth()
-        .setPersistenceMode(remember.value ? "local" : "session");
+        .setPersistenceMode(remember.value ? 'local' : 'session')
     } catch {
-      void 0;
+      void 0
     }
-    await authStore.loginUser({ email: email.value, password: password.value });
-    const redirectPath = (route.query.redirect as string) || "/";
-    router.push(redirectPath);
+    await authStore.loginUser({ email: email.value, password: password.value })
+    const redirectPath = (route.query.redirect as string) || '/'
+    router.push(redirectPath)
   } catch (err) {
-    error.value = err instanceof Error ? err.message : "Login failed";
+    error.value = err instanceof Error ? err.message : 'Login failed'
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 onMounted(async () => {
-  await authStore.initialize();
+  await authStore.initialize()
   if (authStore.isAuthenticated) {
-    const redirectPath = (route.query.redirect as string) || "/";
-    router.push(redirectPath);
+    const redirectPath = (route.query.redirect as string) || '/'
+    router.push(redirectPath)
   }
-});
+})
 </script>

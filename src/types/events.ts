@@ -16,7 +16,7 @@
  * Publishers: `src/utils/useApiGateway.ts`
  * Consumers: `src/components/organisms/GlobalProgressBar.vue`
  */
-export type HttpActivePayload = { active: number };
+export type HttpActivePayload = { active: number }
 
 /**
  * http:error — emitted when a network error occurs (excluding AbortError).
@@ -24,29 +24,29 @@ export type HttpActivePayload = { active: number };
  * Consumers: `src/components/organisms/ToastContainer.vue`
  */
 export type HttpErrorPayload = {
-  method: string;
-  path: string;
-  message: string;
-};
+  method: string
+  path: string
+  message: string
+}
 
 /**
  * CRUD activity payload for create/update/delete notifications.
  * Publishers: `src/composables/useResourceService.ts`
  * Consumers: `src/composables/useActivity.ts`
  */
-export type CrudAction = "create" | "update" | "delete";
+export type CrudAction = 'create' | 'update' | 'delete'
 export interface CrudEventPayload {
-  resource: string;
-  id: string;
-  action: CrudAction;
-  beforeData?: any;
-  afterData?: any;
-  at: number;
+  resource: string
+  id: string
+  action: CrudAction
+  beforeData?: any
+  afterData?: any
+  at: number
 }
 
 /** Stable channel names (prefer named imports for tree-shaking). */
-export const EVENT_HTTP_ACTIVE = "http:active" as const;
-export const EVENT_HTTP_ERROR = "http:error" as const;
-export const EVENT_VISITS_UPDATED = "visits:updated" as const;
-export const EVENT_ACTIVITIES_UPDATED = "activities:updated" as const;
-export const EVENT_CRUD = "crud" as const;
+export const EVENT_HTTP_ACTIVE = 'http:active' as const
+export const EVENT_HTTP_ERROR = 'http:error' as const
+export const EVENT_VISITS_UPDATED = 'visits:updated' as const
+export const EVENT_ACTIVITIES_UPDATED = 'activities:updated' as const
+export const EVENT_CRUD = 'crud' as const

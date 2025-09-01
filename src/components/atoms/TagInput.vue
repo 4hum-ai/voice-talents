@@ -26,35 +26,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch } from 'vue'
 
-const props = withDefaults(
-  defineProps<{ modelValue: string[]; placeholder?: string }>(),
-  {
-    modelValue: () => [],
-    placeholder: "Add tag and press Enter",
-  },
-);
-const emit = defineEmits<{ (e: "update:modelValue", v: string[]): void }>();
+const props = withDefaults(defineProps<{ modelValue: string[]; placeholder?: string }>(), {
+  modelValue: () => [],
+  placeholder: 'Add tag and press Enter',
+})
+const emit = defineEmits<{ (e: 'update:modelValue', v: string[]): void }>()
 
-const local = ref("");
+const local = ref('')
 
 function commit() {
-  const val = local.value.trim();
-  if (!val) return;
-  if (!props.modelValue.includes(val))
-    emit("update:modelValue", [...props.modelValue, val]);
-  local.value = "";
+  const val = local.value.trim()
+  if (!val) return
+  if (!props.modelValue.includes(val)) emit('update:modelValue', [...props.modelValue, val])
+  local.value = ''
 }
 function remove(index: number) {
-  const next = props.modelValue.slice();
-  next.splice(index, 1);
-  emit("update:modelValue", next);
+  const next = props.modelValue.slice()
+  next.splice(index, 1)
+  emit('update:modelValue', next)
 }
 function onKeydown(e: KeyboardEvent) {
-  if (e.key === ",") {
-    e.preventDefault();
-    commit();
+  if (e.key === ',') {
+    e.preventDefault()
+    commit()
   }
 }
 
@@ -62,7 +58,7 @@ function onKeydown(e: KeyboardEvent) {
 watch(
   () => props.modelValue.length,
   () => {
-    if (!props.modelValue.length) local.value = "";
+    if (!props.modelValue.length) local.value = ''
   },
-);
+)
 </script>

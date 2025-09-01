@@ -1,19 +1,19 @@
-import { IToastMessage, ToastTheme } from "@/types/toast";
-import { ref, Ref } from "vue";
+import { IToastMessage, ToastTheme } from '@/types/toast'
+import { ref, Ref } from 'vue'
 
-const messages: Ref<IToastMessage[]> = ref([]);
-export const theme: ToastTheme = "light";
+const messages: Ref<IToastMessage[]> = ref([])
+export const theme: ToastTheme = 'light'
 
 export const useToast = () => {
   const push = (message: IToastMessage) => {
-    messages.value.push(message);
-  };
+    messages.value.push(message)
+  }
   const remove = (id: string) => {
-    messages.value = messages.value.filter((msg) => msg.id !== id);
-  };
+    messages.value = messages.value.filter((msg) => msg.id !== id)
+  }
   const clear = () => {
-    messages.value = [];
-  };
+    messages.value = []
+  }
 
-  return { clear, push, remove, messages };
-};
+  return { clear, push, remove, messages }
+}

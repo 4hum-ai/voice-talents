@@ -37,5 +37,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ title: string; subtitle?: string; icon?: boolean }>();
+defineProps<{ title: string; subtitle?: string; icon?: boolean }>()
 </script>

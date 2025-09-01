@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <AppBar
-      :loading="loading"
-      :show-back="Boolean(onBack)"
-      @back="onBack && onBack()"
-    >
+    <AppBar :loading="loading" :show-back="Boolean(onBack)" @back="onBack && onBack()">
       <template #title>
         <slot name="title">
           {{ title }}
@@ -23,11 +19,7 @@
         >
           Edit
         </button>
-        <ActionsMenu
-          :items="actionMenuItems"
-          size="md"
-          @select="handleActionMenuSelect"
-        />
+        <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
       </template>
     </AppBar>
 
@@ -51,9 +43,7 @@
               v-if="section.title"
               class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
             >
-              <div
-                class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-              />
+              <div class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
             </div>
             <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
               <div
@@ -61,12 +51,8 @@
                 :key="`skeleton-field-${sIdx}-${i}`"
                 class="flex flex-col gap-2"
               >
-                <div
-                  class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-                />
-                <div
-                  class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-                />
+                <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
           </section>
@@ -76,17 +62,9 @@
           class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
         >
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div
-              v-for="i in 8"
-              :key="`skeleton-kv-${i}`"
-              class="flex flex-col gap-2"
-            >
-              <div
-                class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-              />
-              <div
-                class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-              />
+            <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
+              <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
             </div>
           </div>
         </div>
@@ -107,18 +85,12 @@
                 v-if="section.title"
                 class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
               >
-                <h3
-                  class="text-sm font-semibold text-gray-900 dark:text-gray-100"
-                >
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {{ section.title }}
                 </h3>
               </div>
               <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
-                <div
-                  v-for="field in section.fields || []"
-                  :key="field.key"
-                  class="flex flex-col"
-                >
+                <div v-for="field in section.fields || []" :key="field.key" class="flex flex-col">
                   <span class="text-xs text-gray-500 dark:text-gray-400">{{
                     field.label || formatKey(String(field.key))
                   }}</span>
@@ -139,18 +111,13 @@
             class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
           >
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div
-                v-for="(value, key) in displayPairs"
-                :key="String(key)"
-                class="flex flex-col"
-              >
+              <div v-for="(value, key) in displayPairs" :key="String(key)" class="flex flex-col">
                 <span class="text-xs text-gray-500 dark:text-gray-400">{{
                   formatKey(String(key))
                 }}</span>
-                <span
-                  class="text-sm break-all text-gray-900 dark:text-gray-100"
-                  >{{ formatValue(value) }}</span
-                >
+                <span class="text-sm break-all text-gray-900 dark:text-gray-100">{{
+                  formatValue(value)
+                }}</span>
               </div>
             </div>
           </div>
@@ -172,23 +139,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import Breadcrumbs from "@/components/molecules/Breadcrumbs.vue";
-import FieldValue from "@/components/atoms/FieldValue.vue";
-import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
-import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
-import AppBar from "@/components/molecules/AppBar.vue";
+import { computed, ref } from 'vue'
+import Breadcrumbs from '@/components/molecules/Breadcrumbs.vue'
+import FieldValue from '@/components/atoms/FieldValue.vue'
+import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
+import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 
 interface Props {
-  resourceName: string;
-  item?: Record<string, any> | null;
-  loading?: boolean;
-  error?: string | null;
-  enableEdit?: boolean;
-  enableDelete?: boolean;
-  onBack?: () => void;
-  uiConfig?: any;
-  customEditHandler?: boolean;
+  resourceName: string
+  item?: Record<string, any> | null
+  loading?: boolean
+  error?: string | null
+  enableEdit?: boolean
+  enableDelete?: boolean
+  onBack?: () => void
+  uiConfig?: any
+  customEditHandler?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -197,81 +164,77 @@ const props = withDefaults(defineProps<Props>(), {
   error: null,
   enableEdit: true,
   enableDelete: true,
-});
+})
 
-const emit = defineEmits(["edit", "delete", "update"]);
+const emit = defineEmits(['edit', 'delete', 'update'])
 
-const title = computed(
-  () => props.item?.name || props.item?.title || "Details",
-);
-const subtitle = computed(() => props.item?.id);
+const title = computed(() => props.item?.name || props.item?.title || 'Details')
+const subtitle = computed(() => props.item?.id)
 
-const displayPairs = computed(() => props.item || {});
+const displayPairs = computed(() => props.item || {})
 
 const breadcrumbs = computed(() => [
-  { label: "Dashboard", to: "/" },
+  { label: 'Dashboard', to: '/' },
   { label: props.uiConfig?.displayName, to: `/${props.resourceName}` },
   { label: String(title.value) },
-]);
+])
 
 const formatKey = (k: string) =>
   k
-    .replace(/_/g, " ")
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/^./, (s) => s.toUpperCase());
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, (s) => s.toUpperCase())
 const formatValue = (v: any) => {
-  if (v === null || v === undefined) return "-";
-  if (typeof v === "object") return JSON.stringify(v);
-  return String(v);
-};
+  if (v === null || v === undefined) return '-'
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
+}
 
-const detailSections = computed(
-  () => props.uiConfig?.detailView?.sections || [],
-);
+const detailSections = computed(() => props.uiConfig?.detailView?.sections || [])
 const currencyCode = (obj: any): string | undefined => {
-  const code = obj?.currency;
-  return typeof code === "string" && code.length >= 3 ? code : undefined;
-};
+  const code = obj?.currency
+  return typeof code === 'string' && code.length >= 3 ? code : undefined
+}
 
 // Actions menu items (e.g., Delete lives here now)
-type ActionMenuItem = { key: string; label: string; description?: string };
+type ActionMenuItem = { key: string; label: string; description?: string }
 const actionMenuItems = computed<ActionMenuItem[]>(() => {
-  const items: ActionMenuItem[] = [];
-  if (props.enableDelete) items.push({ key: "delete", label: "Delete" });
-  return items;
-});
+  const items: ActionMenuItem[] = []
+  if (props.enableDelete) items.push({ key: 'delete', label: 'Delete' })
+  return items
+})
 
 // Edit sidebar state
-const showFormSidebar = ref(false);
-const formSidebarTitle = ref("");
-const formSidebarData = ref<Record<string, any>>({});
-const formSidebarLoading = ref(false);
-const formSidebarSubmitText = ref("Save changes");
-const formSidebarLoadingText = ref("Saving...");
+const showFormSidebar = ref(false)
+const formSidebarTitle = ref('')
+const formSidebarData = ref<Record<string, any>>({})
+const formSidebarLoading = ref(false)
+const formSidebarSubmitText = ref('Save changes')
+const formSidebarLoadingText = ref('Saving...')
 
 function handleEdit() {
   if (props.customEditHandler) {
-    emit("edit");
-    return;
+    emit('edit')
+    return
   }
-  formSidebarTitle.value = `Edit ${props.uiConfig?.displayName?.slice(0, -1) || "Item"}`;
-  formSidebarSubmitText.value = "Save changes";
-  formSidebarLoadingText.value = "Saving...";
-  formSidebarData.value = { ...(props.item || {}) };
-  showFormSidebar.value = true;
+  formSidebarTitle.value = `Edit ${props.uiConfig?.displayName?.slice(0, -1) || 'Item'}`
+  formSidebarSubmitText.value = 'Save changes'
+  formSidebarLoadingText.value = 'Saving...'
+  formSidebarData.value = { ...(props.item || {}) }
+  showFormSidebar.value = true
 }
 
 function closeFormSidebar() {
-  showFormSidebar.value = false;
-  formSidebarData.value = {};
+  showFormSidebar.value = false
+  formSidebarData.value = {}
 }
 
 function handleFormSubmit(data: Record<string, any>) {
-  emit("update", data);
-  closeFormSidebar();
+  emit('update', data)
+  closeFormSidebar()
 }
 
 function handleActionMenuSelect(key: string) {
-  if (key === "delete") emit("delete");
+  if (key === 'delete') emit('delete')
 }
 </script>

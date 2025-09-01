@@ -31,6 +31,6 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ isDark: boolean }>();
-defineEmits<{ toggle: [] }>();
+defineProps<{ isDark: boolean }>()
+defineEmits<{ toggle: [] }>()
 </script>

@@ -15,11 +15,7 @@
           class="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           @change="onPerPageChange"
         >
-          <option
-            v-for="opt in pageSizeOptionsComputed"
-            :key="`size-${opt}`"
-            :value="opt"
-          >
+          <option v-for="opt in pageSizeOptionsComputed" :key="`size-${opt}`" :value="opt">
             {{ opt }}
           </option>
         </select>
@@ -75,98 +71,81 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue'
 
 type Props = {
-  currentPage: number;
-  totalPages: number;
-  total: number;
-  perPage: number;
-  pageSizeOptions?: number[];
-};
+  currentPage: number
+  totalPages: number
+  total: number
+  perPage: number
+  pageSizeOptions?: number[]
+}
 
 const props = withDefaults(defineProps<Props>(), {
   pageSizeOptions: () => [5, 10, 20, 50, 100],
-});
+})
 const emit = defineEmits<{
-  (e: "page-change", page: number): void;
-  (e: "per-page-change", perPage: number): void;
-}>();
+  (e: 'page-change', page: number): void
+  (e: 'per-page-change', perPage: number): void
+}>()
 
-const safeTotal = computed(() => Number(props.total) || 0);
-const safePerPage = computed(() => Math.max(1, Number(props.perPage) || 10));
-const safeCurrentPage = computed(() =>
-  Math.max(1, Number(props.currentPage) || 1),
-);
+const safeTotal = computed(() => Number(props.total) || 0)
+const safePerPage = computed(() => Math.max(1, Number(props.perPage) || 10))
+const safeCurrentPage = computed(() => Math.max(1, Number(props.currentPage) || 1))
 const safeTotalPages = computed(
-  () =>
-    Number(props.totalPages) ||
-    Math.max(1, Math.ceil(safeTotal.value / safePerPage.value)),
-);
+  () => Number(props.totalPages) || Math.max(1, Math.ceil(safeTotal.value / safePerPage.value)),
+)
 
 const startItem = computed(() => {
-  if (safeTotal.value === 0) return 0;
-  return (safeCurrentPage.value - 1) * safePerPage.value + 1;
-});
-const endItem = computed(() =>
-  Math.min(safeCurrentPage.value * safePerPage.value, safeTotal.value),
-);
+  if (safeTotal.value === 0) return 0
+  return (safeCurrentPage.value - 1) * safePerPage.value + 1
+})
+const endItem = computed(() => Math.min(safeCurrentPage.value * safePerPage.value, safeTotal.value))
 
 const pages = computed(() => {
-  const total = safeTotalPages.value;
-  const current = safeCurrentPage.value;
-  const windowSize = 1;
+  const total = safeTotalPages.value
+  const current = safeCurrentPage.value
+  const windowSize = 1
   const items: Array<{
-    key: string;
-    label: string;
-    value: number;
-    isEllipsis?: boolean;
-  }> = [];
-  const pushPage = (p: number) =>
-    items.push({ key: String(p), label: String(p), value: p });
-  const pushEllipsis = (key: string) =>
-    items.push({ key, label: "…", value: -1, isEllipsis: true });
+    key: string
+    label: string
+    value: number
+    isEllipsis?: boolean
+  }> = []
+  const pushPage = (p: number) => items.push({ key: String(p), label: String(p), value: p })
+  const pushEllipsis = (key: string) => items.push({ key, label: '…', value: -1, isEllipsis: true })
 
   if (total <= 7) {
-    for (let p = 1; p <= total; p++) pushPage(p);
-    return items;
+    for (let p = 1; p <= total; p++) pushPage(p)
+    return items
   }
 
-  pushPage(1);
-  if (current > 2 + windowSize) pushEllipsis("start");
+  pushPage(1)
+  if (current > 2 + windowSize) pushEllipsis('start')
 
-  const start = Math.max(2, current - windowSize);
-  const end = Math.min(total - 1, current + windowSize);
-  for (let p = start; p <= end; p++) pushPage(p);
+  const start = Math.max(2, current - windowSize)
+  const end = Math.min(total - 1, current + windowSize)
+  for (let p = start; p <= end; p++) pushPage(p)
 
-  if (current < total - (1 + windowSize)) pushEllipsis("end");
-  pushPage(total);
-  return items;
-});
+  if (current < total - (1 + windowSize)) pushEllipsis('end')
+  pushPage(total)
+  return items
+})
 
 const pageSizeOptionsComputed = computed(() => {
-  const base = (props.pageSizeOptions || [10, 20, 50, 100]).filter(
-    (n) => Number(n) > 0,
-  );
-  const withCurrent = base.includes(safePerPage.value)
-    ? base
-    : [...base, safePerPage.value];
-  const unique = Array.from(new Set(withCurrent)) as number[];
-  return unique.sort((a, b) => a - b);
-});
+  const base = (props.pageSizeOptions || [10, 20, 50, 100]).filter((n) => Number(n) > 0)
+  const withCurrent = base.includes(safePerPage.value) ? base : [...base, safePerPage.value]
+  const unique = Array.from(new Set(withCurrent)) as number[]
+  return unique.sort((a, b) => a - b)
+})
 
 const goToPage = (page: number) => {
-  if (
-    page >= 1 &&
-    page <= safeTotalPages.value &&
-    page !== safeCurrentPage.value
-  )
-    emit("page-change", page);
-};
+  if (page >= 1 && page <= safeTotalPages.value && page !== safeCurrentPage.value)
+    emit('page-change', page)
+}
 
 const onPerPageChange = (e: Event) => {
-  const next =
-    Number((e.target as HTMLSelectElement).value) || safePerPage.value;
-  if (next > 0 && next !== safePerPage.value) emit("per-page-change", next);
-};
+  const next = Number((e.target as HTMLSelectElement).value) || safePerPage.value
+  if (next > 0 && next !== safePerPage.value) emit('per-page-change', next)
+}
 </script>
