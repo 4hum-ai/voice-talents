@@ -82,7 +82,7 @@
                   <textarea
                     v-else-if="field.type === 'textarea'"
                     :id="field.key"
-                    v-model="formData[field.key]"
+                    v-model="formData[field.key] as string"
                     :placeholder="field.placeholder"
                     rows="3"
                     :class="textareaClass(field)"
@@ -162,25 +162,10 @@ import { reactive, computed, ref } from 'vue'
 import { countries } from '@/utils/countries'
 import FileUploadModal from '@/components/molecules/FileUploadModal.vue'
 
-interface FormField {
-  key: string
-  label: string
-  type: 'text' | 'email' | 'url' | 'number' | 'date' | 'select' | 'textarea' | 'file' | 'boolean'
-  required?: boolean
-  placeholder?: string
-  helpText?: string
-  options?: Array<{ value: string; label: string }>
-}
-interface FormConfig {
-  fields: FormField[]
-  layout?: 'single' | 'tabs' | 'sections'
-  mode?: 'form' | 'upload'
-}
-
 const props = withDefaults(
   defineProps<{
     title: string
-    formConfig?: FormConfig
+    formConfig?: FormViewConfig
     initialData?: Record<string, unknown>
     loading?: boolean
     submitText?: string
@@ -203,8 +188,8 @@ const formData = reactive<Record<string, unknown>>({
 })
 const errors = reactive<Record<string, string | undefined>>({})
 
-const resolvedForm = computed<FormConfig>(() => {
-  const base: FormConfig = props.formConfig
+const resolvedForm = computed<FormViewConfig>(() => {
+  const base: FormViewConfig = props.formConfig
     ? { ...props.formConfig, fields: [...(props.formConfig.fields || [])] }
     : { fields: [] }
   base.fields = base.fields.map((f: FormField) => {
@@ -246,7 +231,7 @@ const validators = {
   url: (v: unknown) =>
     !v || /^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(String(v)),
   number: (v: unknown) => v === undefined || v === null || v === '' || !isNaN(Number(v)),
-  date: (v: unknown) => !v || !isNaN(new Date(v).getTime()),
+  date: (v: unknown) => !v || !isNaN(new Date(v as string).getTime()),
 }
 
 function validateField(field: FormField): string | undefined {
@@ -302,6 +287,7 @@ const handleSubmit = () => {
 
 import { useMedia } from '@/composables/useMedia'
 import { useToast } from '@/composables/useToast'
+import { FormField, FormViewConfig } from '@/types/ui-config'
 const { uploadViaMediaResource } = useMedia()
 const { push } = useToast()
 const uploading = reactive<Record<string, boolean>>({})

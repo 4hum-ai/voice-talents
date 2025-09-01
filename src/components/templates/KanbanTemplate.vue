@@ -13,14 +13,7 @@
       </template>
       <template #actions>
         <template v-if="!isSearchOpen">
-          <button
-            v-if="hasCreateAction"
-            class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 hidden items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none sm:inline-flex"
-            @click="openCreate()"
-          >
-            + Add
-          </button>
-          <IconButton v-if="hasCreateAction" aria-label="Add" @click="openCreate()">
+          <IconButton aria-label="Add" @click="openCreate()">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
@@ -155,7 +148,7 @@
                 :ref="(el) => setCardRef(item.id, el as HTMLElement)"
                 class="cursor-grab touch-none rounded-lg border border-gray-200 bg-white p-4 transition-all duration-200 will-change-transform select-none hover:shadow-md active:cursor-grabbing dark:border-gray-700 dark:bg-gray-800"
                 :class="{ 'z-50 shadow-lg': draggingItemId === item.id }"
-                :style="[baseDragStyleRefs[item.id], cardStyleRefs[item.id]]"
+                :style="getCardStyle(item.id)"
                 @click="handleItemClick(item)"
               >
                 <div class="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -276,8 +269,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, watch, reactive, computed, onMounted, unref } from 'vue'
+import type { CSSProperties, StyleValue, Ref } from 'vue'
+import { LocationQuery, useRoute, useRouter } from 'vue-router'
 import { useDraggable } from '@vueuse/core'
 import TimeWindowPicker from '@/components/molecules/TimeWindowPicker.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
@@ -288,17 +282,12 @@ import FilterSidebar from '@/components/molecules/FilterSidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import IconButton from '@/components/atoms/IconButton.vue'
 import DateRangeInput from '@/components/atoms/DateRangeInput.vue'
-import type { DataArray, ActionArray, UiConfig, FilterArray, ColumnArray } from '@/types/common'
+import type { DataArray, FilterPreset, DataItem } from '@/types/common'
+import type { UiConfig, ColumnConfig, FilterConfig, KanbanViewConfig } from '@/types/ui-config'
 
 interface Props {
   data: DataArray
-  config: {
-    columns: ColumnArray
-    groupByField: string
-    cardTitleField: string
-    cardDescriptionField?: string
-    actions?: ActionArray
-  }
+  config: KanbanViewConfig
   resourceName?: string
   uiConfig?: UiConfig
   loading?: boolean
@@ -333,7 +322,7 @@ function closeSearch() {
 function handleSearchInput() {
   const search = searchQuery.value?.trim() || ''
   const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
-  const nextQuery: Record<string, unknown> = { ...route.query, page: '1' }
+  const nextQuery: LocationQuery = { ...route.query, page: '1' }
   if (search) nextQuery.search = search
   else delete nextQuery.search
   if (field) nextQuery.searchField = field
@@ -354,7 +343,7 @@ const layoutMenuItems = computed(() => [
 ])
 function handleLayoutSelect(key: string) {
   if (!['list', 'gallery', 'calendar', 'kanban'].includes(key)) return
-  const nextQuery: Record<string, unknown> = { view: key }
+  const nextQuery: LocationQuery = { view: key }
   router.replace({ query: nextQuery }).catch(() => {})
 }
 
@@ -378,7 +367,7 @@ function handleFormSubmit(data: Record<string, unknown>) {
 
 // filters sidebar (time window + default filters)
 const showFilterSidebar = ref(false)
-const filterPreset = ref<'all' | '7d' | '30d' | '90d' | 'custom'>('all')
+const filterPreset = ref<FilterPreset>('all')
 const filterFrom = ref<string | undefined>(undefined)
 const filterTo = ref<string | undefined>(undefined)
 function openFilters() {
@@ -392,8 +381,17 @@ function clearFilters() {
   filterFrom.value = undefined
   filterTo.value = undefined
 }
-const listFilters = computed<FilterArray>(() => uiConfig.value?.views?.list?.defaultFilters || [])
-const localFilterValues = ref<Record<string, unknown>>({})
+const listFilters = computed<FilterConfig[]>(
+  () => uiConfig.value?.views?.list?.defaultFilters || [],
+)
+type LocalFilterValue = {
+  min?: number
+  max?: number
+  value?: string
+  from?: string
+  to?: string
+}
+const localFilterValues = ref<Record<string, LocalFilterValue>>({})
 function onLocalValueChange(field: string, e: Event) {
   const value = (e.target as HTMLSelectElement).value
   localFilterValues.value[field] = {
@@ -416,9 +414,7 @@ function onLocalDateChange(field: string, key: 'from' | 'to', value: string) {
   }
 }
 
-// existing Kanban logic
-
-const items = ref<unknown[]>([])
+const items = ref<DataItem[]>([])
 watch(
   () => props.data,
   (newData) => {
@@ -434,13 +430,12 @@ const getKanbanItems = (columnValue: string) =>
 
 const handleItemClick = (item: unknown) => emit('item-click', item)
 
-const selectedPreset = ref<'all' | '7d' | '30d' | '90d' | 'custom'>('all')
+const selectedPreset = ref<FilterPreset>('all')
 const fromISO = ref<string | undefined>(undefined)
 const toISO = ref<string | undefined>(undefined)
 const dateField = computed(() => uiConfig.value?.views?.calendar?.dateField || 'createdAt')
-function onTimeWindowChange(payload: { preset?: string; from?: string; to?: string }) {
-  if (payload.preset)
-    selectedPreset.value = payload.preset as 'all' | '7d' | '30d' | '90d' | 'custom'
+function onTimeWindowChange(payload: { preset?: FilterPreset; from?: string; to?: string }) {
+  if (payload.preset) selectedPreset.value = payload.preset
   if ('from' in payload) fromISO.value = payload.from
   if ('to' in payload) toISO.value = payload.to
   emit('filters-change', {
@@ -493,13 +488,14 @@ const setColumnRef = (value: string, el: HTMLElement | null) => {
 
 const cardElRefs = reactive<Record<string, { el: HTMLElement | null }>>({})
 const draggableMap = new Map<string, ReturnType<typeof useDraggable>>()
-const cardStyleRefs = reactive<Record<string, unknown>>({})
-const baseDragStyleRefs = reactive<Record<string, unknown>>({})
+const cardStyleRefs = reactive<Record<string, StyleValue | Ref<StyleValue> | undefined>>({})
+const baseDragStyleRefs = reactive<Record<string, CSSProperties | undefined>>({})
 const draggingItemId = ref<string | null>(null)
 const lastPointer = ref<{ x: number; y: number } | null>(null)
 const dragMeta = reactive<Record<string, { width: number; height: number }>>({})
 
-const setCardRef = (id: string, el: HTMLElement | null) => {
+const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
+  if (!id) return
   if (!cardElRefs[id]) cardElRefs[id] = { el: null }
   cardElRefs[id].el = el
   if (el && !draggableMap.has(id)) {
@@ -516,7 +512,7 @@ const setCardRef = (id: string, el: HTMLElement | null) => {
           top: `${rect.top}px`,
           width: `${rect.width}px`,
           pointerEvents: 'none',
-        }
+        } as CSSProperties
         draggingItemId.value = id
       },
       onMove: (_evPos, ev: PointerEvent | MouseEvent | TouchEvent) => {
@@ -529,11 +525,11 @@ const setCardRef = (id: string, el: HTMLElement | null) => {
       },
       onEnd: () => {
         handleDropFromDraggable(id)
-        baseDragStyleRefs[id] = undefined as unknown
+        baseDragStyleRefs[id] = undefined
       },
     })
     draggableMap.set(id, instance)
-    cardStyleRefs[id] = instance.style
+    cardStyleRefs[id] = instance.style as unknown as Ref<StyleValue>
   }
 }
 
@@ -587,26 +583,25 @@ const handleDropFromDraggable = (id: string) => {
   draggingItemId.value = null
 }
 
+function getCardStyle(id: string | undefined): StyleValue[] {
+  if (!id) return []
+  const base = baseDragStyleRefs[id] || {}
+  const card = (unref(cardStyleRefs[id]) as StyleValue | undefined) || {}
+  return [base, card]
+}
+
 const resourceName = computed(() => props.resourceName || '')
 const uiConfig = computed(() => props.uiConfig)
 const loading = computed(() => !!props.loading)
 const activeFilters = computed(() => props.activeFilters || [])
-const hasCreateAction = computed(
-  () =>
-    Array.isArray(props.config?.actions) &&
-    (props.config.actions as ActionArray).some((a) => (a as { name?: string })?.name === 'create'),
-)
 
 const searchableFieldOptions = computed<{ key: string; label: string }[]>(() => {
   const cfg = uiConfig.value
   if (!cfg?.views?.list) return []
   const explicit = cfg.views.list.searchableFields as string[] | undefined
-  const columns = (cfg.views.list.columns || []) as ColumnArray
+  const columns = (cfg.views.list.columns || []) as ColumnConfig[]
   const fromColumns = columns
-    .filter(
-      (c) =>
-        c?.type === 'text' || c?.type === 'url' || c?.type === 'email' || c?.searchable === true,
-    )
+    .filter((c) => c?.type === 'text' || c?.type === 'url' || c?.searchable === true)
     .map((c) => ({ key: String(c.key), label: String(c.label || c.key) }))
   const fromExplicit = (explicit || []).map((k) => {
     const col = columns.find((c) => c.key === k)
@@ -624,7 +619,7 @@ function applyFilters() {
     to: toISO.value,
   }
   const filters: Record<string, unknown> = {}
-  for (const f of listFilters.value as FilterArray) {
+  for (const f of listFilters.value as FilterConfig[]) {
     const v = localFilterValues.value[f.field]
     if (!v) continue
     if (f.type === 'number') {

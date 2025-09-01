@@ -29,18 +29,20 @@
 </template>
 
 <script setup lang="ts">
+import { FilterPreset } from '@/types/common'
+
 defineProps<{
-  preset: 'all' | '7d' | '30d' | '90d' | 'custom'
+  preset: FilterPreset
   from?: string
   to?: string
 }>()
 const emit = defineEmits<{
-  change: [payload: { preset?: string; from?: string; to?: string }]
+  change: [payload: { preset?: FilterPreset; from?: string; to?: string }]
 }>()
 
 function onPresetChange(e: Event) {
   const value = (e.target as HTMLSelectElement).value as string
-  emit('change', { preset: value })
+  emit('change', { preset: value as FilterPreset })
 }
 function onDateChange(key: 'from' | 'to', e: Event) {
   const value = (e.target as HTMLInputElement).value

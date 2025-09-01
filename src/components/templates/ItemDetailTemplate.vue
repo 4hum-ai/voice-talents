@@ -94,7 +94,7 @@
                     :value="item?.[field.key]"
                     :type="field.type"
                     :formatter="field.formatter"
-                    :currency-code="currencyCode(item)"
+                    :currency-code="currencyCode(item || {})"
                     :field-key="field.key"
                   />
                 </div>
@@ -136,12 +136,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import Breadcrumbs from '@/components/molecules/Breadcrumbs.vue'
+import Breadcrumbs, { BreadcrumbItem } from '@/components/molecules/Breadcrumbs.vue'
 import FieldValue from '@/components/atoms/FieldValue.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
+import { UiConfig } from '@/types/ui-config'
 
 interface Props {
   resourceName: string
@@ -151,7 +152,7 @@ interface Props {
   enableEdit?: boolean
   enableDelete?: boolean
   onBack?: () => void
-  uiConfig?: unknown
+  uiConfig: UiConfig | null
   customEditHandler?: boolean
 }
 
@@ -170,9 +171,9 @@ const subtitle = computed(() => props.item?.id)
 
 const displayPairs = computed(() => props.item || {})
 
-const breadcrumbs = computed(() => [
+const breadcrumbs = computed((): BreadcrumbItem[] => [
   { label: 'Dashboard', to: '/' },
-  { label: props.uiConfig?.displayName, to: `/${props.resourceName}` },
+  { label: props.uiConfig?.displayName || '', to: `/${props.resourceName}` },
   { label: String(title.value) },
 ])
 
@@ -188,7 +189,7 @@ const formatValue = (v: unknown) => {
 }
 
 const detailSections = computed(() => props.uiConfig?.detailView?.sections || [])
-const currencyCode = (obj: unknown): string | undefined => {
+const currencyCode = (obj: Record<string, unknown>): string | undefined => {
   const code = obj?.currency
   return typeof code === 'string' && code.length >= 3 ? code : undefined
 }

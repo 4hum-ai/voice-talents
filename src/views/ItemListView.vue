@@ -34,7 +34,7 @@
       :active-filters="filterChips"
       @load-more="onLoadMore"
       @sort="onSort"
-      @item-click="(item: Record<string, unknown>) => onAction('view', item)"
+      @item-click="(item: DataItem) => onAction('view', item)"
       @filters-change="onFiltersChange"
       @clear-filter="onClearFilter"
       @clear-all-filters="onClearAllFilters"
@@ -47,7 +47,7 @@
       :ui-config="uiConfig"
       :loading="loading"
       :active-filters="filterChips"
-      @item-click="(item: Record<string, unknown>) => onAction('view', item)"
+      @item-click="(item: DataItem) => onAction('view', item)"
       @status-change="onKanbanStatusChange"
       @filters-change="onFiltersChange"
       @clear-filter="onClearFilter"
@@ -60,7 +60,7 @@
       :resource-name="resource"
       :ui-config="uiConfig"
       :loading="loading"
-      @item-click="(item: Record<string, unknown>) => onAction('view', item)"
+      @item-click="(item: DataItem) => onAction('view', item)"
       @filters-change="onFiltersChange"
     />
     <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">
@@ -81,22 +81,12 @@ import CalendarTemplate from '@/components/templates/CalendarTemplate.vue'
 import { useResourceService, type PaginatedResult } from '@/composables/useResourceService'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { useQueryBuilder } from '@/composables/useQueryBuilder'
-import type { UiConfig } from '@/types/ui-config'
+import type { FilterConfig, UiConfig } from '@/types/ui-config'
 import { usePreference } from '@/composables/usePreference'
 import { useStaleStore } from '@/stores/stale'
+import { DataItem } from '@/types/common'
 
 type ViewType = 'list' | 'gallery' | 'kanban' | 'calendar'
-
-interface FilterOption {
-  value: string | number
-  label: string
-}
-
-interface FilterConfig {
-  field: string
-  label: string
-  options?: FilterOption[]
-}
 
 const api = useResourceService()
 
@@ -117,7 +107,7 @@ const viewPref = computed(() => usePreference(viewPrefKey.value))
 const { get: getUiConfig } = useUiConfig()
 const uiConfig = ref<UiConfig | null>(null)
 
-const items = ref<unknown[]>([])
+const items = ref<DataItem[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 })
@@ -170,8 +160,8 @@ const filterChips = computed<{ key: string; label: string }[]>(() => {
   }
   // Generic default filters from uiConfig
   const filters = uiConfig.value?.views?.list?.defaultFilters || []
-  for (const f of filters) {
-    const filterConfig = f as FilterConfig
+  for (const f of filters as FilterConfig[]) {
+    const filterConfig = f
     const base = `filters[${filterConfig.field}]`
     const eq = q[base]
     const b = q[`${base}[$between]`]
@@ -179,11 +169,8 @@ const filterChips = computed<{ key: string; label: string }[]>(() => {
     const lte = q[`${base}[$lte]`]
     if (eq !== undefined) {
       let valLabel = String(eq)
-      if (
-        (f as { options?: unknown[] }).options &&
-        Array.isArray((f as { options?: unknown[] }).options)
-      ) {
-        const found = (f as { options?: unknown[] }).options?.find(
+      if (f.options && Array.isArray(f.options)) {
+        const found = f.options?.find(
           (o: unknown) => String((o as { value?: unknown })?.value) === String(eq),
         )
         if (found) valLabel = String(found.label)
@@ -257,7 +244,7 @@ async function load(page = 1) {
     if (qs.filters) params.filters = qs.filters
     currentAbort?.abort()
     currentAbort = new AbortController()
-    const res: PaginatedResult<unknown> = await api.list(
+    const res: PaginatedResult<DataItem> = await api.list(
       resource.value,
       params,
       currentAbort.signal,
@@ -309,10 +296,10 @@ function onAction(action: string, payload?: unknown) {
   }
 }
 
-async function onKanbanStatusChange(payload: { item: unknown; from: string; to: string }) {
+async function onKanbanStatusChange(payload: { item: DataItem; from: string; to: string }) {
   try {
     const groupByField = uiConfig.value?.views?.kanban?.groupByField
-    const id = String(payload?.item?.id ?? payload?.item?._id ?? '')
+    const id = String(payload?.item?.id ?? '')
     if (!groupByField || !id) return
     await api.update(resource.value, id, {
       [groupByField]: payload.to,
@@ -340,7 +327,7 @@ async function onLoadMore() {
     if (qs.filters) params.filters = qs.filters
     currentAbort?.abort()
     currentAbort = new AbortController()
-    const res: PaginatedResult<unknown> = await api.list(
+    const res: PaginatedResult<DataItem> = await api.list(
       resource.value,
       params,
       currentAbort.signal,

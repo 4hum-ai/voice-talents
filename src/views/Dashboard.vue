@@ -200,9 +200,11 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import LoadingIcon from '~icons/mdi/loading'
-import { useActivity } from '@/composables/useActivity'
+import { ActivityEntry, useActivity, VisitEntry } from '@/composables/useActivity'
 import { useEventBus } from '@vueuse/core'
 import { EVENT_ACTIVITIES_UPDATED, EVENT_VISITS_UPDATED } from '@/types/events'
+import { ColumnConfig, UiConfig } from '@/types/ui-config'
+import { DataItem } from '@/types/common'
 
 // Connection health check removed as it's low value for UX
 const api = useResourceService()
@@ -341,16 +343,16 @@ onBeforeUnmount(() => {
 
 // Visual helpers moved to Avatar atom
 // Activity and label helpers
-const recentVisits = ref<unknown[]>([])
-const recentActivities = ref<unknown[]>([])
+const recentVisits = ref<VisitEntry<DataItem>[]>([])
+const recentActivities = ref<ActivityEntry<DataItem>[]>([])
 const limit =
   Number((import.meta as { env?: Record<string, unknown> }).env?.VITE_DASHBOARD_ACTIVITY_LIMIT) ||
   10
 
 function refreshActivityLists() {
   try {
-    recentVisits.value = activity.getRecentVisits(limit)
-    recentActivities.value = activity.getRecentActivities(limit)
+    recentVisits.value = activity.getRecentVisits(limit) as VisitEntry<DataItem>[]
+    recentActivities.value = activity.getRecentActivities(limit) as ActivityEntry<DataItem>[]
   } catch {
     recentVisits.value = []
     recentActivities.value = []
@@ -380,7 +382,7 @@ function actionBadgeClass(action: string): string {
   return 'bg-gray-50 text-gray-700 border border-gray-200'
 }
 
-async function onRevert(a: unknown) {
+async function onRevert(a: ActivityEntry<DataItem>) {
   try {
     await activity.revert(a)
     refreshActivityLists()
@@ -389,11 +391,11 @@ async function onRevert(a: unknown) {
   }
 }
 
-function labelFor(resourceName: string, data: unknown): string {
+function labelFor(resourceName: string, data: DataItem | undefined): string {
   if (!data || typeof data !== 'object') return String(data ?? '-')
   const cfg = (useUiConfig() as { state?: { configs?: Record<string, unknown> } }).state?.configs?.[
     resourceName
-  ] as unknown
+  ] as UiConfig
   const pick = (key?: string) => (key && data[key] ? String(data[key]) : '')
   // Try known config keys
   const fromGallery = pick(cfg?.views?.gallery?.titleField)
@@ -403,12 +405,18 @@ function labelFor(resourceName: string, data: unknown): string {
   const fromCalendar = pick(cfg?.views?.calendar?.titleField)
   if (fromCalendar) return fromCalendar
   // Try list column with titleField set
-  const columns = (cfg?.views?.list?.columns || []) as unknown[]
+  const columns = (cfg?.views?.list?.columns || []) as ColumnConfig[]
   for (const c of columns) {
     const t = pick(c?.titleField) || pick(c?.key)
     if (t) return t
   }
   // Common fallbacks
-  return data.name || data.title || data.displayName || data.email || data.id || data._id || '-'
+  return (data?.name ||
+    data?.title ||
+    data?.displayName ||
+    data?.email ||
+    data?.id ||
+    data?._id ||
+    '-') as string
 }
 </script>

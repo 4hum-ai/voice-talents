@@ -30,6 +30,7 @@ import { useUiConfig } from '@/composables/useUiConfig'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import { useActivity } from '@/composables/useActivity'
 import { useStaleStore } from '@/stores/stale'
+import { UiConfig } from '@/types/ui-config'
 
 interface ItemData extends Record<string, unknown> {
   id?: string | number
@@ -52,7 +53,7 @@ const id = computed(() => {
 
 const item = ref<Record<string, unknown> | null>(null)
 const { get: getUiConfig } = useUiConfig()
-const uiConfig = ref<unknown | null>(null)
+const uiConfig = ref<UiConfig | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 let currentAbort: AbortController | null = null

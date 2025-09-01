@@ -95,19 +95,22 @@
 
 <script setup lang="ts">
 import { computed, watch, shallowRef, ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import { toDate, toISODate } from '@/utils/date'
 import { createCalendar, createViewMonthGrid } from '@schedule-x/calendar'
+type PlainDate = unknown
 import 'temporal-polyfill/global'
 import AppBar from '@/components/molecules/AppBar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import IconButton from '@/components/atoms/IconButton.vue'
+import type { DataArray, DataItem } from '@/types/common'
+import type { UiConfig, ColumnConfig } from '@/types/ui-config'
 
 // calendar core
 
 type Props = {
-  data: unknown[]
+  data: DataArray
   config: {
     titleField?: string
     dateField?: string
@@ -115,7 +118,7 @@ type Props = {
     actions?: unknown[]
   }
   resourceName?: string
-  uiConfig?: unknown
+  uiConfig?: UiConfig
   loading?: boolean
 }
 const props = defineProps<Props>()
@@ -134,7 +137,7 @@ const selectedDate = ref<Date>(new Date())
 const currentMonth = computed<number>(() => selectedDate.value.getMonth())
 const currentYear = computed<number>(() => selectedDate.value.getFullYear())
 
-function toTemporalDate(d: Date) {
+function toTemporalDate(d: Date): PlainDate {
   return (
     globalThis as {
       Temporal: {
@@ -147,17 +150,25 @@ function toTemporalDate(d: Date) {
     year: d.getFullYear(),
     month: d.getMonth() + 1,
     day: d.getDate(),
-  })
+  }) as unknown as PlainDate
 }
 
-const mappedEvents = computed(() => {
+type CalendarEvent = {
+  id: string
+  title: string
+  start: PlainDate
+  end: PlainDate
+  __raw: DataItem
+}
+
+const mappedEvents = computed<CalendarEvent[]>(() => {
   const dateField = props.config.dateField || 'date'
   const endField = (props.config as { endDateField?: string }).endDateField || dateField
   return (props.data || [])
-    .map((item: unknown, idx: number) => {
-      const startD = toDate(item?.[dateField])
+    .map((item: DataItem, idx: number) => {
+      const startD = toDate(item?.[dateField] as unknown)
       if (!startD) return null
-      const endD = toDate(item?.[endField]) || startD
+      const endD = toDate(item?.[endField] as unknown) || startD
       return {
         id: String(item?.id ?? item?._id ?? idx),
         title: String(item?.[props.config.titleField || 'title'] ?? ''),
@@ -166,16 +177,17 @@ const mappedEvents = computed(() => {
         __raw: item,
       }
     })
-    .filter(Boolean) as unknown[]
+    .filter(Boolean) as CalendarEvent[]
 })
 
 function buildApp() {
-  return createCalendar({
+  const cfg = {
     selectedDate: toTemporalDate(selectedDate.value),
     views: [viewMonth],
     defaultView: viewMonth.name,
     events: mappedEvents.value,
-  })
+  } as unknown as Parameters<typeof createCalendar>[0]
+  return createCalendar(cfg)
 }
 
 const calendarApp = shallowRef(buildApp())
@@ -208,7 +220,8 @@ try {
 
 // appbar aux state
 const resourceName = computed(() => props.resourceName || '')
-const uiConfig = computed(() => props.uiConfig)
+const uiConfig = computed<UiConfig | undefined>(() => props.uiConfig)
+const subtitle = computed(() => uiConfig.value?.description || '')
 const loading = computed(() => !!props.loading)
 const hasCreateAction = computed(
   () =>
@@ -229,7 +242,7 @@ function closeSearch() {
 function handleSearchInput() {
   const search = searchQuery.value?.trim() || ''
   const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
-  const nextQuery: Record<string, unknown> = { ...route.query, page: '1' }
+  const nextQuery: LocationQuery = { ...route.query, page: '1' }
   if (search) nextQuery.search = search
   else delete nextQuery.search
   if (field) nextQuery.searchField = field
@@ -250,7 +263,7 @@ const layoutMenuItems = computed(() => [
 ])
 function handleLayoutSelect(key: string) {
   if (!['list', 'gallery', 'calendar', 'kanban'].includes(key)) return
-  const nextQuery: Record<string, unknown> = { view: key }
+  const nextQuery: LocationQuery = { view: key }
   router.replace({ query: nextQuery }).catch(() => {})
 }
 
@@ -263,12 +276,9 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(() => 
   const cfg = uiConfig.value
   if (!cfg?.views?.list) return []
   const explicit = cfg.views.list.searchableFields as string[] | undefined
-  const columns = (cfg.views.list.columns || []) as unknown[]
+  const columns = (cfg.views.list.columns || []) as ColumnConfig[]
   const fromColumns = columns
-    .filter(
-      (c) =>
-        c?.type === 'text' || c?.type === 'url' || c?.type === 'email' || c?.searchable === true,
-    )
+    .filter((c) => c?.type === 'text' || c?.type === 'url' || c?.searchable === true)
     .map((c) => ({ key: String(c.key), label: String(c.label || c.key) }))
   const fromExplicit = (explicit || []).map((k) => {
     const col = columns.find((c) => c.key === k)

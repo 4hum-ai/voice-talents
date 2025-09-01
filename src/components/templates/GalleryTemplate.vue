@@ -331,7 +331,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import SortDropdown from '@/components/molecules/SortDropdown.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -344,7 +344,8 @@ import IconButton from '@/components/atoms/IconButton.vue'
 import DateRangeInput from '@/components/atoms/DateRangeInput.vue'
 import PlayIcon from '~icons/mdi/play-circle-outline'
 import MusicIcon from '~icons/mdi/music-note-outline'
-import type { DataArray, ActionArray, UiConfig, FilterArray } from '@/types/common'
+import type { DataArray, DataItem, ActionArray, FilterPreset } from '@/types/common'
+import type { UiConfig, ColumnConfig, FilterConfig } from '@/types/ui-config'
 
 // props/emits
 
@@ -398,7 +399,7 @@ function closeSearch() {
 function handleSearchInput() {
   const search = searchQuery.value?.trim() || ''
   const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
-  const nextQuery: Record<string, unknown> = { ...route.query, page: '1' }
+  const nextQuery: LocationQuery = { ...route.query, page: '1' }
   if (search) nextQuery.search = search
   else delete nextQuery.search
   if (field) nextQuery.searchField = field
@@ -426,12 +427,9 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(() => 
   const cfg = uiConfig.value
   if (!cfg?.views?.list) return []
   const explicit = cfg.views.list.searchableFields as string[] | undefined
-  const columns = (cfg.views.list.columns || []) as unknown[]
+  const columns = (cfg.views.list.columns || []) as ColumnConfig[]
   const fromColumns = columns
-    .filter(
-      (c) =>
-        c?.type === 'text' || c?.type === 'url' || c?.type === 'email' || c?.searchable === true,
-    )
+    .filter((c) => c?.type === 'text' || c?.type === 'url' || c?.searchable === true)
     .map((c) => ({ key: String(c.key), label: String(c.label || c.key) }))
   const fromExplicit = (explicit || []).map((k) => {
     const col = columns.find((c) => c.key === k)
@@ -470,13 +468,13 @@ const layoutMenuItems = computed(() => [
 ])
 function handleLayoutSelect(key: string) {
   if (!['list', 'gallery', 'calendar', 'kanban'].includes(key)) return
-  const nextQuery: Record<string, unknown> = { view: key }
+  const nextQuery: LocationQuery = { view: key }
   router.replace({ query: nextQuery }).catch(() => {})
 }
 
 // filters sidebar
 const showFilterSidebar = ref(false)
-const filterPreset = ref<'all' | '7d' | '30d' | '90d' | 'custom'>('all')
+const filterPreset = ref<FilterPreset>('all')
 const filterFrom = ref<string | undefined>(undefined)
 const filterTo = ref<string | undefined>(undefined)
 function syncFiltersFromQuery() {
@@ -502,8 +500,8 @@ function syncFiltersFromQuery() {
     filterTo.value = to
 
     // sync default field filters from URL
-    const next: Record<string, unknown> = {}
-    for (const f of listFilters.value as FilterArray) {
+    const next: Record<string, LocalFilterValue> = {}
+    for (const f of listFilters.value as FilterConfig[]) {
       const base = `filters[${f.field}]`
       const eq = q[base]
       const b = q[`${base}[$between]`]
@@ -529,7 +527,7 @@ function syncFiltersFromQuery() {
           const [fromD, toD] = String(b).split(',')
           next[f.field] = { from: fromD, to: toD }
         } else if (gte || lte) {
-          next[f.field] = { from: gte || '', to: lte || '' }
+          next[f.field] = { from: (gte as string) || '', to: (lte as string) || '' }
         }
       }
     }
@@ -550,8 +548,8 @@ function clearFilters() {
   filterFrom.value = undefined
   filterTo.value = undefined
 }
-function onTimeWindowChange(payload: { preset?: string; from?: string; to?: string }) {
-  if (payload.preset) filterPreset.value = payload.preset as string
+function onTimeWindowChange(payload: { preset?: FilterPreset; from?: string; to?: string }) {
+  if (payload.preset) filterPreset.value = payload.preset
   if (payload.from !== undefined) filterFrom.value = payload.from
   if (payload.to !== undefined) filterTo.value = payload.to
 }
@@ -563,7 +561,7 @@ function applyFilters() {
   }
   // Translate localFilterValues into backend-friendly filters
   const filters: Record<string, unknown> = {}
-  for (const f of listFilters.value as FilterArray) {
+  for (const f of listFilters.value as FilterConfig[]) {
     const v = localFilterValues.value[f.field]
     if (!v) continue
     if (f.type === 'number') {
@@ -593,8 +591,11 @@ function applyFilters() {
   closeFilters()
 }
 
-const listFilters = computed<FilterArray>(() => uiConfig.value?.views?.list?.defaultFilters || [])
-const localFilterValues = ref<Record<string, unknown>>({})
+const listFilters = computed<FilterConfig[]>(
+  () => uiConfig.value?.views?.list?.defaultFilters || [],
+)
+type LocalFilterValue = { min?: number; max?: number; value?: string; from?: string; to?: string }
+const localFilterValues = ref<Record<string, LocalFilterValue>>({})
 function onLocalValueChange(field: string, e: Event) {
   const value = (e.target as HTMLSelectElement).value
   localFilterValues.value[field] = {
@@ -621,10 +622,10 @@ function onLocalDateChange(field: string, key: 'from' | 'to', value: string) {
 
 // Removed unused handleAction to satisfy type checks
 const handleItemClick = (item: unknown) => emit('item-click', item)
-const getInitials = (name: string) =>
+const getInitials = (name: unknown) =>
   !name
     ? '?'
-    : name
+    : String(name)
         .split(' ')
         .map((n) => n[0])
         .join('')
@@ -712,8 +713,8 @@ function handleSortChange(newValue: string) {
 }
 
 // Media preview helpers
-const previewUrl = (item: unknown): string | null => {
-  const key = (props.config as { imageField?: string })?.imageField || 'thumbnailUrl'
+const previewUrl = (item: DataItem): string | null => {
+  const key = props.config?.imageField || 'thumbnailUrl'
   const value = item?.[key]
   if (!value) return null
   return String(value)
@@ -743,10 +744,10 @@ const getFileExtension = (url: string | undefined): string => {
   return last.toLowerCase()
 }
 
-const mediaFormat = (item: unknown): string => {
+const mediaFormat = (item: DataItem): string => {
   const fmt = String(item?.format || '').toLowerCase()
   if (fmt) return fmt.toUpperCase()
-  const url = String(item?.fileUrl || item?.url || previewUrl(item) || '')
+  const url = String(item?.fileUrl || item?.url || previewUrl(item as DataItem) || '')
   const ext = getFileExtension(url)
   return ext ? ext.toUpperCase() : ''
 }
@@ -768,16 +769,16 @@ const mediaKind = (value: string | null | undefined): MediaKind => {
   return 'other'
 }
 
-const primaryMediaValue = (item: unknown): string | null => {
+const primaryMediaValue = (item: DataItem): string | null => {
   const ct = String(item?.contentType || '')
   if (ct) return ct
   const fmt = String(item?.format || '')
   if (fmt) return fmt
-  const url = String(item?.fileUrl || item?.url || previewUrl(item) || '')
+  const url = String(item?.fileUrl || item?.url || previewUrl(item as DataItem) || '')
   return url || null
 }
 
-const mediaSrc = (item: unknown): string | null => {
+const mediaSrc = (item: DataItem): string | null => {
   // Prefer explicit preview/thumbnail for images, else fileUrl
   const p = previewUrl(item)
   if (p && isImage(p)) return p
@@ -788,7 +789,7 @@ const mediaSrc = (item: unknown): string | null => {
   return null
 }
 
-const posterUrl = (item: unknown): string | null => {
+const posterUrl = (item: DataItem): string | null => {
   const thumb = String(item?.thumbnailUrl || '')
   if (thumb) return thumb
   const p = previewUrl(item)

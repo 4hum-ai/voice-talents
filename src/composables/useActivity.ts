@@ -9,7 +9,7 @@ import {
 import { useToast } from './useToast'
 import { useResourceService } from './useResourceService'
 
-type VisitEntry<T = unknown> = {
+export type VisitEntry<T = unknown> = {
   resource: string
   id: string
   data: T

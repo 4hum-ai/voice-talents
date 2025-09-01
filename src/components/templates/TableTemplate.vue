@@ -174,9 +174,15 @@
             <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
               <tr
                 v-for="item in sortedData"
-                :key="item.id"
+                :key="
+                  String(
+                    (item as Record<string, unknown>)?.id ??
+                      (item as Record<string, unknown>)?._id ??
+                      '',
+                  )
+                "
                 class="cursor-pointer transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800"
-                :title="`Click to view ${item.name || item.title || 'details'}`"
+                :title="`Click to view ${String((item as Record<string, unknown>)?.name || (item as Record<string, unknown>)?.title || 'details')}`"
                 @click="handleRowClick(item)"
               >
                 <td v-if="selectable" class="px-6 py-4 whitespace-nowrap" @click.stop>
@@ -195,12 +201,7 @@
                 >
                   <div v-if="column.key === 'actions'" class="flex items-center justify-end">
                     <ActionsMenu
-                      :items="
-                        (config.actions || []).map((a: unknown) => ({
-                          key: (a as { name?: string }).name,
-                          label: (a as { label?: string }).label,
-                        }))
-                      "
+                      :items="actionMenuItems"
                       size="sm"
                       @select="(key) => handleAction(key, item)"
                     />
@@ -220,7 +221,10 @@
                       </div>
                     </div>
                     <div v-else-if="column.formatter === 'country'" class="flex items-center gap-2">
-                      <div v-if="countryCode(item[column.key])" class="shrink-0">
+                      <div
+                        v-if="countryCode((item as Record<string, unknown>)[column.key])"
+                        class="shrink-0"
+                      >
                         <picture>
                           <source
                             :srcset="`https://flagcdn.com/${countryCode(item[column.key])}.svg`"
@@ -236,27 +240,19 @@
                         </picture>
                       </div>
                       <span class="text-sm text-gray-900 dark:text-gray-100">
-                        {{ countryName(item[column.key]) || item[column.key] || '-' }}
+                        {{ countryName(item[column.key]) }}
                       </span>
                     </div>
                     <div v-else-if="column.type === 'image'" class="flex items-center">
                       <img
-                        :src="
-                          (item as Record<string, unknown>)[
-                            (column as { key: string }).key
-                          ] as string
-                        "
+                        :src="getItemString(item, column.key)"
                         alt=""
                         class="h-8 w-8 rounded bg-gray-100 object-cover dark:bg-gray-800"
                       />
                     </div>
                     <div v-else-if="column.type === 'url'">
                       <a
-                        :href="
-                          (item as Record<string, unknown>)[
-                            (column as { key: string }).key
-                          ] as string
-                        "
+                        :href="getItemString(item, column.key)"
                         target="_blank"
                         rel="noopener"
                         class="text-primary-600 dark:text-primary-400 hover:underline"
@@ -267,14 +263,11 @@
                       <span
                         class="inline-block h-4 w-4 rounded border border-gray-300 dark:border-gray-700"
                         :style="{
-                          backgroundColor: String(
-                            (item as Record<string, unknown>)[(column as { key: string }).key] ||
-                              '#ffffff',
-                          ),
+                          backgroundColor: getItemString(item, column.key) || '#ffffff',
                         }"
-                      />
+                      ></span>
                       <span class="text-sm text-gray-900 dark:text-gray-100">{{
-                        String(item[column.key] || '-')
+                        item[column.key] || '-'
                       }}</span>
                     </div>
                     <div v-else-if="column.formatter === 'badge'">
@@ -283,20 +276,23 @@
                           'inline-flex items-center rounded px-2 py-0.5 text-xs font-medium',
                           badgeClass(item[column.key]),
                         ]"
-                        >{{ item[column.key] ?? '-' }}</span
                       >
+                        {{ item[column.key] }}
+                      </span>
                     </div>
                     <div
                       v-else-if="column.formatter === 'status'"
                       class="inline-flex items-center gap-2"
                     >
-                      <span :class="['h-2 w-2 rounded-full', statusDotClass(item[column.key])]" />
+                      <span :class="['h-2 w-2 rounded-full', statusDotClass(item[column.key])]">{{
+                        item[column.key] || '-'
+                      }}</span>
                       <span
                         :class="[
                           'rounded px-2 py-0.5 text-xs font-medium',
                           statusBadgeClass(item[column.key]),
                         ]"
-                        >{{ item[column.key] ?? '-' }}</span
+                        >{{ item[column.key] || '-' }}</span
                       >
                     </div>
                     <div v-else class="text-gray-900 dark:text-gray-100">
@@ -353,7 +349,7 @@
             @change="onTimeWindowChange"
           />
         </div>
-        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
+        <div v-for="f in listFilters" :key="f.key" class="space-y-1">
           <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">{{
             f.label
           }}</label>
@@ -361,25 +357,25 @@
             <div class="flex items-center gap-2">
               <input
                 type="number"
-                :value="localFilterValues[f.field]?.min ?? ''"
+                :value="localFilterValues[f.key]?.min ?? ''"
                 placeholder="Min"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @input="onLocalNumberChange(f.field, 'min', $event)"
+                @input="onLocalNumberChange(f.key, 'min', $event)"
               />
               <input
                 type="number"
-                :value="localFilterValues[f.field]?.max ?? ''"
+                :value="localFilterValues[f.key]?.max ?? ''"
                 placeholder="Max"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @input="onLocalNumberChange(f.field, 'max', $event)"
+                @input="onLocalNumberChange(f.key, 'max', $event)"
               />
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
             <select
-              :value="localFilterValues[f.field]?.value ?? ''"
+              :value="localFilterValues[f.key]?.value ?? ''"
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-              @change="onLocalValueChange(f.field, $event)"
+              @change="onLocalValueChange(f.key, $event)"
             >
               <option value="">Any</option>
               <option
@@ -393,9 +389,9 @@
           </template>
           <template v-else-if="f.type === 'boolean'">
             <select
-              :value="localFilterValues[f.field]?.value ?? ''"
+              :value="localFilterValues[f.key]?.value ?? ''"
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-              @change="onLocalValueChange(f.field, $event)"
+              @change="onLocalValueChange(f.key, $event)"
             >
               <option value="">Any</option>
               <option value="true">True</option>
@@ -404,10 +400,10 @@
           </template>
           <template v-else-if="f.type === 'date'">
             <DateRangeInput
-              :from="localFilterValues[f.field]?.from ?? ''"
-              :to="localFilterValues[f.field]?.to ?? ''"
-              @update:from="(value) => onLocalDateChange(f.field, 'from', value)"
-              @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
+              :from="localFilterValues[f.key]?.from ?? ''"
+              :to="localFilterValues[f.key]?.to ?? ''"
+              @update:from="(value) => onLocalDateChange(f.key, 'from', value)"
+              @update:to="(value) => onLocalDateChange(f.key, 'to', value)"
             />
           </template>
         </div>
@@ -430,12 +426,13 @@ import IconButton from '@/components/atoms/IconButton.vue'
 import DateRangeInput from '@/components/atoms/DateRangeInput.vue'
 import { getCountryByCode } from '@/utils/countries'
 import { toDate } from '@/utils/date'
-import { useRoute, useRouter } from 'vue-router'
-import type { DataArray, ActionArray, UiConfig, FilterArray, ColumnArray } from '@/types/common'
+import { LocationQuery, useRoute, useRouter } from 'vue-router'
+import type { DataArray, ActionArray, DataItem, FilterPreset } from '@/types/common'
+import { ColumnConfig, FilterConfig, UiConfig } from '@/types/ui-config'
 
 type Props = {
   data: DataArray
-  config: { columns: ColumnArray; actions?: ActionArray }
+  config: { columns: ColumnConfig[]; actions?: ActionArray }
   selectable?: boolean
   rowIdKey?: string
   currentPage?: number
@@ -492,12 +489,9 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(() => 
   const cfg = uiConfig.value
   if (!cfg?.views?.list) return []
   const explicit = cfg.views.list.searchableFields as string[] | undefined
-  const columns = (cfg.views.list.columns || []) as ColumnArray
+  const columns = (cfg.views.list.columns || []) as ColumnConfig[]
   const fromColumns = columns
-    .filter(
-      (c) =>
-        c?.type === 'text' || c?.type === 'url' || c?.type === 'email' || c?.searchable === true,
-    )
+    .filter((c: ColumnConfig) => c?.type === 'text' || c?.type === 'url' || c?.searchable === true)
     .map((c) => ({ key: String(c.key), label: String(c.label || c.key) }))
   const fromExplicit = (explicit || []).map((k) => {
     const col = columns.find((c) => c.key === k)
@@ -519,7 +513,7 @@ function closeSearch() {
 function handleSearchInput() {
   const search = searchQuery.value?.trim() || ''
   const field = selectedSearchField.value !== 'all' ? selectedSearchField.value : undefined
-  const nextQuery: Record<string, unknown> = { ...route.query, page: '1' }
+  const nextQuery: LocationQuery = { ...route.query, page: '1' }
   if (search) nextQuery.search = search
   else delete nextQuery.search
   if (field) nextQuery.searchField = field
@@ -542,17 +536,30 @@ const layoutMenuItems = computed(() => [
   { key: 'calendar', label: 'Calendar' },
   { key: 'kanban', label: 'Kanban' },
 ])
+const actionMenuItems = computed<{ key: string; label: string }[]>(() => {
+  const actions = props.config?.actions as ActionArray | undefined
+  if (!Array.isArray(actions)) return []
+  return actions
+    .map((a: unknown) => {
+      const name = (a as { name?: string }).name
+      const label = (a as { label?: string; name?: string }).label || name || ''
+      return { key: String(name || ''), label: String(label) }
+    })
+    .filter((it) => it.key && it.label)
+})
 function handleLayoutSelect(key: string) {
   if (!['list', 'gallery', 'calendar', 'kanban'].includes(key)) return
-  const nextQuery: Record<string, unknown> = { view: key }
+  const nextQuery: LocationQuery = { view: key }
   router.replace({ query: nextQuery }).catch(() => {})
 }
 // Filters sidebar state and syncing with URL
 const showFilterSidebar = ref(false)
-const filterPreset = ref<'all' | '7d' | '30d' | '90d' | 'custom'>('all')
+const filterPreset = ref<FilterPreset>('all')
 const filterFrom = ref<string | undefined>(undefined)
 const filterTo = ref<string | undefined>(undefined)
-const listFilters = computed<FilterArray>(() => uiConfig.value?.views?.list?.defaultFilters || [])
+const listFilters = computed<FilterConfig[]>(
+  () => uiConfig.value?.views?.list?.defaultFilters || [],
+)
 const localFilterValues = ref<Record<string, unknown>>({})
 
 function syncFiltersFromQuery() {
@@ -578,7 +585,7 @@ function syncFiltersFromQuery() {
     filterTo.value = to
     // Field filters
     const next: Record<string, unknown> = {}
-    for (const f of listFilters.value as FilterArray) {
+    for (const f of listFilters.value as FilterConfig[]) {
       const base = `filters[${f.field}]`
       const eq = q[base]
       const b = q[`${base}[$between]`]
@@ -626,8 +633,8 @@ function clearFilters() {
   filterFrom.value = undefined
   filterTo.value = undefined
 }
-function onTimeWindowChange(payload: { preset?: string; from?: string; to?: string }) {
-  if (payload.preset) filterPreset.value = payload.preset as 'all' | '7d' | '30d' | '90d' | 'custom'
+function onTimeWindowChange(payload: { preset?: FilterPreset; from?: string; to?: string }) {
+  if (payload.preset) filterPreset.value = payload.preset
   if (payload.from !== undefined) filterFrom.value = payload.from
   if (payload.to !== undefined) filterTo.value = payload.to
 }
@@ -652,6 +659,7 @@ function onLocalDateChange(field: string, key: 'from' | 'to', value: string) {
     [key]: value,
   }
 }
+
 function applyFilters() {
   const payload: Record<string, unknown> = {
     preset: filterPreset.value,
@@ -659,8 +667,8 @@ function applyFilters() {
     to: filterTo.value,
   }
   const filters: Record<string, unknown> = {}
-  for (const f of listFilters.value as FilterArray) {
-    const v = localFilterValues.value[f.field]
+  for (const f of listFilters.value as FilterConfig[]) {
+    const v = localFilterValues.value[f.field] as Record<string, unknown>
     if (!v) continue
     if (f.type === 'number') {
       const min = v.min
@@ -742,10 +750,15 @@ const visibleColumns = computed(() =>
 const sortedData = computed(() => {
   const d = [...props.data]
   if (sortField.value) {
-    d.sort((a, b) => {
+    d.sort((a: DataItem, b: DataItem) => {
       const av = a[sortField.value]
       const bv = b[sortField.value]
-      return sortDirection.value === 'asc' ? (av > bv ? 1 : -1) : av < bv ? 1 : -1
+      if (av == null && bv == null) return 0
+      if (av == null) return 1
+      if (bv == null) return -1
+      const as = String(av)
+      const bs = String(bv)
+      return sortDirection.value === 'asc' ? as.localeCompare(bs) : bs.localeCompare(as)
     })
   }
   return d
@@ -777,7 +790,7 @@ function handleRowClick(item: unknown) {
   emit('item-click', item)
   emit('itemClick', item)
 }
-function handleAction(actionKey: string, item: unknown) {
+function handleAction(actionKey: string, item: DataItem) {
   emit('action', actionKey, item)
 }
 function handleSort(field: string) {
@@ -801,15 +814,15 @@ const hasPagination = computed(() => {
 const onPageChange = (page: number) => emit('page-change', page)
 const onPerPageChange = (perPage: number) => emit('per-page-change', perPage)
 
-const getRowId = (item: unknown): string | number =>
-  (item as Record<string, unknown>)?.[props.rowIdKey as string] as string | number
-const isSelected = (item: unknown): boolean => selectedIds.value.has(getRowId(item))
+const getRowId = (item: DataItem): string | number =>
+  item?.[props.rowIdKey as string] as string | number
+const isSelected = (item: DataItem): boolean => selectedIds.value.has(getRowId(item))
 const allSelected = computed(
   () =>
     sortedData.value.length > 0 &&
     sortedData.value.every((it) => selectedIds.value.has(getRowId(it))),
 )
-const toggleSelectRow = (item: unknown) => {
+const toggleSelectRow = (item: DataItem) => {
   const id = getRowId(item)
   if (selectedIds.value.has(id)) selectedIds.value.delete(id)
   else selectedIds.value.add(id)
@@ -824,7 +837,7 @@ const toggleSelectAll = () => {
   emit('selection-change', Array.from(selectedIds.value))
 }
 
-const formatCellValue = (value: unknown, column: unknown, item?: unknown) => {
+const formatCellValue = (value: unknown, column: ColumnConfig, item?: unknown) => {
   if (value === null || value === undefined) return '-'
   switch (column.formatter) {
     case 'date': {
@@ -837,24 +850,25 @@ const formatCellValue = (value: unknown, column: unknown, item?: unknown) => {
       })
     }
     case 'currency': {
-      const num = typeof value === 'string' ? parseFloat(value) : value
-      if (isNaN(num)) return '-'
-      return num.toLocaleString('en-US', {
+      const num = typeof value === 'string' ? parseFloat(value) : (value as number)
+      if (!Number.isFinite(num)) return '-'
+      const currency = String((item as Record<string, unknown>)?.currency || 'USD')
+      return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: item?.currency || 'USD',
+        currency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      })
+      }).format(num as number)
     }
     case 'number': {
-      const num = typeof value === 'string' ? parseFloat(value) : value
-      if (isNaN(num)) return '-'
-      return num.toLocaleString('en-US')
+      const num = typeof value === 'string' ? parseFloat(value) : (value as number)
+      if (!Number.isFinite(num)) return '-'
+      return new Intl.NumberFormat('en-US').format(num as number)
     }
     case 'rating': {
-      const num = typeof value === 'string' ? parseFloat(value) : value
-      if (isNaN(num)) return '-'
-      return `${num.toFixed(1)} / 5`
+      const num = typeof value === 'string' ? parseFloat(value) : (value as number)
+      if (!Number.isFinite(num)) return '-'
+      return `${(num as number).toFixed(1)} / 5`
     }
     case 'badge':
     case 'status':
@@ -872,9 +886,9 @@ const formatCellValue = (value: unknown, column: unknown, item?: unknown) => {
       })
     }
     case 'number': {
-      const num = typeof value === 'string' ? parseFloat(value) : value
-      if (isNaN(num)) return '-'
-      return num.toLocaleString('en-US')
+      const num = typeof value === 'string' ? parseFloat(value) : (value as number)
+      if (!Number.isFinite(num)) return '-'
+      return new Intl.NumberFormat('en-US').format(num as number)
     }
     case 'boolean':
       return value ? 'Yes' : 'No'
@@ -887,10 +901,15 @@ const formatCellValue = (value: unknown, column: unknown, item?: unknown) => {
   }
 }
 
-const getTitle = (item: unknown, column: unknown): string => {
-  const key =
-    (column as { titleField?: string; key?: string }).titleField || (column as { key?: string }).key
-  const val = (item as Record<string, unknown>)?.[key as string]
+const getItemString = (item: DataItem, key: string): string => {
+  const val = item[key]
+  if (val === null || val === undefined) return ''
+  return String(val)
+}
+
+const getTitle = (item: DataItem, column: ColumnConfig): string => {
+  const key = column.titleField || column.key
+  const val = item?.[key]
   if (val === null || val === undefined) return '-'
   return String(val)
 }
@@ -944,7 +963,7 @@ const countryCode = (raw: unknown): string | '' => {
 }
 
 const countryName = (raw: unknown): string => {
-  if (!raw) return ''
+  if (!raw) return '-'
   const val = String(raw).trim()
   const c = getCountryByCode(val)
   return c?.name || val

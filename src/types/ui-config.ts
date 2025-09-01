@@ -105,6 +105,8 @@ export interface FormField {
     | 'file'
     | 'url'
     | 'color'
+    // extention from frontend, need adding back to backend
+    | 'email'
   required?: boolean
   validation?: unknown
   options?: Array<{ value: string; label: string }>

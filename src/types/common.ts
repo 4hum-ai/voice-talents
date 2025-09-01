@@ -1,55 +1,50 @@
 // Common types to replace duplicated 'any' usage throughout the codebase
 
-export type DataItem = unknown;
-export type DataArray = DataItem[];
+export type DataItem = {
+  id?: string
+  createdAt?: string
+  updatedAt?: string
+  [key: string]: unknown
+}
+export type DataArray = DataItem[]
 
 export type ActionItem = {
-  name?: string;
-  [key: string]: unknown;
-};
+  name?: string
+  [key: string]: unknown
+}
 
-export type ActionArray = ActionItem[];
+export type ActionArray = ActionItem[]
 
-export type UiConfig = unknown;
+export type FormData = Record<string, unknown>
 
-export type FormData = Record<string, unknown>;
+export type QueryParams = Record<string, unknown>
 
-export type QueryParams = Record<string, unknown>;
+export type FilterValue = unknown
 
-export type FilterValue = unknown;
+export type FilterPreset = 'all' | '7d' | '30d' | '90d' | 'custom'
 
 export type FilterConfig = {
-  key: string;
-  label: string;
-  [key: string]: unknown;
-};
+  key: string
+  label: string
+  [key: string]: unknown
+}
 
-export type FilterArray = FilterConfig[];
+export type FilterArray = FilterConfig[]
 
-export type ColumnConfig = {
-  key: string;
-  label?: string;
-  type?: string;
-  searchable?: boolean;
-  [key: string]: unknown;
-};
+export type ErrorType = unknown
 
-export type ColumnArray = ColumnConfig[];
-
-export type ErrorType = unknown;
-
-export type EventHandler = (event: unknown) => void;
+export type EventHandler = (event: unknown) => void
 
 export type TemporalDate = {
-  year: number;
-  month: number;
-  day: number;
-};
+  year: number
+  month: number
+  day: number
+}
 
 export type TemporalGlobal = {
   Temporal: {
     PlainDate: {
-      from: (date: TemporalDate) => unknown;
-    };
-  };
-};
+      from: (date: TemporalDate) => unknown
+    }
+  }
+}
