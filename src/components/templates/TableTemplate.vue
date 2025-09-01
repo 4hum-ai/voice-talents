@@ -284,9 +284,10 @@
                       v-else-if="column.formatter === 'status'"
                       class="inline-flex items-center gap-2"
                     >
-                      <span :class="['h-2 w-2 rounded-full', statusDotClass(item[column.key])]">{{
-                        item[column.key] || '-'
-                      }}</span>
+                      <span
+                        :class="['h-2 w-2 rounded-full', statusDotClass(item[column.key])]"
+                        aria-hidden="true"
+                      ></span>
                       <span
                         :class="[
                           'rounded px-2 py-0.5 text-xs font-medium',
