@@ -29,16 +29,21 @@ export interface MediaItem {
   path?: string
 }
 
-function transformPaginatedResponse<T>(response: any): PaginatedResponse<T> {
-  const pg = response?.pagination ?? {}
-  const page = Number(pg.page ?? response?.page ?? 1) || 1
-  const limit = Number(pg.limit ?? response?.limit ?? 20) || 20
-  const total = Number(pg.total ?? response?.total ?? 0) || 0
+function transformPaginatedResponse<T>(response: unknown): PaginatedResponse<T> {
+  if (typeof response !== 'object' || response === null) {
+    return { data: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 1 } }
+  }
+  const obj = response as Record<string, unknown>
+  const pg = (obj.pagination as Record<string, unknown>) ?? {}
+  const page = Number(pg.page ?? obj.page ?? 1) || 1
+  const limit = Number(pg.limit ?? obj.limit ?? 20) || 20
+  const total = Number(pg.total ?? obj.total ?? 0) || 0
   const totalPages =
-    Number(pg.totalPages ?? response?.totalPages ?? Math.ceil(total / (limit || 1))) ||
+    Number(pg.totalPages ?? obj.totalPages ?? Math.ceil(total / (limit || 1))) ||
     Math.max(1, Math.ceil(total / (limit || 1)))
+
   return {
-    data: (response?.data || []) as T[],
+    data: (obj.data as T[]) ?? [],
     pagination: { page, limit, total, totalPages },
   }
 }
@@ -57,26 +62,26 @@ export function useMedia() {
   const isFirstPage = computed(() => currentPage.value <= 1)
   const isLastPage = computed(() => currentPage.value >= totalPages.value)
 
-  const fetchMedia = async (options?: { search?: string; filters?: Record<string, any> }) => {
+  const fetchMedia = async (options?: { search?: string; filters?: Record<string, unknown> }) => {
     try {
       loading.value = true
       error.value = null
-      const params: Record<string, any> = {
+      const params: Record<string, unknown> = {
         page: currentPage.value,
         limit: 20,
       }
       if (options?.search) params.search = options.search
       if (options?.filters) Object.assign(params, options.filters)
 
-      const raw = await list('media', params)
+      const raw = await list<MediaItem>('media', params)
       const result: PaginatedResponse<MediaItem> = transformPaginatedResponse<MediaItem>(raw)
-      media.value = result.data as MediaItem[]
+      media.value = result.data
       totalPages.value = result.pagination.totalPages
-    } catch (err: any) {
-      const message = err?.message || 'Failed to fetch media'
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch media'
       error.value = message
       push({
-        id: `${Date.now()}-media-fetch` as any,
+        id: `${Date.now()}-media-fetch`,
         type: 'error',
         title: 'Failed to load media',
         body: message,
@@ -111,7 +116,7 @@ export function useMedia() {
     description?: string
     tags?: string[]
     relationships?: string[] // ["entityType:entityId:relationshipType"]
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   }): Promise<MediaItem> {
     const payload = {
       ...params,
@@ -119,8 +124,7 @@ export function useMedia() {
       relationships: params.relationships || [],
       metadata: params.metadata || {},
     }
-    const created = (await create('media', payload)) as MediaItem
-    return created
+    return await create<MediaItem>('media', payload)
   }
 
   async function uploadFileToSignedUrl(options: {
@@ -130,7 +134,6 @@ export function useMedia() {
     onProgress?: (percent: number) => void
   }): Promise<Response> {
     const { uploadUrl, file, contentType } = options
-    // Fetch PUT to signed URL. Native fetch lacks progress; for now, do a single PUT.
     return await fetch(uploadUrl, {
       method: 'PUT',
       headers: { 'Content-Type': contentType },
@@ -147,7 +150,7 @@ export function useMedia() {
       description?: string
       tags?: string[]
       relationships?: string[]
-      metadata?: Record<string, any>
+      metadata?: Record<string, unknown>
       duration?: number
       markCompleted?: boolean
     } = {},
@@ -185,23 +188,21 @@ export function useMedia() {
       throw new Error(`Upload failed (${res.status}): ${text.slice(0, 160)}`)
     }
 
-    // Always try to complete the upload to finalize metadata
     try {
-      await update('media', mediaRecord.id, {
+      await update<MediaItem>('media', mediaRecord.id, {
         status: 'completed',
         fileSize: file.size,
       })
-    } catch (err: any) {
-      const message = err?.message || 'Failed to complete upload'
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to complete upload'
       push({
-        id: `${Date.now()}-media-complete` as any,
+        id: `${Date.now()}-media-complete`,
         type: 'error',
         title: 'Upload completion failed',
         body: message,
         position: 'tr',
         timeout: 6000,
       })
-      // Do not throw to avoid breaking the caller; metadata can be retried later
     }
 
     return { media: mediaRecord, fileUrl: mediaRecord.fileUrl }
@@ -219,7 +220,6 @@ export function useMedia() {
     fetchMedia,
     nextPage,
     previousPage,
-    // upload helpers
     uploadViaMediaResource,
   }
 }

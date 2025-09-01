@@ -37,7 +37,7 @@ import { computed } from 'vue'
 import { useGlobalUpload } from '@/composables/useGlobalUpload'
 
 const up = useGlobalUpload()
-const items = computed(() => [...(up.queue as any)])
+const items = computed(() => [...up.queue])
 
 function prettySize(bytes: number): string {
   const sizes = ['B', 'KB', 'MB', 'GB']

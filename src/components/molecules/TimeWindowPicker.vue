@@ -39,7 +39,7 @@ const emit = defineEmits<{
 }>()
 
 function onPresetChange(e: Event) {
-  const value = (e.target as HTMLSelectElement).value as any
+  const value = (e.target as HTMLSelectElement).value
   emit('change', { preset: value })
 }
 function onDateChange(key: 'from' | 'to', e: Event) {

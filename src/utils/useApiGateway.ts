@@ -34,7 +34,7 @@ async function buildAuthHeader(): Promise<Record<string, string>> {
     const firebaseUser = auth.currentUser
     const token = await firebaseUser?.getIdToken()
     if (token) return { Authorization: `Bearer ${token}` }
-  } catch (_) {
+  } catch {
     // Ignore auth header build failures; proceed without auth
   }
   return {}
@@ -59,9 +59,10 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     // Prefer caller-provided AbortSignal. If none, optionally create a timeout-based signal.
     const computedSignal = opts.signal
       ? opts.signal
-      : typeof AbortSignal !== 'undefined' && (AbortSignal as any).timeout
+      : typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
         ? (opts.timeoutMs ?? timeoutMs)
-          ? (AbortSignal as any).timeout(opts.timeoutMs ?? timeoutMs)
+          ? // @ts-expect-error timeout may not exist in older TS lib
+            AbortSignal.timeout(opts.timeoutMs ?? timeoutMs)
           : undefined
         : undefined
 
@@ -71,13 +72,13 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     activeBus.emit({ active: activeRequests })
     try {
       response = await fetch(url, { ...opts, headers, signal: computedSignal })
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Suppress toasts for intentional aborts
-      if (error?.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== 'AbortError') {
         errorBus.emit({
           method: String(opts.method ?? 'GET'),
           path,
-          message: String(error?.message ?? 'Request failed'),
+          message: error.message,
         })
       }
       throw error
@@ -109,13 +110,12 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
             activeBus.emit({ active: activeRequests })
           }
         }
-      } catch (_) {
+      } catch {
         // Token refresh failed; return original unauthorized response
       }
     }
 
     // Do not toast for HTTP error statuses here; let callers decide contextually.
-
     return response
   }
 
@@ -126,19 +126,23 @@ const clientsByBase: Record<string, ApiClient> = {}
 
 export function useApiGateway(base: string = 'movie'): ApiClient {
   // Allow env override for base path when provided
-  const envBasePath = (import.meta as any).env?.VITE_API_BASE_PATH as string | undefined
+  const envBasePath = (import.meta as unknown as { env: { VITE_API_BASE_PATH: string } }).env
+    .VITE_API_BASE_PATH
   const normalizedBase =
     envBasePath && envBasePath.length > 0
       ? envBasePath.replace(/^\/+/, '').replace(/\/+$/, '')
       : base.replace(/^\/+/, '').replace(/\/+$/, '')
 
   if (clientsByBase[normalizedBase]) return clientsByBase[normalizedBase]
-  const API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as string | undefined
+
+  const API_BASE = (import.meta as unknown as { env: { VITE_PUBLIC_API_URL: string } }).env
+    .VITE_PUBLIC_API_URL
   let baseUrl = ''
   if (API_BASE && /^https?:\/\//i.test(API_BASE)) {
     const root = API_BASE.replace(/\/$/, '')
     baseUrl = `${root}/${normalizedBase}`
   }
+
   const client = createApiClient({ baseUrl })
   clientsByBase[normalizedBase] = client
   return client

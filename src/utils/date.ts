@@ -1,13 +1,21 @@
-export function toDate(value: any): Date | null {
+export type FirestoreTimestampLike = {
+  _seconds?: number
+  seconds?: number
+  _nanoseconds?: number
+  nanoseconds?: number
+}
+
+export function toDate(value: unknown): Date | null {
   if (!value) return null
   if (value instanceof Date) return isNaN(value.getTime()) ? null : value
   if (typeof value === 'string' || typeof value === 'number') {
     const d = new Date(value)
     return isNaN(d.getTime()) ? null : d
   }
-  if (typeof value === 'object') {
-    const seconds = (value as any)._seconds ?? (value as any).seconds
-    const nanos = (value as any)._nanoseconds ?? (value as any).nanoseconds ?? 0
+  if (typeof value === 'object' && value !== null) {
+    const ts = value as FirestoreTimestampLike
+    const seconds = ts._seconds ?? ts.seconds
+    const nanos = ts._nanoseconds ?? ts.nanoseconds ?? 0
     if (typeof seconds === 'number') {
       const ms = seconds * 1000 + Math.floor(nanos / 1e6)
       const d = new Date(ms)

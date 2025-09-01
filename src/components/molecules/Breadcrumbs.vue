@@ -21,7 +21,7 @@ import { RouterLink } from 'vue-router'
 
 export interface BreadcrumbItem {
   label: string
-  to?: string | Record<string, any>
+  to?: string | Record<string, { to: string; label: string }>
 }
 
 defineProps<{ items: BreadcrumbItem[] }>()

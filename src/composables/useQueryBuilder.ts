@@ -1,7 +1,15 @@
 import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router'
 import { computeDateRange } from '@/utils/date'
 import type { UiConfig } from '@/types/ui-config'
+
+type OperatorObject = {
+  $between?: unknown
+  $gte?: unknown
+  $lte?: unknown
+}
+
+type FilterValue = string | number | boolean | OperatorObject
 
 export interface QueryState {
   page: number
@@ -9,7 +17,7 @@ export interface QueryState {
   search?: string
   searchField?: string
   sort?: string
-  filters?: Record<string, any>
+  filters?: Record<string, FilterValue>
 }
 
 export function useQueryBuilder(options: {
@@ -35,13 +43,11 @@ export function useQueryBuilder(options: {
     const params: QueryState = { page, limit: limitFromQuery }
     if (search) params.search = search
     if (searchField) params.searchField = searchField
-    if (sort) params.sort = sort
+    if (sort) params.sort = sort // Parse generic filters from URL query (filters[<field>] and filters[<field>][$op])
 
-    // Parse generic filters from URL query (filters[<field>] and filters[<field>][$op])
-    const parsedFilters: Record<string, any> = {}
+    const parsedFilters: Record<string, FilterValue> = {}
     Object.keys(q).forEach((key) => {
-      if (!key.startsWith('filters[')) return
-      // patterns: filters[field] or filters[field][$op]
+      if (!key.startsWith('filters[')) return // patterns: filters[field] or filters[field][$op]
       const match = key.match(/^filters\[(.+?)\](?:\[(\$\w+)\])?$/)
       if (!match) return
       const field = match[1]
@@ -49,16 +55,16 @@ export function useQueryBuilder(options: {
       const raw = q[key]
       if (!field) return
       if (op) {
-        parsedFilters[field] = parsedFilters[field] || {}
+        parsedFilters[field] = (parsedFilters[field] || {}) as OperatorObject
         const value = String(raw)
         if (op === '$between') {
           const [a, b] = value
             .split(',')
             .map((s) => s.trim())
             .filter(Boolean)
-          if (a && b) parsedFilters[field]['$between'] = [a, b]
+          if (a && b) (parsedFilters[field] as OperatorObject)['$between'] = [a, b]
         } else if (op === '$gte' || op === '$lte') {
-          parsedFilters[field][op] = value
+          ;(parsedFilters[field] as OperatorObject)[op] = value
         }
       } else {
         // direct equality
@@ -67,9 +73,8 @@ export function useQueryBuilder(options: {
     })
     if (Object.keys(parsedFilters).length > 0) {
       params.filters = { ...(params.filters || {}), ...parsedFilters }
-    }
+    } // Merge time window into filters for the configured dateField
 
-    // Merge time window into filters for the configured dateField
     const range = computeDateRange(
       timeWindow.value.preset,
       timeWindow.value.from,
@@ -83,15 +88,13 @@ export function useQueryBuilder(options: {
       else if (range.to) params.filters[dateField.value] = { $lte: range.to }
     }
     return params
-  })
-
-  // Note: chips are a presentation detail; compute them in views instead
+  }) // Note: chips are a presentation detail; compute them in views instead
 
   function setLimit(next: number) {
     // Update local state and sync URL so it is shareable and triggers reloads
     limit.value = next
     try {
-      const nextQuery: Record<string, any> = {
+      const nextQuery: LocationQueryRaw = {
         ...route.query,
         limit: String(next),
         page: '1',
@@ -105,7 +108,7 @@ export function useQueryBuilder(options: {
   function setTimeWindow(payload: { preset?: string; from?: string; to?: string }) {
     timeWindow.value = { ...payload }
     try {
-      const nextQuery: Record<string, any> = { ...route.query }
+      const nextQuery: LocationQueryRaw = { ...route.query }
       delete nextQuery.preset
       delete nextQuery.from
       delete nextQuery.to
@@ -132,50 +135,47 @@ export function useQueryBuilder(options: {
     preset?: string
     from?: string
     to?: string
-    filters?: Record<string, any>
+    filters?: Record<string, FilterValue>
   }) {
     try {
-      const nextQuery: Record<string, any> = { ...route.query }
-      // Remove any existing time window keys for the active dateField
+      const nextQuery: LocationQueryRaw = { ...route.query } // Remove any existing time window keys for the active dateField
       const betweenKey = `filters[${dateField.value}][$between]`
       const gteKey = `filters[${dateField.value}][$gte]`
       const lteKey = `filters[${dateField.value}][$lte]`
       delete nextQuery.preset
       delete nextQuery.from
       delete nextQuery.to
-      for (const k of [betweenKey, gteKey, lteKey]) delete nextQuery[k]
+      for (const k of [betweenKey, gteKey, lteKey]) delete nextQuery[k] // Remove existing defaultFilters for this resource from URL
 
-      // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig()
-      const fields = (cfg?.views?.list?.defaultFilters || []).map((f: any) => f.field)
+      const fields = (cfg?.views?.list?.defaultFilters || []).map((f: { field: string }) => f.field)
       for (const k of Object.keys(nextQuery)) {
         const m = k.match(/^filters\[(.+?)\]/)
         if (m && fields.includes(m[1])) delete nextQuery[k]
-      }
+      } // Add provided field filters
 
-      // Add provided field filters
       const nextFilters = payload?.filters || {}
       for (const [field, value] of Object.entries(nextFilters)) {
         if (value && typeof value === 'object' && !Array.isArray(value)) {
-          if ('$between' in value && Array.isArray((value as any)['$between'])) {
-            const arr = (value as any)['$between'] as any[]
+          if ('$between' in value && Array.isArray((value as OperatorObject)['$between'])) {
+            const arr = (value as OperatorObject)['$between'] as unknown[]
             const asString = arr.map((v) => String(v)).join(',')
             nextQuery[`filters[${field}][$between]`] = asString
           }
-          if ('$gte' in value) nextQuery[`filters[${field}][$gte]`] = String((value as any)['$gte'])
-          if ('$lte' in value) nextQuery[`filters[${field}][$lte]`] = String((value as any)['$lte'])
+          if ('$gte' in value)
+            nextQuery[`filters[${field}][$gte]`] = String((value as OperatorObject)['$gte'])
+          if ('$lte' in value)
+            nextQuery[`filters[${field}][$lte]`] = String((value as OperatorObject)['$lte'])
         } else if (value !== undefined && value !== null && value !== '') {
           nextQuery[`filters[${field}]`] = String(value)
         }
-      }
+      } // Add computed time window keys
 
-      // Add computed time window keys
       const range = computeDateRange(payload?.preset, payload?.from, payload?.to)
       if (range?.from && range?.to) nextQuery[betweenKey] = `${range.from},${range.to}`
       else if (range?.from) nextQuery[gteKey] = range.from
-      else if (range?.to) nextQuery[lteKey] = range.to
+      else if (range?.to) nextQuery[lteKey] = range.to // Reset page
 
-      // Reset page
       nextQuery.page = '1'
       router.replace({ query: nextQuery })
     } catch {
@@ -183,26 +183,26 @@ export function useQueryBuilder(options: {
     }
   }
 
-  function setFilters(nextFilters: Record<string, any>) {
+  function setFilters(nextFilters: Record<string, FilterValue>) {
     try {
-      const nextQuery: Record<string, any> = { ...route.query }
-      // Remove existing defaultFilters for this resource from URL
+      const nextQuery: LocationQueryRaw = { ...route.query } // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig()
-      const fields = (cfg?.views?.list?.defaultFilters || []).map((f: any) => f.field)
+      const fields = (cfg?.views?.list?.defaultFilters || []).map((f: { field: string }) => f.field)
       for (const k of Object.keys(nextQuery)) {
         const m = k.match(/^filters\[(.+?)\]/)
         if (m && fields.includes(m[1])) delete nextQuery[k]
-      }
-      // Add new filters
+      } // Add new filters
       for (const [field, value] of Object.entries(nextFilters || {})) {
         if (value && typeof value === 'object' && !Array.isArray(value)) {
-          if ('$between' in value && Array.isArray((value as any)['$between'])) {
-            const arr = (value as any)['$between'] as any[]
+          if ('$between' in value && Array.isArray((value as OperatorObject)['$between'])) {
+            const arr = (value as OperatorObject)['$between'] as unknown[]
             const asString = arr.map((v) => String(v)).join(',')
             nextQuery[`filters[${field}][$between]`] = asString
           }
-          if ('$gte' in value) nextQuery[`filters[${field}][$gte]`] = String((value as any)['$gte'])
-          if ('$lte' in value) nextQuery[`filters[${field}][$lte]`] = String((value as any)['$lte'])
+          if ('$gte' in value)
+            nextQuery[`filters[${field}][$gte]`] = String((value as OperatorObject)['$gte'])
+          if ('$lte' in value)
+            nextQuery[`filters[${field}][$lte]`] = String((value as OperatorObject)['$lte'])
         } else if (value !== undefined && value !== null && value !== '') {
           nextQuery[`filters[${field}]`] = String(value)
         }
@@ -215,7 +215,7 @@ export function useQueryBuilder(options: {
   }
 
   function clearFilter(key: string) {
-    const nextQuery: Record<string, any> = { ...route.query }
+    const nextQuery: LocationQueryRaw = { ...route.query }
     delete nextQuery[key]
     if (key === 'search') {
       delete nextQuery.searchField
@@ -235,11 +235,10 @@ export function useQueryBuilder(options: {
   }
 
   function clearAllFilters() {
-    const nextQuery: Record<string, any> = { ...route.query }
+    const nextQuery: LocationQueryRaw = { ...route.query }
     delete nextQuery.search
     delete nextQuery.searchField
-    delete nextQuery.searchFields
-    // Remove all filters[*] keys
+    delete nextQuery.searchFields // Remove all filters[*] keys
     for (const k of Object.keys(nextQuery)) {
       if (k.startsWith('filters[')) delete nextQuery[k]
     }
@@ -272,8 +271,7 @@ export function useQueryBuilder(options: {
     const search = String(q.search || '')
     const searchField = String(q.searchField || q.searchFields || '')
     const page = String(q.page || '1')
-    const limitStr = String(q.limit || String(limit.value))
-    // Include all filters[*] params to trigger reloads when filters change
+    const limitStr = String(q.limit || String(limit.value)) // Include all filters[*] params to trigger reloads when filters change
     const filterEntries = Object.keys(q)
       .filter((k) => k.startsWith('filters['))
       .sort()
@@ -331,8 +329,7 @@ export function useQueryBuilder(options: {
     timeWindow,
     dateField,
     queryState,
-    canonicalQueryString,
-    // actions
+    canonicalQueryString, // actions
     setLimit,
     setTimeWindow,
     applyFilters,

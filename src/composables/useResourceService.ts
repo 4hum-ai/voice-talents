@@ -37,10 +37,15 @@ export function useResourceService(base: string = 'movie/api') {
         const contentType = res.headers.get('content-type') || ''
         if (/application\/json/.test(contentType)) {
           try {
-            const err = await res.json()
-            message = err.message || err.error || message
+            const err: unknown = await res.json()
+            if (err && typeof err === 'object') {
+              message =
+                (err as { message?: string }).message ||
+                (err as { error?: string }).error ||
+                message
+            }
           } catch {
-            void 0
+            /* ignore */
           }
         } else {
           const text = await res.text().catch(() => '')
@@ -59,25 +64,29 @@ export function useResourceService(base: string = 'movie/api') {
             text.slice(0, 120),
         )
       }
-      return await res.json()
-    } catch (error: any) {
-      if (error?.name === 'AbortError' || /Failed to fetch|NetworkError/.test(String(error))) {
-        throw new ConnectionError('Unable to reach API. Check connectivity and URL.', error)
+      return (await res.json()) as T
+    } catch (error: unknown) {
+      if (
+        (error as { name?: string })?.name === 'AbortError' ||
+        /Failed to fetch|NetworkError/.test(String(error))
+      ) {
+        throw new ConnectionError(
+          'Unable to reach API. Check connectivity and URL.',
+          error instanceof Error ? error : undefined,
+        )
       }
       throw error
     }
   }
 
-  // Removed helper methods (get/post/put/del) in favor of direct request usage
-
-  const list = async (
+  const list = async <T = Record<string, unknown>>(
     resource: string,
-    query?: Record<string, any>,
+    query?: Record<string, unknown>,
     signal?: AbortSignal,
-  ): Promise<PaginatedResult<any>> => {
-    const toSearchParams = (input: Record<string, any>): URLSearchParams => {
+  ): Promise<PaginatedResult<T>> => {
+    const toSearchParams = (input: Record<string, unknown>): URLSearchParams => {
       const search = new URLSearchParams()
-      const append = (key: string, value: any) => {
+      const append = (key: string, value: unknown) => {
         if (value === undefined || value === null) return
         if (value instanceof Date) {
           search.append(key, value.toISOString())
@@ -87,7 +96,7 @@ export function useResourceService(base: string = 'movie/api') {
           search.append(key, String(value))
         }
       }
-      const build = (prefix: string, value: any) => {
+      const build = (prefix: string, value: unknown) => {
         if (value === undefined || value === null) return
         if (value instanceof Date || typeof value !== 'object' || Array.isArray(value)) {
           append(prefix, value)
@@ -101,27 +110,40 @@ export function useResourceService(base: string = 'movie/api') {
     const search = query ? toSearchParams(query) : new URLSearchParams()
     const q = search.toString()
     const path = q ? `/${resource}?${q}` : `/${resource}`
-    const payload = await request<any>(path, { signal })
+    const payload = await request<{ data: T[]; pagination?: Record<string, unknown> }>(path, {
+      signal,
+    })
     const pg = payload?.pagination ?? {}
-    const page = Number(pg.page ?? payload.page ?? 1) || 1
-    const limit = Number(pg.limit ?? payload.limit ?? 20) || 20
-    const total = Number(pg.total ?? payload.total ?? 0) || 0
+    const page = Number(pg.page ?? (payload as Record<string, unknown>).page ?? 1) || 1
+    const limit = Number(pg.limit ?? (payload as Record<string, unknown>).limit ?? 20) || 20
+    const total = Number(pg.total ?? (payload as Record<string, unknown>).total ?? 0) || 0
     const totalPages =
-      Number(pg.totalPages ?? payload.totalPages ?? Math.ceil(total / (limit || 1))) ||
-      Math.max(1, Math.ceil(total / (limit || 1)))
+      Number(
+        pg.totalPages ??
+          (payload as Record<string, unknown>).totalPages ??
+          Math.ceil(total / (limit || 1)),
+      ) || Math.max(1, Math.ceil(total / (limit || 1)))
     return {
       data: payload.data || [],
       pagination: { page, limit, total, totalPages },
     }
   }
 
-  const getById = async (resource: string, id: string, signal?: AbortSignal): Promise<any> => {
-    const payload = await request<any>(`/${resource}/${id}`, { signal })
-    return payload?.data ?? payload
+  const getById = async <T = Record<string, unknown>>(
+    resource: string,
+    id: string,
+    signal?: AbortSignal,
+  ): Promise<T> => {
+    const payload = await request<{ data?: T } | T>(`/${resource}/${id}`, { signal })
+    return (payload as { data?: T })?.data ?? (payload as T)
   }
 
-  const create = async (resource: string, body: any, signal?: AbortSignal): Promise<any> => {
-    const payload = await request<any>(`/${resource}`, {
+  const create = async <T = Record<string, unknown>>(
+    resource: string,
+    body: unknown,
+    signal?: AbortSignal,
+  ): Promise<T> => {
+    const payload = await request<{ data: T }>(`/${resource}`, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
       signal,
@@ -130,7 +152,9 @@ export function useResourceService(base: string = 'movie/api') {
     try {
       crudBus.emit({
         resource,
-        id: String(result?.id ?? result?._id ?? ''),
+        id: String(
+          (result as { id?: string; _id?: string })?.id ?? (result as { _id?: string })?._id ?? '',
+        ),
         action: 'create',
         afterData: result,
         at: Date.now(),
@@ -141,19 +165,19 @@ export function useResourceService(base: string = 'movie/api') {
     return result
   }
 
-  const update = async (
+  const update = async <T = Record<string, unknown>>(
     resource: string,
     id: string,
-    body: any,
+    body: unknown,
     signal?: AbortSignal,
-  ): Promise<any> => {
-    let beforeData: any = null
+  ): Promise<T> => {
+    let beforeData: T | null = null
     try {
-      beforeData = await getById(resource, id, signal)
+      beforeData = await getById<T>(resource, id, signal)
     } catch {
       /* ignore */
     }
-    const payload = await request<any>(`/${resource}/${id}`, {
+    const payload = await request<{ data: T }>(`/${resource}/${id}`, {
       method: 'PUT',
       body: body ? JSON.stringify(body) : undefined,
       signal,
@@ -175,7 +199,7 @@ export function useResourceService(base: string = 'movie/api') {
   }
 
   const remove = async (resource: string, id: string, signal?: AbortSignal): Promise<void> => {
-    let beforeData: any = null
+    let beforeData: Record<string, unknown> | null = null
     try {
       beforeData = await getById(resource, id, signal)
     } catch {

@@ -24,15 +24,17 @@ const state = reactive<UiConfigState>({
 const LOCAL_STORAGE_KEY = 'admin-ui:configs'
 
 const configFromLocal = (() => {
-  const env: any = (import.meta as any).env || {}
+  const env: Record<string, unknown> =
+    (import.meta as unknown as { env?: Record<string, unknown> }).env || {}
   return (
     env?.VITE_ADMIN_UI_CONFIG_FROM_LOCAL === 'true' || env?.VITE_ADMIN_UI_CONFIG_FROM_LOCAL === true
   )
 })()
 const localPath = (() => {
-  const env: any = (import.meta as any).env || {}
+  const env: Record<string, unknown> =
+    (import.meta as unknown as { env?: Record<string, unknown> }).env || {}
   // Path to modules index file served from public. Default to /ui-configs/index.json
-  return env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH || '/ui-configs/index.json'
+  return (env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH as string) || '/ui-configs/index.json'
 })()
 
 // Shared singleton cache across composable instances
@@ -47,8 +49,6 @@ let cachedResources: AdminResourceInfo[] | null = null
 let modulesPromise: Promise<AdminResourceInfo[]> | null = null
 
 export function useUiConfig() {
-  // movie service kept available for future extension; not used in current flow
-  // const movie = useMovieService()
   const api = useApiGateway()
 
   const loadFromCache = () => {
@@ -57,13 +57,16 @@ export function useUiConfig() {
       if (!raw) return
       const parsed = JSON.parse(raw)
       if (parsed && typeof parsed === 'object') {
-        const incoming = parsed as Record<string, any>
+        const incoming = parsed as Record<string, unknown>
         const normalized: Record<string, UiConfig> = {}
         let mutated = false
         for (const [mod, cfg] of Object.entries(incoming)) {
-          const flat = cfg && typeof cfg === 'object' && 'config' in cfg ? (cfg as any).config : cfg
+          const flat =
+            cfg && typeof cfg === 'object' && 'config' in (cfg as Record<string, unknown>)
+              ? (cfg as { config: UiConfig }).config
+              : (cfg as UiConfig)
           if (flat !== cfg) mutated = true
-          normalized[mod] = flat as UiConfig
+          normalized[mod] = flat
         }
         state.configs = normalized
         if (mutated) saveToCache()
@@ -126,10 +129,12 @@ export function useUiConfig() {
           if (!/application\/json/.test(contentType)) {
             return cachedResources ?? []
           }
-          const json = await res.json().catch(() => null)
-          const modules = Array.isArray(json?.modules) ? json.modules : []
+          const json: unknown = await res.json().catch(() => null)
+          const modules = Array.isArray((json as { modules?: unknown })?.modules)
+            ? ((json as { modules: AdminResourceInfo[] }).modules ?? [])
+            : []
           if (modules.length > 0) {
-            cachedResources = modules as AdminResourceInfo[]
+            cachedResources = modules
             return cachedResources
           }
         }
@@ -149,9 +154,11 @@ export function useUiConfig() {
         if (!res.ok) return cachedResources ?? []
         const contentType = res.headers.get('content-type') || ''
         if (!/application\/json/.test(contentType)) return cachedResources ?? []
-        const payload = await res.json().catch(() => null)
-        const modules = Array.isArray(payload?.modules) ? payload.modules : []
-        cachedResources = modules as AdminResourceInfo[]
+        const payload: unknown = await res.json().catch(() => null)
+        const modules = Array.isArray((payload as { modules?: unknown })?.modules)
+          ? ((payload as { modules: AdminResourceInfo[] }).modules ?? [])
+          : []
+        cachedResources = modules
         return cachedResources
       } catch {
         return cachedResources ?? []
@@ -187,8 +194,8 @@ export function useUiConfig() {
       if (!res.ok) return null
       const contentType = res.headers.get('content-type') || ''
       if (!/application\/json/.test(contentType)) return null
-      const payload = await res.json().catch(() => null)
-      const cfg = (payload as any)?.config ?? payload
+      const payload: unknown = await res.json().catch(() => null)
+      const cfg = (payload as { config?: UiConfig })?.config ?? (payload as UiConfig)
       if (cfg) setConfig(resourceName, cfg)
       return cfg ?? null
     } catch {
@@ -228,9 +235,9 @@ export function useUiConfig() {
           if (res.ok) {
             const contentType = res.headers.get('content-type') || ''
             if (/application\/json/.test(contentType)) {
-              const payload = await res.json().catch(() => null)
-              const remoteCfg = (payload as any)?.config ?? payload
-              if (remoteCfg) setConfig(name, remoteCfg as any)
+              const payload: unknown = await res.json().catch(() => null)
+              const remoteCfg = (payload as { config?: UiConfig })?.config ?? (payload as UiConfig)
+              if (remoteCfg) setConfig(name, remoteCfg)
             }
           }
         } catch {
@@ -238,8 +245,8 @@ export function useUiConfig() {
         }
       }
       state.initialized = true
-    } catch (e: any) {
-      state.error = e?.message || 'Failed to initialize UI configs'
+    } catch (e: unknown) {
+      state.error = e instanceof Error ? e.message : 'Failed to initialize UI configs'
     } finally {
       state.loading = false
     }

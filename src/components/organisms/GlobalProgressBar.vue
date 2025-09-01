@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-// @ts-nocheck
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useEventBus } from '@vueuse/core'
 import { EVENT_HTTP_ACTIVE, type HttpActivePayload } from '@/types/events'

@@ -9,21 +9,21 @@ import {
 import { useToast } from './useToast'
 import { useResourceService } from './useResourceService'
 
-type VisitEntry = {
+type VisitEntry<T = unknown> = {
   resource: string
   id: string
-  data: any
+  data: T
   lastVisited: number
   count: number
 }
 
-type ActivityEntry = {
+export type ActivityEntry<T = unknown> = {
   resource: string
   id: string
   action: 'create' | 'update' | 'delete'
   at: number
-  beforeData?: any
-  afterData?: any
+  beforeData?: T
+  afterData?: T
 }
 
 const VISITS_KEY = 'md_admin_recent_visits'
@@ -52,8 +52,9 @@ function writeJson<T>(key: string, value: T) {
 }
 
 function getLimit(): number {
-  const env: any = (import.meta as any).env || {}
-  const n = Number(env?.VITE_DASHBOARD_ACTIVITY_LIMIT)
+  const env =
+    (import.meta as unknown as { env: { VITE_DASHBOARD_ACTIVITY_LIMIT: string } }).env || {}
+  const n = Number((env as Record<string, unknown>)?.VITE_DASHBOARD_ACTIVITY_LIMIT)
   return Number.isFinite(n) && n > 0 ? n : 10
 }
 
@@ -82,9 +83,9 @@ export function useActivity() {
     started.value = false
   }
 
-  const recordVisit = (entry: { resource: string; id: string; data: any }) => {
+  const recordVisit = <T>(entry: { resource: string; id: string; data: T }) => {
     const limit = getLimit()
-    const list = readJson<VisitEntry[]>(VISITS_KEY, [])
+    const list = readJson<VisitEntry<T>[]>(VISITS_KEY, [])
     const idx = list.findIndex((v) => v.resource === entry.resource && v.id === String(entry.id))
     const now = Date.now()
     if (idx >= 0) {
@@ -150,37 +151,42 @@ export function useActivity() {
         await service.remove(entry.resource, entry.id)
         toast.push({
           id: Math.random().toString(36).slice(2),
-          type: 'success' as any,
+          type: 'success',
           title: 'Reverted creation',
           position: 'tr',
           body: `${entry.resource} ${entry.id} deleted`,
         })
       } else if (entry.action === 'update') {
-        await service.update(entry.resource, entry.id, entry.beforeData)
+        if (entry.beforeData) {
+          await service.update(entry.resource, entry.id, entry.beforeData)
+        }
         toast.push({
           id: Math.random().toString(36).slice(2),
-          type: 'success' as any,
+          type: 'success',
           title: 'Reverted update',
           position: 'tr',
           body: `${entry.resource} ${entry.id} restored`,
         })
       } else if (entry.action === 'delete') {
-        await service.create(entry.resource, entry.beforeData)
+        if (entry.beforeData) {
+          await service.create(entry.resource, entry.beforeData)
+        }
         toast.push({
           id: Math.random().toString(36).slice(2),
-          type: 'success' as any,
+          type: 'success',
           title: 'Reverted deletion',
           position: 'tr',
           body: `${entry.resource} ${entry.id} recreated`,
         })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Operation failed'
       toast.push({
         id: Math.random().toString(36).slice(2),
-        type: 'error' as any,
+        type: 'error',
         title: 'Revert failed',
         position: 'tr',
-        body: e?.message || 'Operation failed',
+        body: message,
       })
       throw e
     }

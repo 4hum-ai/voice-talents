@@ -31,12 +31,14 @@ export interface SortConfig {
   direction: 'asc' | 'desc'
 }
 
+export type FilterDefaultValue = string | number | boolean | Date | null
+
 export interface FilterConfig {
   field: string
   type: 'text' | 'select' | 'date' | 'boolean' | 'number'
   label: string
   options?: Array<{ value: string; label: string }>
-  defaultValue?: any
+  defaultValue?: FilterDefaultValue
 }
 
 export interface ListViewConfig {
@@ -82,6 +84,13 @@ export interface DetailViewConfig {
   sections: DetailSection[]
 }
 
+export type ValidationRule =
+  | { type: 'required'; message?: string }
+  | { type: 'minLength'; value: number; message?: string }
+  | { type: 'maxLength'; value: number; message?: string }
+  | { type: 'pattern'; value: RegExp; message?: string }
+  | { type: 'custom'; validate: (val: unknown) => boolean | string }
+
 export interface FormField {
   key: string
   label: string
@@ -97,7 +106,7 @@ export interface FormField {
     | 'url'
     | 'color'
   required?: boolean
-  validation?: any
+  validation?: ValidationRule | ValidationRule[]
   options?: Array<{ value: string; label: string }>
   placeholder?: string
   helpText?: string
@@ -127,7 +136,7 @@ export interface ResourceUIConfig {
 
 // Frontend-only optional extensions
 export interface UiFeaturesConfig {
-  stats?: any
+  stats?: Record<string, number | string | boolean>
 }
 
 export type UiConfig = ResourceUIConfig & { features?: UiFeaturesConfig }
