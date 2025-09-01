@@ -32,7 +32,7 @@ const configFromLocal = (() => {
 const localPath = (() => {
   const env: Record<string, unknown> = (import.meta as { env?: Record<string, unknown> }).env || {}
   // Path to modules index file served from public. Default to /ui-configs/index.json
-  return env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH || '/ui-configs/index.json'
+  return (env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH as string) || '/ui-configs/index.json'
 })()
 
 // Shared singleton cache across composable instances
@@ -47,8 +47,6 @@ let cachedResources: AdminResourceInfo[] | null = null
 let modulesPromise: Promise<AdminResourceInfo[]> | null = null
 
 export function useUiConfig() {
-  // movie service kept available for future extension; not used in current flow
-  // const movie = useMovieService()
   const api = useApiGateway()
 
   const loadFromCache = () => {
@@ -66,7 +64,7 @@ export function useUiConfig() {
               ? (cfg as { config: unknown }).config
               : cfg
           if (flat !== cfg) mutated = true
-          normalized[mod] = flat as UiConfig
+          normalized[mod] = flat
         }
         state.configs = normalized
         if (mutated) saveToCache()
@@ -129,10 +127,12 @@ export function useUiConfig() {
           if (!/application\/json/.test(contentType)) {
             return cachedResources ?? []
           }
-          const json = await res.json().catch(() => null)
-          const modules = Array.isArray(json?.modules) ? json.modules : []
+          const json: unknown = await res.json().catch(() => null)
+          const modules = Array.isArray((json as { modules?: unknown })?.modules)
+            ? ((json as { modules: AdminResourceInfo[] }).modules ?? [])
+            : []
           if (modules.length > 0) {
-            cachedResources = modules as AdminResourceInfo[]
+            cachedResources = modules
             return cachedResources
           }
         }
@@ -152,9 +152,11 @@ export function useUiConfig() {
         if (!res.ok) return cachedResources ?? []
         const contentType = res.headers.get('content-type') || ''
         if (!/application\/json/.test(contentType)) return cachedResources ?? []
-        const payload = await res.json().catch(() => null)
-        const modules = Array.isArray(payload?.modules) ? payload.modules : []
-        cachedResources = modules as AdminResourceInfo[]
+        const payload: unknown = await res.json().catch(() => null)
+        const modules = Array.isArray((payload as { modules?: unknown })?.modules)
+          ? ((payload as { modules: AdminResourceInfo[] }).modules ?? [])
+          : []
+        cachedResources = modules
         return cachedResources
       } catch {
         return cachedResources ?? []

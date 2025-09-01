@@ -2,9 +2,6 @@ import { ref, computed, readonly } from 'vue'
 import { useResourceService } from '@/composables/useResourceService'
 import { useToast } from '@/composables/useToast'
 
-/**
- * Paginated response structure for media items
- */
 export interface PaginatedResponse<T> {
   /** Array of media items */
   data: T[]
@@ -21,9 +18,6 @@ export interface PaginatedResponse<T> {
   }
 }
 
-/**
- * Media item structure representing a file in the system
- */
 export interface MediaItem {
   /** Unique identifier */
   id: string
@@ -66,79 +60,15 @@ function transformPaginatedResponse<T>(response: unknown): PaginatedResponse<T> 
   const limit = Number(pg.limit ?? response?.limit ?? 20) || 20
   const total = Number(pg.total ?? response?.total ?? 0) || 0
   const totalPages =
-    Number(pg.totalPages ?? response?.totalPages ?? Math.ceil(total / (limit || 1))) ||
+    Number(pg.totalPages ?? obj.totalPages ?? Math.ceil(total / (limit || 1))) ||
     Math.max(1, Math.ceil(total / (limit || 1)))
+
   return {
-    data: (response?.data || []) as T[],
+    data: (obj.data as T[]) ?? [],
     pagination: { page, limit, total, totalPages },
   }
 }
 
-/**
- * Media management composable for handling media files with pagination and search
- *
- * @returns Media service with reactive state and media management methods
- *
- * @example
- * ```typescript
- * const media = useMedia();
- *
- * // Load initial media
- * await media.fetchMedia();
- *
- * // Search media
- * await media.fetchMedia({ search: 'video' });
- *
- * // Filter media
- * await media.fetchMedia({
- *   filters: { type: 'video', status: 'processed' }
- * });
- *
- * // Navigate pages
- * await media.nextPage();
- * await media.previousPage();
- *
- * // Create media record
- * const newMedia = await media.createMediaRecord({
- *   fileName: 'video.mp4',
- *   contentType: 'video/mp4',
- *   fileSize: 1024000,
- *   duration: 120,
- *   type: 'video',
- *   format: 'mp4'
- * });
- * ```
- *
- * @example
- * ```vue
- * <template>
- *   <div>
- *     <!-- Loading state -->
- *     <div v-if="media.loading">Loading media...</div>
- *
- *     <!-- Error state -->
- *     <div v-if="media.error" class="error">{{ media.error }}</div>
- *
- *     <!-- Media list -->
- *     <div v-if="media.hasMedia">
- *       <div v-for="item in media.media" :key="item.id">
- *         <h3>{{ item.fileName }}</h3>
- *         <p>{{ item.type }} - {{ item.format }}</p>
- *       </div>
- *
- *       <!-- Pagination -->
- *       <button @click="media.previousPage()" :disabled="media.isFirstPage">
- *         Previous
- *       </button>
- *       <span>Page {{ media.currentPage }} of {{ media.totalPages }}</span>
- *       <button @click="media.nextPage()" :disabled="media.isLastPage">
- *         Next
- *       </button>
- *     </div>
- *   </div>
- * </template>
- * ```
- */
 export function useMedia() {
   const { list, create, update } = useResourceService()
   const { push } = useToast()
@@ -193,9 +123,9 @@ export function useMedia() {
       if (options?.search) params.search = options.search
       if (options?.filters) Object.assign(params, options.filters)
 
-      const raw = await list('media', params)
+      const raw = await list<MediaItem>('media', params)
       const result: PaginatedResponse<MediaItem> = transformPaginatedResponse<MediaItem>(raw)
-      media.value = result.data as MediaItem[]
+      media.value = result.data
       totalPages.value = result.pagination.totalPages
     } catch (err: unknown) {
       const message = (err as Error)?.message || 'Failed to fetch media'
@@ -213,51 +143,18 @@ export function useMedia() {
     }
   }
 
-  /**
-   * Navigate to the next page of media items
-   *
-   * @example
-   * ```typescript
-   * await media.nextPage();
-   * ```
-   */
   const nextPage = async () => {
     if (isLastPage.value) return
     currentPage.value += 1
     await fetchMedia()
   }
 
-  /**
-   * Navigate to the previous page of media items
-   *
-   * @example
-   * ```typescript
-   * await media.previousPage();
-   * ```
-   */
   const previousPage = async () => {
     if (isFirstPage.value) return
     currentPage.value -= 1
     await fetchMedia()
   }
 
-  /**
-   * Create a new media record in the system
-   * @param params - Media record parameters
-   * @returns A promise resolving to the created media item
-   *
-   * @example
-   * ```typescript
-   * const newMedia = await media.createMediaRecord({
-   *   fileName: 'video.mp4',
-   *   contentType: 'video/mp4',
-   *   fileSize: 1024000,
-   *   duration: 120,
-   *   type: 'video',
-   *   format: 'mp4'
-   * });
-   * ```
-   */
   async function createMediaRecord(params: {
     fileName: string
     contentType: string
@@ -277,24 +174,9 @@ export function useMedia() {
       relationships: params.relationships || [],
       metadata: params.metadata || {},
     }
-    const created = (await create('media', payload)) as MediaItem
-    return created
+    return await create<MediaItem>('media', payload)
   }
 
-  /**
-   * Upload a file directly to a signed URL
-   * @param options - Upload options including signed URL, file, and content type
-   * @returns A promise resolving to the response from the signed URL
-   *
-   * @example
-   * ```typescript
-   * const res = await media.uploadFileToSignedUrl({
-   *   uploadUrl: 'https://example.com/upload',
-   *   file: new File(['video'], 'video.mp4'),
-   *   contentType: 'video/mp4'
-   * });
-   * ```
-   */
   async function uploadFileToSignedUrl(options: {
     uploadUrl: string
     file: File | Blob
@@ -302,7 +184,6 @@ export function useMedia() {
     onProgress?: (percent: number) => void
   }): Promise<Response> {
     const { uploadUrl, file, contentType } = options
-    // Fetch PUT to signed URL. Native fetch lacks progress; for now, do a single PUT.
     return await fetch(uploadUrl, {
       method: 'PUT',
       headers: { 'Content-Type': contentType },
@@ -310,25 +191,6 @@ export function useMedia() {
     })
   }
 
-  /**
-   * Upload a file via the media resource service, handling signing and completion
-   * @param file - The file to upload
-   * @param opts - Optional parameters for the upload
-   * @returns A promise resolving to the uploaded media item and its URL
-   *
-   * @example
-   * ```typescript
-   * const { media: newMedia, fileUrl } = await media.uploadViaMediaResource({
-   *   file: new File(['video'], 'video.mp4'),
-   *   type: 'video',
-   *   format: 'mp4',
-   *   language: 'en',
-   *   description: 'A description',
-   *   tags: ['tag1', 'tag2'],
-   *   relationships: ['entityType:entityId:relationshipType']
-   * });
-   * ```
-   */
   async function uploadViaMediaResource(
     file: File,
     opts: {
@@ -376,9 +238,8 @@ export function useMedia() {
       throw new Error(`Upload failed (${res.status}): ${text.slice(0, 160)}`)
     }
 
-    // Always try to complete the upload to finalize metadata
     try {
-      await update('media', mediaRecord.id, {
+      await update<MediaItem>('media', mediaRecord.id, {
         status: 'completed',
         fileSize: file.size,
       })
@@ -392,7 +253,6 @@ export function useMedia() {
         position: 'tr',
         timeout: 6000,
       })
-      // Do not throw to avoid breaking the caller; metadata can be retried later
     }
 
     return { media: mediaRecord, fileUrl: mediaRecord.fileUrl }
@@ -410,7 +270,6 @@ export function useMedia() {
     fetchMedia,
     nextPage,
     previousPage,
-    // upload helpers
     uploadViaMediaResource,
   }
 }

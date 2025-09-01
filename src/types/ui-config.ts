@@ -31,6 +31,8 @@ export interface SortConfig {
   direction: 'asc' | 'desc'
 }
 
+export type FilterDefaultValue = string | number | boolean | Date | null
+
 export interface FilterConfig {
   field: string
   type: 'text' | 'select' | 'date' | 'boolean' | 'number'
@@ -81,6 +83,13 @@ export interface DetailSection {
 export interface DetailViewConfig {
   sections: DetailSection[]
 }
+
+export type ValidationRule =
+  | { type: 'required'; message?: string }
+  | { type: 'minLength'; value: number; message?: string }
+  | { type: 'maxLength'; value: number; message?: string }
+  | { type: 'pattern'; value: RegExp; message?: string }
+  | { type: 'custom'; validate: (val: unknown) => boolean | string }
 
 export interface FormField {
   key: string

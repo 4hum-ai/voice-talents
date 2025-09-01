@@ -4,9 +4,6 @@ import { EVENT_CRUD, type CrudEventPayload } from '@/types/events'
 import type { ResourceQuery } from '@/types/query'
 import { ref, computed, type Ref, type ComputedRef } from 'vue'
 
-/**
- * Represents a paginated result from an API response
- */
 export interface PaginatedResult<T> {
   /** Array of items returned from the API */
   data: T[]
@@ -23,13 +20,9 @@ export interface PaginatedResult<T> {
   }
 }
 
-/**
- * Custom error class for connection-related errors
- */
 export class ConnectionError extends Error {
   constructor(
     message: string,
-    /** The original error that caused this connection error */
     public originalError?: Error,
   ) {
     super(message)
@@ -204,10 +197,15 @@ export function useResourceService(base: string = 'movie/api') {
         const contentType = res.headers.get('content-type') || ''
         if (/application\/json/.test(contentType)) {
           try {
-            const err = await res.json()
-            message = err.message || err.error || message
+            const err: unknown = await res.json()
+            if (err && typeof err === 'object') {
+              message =
+                (err as { message?: string }).message ||
+                (err as { error?: string }).error ||
+                message
+            }
           } catch {
-            void 0
+            /* ignore */
           }
         } else {
           const text = await res.text().catch(() => '')
@@ -238,42 +236,11 @@ export function useResourceService(base: string = 'movie/api') {
     }
   }
 
-  /**
-   * Fetch a paginated list of items with search, filtering, and pagination support
-   *
-   * @param resource - Resource type to fetch (e.g., "titles", "organizations")
-   * @param query - Optional query parameters for search, filtering, and pagination
-   * @param signal - Optional AbortSignal for request cancellation
-   * @returns Promise resolving to paginated result
-   *
-   * @example
-   * ```typescript
-   * // Basic list
-   * const result = await api.list("titles", { page: 1, limit: 20 });
-   *
-   * // With search
-   * const result = await api.list("titles", {
-   *   search: "action movie",
-   *   page: 1,
-   *   limit: 20
-   * });
-   *
-   * // With advanced filtering
-   * const result = await api.list("titles", {
-   *   search: "action",
-   *   searchFields: ["title", "description"],
-   *   filters: { year: 2024, genre: "action" },
-   *   sort: "title:asc",
-   *   page: 1,
-   *   limit: 20
-   * });
-   * ```
-   */
-  const list = async (
-    resource: ResourceType,
-    query?: ResourceQuery,
+  const list = async <T = Record<string, unknown>>(
+    resource: string,
+    query?: Record<string, unknown>,
     signal?: AbortSignal,
-  ): Promise<PaginatedResult<unknown>> => {
+  ): Promise<PaginatedResult<T>> => {
     const operation = `list:${resource}`
     setLoading(operation, true)
     error.value = null
@@ -608,7 +575,6 @@ export function useResourceService(base: string = 'movie/api') {
   }
 
   return {
-    // Methods
     list,
     getById,
     create,

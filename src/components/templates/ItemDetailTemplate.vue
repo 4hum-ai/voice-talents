@@ -34,10 +34,10 @@
     <main class="p-4">
       <div v-if="loading" class="space-y-6">
         <div v-if="detailSections && detailSections.length" class="space-y-6">
-          <Card
+          <section
             v-for="(section, sIdx) in detailSections"
             :key="`skeleton-sec-${sIdx}`"
-            variant="elevated"
+            class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
           >
             <div
               v-if="section.title"
@@ -55,16 +55,19 @@
                 <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
-          </Card>
+          </section>
         </div>
-        <Card v-else padding="md">
+        <div
+          v-else
+          class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+        >
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
               <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
             </div>
           </div>
-        </Card>
+        </div>
       </div>
       <div v-else-if="error" class="text-error-600 dark:text-error-400 text-sm">
         {{ error }}
@@ -99,7 +102,10 @@
             </Card>
           </div>
           <!-- Fallback to naive key/value rendering in a single card -->
-          <Card v-else padding="md">
+          <div
+            v-else
+            class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+          >
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div v-for="(value, key) in displayPairs" :key="String(key)" class="flex flex-col">
                 <span class="text-xs text-gray-500 dark:text-gray-400">{{
@@ -110,7 +116,7 @@
                 }}</span>
               </div>
             </div>
-          </Card>
+          </div>
         </slot>
       </div>
     </main>

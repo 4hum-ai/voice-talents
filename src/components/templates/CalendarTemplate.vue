@@ -7,7 +7,7 @@
             {{ uiConfig?.displayName || resourceName }}
           </div>
           <div class="truncate text-xs text-gray-500 dark:text-gray-400">
-            {{ uiConfig?.description }}
+            {{ subtitle }}
           </div>
         </div>
       </template>
@@ -87,22 +87,8 @@
       </template>
     </AppBar>
 
-    <main class="p-4">
-      <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-        <div class="sx-vue-calendar-wrapper h-[720px] w-full max-w-full">
-          <ScheduleXCalendar :calendar-app="calendarApp">
-            <template #monthGridEvent="{ calendarEvent }">
-              <button
-                class="m-1 w-full truncate rounded bg-blue-50 px-2 py-1 text-left text-xs text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
-                :title="String(calendarEvent.title)"
-                @click.stop="handleItemClick(calendarEvent.__raw)"
-              >
-                {{ String(calendarEvent.title) }}
-              </button>
-            </template>
-          </ScheduleXCalendar>
-        </div>
-      </div>
+    <main class="px-4 py-6">
+      <slot />
     </main>
   </div>
 </template>
@@ -111,7 +97,6 @@
 import { computed, watch, shallowRef, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toDate, toISODate } from '@/utils/date'
-import { ScheduleXCalendar } from '@schedule-x/vue'
 import { createCalendar, createViewMonthGrid } from '@schedule-x/calendar'
 import 'temporal-polyfill/global'
 import AppBar from '@/components/molecules/AppBar.vue'
@@ -219,10 +204,6 @@ try {
   if (!hasDateFilter) emitVisibleRange()
 } catch {
   void 0
-}
-
-function handleItemClick(item: unknown) {
-  if (item) emit('item-click', item)
 }
 
 // appbar aux state

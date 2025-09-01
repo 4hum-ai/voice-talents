@@ -7,9 +7,6 @@ import {
   type HttpErrorPayload,
 } from '@/types/events'
 
-/**
- * Configuration options for creating an API client
- */
 export interface ApiClientOptions {
   /** Base URL for the API */
   baseUrl: string
@@ -19,17 +16,11 @@ export interface ApiClientOptions {
   timeoutMs?: number
 }
 
-/**
- * Extended request options that include timeout configuration
- */
 export interface RequestOptions extends RequestInit {
   /** Request timeout in milliseconds */
   timeoutMs?: number
 }
 
-/**
- * API client interface providing HTTP request capabilities
- */
 export interface ApiClient {
   /** Make HTTP requests to the API */
   request: (path: string, options?: RequestOptions) => Promise<Response>
@@ -37,34 +28,12 @@ export interface ApiClient {
   baseUrl: string
 }
 
-/**
- * Join base URL and path, handling trailing slashes properly
- * @param baseUrl - Base URL (e.g., "https://api.example.com")
- * @param path - Path to append (e.g., "/users" or "users")
- * @returns Properly joined URL
- *
- * @example
- * ```typescript
- * joinUrl("https://api.example.com", "/users"); // "https://api.example.com/users"
- * joinUrl("https://api.example.com/", "users"); // "https://api.example.com/users"
- * ```
- */
 function joinUrl(baseUrl: string, path: string): string {
   const base = baseUrl.replace(/\/$/, '')
   const suffix = path.startsWith('/') ? path : `/${path}`
   return `${base}${suffix}`
 }
 
-/**
- * Build authentication header using Firebase token
- * @returns Promise resolving to authorization header object or empty object if no token
- *
- * @example
- * ```typescript
- * const headers = await buildAuthHeader();
- * // Returns: { Authorization: "Bearer <firebase-token>" } or {}
- * ```
- */
 async function buildAuthHeader(): Promise<Record<string, string>> {
   try {
     const auth = getAuth()
@@ -77,26 +46,6 @@ async function buildAuthHeader(): Promise<Record<string, string>> {
   return {}
 }
 
-/**
- * Create an API client with authentication, error handling, and request tracking
- *
- * @param options - Configuration options for the API client
- * @returns API client instance
- *
- * @example
- * ```typescript
- * const client = createApiClient({
- *   baseUrl: "https://api.example.com",
- *   defaultHeaders: { "X-API-Version": "v1" },
- *   timeoutMs: 10000
- * });
- *
- * const response = await client.request("/users", {
- *   method: "GET",
- *   timeoutMs: 5000
- * });
- * ```
- */
 export function createApiClient(options: ApiClientOptions): ApiClient {
   const { baseUrl, defaultHeaders = {}, timeoutMs } = options
   const activeBus = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE)
@@ -170,7 +119,6 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       activeBus.emit({ active: activeRequests })
     }
 
-    // Handle 401 Unauthorized with token refresh
     if (response.status === 401) {
       try {
         const refreshed = await getAuth().currentUser?.getIdToken(true)
@@ -199,7 +147,6 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     }
 
     // Do not toast for HTTP error statuses here; let callers decide contextually.
-
     return response
   }
 
@@ -285,6 +232,7 @@ export function useApiGateway(base: string = 'movie'): ApiClient {
     const root = API_BASE.replace(/\/$/, '')
     baseUrl = `${root}/${normalizedBase}`
   }
+
   const client = createApiClient({ baseUrl })
   clientsByBase[normalizedBase] = client
   return client

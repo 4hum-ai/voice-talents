@@ -35,12 +35,13 @@ export type HttpErrorPayload = {
  * Consumers: `src/composables/useActivity.ts`
  */
 export type CrudAction = 'create' | 'update' | 'delete'
-export interface CrudEventPayload {
+
+export interface CrudEventPayload<T = unknown> {
   resource: string
   id: string
   action: CrudAction
-  beforeData?: unknown
-  afterData?: unknown
+  beforeData?: T
+  afterData?: T
   at: number
 }
 

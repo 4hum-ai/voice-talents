@@ -51,50 +51,10 @@ export function toDate(value: unknown): Date | null {
   return null
 }
 
-/**
- * Convert a Date object to ISO date string (YYYY-MM-DD format)
- * @param d - Date object to convert
- * @returns ISO date string in YYYY-MM-DD format
- *
- * @example
- * ```typescript
- * const date = new Date("2024-01-15T10:30:00Z");
- * toISODate(date); // "2024-01-15"
- *
- * toISODate(new Date()); // Current date in YYYY-MM-DD format
- * ```
- */
 export function toISODate(d: Date): string {
   return d.toISOString().slice(0, 10)
 }
 
-/**
- * Compute date range based on preset or custom dates
- * @param preset - Preset range ("7d", "30d", "90d", "all", "custom") or undefined
- * @param from - Custom start date in YYYY-MM-DD format
- * @param to - Custom end date in YYYY-MM-DD format
- * @returns Date range object with from/to dates or undefined
- *
- * @example
- * ```typescript
- * // Preset ranges
- * computeDateRange("7d"); // { from: "2024-01-08", to: "2024-01-15" }
- * computeDateRange("30d"); // { from: "2023-12-16", to: "2024-01-15" }
- * computeDateRange("90d"); // { from: "2023-10-17", to: "2024-01-15" }
- *
- * // Custom dates
- * computeDateRange("custom", "2024-01-01", "2024-01-31");
- * // { from: "2024-01-01", to: "2024-01-31" }
- *
- * // Mixed preset and custom
- * computeDateRange(undefined, "2024-01-01", "2024-01-31");
- * // { from: "2024-01-01", to: "2024-01-31" }
- *
- * // No range
- * computeDateRange("all"); // undefined
- * computeDateRange(); // undefined
- * ```
- */
 export function computeDateRange(
   preset?: string,
   from?: string,

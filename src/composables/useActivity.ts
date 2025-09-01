@@ -9,21 +9,21 @@ import {
 import { useToast } from './useToast'
 import { useResourceService } from './useResourceService'
 
-type VisitEntry = {
+type VisitEntry<T = unknown> = {
   resource: string
   id: string
-  data: unknown
+  data: T
   lastVisited: number
   count: number
 }
 
-type ActivityEntry = {
+export type ActivityEntry<T = unknown> = {
   resource: string
   id: string
   action: 'create' | 'update' | 'delete'
   at: number
-  beforeData?: unknown
-  afterData?: unknown
+  beforeData?: T
+  afterData?: T
 }
 
 const VISITS_KEY = 'md_admin_recent_visits'
@@ -84,7 +84,7 @@ export function useActivity() {
 
   const recordVisit = (entry: { resource: string; id: string; data: unknown }) => {
     const limit = getLimit()
-    const list = readJson<VisitEntry[]>(VISITS_KEY, [])
+    const list = readJson<VisitEntry<T>[]>(VISITS_KEY, [])
     const idx = list.findIndex((v) => v.resource === entry.resource && v.id === String(entry.id))
     const now = Date.now()
     if (idx >= 0) {
@@ -156,7 +156,9 @@ export function useActivity() {
           body: `${entry.resource} ${entry.id} deleted`,
         })
       } else if (entry.action === 'update') {
-        await service.update(entry.resource, entry.id, entry.beforeData)
+        if (entry.beforeData) {
+          await service.update(entry.resource, entry.id, entry.beforeData)
+        }
         toast.push({
           id: Math.random().toString(36).slice(2),
           type: 'success' as const,
@@ -165,7 +167,9 @@ export function useActivity() {
           body: `${entry.resource} ${entry.id} restored`,
         })
       } else if (entry.action === 'delete') {
-        await service.create(entry.resource, entry.beforeData)
+        if (entry.beforeData) {
+          await service.create(entry.resource, entry.beforeData)
+        }
         toast.push({
           id: Math.random().toString(36).slice(2),
           type: 'success' as const,
