@@ -9,7 +9,7 @@
     "dev": "vite",
     "prepare": "husky",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --check src tests",
     "lint:check": "eslint src",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",

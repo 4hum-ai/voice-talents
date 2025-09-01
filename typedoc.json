@@ -22,11 +22,7 @@
   "readme": "docs/use-resource-service.md",
   "includeVersion": true,
   "categorizeByGroup": true,
-  "categoryOrder": [
-    "Composables",
-    "Utilities",
-    "*"
-  ],
+  "categoryOrder": ["Composables", "Utilities", "*"],
   "defaultCategory": "Other",
   "plugin": [],
   "validation": {
@@ -37,9 +33,7 @@
   "cleanOutputDir": true,
   "gitRevision": "main",
   "gitRemote": "origin",
-  "sort": [
-    "source-order"
-  ],
+  "sort": ["source-order"],
   "visibilityFilters": {
     "protected": false,
     "private": false,

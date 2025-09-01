@@ -43,15 +43,13 @@ console.log(api.isLoading.value); // Loading state
 <template>
   <div>
     <!-- Loading state -->
-    <div v-if="api.isOperationLoading('list:titles')">
-      Loading titles...
-    </div>
-    
+    <div v-if="api.isOperationLoading('list:titles')">Loading titles...</div>
+
     <!-- Error state -->
     <div v-if="api.hasError" class="error">
       {{ api.error }}
     </div>
-    
+
     <!-- Results -->
     <div v-if="api.hasItems">
       <div v-for="title in api.items" :key="title.id">
@@ -77,7 +75,7 @@ api.list("titles", { page: 1, limit: 20 });
 // Create
 const newTitle = await api.create("titles", {
   title: "New Movie",
-  description: "A great movie"
+  description: "A great movie",
 });
 
 // Read
@@ -85,7 +83,7 @@ const title = await api.getById("titles", "123");
 
 // Update
 const updated = await api.update("titles", "123", {
-  title: "Updated Title"
+  title: "Updated Title",
 });
 
 // Delete
@@ -95,6 +93,7 @@ await api.remove("titles", "123");
 ## 🔧 API Overview
 
 ### Methods
+
 - `list(resource, query?, signal?)` - Fetch paginated list
 - `getById(resource, id, signal?)` - Fetch single item
 - `create(resource, body, signal?)` - Create new item
@@ -102,27 +101,32 @@ await api.remove("titles", "123");
 - `remove(resource, id, signal?)` - Delete item
 
 ### Reactive Data
+
 - `items` - Array of items from list operations
 - `item` - Single item from getById operations
 - `pagination` - Pagination information
 - `error` - Current error message
 
 ### Loading States
+
 - `isLoading` - Boolean indicating if any operation is loading
 - `isOperationLoading(operation)` - Check specific operation loading state
 
 ### Computed Helpers
+
 - `hasItems` - Boolean indicating if there are items
 - `isEmpty` - Boolean indicating if no items and not loading
 - `hasError` - Boolean indicating if there's an error
 
 ### Utility Methods
+
 - `clearError()` - Clear current error
 - `clearData()` - Reset all data to initial state
 
 ## 📋 Supported Resources
 
 Currently supported resource types:
+
 - `"titles"`
 - `"organizations"`
 - Custom string values (for other resources)
