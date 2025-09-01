@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ stats: unknown[]; data: unknown[] }>()
-const getStatValue = (stat: unknown) => (stat.computed ? props.data?.length || 0 : stat.value || 0)
+type Stat = { key: string; label: string; value?: number; computed?: boolean }
+const props = defineProps<{ stats: Stat[]; data: unknown[] }>()
+const getStatValue = (stat: Stat) => (stat.computed ? props.data?.length || 0 : stat.value || 0)
 </script>

@@ -84,7 +84,7 @@ export function useActivity() {
 
   const recordVisit = (entry: { resource: string; id: string; data: unknown }) => {
     const limit = getLimit()
-    const list = readJson<VisitEntry<T>[]>(VISITS_KEY, [])
+    const list = readJson<VisitEntry[]>(VISITS_KEY, [])
     const idx = list.findIndex((v) => v.resource === entry.resource && v.id === String(entry.id))
     const now = Date.now()
     if (idx >= 0) {

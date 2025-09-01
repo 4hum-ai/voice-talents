@@ -55,16 +55,17 @@ export interface MediaItem {
  * @returns Standardized paginated response
  */
 function transformPaginatedResponse<T>(response: unknown): PaginatedResponse<T> {
-  const pg = response?.pagination ?? {}
-  const page = Number(pg.page ?? response?.page ?? 1) || 1
-  const limit = Number(pg.limit ?? response?.limit ?? 20) || 20
-  const total = Number(pg.total ?? response?.total ?? 0) || 0
+  const payload = (response as Record<string, unknown>) || {}
+  const pg = (payload.pagination as Record<string, unknown>) || {}
+  const page = Number(pg.page ?? payload.page ?? 1) || 1
+  const limit = Number(pg.limit ?? payload.limit ?? 20) || 20
+  const total = Number(pg.total ?? payload.total ?? 0) || 0
   const totalPages =
-    Number(pg.totalPages ?? obj.totalPages ?? Math.ceil(total / (limit || 1))) ||
+    Number(pg.totalPages ?? payload.totalPages ?? Math.ceil(total / (limit || 1))) ||
     Math.max(1, Math.ceil(total / (limit || 1)))
 
   return {
-    data: (obj.data as T[]) ?? [],
+    data: ((payload.data as T[]) || []) as T[],
     pagination: { page, limit, total, totalPages },
   }
 }
@@ -123,7 +124,7 @@ export function useMedia() {
       if (options?.search) params.search = options.search
       if (options?.filters) Object.assign(params, options.filters)
 
-      const raw = await list<MediaItem>('media', params)
+      const raw = await list('media', params)
       const result: PaginatedResponse<MediaItem> = transformPaginatedResponse<MediaItem>(raw)
       media.value = result.data
       totalPages.value = result.pagination.totalPages
@@ -174,7 +175,7 @@ export function useMedia() {
       relationships: params.relationships || [],
       metadata: params.metadata || {},
     }
-    return await create<MediaItem>('media', payload)
+    return (await create('media', payload)) as MediaItem
   }
 
   async function uploadFileToSignedUrl(options: {
@@ -239,7 +240,7 @@ export function useMedia() {
     }
 
     try {
-      await update<MediaItem>('media', mediaRecord.id, {
+      await update('media', mediaRecord.id, {
         status: 'completed',
         fileSize: file.size,
       })

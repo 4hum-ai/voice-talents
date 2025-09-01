@@ -45,7 +45,7 @@ export function useQueryBuilder(options: {
     if (sort) params.sort = sort // Parse generic filters from URL query (filters[<field>] and filters[<field>][$op])
 
     // Parse generic filters from URL query (filters[<field>] and filters[<field>][$op])
-    const parsedFilters: Record<string, unknown> = {}
+    const parsedFilters: Record<string, FieldFilter> = {}
     Object.keys(q).forEach((key) => {
       if (!key.startsWith('filters[')) return // patterns: filters[field] or filters[field][$op]
       const match = key.match(/^filters\[(.+?)\](?:\[(\$\w+)\])?$/)
@@ -55,16 +55,16 @@ export function useQueryBuilder(options: {
       const raw = q[key]
       if (!field) return
       if (op) {
-        parsedFilters[field] = (parsedFilters[field] || {}) as OperatorObject
+        parsedFilters[field] = (parsedFilters[field] || {}) as unknown as FieldFilter
         const value = String(raw)
         if (op === '$between') {
           const [a, b] = value
             .split(',')
             .map((s) => s.trim())
             .filter(Boolean)
-          if (a && b) (parsedFilters[field] as OperatorObject)['$between'] = [a, b]
+          if (a && b) (parsedFilters[field] as unknown as OperatorObject)['$between'] = [a, b]
         } else if (op === '$gte' || op === '$lte') {
-          ;(parsedFilters[field] as OperatorObject)[op] = value
+          ;(parsedFilters[field] as unknown as OperatorObject)[op] = value
         }
       } else {
         // direct equality
@@ -94,12 +94,12 @@ export function useQueryBuilder(options: {
     // Update local state and sync URL so it is shareable and triggers reloads
     limit.value = next
     try {
-      const nextQuery: Record<string, unknown> = {
+      const nextQuery: Record<string, string> = {
         ...route.query,
         limit: String(next),
         page: '1',
       }
-      router.replace({ query: nextQuery })
+      router.replace({ query: nextQuery as unknown as import('vue-router').LocationQueryRaw })
     } catch {
       void 0
     }
@@ -108,7 +108,7 @@ export function useQueryBuilder(options: {
   function setTimeWindow(payload: { preset?: string; from?: string; to?: string }) {
     timeWindow.value = { ...payload }
     try {
-      const nextQuery: Record<string, unknown> = { ...route.query }
+      const nextQuery: Record<string, string> = { ...(route.query as Record<string, string>) }
       delete nextQuery.preset
       delete nextQuery.from
       delete nextQuery.to
@@ -125,7 +125,7 @@ export function useQueryBuilder(options: {
       else if (range?.from) nextQuery[gteKey] = range.from
       else if (range?.to) nextQuery[lteKey] = range.to
       nextQuery.page = '1'
-      router.replace({ query: nextQuery })
+      router.replace({ query: nextQuery as unknown as import('vue-router').LocationQueryRaw })
     } catch {
       void 0
     }
@@ -138,7 +138,7 @@ export function useQueryBuilder(options: {
     filters?: Record<string, unknown>
   }) {
     try {
-      const nextQuery: Record<string, unknown> = { ...route.query }
+      const nextQuery: Record<string, string> = { ...(route.query as Record<string, string>) }
       // Remove any existing time window keys for the active dateField
       const betweenKey = `filters[${dateField.value}][$between]`
       const gteKey = `filters[${dateField.value}][$gte]`
@@ -187,7 +187,7 @@ export function useQueryBuilder(options: {
       else if (range?.to) nextQuery[lteKey] = range.to // Reset page
 
       nextQuery.page = '1'
-      router.replace({ query: nextQuery })
+      router.replace({ query: nextQuery as unknown as import('vue-router').LocationQueryRaw })
     } catch {
       void 0
     }
@@ -195,7 +195,7 @@ export function useQueryBuilder(options: {
 
   function setFilters(nextFilters: Record<string, unknown>) {
     try {
-      const nextQuery: Record<string, unknown> = { ...route.query }
+      const nextQuery: Record<string, string> = { ...(route.query as Record<string, string>) }
       // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig()
       const fields = (cfg?.views?.list?.defaultFilters || []).map(
@@ -228,14 +228,14 @@ export function useQueryBuilder(options: {
         }
       }
       nextQuery.page = '1'
-      router.replace({ query: nextQuery })
+      router.replace({ query: nextQuery as unknown as import('vue-router').LocationQueryRaw })
     } catch {
       void 0
     }
   }
 
   function clearFilter(key: string) {
-    const nextQuery: Record<string, unknown> = { ...route.query }
+    const nextQuery: Record<string, string> = { ...(route.query as Record<string, string>) }
     delete nextQuery[key]
     if (key === 'search') {
       delete nextQuery.searchField
@@ -251,11 +251,11 @@ export function useQueryBuilder(options: {
       timeWindow.value = {}
     }
     nextQuery.page = '1'
-    router.replace({ query: nextQuery })
+    router.replace({ query: nextQuery as unknown as import('vue-router').LocationQueryRaw })
   }
 
   function clearAllFilters() {
-    const nextQuery: Record<string, unknown> = { ...route.query }
+    const nextQuery: Record<string, string> = { ...(route.query as Record<string, string>) }
     delete nextQuery.search
     delete nextQuery.searchField
     delete nextQuery.searchFields // Remove all filters[*] keys
@@ -264,14 +264,17 @@ export function useQueryBuilder(options: {
     }
     timeWindow.value = {}
     nextQuery.page = '1'
-    router.replace({ query: nextQuery })
+    router.replace({ query: nextQuery as unknown as import('vue-router').LocationQueryRaw })
   }
 
   function setSort(field: string, direction: string) {
     try {
-      router.replace({
-        query: { ...route.query, sort: `${field}:${direction}`, page: '1' },
-      })
+      const q: Record<string, string> = {
+        ...(route.query as Record<string, string>),
+        sort: `${field}:${direction}`,
+        page: '1',
+      }
+      router.replace({ query: q as unknown as import('vue-router').LocationQueryRaw })
     } catch {
       void 0
     }
@@ -279,7 +282,11 @@ export function useQueryBuilder(options: {
 
   function setPage(page: number) {
     try {
-      router.replace({ query: { ...route.query, page: String(page) } })
+      const q: Record<string, string> = {
+        ...(route.query as Record<string, string>),
+        page: String(page),
+      }
+      router.replace({ query: q as unknown as import('vue-router').LocationQueryRaw })
     } catch {
       void 0
     }

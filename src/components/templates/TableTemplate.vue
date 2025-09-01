@@ -350,7 +350,7 @@
             @change="onTimeWindowChange"
           />
         </div>
-        <div v-for="f in listFilters" :key="f.key" class="space-y-1">
+        <div v-for="f in listFilters" :key="f.field" class="space-y-1">
           <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">{{
             f.label
           }}</label>
@@ -358,25 +358,25 @@
             <div class="flex items-center gap-2">
               <input
                 type="number"
-                :value="localFilterValues[f.key]?.min ?? ''"
+                :value="(localFilterValues as any)[f.field]?.min ?? ''"
                 placeholder="Min"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @input="onLocalNumberChange(f.key, 'min', $event)"
+                @input="onLocalNumberChange(f.field, 'min', $event)"
               />
               <input
                 type="number"
-                :value="localFilterValues[f.key]?.max ?? ''"
+                :value="(localFilterValues as any)[f.field]?.max ?? ''"
                 placeholder="Max"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @input="onLocalNumberChange(f.key, 'max', $event)"
+                @input="onLocalNumberChange(f.field, 'max', $event)"
               />
             </div>
           </template>
           <template v-else-if="f.type === 'select'">
             <select
-              :value="localFilterValues[f.key]?.value ?? ''"
+              :value="(localFilterValues as any)[f.field]?.value ?? ''"
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-              @change="onLocalValueChange(f.key, $event)"
+              @change="onLocalValueChange(f.field, $event)"
             >
               <option value="">Any</option>
               <option
@@ -390,9 +390,9 @@
           </template>
           <template v-else-if="f.type === 'boolean'">
             <select
-              :value="localFilterValues[f.key]?.value ?? ''"
+              :value="(localFilterValues as any)[f.field]?.value ?? ''"
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-              @change="onLocalValueChange(f.key, $event)"
+              @change="onLocalValueChange(f.field, $event)"
             >
               <option value="">Any</option>
               <option value="true">True</option>
@@ -401,10 +401,10 @@
           </template>
           <template v-else-if="f.type === 'date'">
             <DateRangeInput
-              :from="localFilterValues[f.key]?.from ?? ''"
-              :to="localFilterValues[f.key]?.to ?? ''"
-              @update:from="(value) => onLocalDateChange(f.key, 'from', value)"
-              @update:to="(value) => onLocalDateChange(f.key, 'to', value)"
+              :from="(localFilterValues as any)[f.field]?.from ?? ''"
+              :to="(localFilterValues as any)[f.field]?.to ?? ''"
+              @update:from="(value) => onLocalDateChange(f.field, 'from', value)"
+              @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
             />
           </template>
         </div>

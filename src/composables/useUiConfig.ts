@@ -64,7 +64,7 @@ export function useUiConfig() {
               ? (cfg as { config: unknown }).config
               : cfg
           if (flat !== cfg) mutated = true
-          normalized[mod] = flat
+          normalized[mod] = flat as UiConfig
         }
         state.configs = normalized
         if (mutated) saveToCache()

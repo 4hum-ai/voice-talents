@@ -230,7 +230,10 @@ export function useResourceService(base: string = 'movie/api') {
         (error as Error)?.name === 'AbortError' ||
         /Failed to fetch|NetworkError/.test(String(error))
       ) {
-        throw new ConnectionError('Unable to reach API. Check connectivity and URL.', error)
+        throw new ConnectionError(
+          'Unable to reach API. Check connectivity and URL.',
+          error as Error,
+        )
       }
       throw error
     }
@@ -271,17 +274,20 @@ export function useResourceService(base: string = 'movie/api') {
       const search = query ? toSearchParams(query) : new URLSearchParams()
       const q = search.toString()
       const path = q ? `/${resource}?${q}` : `/${resource}`
-      const payload = await request<unknown>(path, { signal })
-      const pg = payload?.pagination ?? {}
-      const page = Number(pg.page ?? payload.page ?? 1) || 1
-      const limit = Number(pg.limit ?? payload.limit ?? 20) || 20
-      const total = Number(pg.total ?? payload.total ?? 0) || 0
+      const payload = (await request<unknown>(path, { signal })) as Record<string, unknown>
+      const pg = (payload?.pagination as Record<string, unknown>) ?? {}
+      const page = Number(pg.page ?? (payload as Record<string, unknown>).page ?? 1) || 1
+      const limit = Number(pg.limit ?? (payload as Record<string, unknown>).limit ?? 20) || 20
+      const total = Number(pg.total ?? (payload as Record<string, unknown>).total ?? 0) || 0
       const totalPages =
-        Number(pg.totalPages ?? payload.totalPages ?? Math.ceil(total / (limit || 1))) ||
-        Math.max(1, Math.ceil(total / (limit || 1)))
+        Number(
+          pg.totalPages ??
+            (payload as Record<string, unknown>).totalPages ??
+            Math.ceil(total / (limit || 1)),
+        ) || Math.max(1, Math.ceil(total / (limit || 1)))
 
-      const result = {
-        data: payload.data || [],
+      const result: PaginatedResult<T> = {
+        data: ((payload.data as unknown[]) || []) as T[],
         pagination: { page, limit, total, totalPages },
       }
 
@@ -321,8 +327,11 @@ export function useResourceService(base: string = 'movie/api') {
     setLoading(operation, true)
     error.value = null
     try {
-      const payload = await request<unknown>(`/${resource}/${id}`, { signal })
-      const result = payload?.data ?? payload
+      const payload = (await request<unknown>(`/${resource}/${id}`, { signal })) as Record<
+        string,
+        unknown
+      >
+      const result = (payload?.data as unknown) ?? payload
 
       // Update reactive data
       item.value = result
@@ -363,21 +372,24 @@ export function useResourceService(base: string = 'movie/api') {
     setLoading(operation, true)
     error.value = null
     try {
-      const payload = await request<unknown>(`/${resource}`, {
+      const payload = (await request<unknown>(`/${resource}`, {
         method: 'POST',
         body: body ? JSON.stringify(body) : undefined,
         signal,
-      })
-      const result = payload.data
+      })) as Record<string, unknown>
+      const result = payload.data as unknown
 
       // Update reactive data - add to items list
       items.value.unshift(result)
       pagination.value.total += 1
 
       try {
+        const rid = String(
+          (result as Record<string, unknown>)?.id ?? (result as Record<string, unknown>)?._id ?? '',
+        )
         crudBus.emit({
           resource,
-          id: String(result?.id ?? result?._id ?? ''),
+          id: rid,
           action: 'create',
           afterData: result,
           at: Date.now(),
@@ -427,23 +439,26 @@ export function useResourceService(base: string = 'movie/api') {
       } catch {
         /* ignore */
       }
-      const payload = await request<unknown>(`/${resource}/${id}`, {
+      const payload = (await request<unknown>(`/${resource}/${id}`, {
         method: 'PUT',
         body: body ? JSON.stringify(body) : undefined,
         signal,
-      })
-      const result = payload.data
+      })) as Record<string, unknown>
+      const result = payload.data as unknown
 
       // Update reactive data
-      if (item.value?.id === id || item.value?._id === id) {
-        item.value = result
+      {
+        const current = item.value as Record<string, unknown> | null
+        if (current && (current.id === id || current._id === id)) {
+          item.value = result
+        }
       }
 
       // Update in items list if present
-      const itemIndex = items.value.findIndex(
-        (i: unknown) =>
-          (i as { id?: unknown; _id?: unknown }).id === id || (i as { _id?: unknown })._id === id,
-      )
+      const itemIndex = items.value.findIndex((i: unknown) => {
+        const rec = i as Record<string, unknown>
+        return rec?.id === id || rec?._id === id
+      })
       if (itemIndex !== -1) {
         items.value[itemIndex] = result
       }
@@ -504,8 +519,11 @@ export function useResourceService(base: string = 'movie/api') {
       })
 
       // Update reactive data
-      if (item.value?.id === id || item.value?._id === id) {
-        item.value = null
+      {
+        const current = item.value as Record<string, unknown> | null
+        if (current && (current.id === id || current._id === id)) {
+          item.value = null
+        }
       }
 
       // Remove from items list

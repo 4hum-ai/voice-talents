@@ -169,6 +169,13 @@ const textValue = computed(() => {
   return String(v)
 })
 
+type FirestoreTimestampLike = {
+  _seconds?: number
+  _nanoseconds?: number
+  seconds?: number
+  nanoseconds?: number
+}
+
 const toDate = (v: unknown): Date | null => {
   if (v instanceof Date) return v
   if (typeof v === 'string' || typeof v === 'number') {
@@ -176,8 +183,9 @@ const toDate = (v: unknown): Date | null => {
     return isNaN(d.getTime()) ? null : d
   }
   if (v && typeof v === 'object') {
-    const seconds = v._seconds ?? v.seconds
-    const nanos = v._nanoseconds ?? v.nanoseconds ?? 0
+    const ts = v as FirestoreTimestampLike
+    const seconds = ts._seconds ?? ts.seconds
+    const nanos = ts._nanoseconds ?? ts.nanoseconds ?? 0
     if (typeof seconds === 'number') {
       const ms = seconds * 1000 + Math.floor(nanos / 1e6)
       const d = new Date(ms)
@@ -198,26 +206,29 @@ const dateValue = computed(() => {
 })
 
 const numberValue = computed(() => {
-  const n = typeof props.value === 'string' ? parseFloat(props.value) : props.value
-  if (n === null || n === undefined || isNaN(n)) return '-'
-  return n.toLocaleString('en-US')
+  const raw = props.value
+  const n = typeof raw === 'string' ? parseFloat(raw) : typeof raw === 'number' ? raw : Number.NaN
+  if (!Number.isFinite(n)) return '-'
+  return new Intl.NumberFormat('en-US').format(n)
 })
 
 const currencyValue = computed(() => {
-  const n = typeof props.value === 'string' ? parseFloat(props.value) : props.value
-  if (n === null || n === undefined || isNaN(n)) return '-'
+  const raw = props.value
+  const n = typeof raw === 'string' ? parseFloat(raw) : typeof raw === 'number' ? raw : Number.NaN
+  if (!Number.isFinite(n)) return '-'
   const code = props.currencyCode || 'USD'
-  return n.toLocaleString('en-US', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: code,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })
+  }).format(n)
 })
 
 const ratingValue = computed(() => {
-  const n = typeof props.value === 'string' ? parseFloat(props.value) : props.value
-  if (n === null || n === undefined || isNaN(n)) return '-'
+  const raw = props.value
+  const n = typeof raw === 'string' ? parseFloat(raw) : typeof raw === 'number' ? raw : Number.NaN
+  if (!Number.isFinite(n)) return '-'
   return `${n.toFixed(1)} / 5`
 })
 
