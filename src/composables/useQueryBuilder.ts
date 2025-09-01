@@ -2,6 +2,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { computeDateRange } from "@/utils/date";
 import type { UiConfig } from "@/types/ui-config";
+import type { ResourceQuery, FieldFilter } from "@/types/query";
 
 export interface QueryState {
   page: number;
@@ -9,7 +10,7 @@ export interface QueryState {
   search?: string;
   searchField?: string;
   sort?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, FieldFilter>;
 }
 
 export function useQueryBuilder(options: {
