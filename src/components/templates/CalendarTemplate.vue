@@ -22,9 +22,8 @@
           >
             + Add
           </button>
-          <button
+          <IconButton
             v-if="hasCreateAction"
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -38,12 +37,8 @@
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
               />
             </svg>
-          </button>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Search"
-            @click="openSearch"
-          >
+          </IconButton>
+          <IconButton aria-label="Search" @click="openSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -56,7 +51,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
           <ActionsMenu
             :items="layoutMenuItems"
             size="md"
@@ -162,25 +157,26 @@ import "temporal-polyfill/global";
 import AppBar from "@/components/molecules/AppBar.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
 import SearchInput from "@/components/atoms/SearchInput.vue";
+import IconButton from "@/components/atoms/IconButton.vue";
 
 // calendar core
 
 type Props = {
-  data: any[];
+  data: unknown[];
   config: {
     titleField?: string;
     dateField?: string;
     endDateField?: string;
-    actions?: any[];
+    actions?: unknown[];
   };
   resourceName?: string;
-  uiConfig?: any;
+  uiConfig?: unknown;
   loading?: boolean;
 };
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  (e: "action", action: string, item?: any): void;
-  (e: "item-click", item: any): void;
+  (e: "action", action: string, item?: unknown): void;
+  (e: "item-click", item: unknown): void;
   (
     e: "filters-change",
     payload: { from?: string; to?: string; preset?: string },
@@ -197,7 +193,15 @@ const currentMonth = computed<number>(() => selectedDate.value.getMonth());
 const currentYear = computed<number>(() => selectedDate.value.getFullYear());
 
 function toTemporalDate(d: Date) {
-  return (globalThis as any).Temporal.PlainDate.from({
+  return (
+    globalThis as {
+      Temporal: {
+        PlainDate: {
+          from: (date: { year: number; month: number; day: number }) => unknown;
+        };
+      };
+    }
+  ).Temporal.PlainDate.from({
     year: d.getFullYear(),
     month: d.getMonth() + 1,
     day: d.getDate(),
@@ -206,9 +210,10 @@ function toTemporalDate(d: Date) {
 
 const mappedEvents = computed(() => {
   const dateField = props.config.dateField || "date";
-  const endField = (props.config as any).endDateField || dateField;
+  const endField =
+    (props.config as { endDateField?: string }).endDateField || dateField;
   return (props.data || [])
-    .map((item: any, idx: number) => {
+    .map((item: unknown, idx: number) => {
       const startD = toDate(item?.[dateField]);
       if (!startD) return null;
       const endD = toDate(item?.[endField]) || startD;
@@ -220,7 +225,7 @@ const mappedEvents = computed(() => {
         __raw: item,
       };
     })
-    .filter(Boolean) as any[];
+    .filter(Boolean) as unknown[];
 });
 
 function buildApp() {
@@ -250,7 +255,7 @@ const emitVisibleRange = () => {
 
 // Only emit initial range if no date filters exist in URL to avoid duplicate query updates
 try {
-  const q = route.query as Record<string, any>;
+  const q = route.query as Record<string, unknown>;
   const df = (props.uiConfig?.views?.calendar?.dateField ||
     "createdAt") as string;
   const hasDateFilter = Boolean(
@@ -263,7 +268,7 @@ try {
   void 0;
 }
 
-function handleItemClick(item: any) {
+function handleItemClick(item: unknown) {
   if (item) emit("item-click", item);
 }
 
@@ -274,7 +279,9 @@ const loading = computed(() => !!props.loading);
 const hasCreateAction = computed(
   () =>
     Array.isArray(props.config?.actions) &&
-    (props.config.actions as any[]).some((a) => a?.name === "create"),
+    (props.config.actions as unknown[]).some(
+      (a) => (a as { name?: string })?.name === "create",
+    ),
 );
 const isSearchOpen = ref(false);
 const searchQuery = ref("");
@@ -291,7 +298,7 @@ function handleSearchInput() {
   const search = searchQuery.value?.trim() || "";
   const field =
     selectedSearchField.value !== "all" ? selectedSearchField.value : undefined;
-  const nextQuery: Record<string, any> = { ...route.query, page: "1" };
+  const nextQuery: Record<string, unknown> = { ...route.query, page: "1" };
   if (search) nextQuery.search = search;
   else delete nextQuery.search;
   if (field) nextQuery.searchField = field;
@@ -312,7 +319,7 @@ const layoutMenuItems = computed(() => [
 ]);
 function handleLayoutSelect(key: string) {
   if (!["list", "gallery", "calendar", "kanban"].includes(key)) return;
-  const nextQuery: Record<string, any> = { view: key };
+  const nextQuery: Record<string, unknown> = { view: key };
   router.replace({ query: nextQuery }).catch(() => {});
 }
 
@@ -326,7 +333,7 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(
     const cfg = uiConfig.value;
     if (!cfg?.views?.list) return [];
     const explicit = cfg.views.list.searchableFields as string[] | undefined;
-    const columns = (cfg.views.list.columns || []) as any[];
+    const columns = (cfg.views.list.columns || []) as unknown[];
     const fromColumns = columns
       .filter(
         (c) =>

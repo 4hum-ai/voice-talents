@@ -352,7 +352,7 @@ function setFiles(list: File[]) {
   totalSize.value = list.reduce((acc, f) => acc + (f.size || 0), 0);
   // default format from first file extension
   const ext = (list[0]?.name.split(".").pop() || "").toLowerCase();
-  if (ext && formatOptions.includes(ext)) form.value.format = ext as any;
+  if (ext && formatOptions.includes(ext)) form.value.format = ext as string;
   // build previews
   previews.value.forEach((p: { url: string }) => URL.revokeObjectURL(p.url));
   previews.value = list.map((f) => {
@@ -377,7 +377,7 @@ function setFiles(list: File[]) {
       duration?: number;
     } = {
       url,
-      kind: kind as any,
+      kind: kind as "image" | "video" | "audio" | "other",
       name: f.name,
       type: f.type,
       size: f.size,
@@ -410,10 +410,10 @@ async function upload() {
       status: "pending",
     });
     // Kick off upload without blocking modal
-    doUpload(id, f).catch((e: any) => {
+    doUpload(id, f).catch((e: unknown) => {
       uploader.update(id, {
         status: "failed",
-        error: e?.message || "Upload failed",
+        error: (e as Error)?.message || "Upload failed",
       });
     });
   }
@@ -486,10 +486,12 @@ onMounted(() => {
   });
 });
 
-function collectMetadataForFile(name: string): Record<string, any> | undefined {
+function collectMetadataForFile(
+  name: string,
+): Record<string, unknown> | undefined {
   const p = previews.value.find((x) => x.name === name);
   if (!p) return undefined;
-  const md: Record<string, any> = {};
+  const md: Record<string, unknown> = {};
   if (p.duration !== undefined) md.duration = Math.round(p.duration);
   return Object.keys(md).length ? md : undefined;
 }

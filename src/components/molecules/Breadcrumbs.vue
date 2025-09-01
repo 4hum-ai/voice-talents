@@ -32,7 +32,7 @@ import { RouterLink } from "vue-router";
 
 export interface BreadcrumbItem {
   label: string;
-  to?: string | Record<string, any>;
+  to?: string | Record<string, unknown>;
 }
 
 defineProps<{ items: BreadcrumbItem[] }>();

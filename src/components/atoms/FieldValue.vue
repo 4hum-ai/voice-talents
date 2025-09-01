@@ -169,7 +169,7 @@ import { computed } from "vue";
 import { getCountryByAny } from "@/utils/countries";
 
 interface Props {
-  value: any;
+  value: unknown;
   type?:
     | "text"
     | "number"
@@ -226,7 +226,7 @@ const textValue = computed(() => {
   return String(v);
 });
 
-const toDate = (v: any): Date | null => {
+const toDate = (v: unknown): Date | null => {
   if (v instanceof Date) return v;
   if (typeof v === "string" || typeof v === "number") {
     const d = new Date(v);
@@ -285,7 +285,7 @@ const badgeClass = computed(() => {
   const v = String(props.value || "").toLowerCase();
   if (
     ["active", "success", "paid", "publisher", "large", "enterprise"].includes(
-      v
+      v,
     )
   )
     return "bg-green-100 text-green-800";

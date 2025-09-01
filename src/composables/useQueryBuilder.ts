@@ -2,6 +2,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { computeDateRange } from "@/utils/date";
 import type { UiConfig } from "@/types/ui-config";
+import type { FieldFilter } from "@/types/query";
 
 export interface QueryState {
   page: number;
@@ -9,7 +10,7 @@ export interface QueryState {
   search?: string;
   searchField?: string;
   sort?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, FieldFilter>;
 }
 
 export function useQueryBuilder(options: {
@@ -41,7 +42,7 @@ export function useQueryBuilder(options: {
     if (sort) params.sort = sort;
 
     // Parse generic filters from URL query (filters[<field>] and filters[<field>][$op])
-    const parsedFilters: Record<string, any> = {};
+    const parsedFilters: Record<string, unknown> = {};
     Object.keys(q).forEach((key) => {
       if (!key.startsWith("filters[")) return;
       // patterns: filters[field] or filters[field][$op]
@@ -95,7 +96,7 @@ export function useQueryBuilder(options: {
     // Update local state and sync URL so it is shareable and triggers reloads
     limit.value = next;
     try {
-      const nextQuery: Record<string, any> = {
+      const nextQuery: Record<string, unknown> = {
         ...route.query,
         limit: String(next),
         page: "1",
@@ -113,7 +114,7 @@ export function useQueryBuilder(options: {
   }) {
     timeWindow.value = { ...payload };
     try {
-      const nextQuery: Record<string, any> = { ...route.query };
+      const nextQuery: Record<string, unknown> = { ...route.query };
       delete nextQuery.preset;
       delete nextQuery.from;
       delete nextQuery.to;
@@ -142,10 +143,10 @@ export function useQueryBuilder(options: {
     preset?: string;
     from?: string;
     to?: string;
-    filters?: Record<string, any>;
+    filters?: Record<string, unknown>;
   }) {
     try {
-      const nextQuery: Record<string, any> = { ...route.query };
+      const nextQuery: Record<string, unknown> = { ...route.query };
       // Remove any existing time window keys for the active dateField
       const betweenKey = `filters[${dateField.value}][$between]`;
       const gteKey = `filters[${dateField.value}][$gte]`;
@@ -158,7 +159,7 @@ export function useQueryBuilder(options: {
       // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig();
       const fields = (cfg?.views?.list?.defaultFilters || []).map(
-        (f: any) => f.field,
+        (f: unknown) => (f as { field?: string }).field,
       );
       for (const k of Object.keys(nextQuery)) {
         const m = k.match(/^filters\[(.+?)\]/);
@@ -171,19 +172,21 @@ export function useQueryBuilder(options: {
         if (value && typeof value === "object" && !Array.isArray(value)) {
           if (
             "$between" in value &&
-            Array.isArray((value as any)["$between"])
+            Array.isArray((value as Record<string, unknown>)["$between"])
           ) {
-            const arr = (value as any)["$between"] as any[];
+            const arr = (value as Record<string, unknown>)[
+              "$between"
+            ] as unknown[];
             const asString = arr.map((v) => String(v)).join(",");
             nextQuery[`filters[${field}][$between]`] = asString;
           }
           if ("$gte" in value)
             nextQuery[`filters[${field}][$gte]`] = String(
-              (value as any)["$gte"],
+              (value as Record<string, unknown>)["$gte"],
             );
           if ("$lte" in value)
             nextQuery[`filters[${field}][$lte]`] = String(
-              (value as any)["$lte"],
+              (value as Record<string, unknown>)["$lte"],
             );
         } else if (value !== undefined && value !== null && value !== "") {
           nextQuery[`filters[${field}]`] = String(value);
@@ -209,13 +212,13 @@ export function useQueryBuilder(options: {
     }
   }
 
-  function setFilters(nextFilters: Record<string, any>) {
+  function setFilters(nextFilters: Record<string, unknown>) {
     try {
-      const nextQuery: Record<string, any> = { ...route.query };
+      const nextQuery: Record<string, unknown> = { ...route.query };
       // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig();
       const fields = (cfg?.views?.list?.defaultFilters || []).map(
-        (f: any) => f.field,
+        (f: unknown) => (f as { field?: string }).field,
       );
       for (const k of Object.keys(nextQuery)) {
         const m = k.match(/^filters\[(.+?)\]/);
@@ -226,19 +229,21 @@ export function useQueryBuilder(options: {
         if (value && typeof value === "object" && !Array.isArray(value)) {
           if (
             "$between" in value &&
-            Array.isArray((value as any)["$between"])
+            Array.isArray((value as Record<string, unknown>)["$between"])
           ) {
-            const arr = (value as any)["$between"] as any[];
+            const arr = (value as Record<string, unknown>)[
+              "$between"
+            ] as unknown[];
             const asString = arr.map((v) => String(v)).join(",");
             nextQuery[`filters[${field}][$between]`] = asString;
           }
           if ("$gte" in value)
             nextQuery[`filters[${field}][$gte]`] = String(
-              (value as any)["$gte"],
+              (value as Record<string, unknown>)["$gte"],
             );
           if ("$lte" in value)
             nextQuery[`filters[${field}][$lte]`] = String(
-              (value as any)["$lte"],
+              (value as Record<string, unknown>)["$lte"],
             );
         } else if (value !== undefined && value !== null && value !== "") {
           nextQuery[`filters[${field}]`] = String(value);
@@ -252,7 +257,7 @@ export function useQueryBuilder(options: {
   }
 
   function clearFilter(key: string) {
-    const nextQuery: Record<string, any> = { ...route.query };
+    const nextQuery: Record<string, unknown> = { ...route.query };
     delete nextQuery[key];
     if (key === "search") {
       delete nextQuery.searchField;
@@ -272,7 +277,7 @@ export function useQueryBuilder(options: {
   }
 
   function clearAllFilters() {
-    const nextQuery: Record<string, any> = { ...route.query };
+    const nextQuery: Record<string, unknown> = { ...route.query };
     delete nextQuery.search;
     delete nextQuery.searchField;
     delete nextQuery.searchFields;

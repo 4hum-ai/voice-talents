@@ -382,10 +382,13 @@ onBeforeUnmount(() => {
 
 // Visual helpers moved to Avatar atom
 // Activity and label helpers
-const recentVisits = ref<any[]>([]);
-const recentActivities = ref<any[]>([]);
+const recentVisits = ref<unknown[]>([]);
+const recentActivities = ref<unknown[]>([]);
 const limit =
-  Number((import.meta as any).env?.VITE_DASHBOARD_ACTIVITY_LIMIT) || 10;
+  Number(
+    (import.meta as { env?: Record<string, unknown> }).env
+      ?.VITE_DASHBOARD_ACTIVITY_LIMIT,
+  ) || 10;
 
 function refreshActivityLists() {
   try {
@@ -423,7 +426,7 @@ function actionBadgeClass(action: string): string {
   return "bg-gray-50 text-gray-700 border border-gray-200";
 }
 
-async function onRevert(a: any) {
+async function onRevert(a: unknown) {
   try {
     await activity.revert(a);
     refreshActivityLists();
@@ -432,9 +435,11 @@ async function onRevert(a: any) {
   }
 }
 
-function labelFor(resourceName: string, data: any): string {
+function labelFor(resourceName: string, data: unknown): string {
   if (!data || typeof data !== "object") return String(data ?? "-");
-  const cfg = (useUiConfig() as any).state?.configs?.[resourceName] as any;
+  const cfg = (
+    useUiConfig() as { state?: { configs?: Record<string, unknown> } }
+  ).state?.configs?.[resourceName] as unknown;
   const pick = (key?: string) => (key && data[key] ? String(data[key]) : "");
   // Try known config keys
   const fromGallery = pick(cfg?.views?.gallery?.titleField);
@@ -444,7 +449,7 @@ function labelFor(resourceName: string, data: any): string {
   const fromCalendar = pick(cfg?.views?.calendar?.titleField);
   if (fromCalendar) return fromCalendar;
   // Try list column with titleField set
-  const columns = (cfg?.views?.list?.columns || []) as any[];
+  const columns = (cfg?.views?.list?.columns || []) as unknown[];
   for (const c of columns) {
     const t = pick(c?.titleField) || pick(c?.key);
     if (t) return t;

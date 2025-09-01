@@ -113,7 +113,7 @@ const viewPref = computed(() => usePreference(viewPrefKey.value));
 const { get: getUiConfig } = useUiConfig();
 const uiConfig = ref<UiConfig | null>(null);
 
-const items = ref<any[]>([]);
+const items = ref<unknown[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const pagination = ref({ page: 1, limit: 20, total: 0, totalPages: 1 });
@@ -129,7 +129,7 @@ const currentView = computed<"list" | "gallery" | "kanban" | "calendar">(() => {
   }
   if (!v) v = "list";
   return v === "gallery" || v === "kanban" || v === "calendar"
-    ? (v as any)
+    ? (v as "gallery" | "kanban" | "calendar")
     : "list";
 });
 const hasMore = computed(
@@ -182,9 +182,13 @@ const filterChips = computed<{ key: string; label: string }[]>(() => {
     const lte = q[`${base}[$lte]`];
     if (eq !== undefined) {
       let valLabel = String(eq);
-      if ((f as any).options && Array.isArray((f as any).options)) {
-        const found = (f as any).options.find(
-          (o: any) => String(o.value) === String(eq),
+      if (
+        (f as { options?: unknown[] }).options &&
+        Array.isArray((f as { options?: unknown[] }).options)
+      ) {
+        const found = (f as { options?: unknown[] }).options?.find(
+          (o: unknown) =>
+            String((o as { value?: unknown })?.value) === String(eq),
         );
         if (found) valLabel = String(found.label);
       }
@@ -230,8 +234,8 @@ async function loadUiConfig() {
     if (pageSize && typeof pageSize === "number") {
       pagination.value.limit = pageSize;
     }
-  } catch (e: any) {
-    error.value = e?.message || "Failed to load UI configuration";
+  } catch (e: unknown) {
+    error.value = (e as Error)?.message || "Failed to load UI configuration";
     // Do not rethrow to avoid breaking navigation/view rendering
   } finally {
     loading.value = false;
@@ -247,7 +251,7 @@ async function load(page = 1) {
       await loadUiConfig();
     }
     const qs = qb.queryState.value;
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page,
       limit: qs.limit || qb.limit.value,
     };
@@ -257,7 +261,7 @@ async function load(page = 1) {
     if (qs.filters) params.filters = qs.filters;
     currentAbort?.abort();
     currentAbort = new AbortController();
-    const res: PaginatedResult<any> = await api.list(
+    const res: PaginatedResult<unknown> = await api.list(
       resource.value,
       params,
       currentAbort.signal,
@@ -272,8 +276,8 @@ async function load(page = 1) {
         Number(p.totalPages) ||
         Math.max(1, Math.ceil((Number(p.total) || 0) / (Number(p.limit) || 1))),
     };
-  } catch (e: any) {
-    error.value = e?.message || "Failed to load data";
+  } catch (e: unknown) {
+    error.value = (e as Error)?.message || "Failed to load data";
   } finally {
     loading.value = false;
   }
@@ -293,22 +297,28 @@ function onPerPageChange(perPage: number) {
   qb.setLimit(perPage);
 }
 
-function onAction(action: string, payload?: any) {
+function onAction(action: string, payload?: unknown) {
   if (action === "create") {
     api
       .create(resource.value, payload)
       .then(() => load(pagination.value.page))
-      .catch((e: any) => (error.value = e?.message || "Create failed"));
+      .catch(
+        (e: unknown) =>
+          (error.value = (e as Error)?.message || "Create failed"),
+      );
     return;
   }
   if (action === "view" && payload) {
-    const id = String(payload.id ?? payload._id);
+    const id = String(
+      (payload as { id?: unknown; _id?: unknown }).id ??
+        (payload as { _id?: unknown })._id,
+    );
     if (id) router.push({ path: `/${resource.value}/${id}` });
   }
 }
 
 async function onKanbanStatusChange(payload: {
-  item: any;
+  item: unknown;
   from: string;
   to: string;
 }) {
@@ -320,7 +330,7 @@ async function onKanbanStatusChange(payload: {
       [groupByField]: payload.to,
     });
     await load(pagination.value.page);
-  } catch (_e) {
+  } catch {
     // ignore; error surfaced by caller via existing error handling if needed
   }
 }
@@ -332,7 +342,7 @@ async function onLoadMore() {
   loading.value = true;
   try {
     const qs = qb.queryState.value;
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: nextPage,
       limit: qs.limit || qb.limit.value,
     };
@@ -342,7 +352,7 @@ async function onLoadMore() {
     if (qs.filters) params.filters = qs.filters;
     currentAbort?.abort();
     currentAbort = new AbortController();
-    const res: PaginatedResult<any> = await api.list(
+    const res: PaginatedResult<unknown> = await api.list(
       resource.value,
       params,
       currentAbort.signal,
@@ -355,8 +365,8 @@ async function onLoadMore() {
       total: Number(p.total) || pagination.value.total,
       totalPages: Number(p.totalPages) || pagination.value.totalPages,
     };
-  } catch (e: any) {
-    error.value = e?.message || "Failed to load more";
+  } catch (e: unknown) {
+    error.value = (e as Error)?.message || "Failed to load more";
   } finally {
     loading.value = false;
   }
@@ -366,7 +376,7 @@ function onFiltersChange(payload: {
   preset?: string;
   from?: string;
   to?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }) {
   qb.applyFilters(payload);
 }

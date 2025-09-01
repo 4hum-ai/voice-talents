@@ -39,8 +39,8 @@ export interface CrudEventPayload {
   resource: string;
   id: string;
   action: CrudAction;
-  beforeData?: any;
-  afterData?: any;
+  beforeData?: unknown;
+  afterData?: unknown;
   at: number;
 }
 

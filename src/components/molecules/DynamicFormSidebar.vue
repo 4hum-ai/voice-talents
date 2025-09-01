@@ -222,21 +222,24 @@ const props = withDefaults(
   defineProps<{
     title: string;
     formConfig?: FormConfig;
-    initialData?: Record<string, any>;
+    initialData?: Record<string, unknown>;
     loading?: boolean;
     submitText?: string;
     loadingText?: string;
   }>(),
   { loading: false, submitText: "Submit", loadingText: "Submitting..." },
 );
-const emit = defineEmits<{ close: []; submit: [data: Record<string, any>] }>();
+const emit = defineEmits<{
+  close: [];
+  submit: [data: Record<string, unknown>];
+}>();
 
 const isUploadMode = computed(() => props.formConfig?.mode === "upload");
 function onUploaded() {
-  emit("submit", {} as any);
+  emit("submit", {} as Record<string, unknown>);
 }
 
-const formData = reactive<Record<string, any>>({
+const formData = reactive<Record<string, unknown>>({
   ...(props.initialData || {}),
 });
 const errors = reactive<Record<string, string | undefined>>({});
@@ -287,16 +290,16 @@ const inputType = (field: FormField) => {
 };
 
 const validators = {
-  required: (v: any) => !(v === undefined || v === null || v === ""),
-  email: (v: any) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v)),
-  url: (v: any) =>
+  required: (v: unknown) => !(v === undefined || v === null || v === ""),
+  email: (v: unknown) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v)),
+  url: (v: unknown) =>
     !v ||
     /^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/.test(
       String(v),
     ),
-  number: (v: any) =>
+  number: (v: unknown) =>
     v === undefined || v === null || v === "" || !isNaN(Number(v)),
-  date: (v: any) => !v || !isNaN(new Date(v).getTime()),
+  date: (v: unknown) => !v || !isNaN(new Date(v).getTime()),
 };
 
 function validateField(field: FormField): string | undefined {
@@ -369,19 +372,19 @@ async function onFileSelected(field: FormField, e: Event) {
     formData[field.key] = result.fileUrl;
     setFieldError(field);
     push({
-      id: `${Date.now()}-${field.key}` as any,
+      id: `${Date.now()}-${field.key}` as string,
       type: "success",
       title: "Upload complete",
       body: `${file.name} uploaded`,
       position: "tr",
       timeout: 4000,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     push({
-      id: `${Date.now()}-${field.key}-err` as any,
+      id: `${Date.now()}-${field.key}-err` as string,
       type: "error",
       title: "Upload failed",
-      body: err?.message || "Unable to upload file",
+      body: (err as Error)?.message || "Unable to upload file",
       position: "tr",
       timeout: 6000,
     });

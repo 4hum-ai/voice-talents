@@ -52,7 +52,7 @@ export interface FilterConfig {
   type: "text" | "select" | "date" | "boolean" | "number";
   label: string;
   options?: Array<{ value: string; label: string }>;
-  defaultValue?: any;
+  defaultValue?: unknown;
 }
 
 export interface ListViewConfig {
@@ -128,7 +128,7 @@ export interface FormField {
     | "url"
     | "color";
   required?: boolean;
-  validation?: any;
+  validation?: unknown;
   options?: Array<{ value: string; label: string }>;
   placeholder?: string;
   helpText?: string;
@@ -158,7 +158,7 @@ export interface ResourceUIConfig {
 
 // Frontend-only optional extensions
 export interface UiFeaturesConfig {
-  stats?: any;
+  stats?: unknown;
 }
 
 export type UiConfig = ResourceUIConfig & { features?: UiFeaturesConfig };

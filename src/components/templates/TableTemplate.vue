@@ -22,9 +22,8 @@
           >
             + Add
           </button>
-          <button
+          <IconButton
             v-if="hasCreateAction"
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -38,12 +37,8 @@
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
               />
             </svg>
-          </button>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Search"
-            @click="openSearch"
-          >
+          </IconButton>
+          <IconButton aria-label="Search" @click="openSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -56,7 +51,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
           <ActionsMenu
             :items="layoutMenuItems"
             size="md"
@@ -114,11 +109,7 @@
               </button>
             </div>
           </div>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Close search"
-            @click="closeSearch"
-          >
+          <IconButton aria-label="Close search" @click="closeSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -131,7 +122,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
         </template>
       </template>
     </AppBar>
@@ -258,9 +249,9 @@
                   >
                     <ActionsMenu
                       :items="
-                        (config.actions || []).map((a: any) => ({
-                          key: a.name,
-                          label: a.label,
+                        (config.actions || []).map((a: unknown) => ({
+                          key: (a as { name?: string }).name,
+                          label: (a as { label?: string }).label,
                         }))
                       "
                       size="sm"
@@ -308,23 +299,35 @@
                           />
                         </picture>
                       </div>
-                      <span class="text-sm text-gray-900 dark:text-gray-100">{{
-                        countryName(item[column.key]) || item[column.key] || "-"
-                      }}</span>
+                      <span class="text-sm text-gray-900 dark:text-gray-100">
+                        {{
+                          countryName(item[column.key]) ||
+                          item[column.key] ||
+                          "-"
+                        }}
+                      </span>
                     </div>
                     <div
                       v-else-if="column.type === 'image'"
                       class="flex items-center"
                     >
                       <img
-                        :src="item[column.key]"
+                        :src="
+                          (item as Record<string, unknown>)[
+                            (column as { key: string }).key
+                          ] as string
+                        "
                         alt=""
                         class="h-8 w-8 rounded bg-gray-100 object-cover dark:bg-gray-800"
                       />
                     </div>
                     <div v-else-if="column.type === 'url'">
                       <a
-                        :href="item[column.key]"
+                        :href="
+                          (item as Record<string, unknown>)[
+                            (column as { key: string }).key
+                          ] as string
+                        "
                         target="_blank"
                         rel="noopener"
                         class="text-primary-600 dark:text-primary-400 hover:underline"
@@ -339,7 +342,9 @@
                         class="inline-block h-4 w-4 rounded border border-gray-300 dark:border-gray-700"
                         :style="{
                           backgroundColor: String(
-                            item[column.key] || '#ffffff',
+                            (item as Record<string, unknown>)[
+                              (column as { key: string }).key
+                            ] || '#ffffff',
                           ),
                         }"
                       />
@@ -483,20 +488,14 @@
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
-            <div class="flex items-center gap-2">
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.from ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'from', $event)"
-              />
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.to ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'to', $event)"
-              />
-            </div>
+            <DateRangeInput
+              :from="localFilterValues[f.field]?.from ?? ''"
+              :to="localFilterValues[f.field]?.to ?? ''"
+              @update:from="
+                (value) => onLocalDateChange(f.field, 'from', value)
+              "
+              @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
+            />
           </template>
         </div>
       </div>
@@ -514,13 +513,22 @@ import SearchInput from "@/components/atoms/SearchInput.vue";
 import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
 import TimeWindowPicker from "@/components/molecules/TimeWindowPicker.vue";
+import IconButton from "@/components/atoms/IconButton.vue";
+import DateRangeInput from "@/components/atoms/DateRangeInput.vue";
 import { getCountryByCode } from "@/utils/countries";
 import { toDate } from "@/utils/date";
 import { useRoute, useRouter } from "vue-router";
+import type {
+  DataArray,
+  ActionArray,
+  UiConfig,
+  FilterArray,
+  ColumnArray,
+} from "@/types/common";
 
 type Props = {
-  data: any[];
-  config: { columns: any[]; actions?: any[] };
+  data: DataArray;
+  config: { columns: ColumnArray; actions?: ActionArray };
   selectable?: boolean;
   rowIdKey?: string;
   currentPage?: number;
@@ -529,7 +537,7 @@ type Props = {
   perPage?: number;
   pageSizeOptions?: number[];
   resourceName?: string;
-  uiConfig?: any;
+  uiConfig?: UiConfig;
   loading?: boolean;
   activeFilters?: { key: string; label: string }[];
 };
@@ -538,10 +546,10 @@ const props = withDefaults(defineProps<Props>(), {
   rowIdKey: "id",
 });
 const emit = defineEmits<{
-  (e: "action", action: string, item?: any): void;
+  (e: "action", action: string, item?: unknown): void;
   (e: "sort", field: string, direction: "asc" | "desc"): void;
-  (e: "item-click", item: any): void;
-  (e: "itemClick", item: any): void;
+  (e: "item-click", item: unknown): void;
+  (e: "itemClick", item: unknown): void;
   (e: "selection-change", ids: (string | number)[]): void;
   (e: "page-change", page: number): void;
   (e: "per-page-change", perPage: number): void;
@@ -553,7 +561,7 @@ const emit = defineEmits<{
       preset?: string;
       from?: string;
       to?: string;
-      filters?: Record<string, any>;
+      filters?: Record<string, unknown>;
     },
   ): void;
 }>();
@@ -580,7 +588,7 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(
     const cfg = uiConfig.value;
     if (!cfg?.views?.list) return [];
     const explicit = cfg.views.list.searchableFields as string[] | undefined;
-    const columns = (cfg.views.list.columns || []) as any[];
+    const columns = (cfg.views.list.columns || []) as ColumnArray;
     const fromColumns = columns
       .filter(
         (c) =>
@@ -612,7 +620,7 @@ function handleSearchInput() {
   const search = searchQuery.value?.trim() || "";
   const field =
     selectedSearchField.value !== "all" ? selectedSearchField.value : undefined;
-  const nextQuery: Record<string, any> = { ...route.query, page: "1" };
+  const nextQuery: Record<string, unknown> = { ...route.query, page: "1" };
   if (search) nextQuery.search = search;
   else delete nextQuery.search;
   if (field) nextQuery.searchField = field;
@@ -637,7 +645,7 @@ const layoutMenuItems = computed(() => [
 ]);
 function handleLayoutSelect(key: string) {
   if (!["list", "gallery", "calendar", "kanban"].includes(key)) return;
-  const nextQuery: Record<string, any> = { view: key };
+  const nextQuery: Record<string, unknown> = { view: key };
   router.replace({ query: nextQuery }).catch(() => {});
 }
 // Filters sidebar state and syncing with URL
@@ -645,10 +653,10 @@ const showFilterSidebar = ref(false);
 const filterPreset = ref<"all" | "7d" | "30d" | "90d" | "custom">("all");
 const filterFrom = ref<string | undefined>(undefined);
 const filterTo = ref<string | undefined>(undefined);
-const listFilters = computed<any[]>(
+const listFilters = computed<FilterArray>(
   () => uiConfig.value?.views?.list?.defaultFilters || [],
 );
-const localFilterValues = ref<Record<string, any>>({});
+const localFilterValues = ref<Record<string, unknown>>({});
 
 function syncFiltersFromQuery() {
   try {
@@ -672,8 +680,8 @@ function syncFiltersFromQuery() {
     filterFrom.value = from;
     filterTo.value = to;
     // Field filters
-    const next: Record<string, any> = {};
-    for (const f of listFilters.value as any[]) {
+    const next: Record<string, unknown> = {};
+    for (const f of listFilters.value as FilterArray) {
       const base = `filters[${f.field}]`;
       const eq = q[base];
       const b = q[`${base}[$between]`];
@@ -726,7 +734,13 @@ function onTimeWindowChange(payload: {
   from?: string;
   to?: string;
 }) {
-  if (payload.preset) filterPreset.value = payload.preset as any;
+  if (payload.preset)
+    filterPreset.value = payload.preset as
+      | "all"
+      | "7d"
+      | "30d"
+      | "90d"
+      | "custom";
   if (payload.from !== undefined) filterFrom.value = payload.from;
   if (payload.to !== undefined) filterTo.value = payload.to;
 }
@@ -745,21 +759,20 @@ function onLocalNumberChange(field: string, key: "min" | "max", e: Event) {
     [key]: value,
   };
 }
-function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
-  const value = (e.target as HTMLInputElement).value;
+function onLocalDateChange(field: string, key: "from" | "to", value: string) {
   localFilterValues.value[field] = {
     ...(localFilterValues.value[field] || {}),
     [key]: value,
   };
 }
 function applyFilters() {
-  const payload: Record<string, any> = {
+  const payload: Record<string, unknown> = {
     preset: filterPreset.value,
     from: filterFrom.value,
     to: filterTo.value,
   };
-  const filters: Record<string, any> = {};
-  for (const f of listFilters.value as any[]) {
+  const filters: Record<string, unknown> = {};
+  for (const f of listFilters.value as FilterArray) {
     const v = localFilterValues.value[f.field];
     if (!v) continue;
     if (f.type === "number") {
@@ -792,7 +805,15 @@ function applyFilters() {
     }
   }
   if (Object.keys(filters).length > 0) payload.filters = filters;
-  emit("filters-change", payload as any);
+  emit(
+    "filters-change",
+    payload as {
+      preset?: string;
+      from?: string;
+      to?: string;
+      filters?: Record<string, unknown>;
+    },
+  );
   closeFilters();
 }
 
@@ -835,7 +856,9 @@ function syncSortFromQuery() {
 const selectedIds = ref<Set<string | number>>(new Set());
 
 const visibleColumns = computed(() =>
-  (props.config?.columns || []).filter((c: any) => !c.hidden),
+  (props.config?.columns || []).filter(
+    (c: unknown) => !(c as { hidden?: boolean }).hidden,
+  ),
 );
 
 const sortedData = computed(() => {
@@ -859,7 +882,9 @@ const sortedData = computed(() => {
 const hasCreateAction = computed(
   () =>
     Array.isArray(props.config?.actions) &&
-    (props.config.actions as any[]).some((a) => a?.name === "create"),
+    (props.config.actions as ActionArray).some(
+      (a) => (a as { name?: string })?.name === "create",
+    ),
 );
 
 const showFormSidebar = ref(false);
@@ -872,17 +897,17 @@ const formSidebarLoadingText = ref("");
 function closeFormSidebar() {
   showFormSidebar.value = false;
 }
-function handleFormSubmit(data: any) {
+function handleFormSubmit(data: Record<string, unknown>) {
   console.log("Form submitted:", data);
   closeFormSidebar();
 }
 
 // row/action/sort handlers referenced in template
-function handleRowClick(item: any) {
+function handleRowClick(item: unknown) {
   emit("item-click", item);
   emit("itemClick", item);
 }
-function handleAction(actionKey: string, item: any) {
+function handleAction(actionKey: string, item: unknown) {
   emit("action", actionKey, item);
 }
 function handleSort(field: string) {
@@ -906,16 +931,18 @@ const hasPagination = computed(() => {
 const onPageChange = (page: number) => emit("page-change", page);
 const onPerPageChange = (perPage: number) => emit("per-page-change", perPage);
 
-const getRowId = (item: any): string | number =>
-  item?.[props.rowIdKey as string];
-const isSelected = (item: any): boolean =>
+const getRowId = (item: unknown): string | number =>
+  (item as Record<string, unknown>)?.[props.rowIdKey as string] as
+    | string
+    | number;
+const isSelected = (item: unknown): boolean =>
   selectedIds.value.has(getRowId(item));
 const allSelected = computed(
   () =>
     sortedData.value.length > 0 &&
     sortedData.value.every((it) => selectedIds.value.has(getRowId(it))),
 );
-const toggleSelectRow = (item: any) => {
+const toggleSelectRow = (item: unknown) => {
   const id = getRowId(item);
   if (selectedIds.value.has(id)) selectedIds.value.delete(id);
   else selectedIds.value.add(id);
@@ -930,7 +957,7 @@ const toggleSelectAll = () => {
   emit("selection-change", Array.from(selectedIds.value));
 };
 
-const formatCellValue = (value: any, column: any, item?: any) => {
+const formatCellValue = (value: unknown, column: unknown, item?: unknown) => {
   if (value === null || value === undefined) return "-";
   switch (column.formatter) {
     case "date": {
@@ -993,22 +1020,24 @@ const formatCellValue = (value: any, column: any, item?: any) => {
   }
 };
 
-const getTitle = (item: any, column: any): string => {
-  const key = column.titleField || column.key;
-  const val = item?.[key];
+const getTitle = (item: unknown, column: unknown): string => {
+  const key =
+    (column as { titleField?: string; key?: string }).titleField ||
+    (column as { key?: string }).key;
+  const val = (item as Record<string, unknown>)?.[key as string];
   if (val === null || val === undefined) return "-";
   return String(val);
 };
 
-const getSubtitle = (item: any, column: any): string => {
-  const key = column.subtitleField;
+const getSubtitle = (item: unknown, column: unknown): string => {
+  const key = (column as { subtitleField?: string }).subtitleField;
   if (!key) return "";
-  const val = item?.[key];
+  const val = (item as Record<string, unknown>)?.[key];
   if (val === null || val === undefined) return "";
   return String(val);
 };
 
-const badgeClass = (value: any): string => {
+const badgeClass = (value: unknown): string => {
   const v = String(value || "").toLowerCase();
   if (
     ["active", "success", "paid", "publisher", "large", "enterprise"].includes(
@@ -1025,7 +1054,7 @@ const badgeClass = (value: any): string => {
   return "bg-gray-100 text-gray-800";
 };
 
-const statusDotClass = (value: any): string => {
+const statusDotClass = (value: unknown): string => {
   const v = String(value || "").toLowerCase();
   if (["active", "success", "paid", "online"].includes(v))
     return "bg-green-500";
@@ -1035,7 +1064,7 @@ const statusDotClass = (value: any): string => {
   return "bg-gray-400";
 };
 
-const statusBadgeClass = (value: any): string => {
+const statusBadgeClass = (value: unknown): string => {
   const v = String(value || "").toLowerCase();
   if (["active", "success", "paid", "online"].includes(v))
     return "bg-green-50 text-green-700 border border-green-200";
@@ -1048,7 +1077,7 @@ const statusBadgeClass = (value: any): string => {
   return "bg-gray-50 text-gray-700 border border-gray-200";
 };
 
-const countryCode = (raw: any): string | "" => {
+const countryCode = (raw: unknown): string | "" => {
   if (!raw) return "";
   const val = String(raw).trim();
   if (val.length === 2) return val.toLowerCase();
@@ -1057,7 +1086,7 @@ const countryCode = (raw: any): string | "" => {
   return "";
 };
 
-const countryName = (raw: any): string => {
+const countryName = (raw: unknown): string => {
   if (!raw) return "";
   const val = String(raw).trim();
   const c = getCountryByCode(val);

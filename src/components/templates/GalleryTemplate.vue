@@ -22,9 +22,8 @@
           >
             + Add
           </button>
-          <button
+          <IconButton
             v-if="hasCreateAction"
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -38,12 +37,8 @@
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
               />
             </svg>
-          </button>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Search"
-            @click="openSearch"
-          >
+          </IconButton>
+          <IconButton aria-label="Search" @click="openSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -56,7 +51,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
           <ActionsMenu
             :items="layoutMenuItems"
             size="md"
@@ -114,11 +109,7 @@
               </button>
             </div>
           </div>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Close search"
-            @click="closeSearch"
-          >
+          <IconButton aria-label="Close search" @click="closeSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -131,7 +122,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
         </template>
       </template>
     </AppBar>
@@ -398,20 +389,14 @@
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
-            <div class="flex items-center gap-2">
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.from ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'from', $event)"
-              />
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.to ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'to', $event)"
-              />
-            </div>
+            <DateRangeInput
+              :from="localFilterValues[f.field]?.from ?? ''"
+              :to="localFilterValues[f.field]?.to ?? ''"
+              @update:from="
+                (value) => onLocalDateChange(f.field, 'from', value)
+              "
+              @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
+            />
           </template>
         </div>
       </div>
@@ -430,22 +415,30 @@ import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
 import TimeWindowPicker from "@/components/molecules/TimeWindowPicker.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
+import IconButton from "@/components/atoms/IconButton.vue";
+import DateRangeInput from "@/components/atoms/DateRangeInput.vue";
 import PlayIcon from "~icons/mdi/play-circle-outline";
 import MusicIcon from "~icons/mdi/music-note-outline";
+import type {
+  DataArray,
+  ActionArray,
+  UiConfig,
+  FilterArray,
+} from "@/types/common";
 
 // props/emits
 
 type Props = {
-  data: any[];
+  data: DataArray;
   config: {
     imageField?: string;
     titleField?: string;
     descriptionField?: string;
-    actions?: any[];
+    actions?: ActionArray;
   };
   hasMore?: boolean;
   resourceName?: string;
-  uiConfig?: any;
+  uiConfig?: UiConfig;
   loading?: boolean;
   activeFilters?: { key: string; label: string }[];
 };
@@ -453,8 +446,8 @@ const props = defineProps<Props>();
 const route = useRoute();
 const router = useRouter();
 const emit = defineEmits<{
-  (e: "action", action: string, item?: any): void;
-  (e: "item-click", item: any): void;
+  (e: "action", action: string, item?: unknown): void;
+  (e: "item-click", item: unknown): void;
   (e: "load-more"): void;
   (e: "sort", field: string, direction: "asc" | "desc"): void;
   (e: "clear-filter", key: string): void;
@@ -465,7 +458,7 @@ const emit = defineEmits<{
       preset?: string;
       from?: string;
       to?: string;
-      filters?: Record<string, any>;
+      filters?: Record<string, unknown>;
     },
   ): void;
 }>();
@@ -486,7 +479,7 @@ function handleSearchInput() {
   const search = searchQuery.value?.trim() || "";
   const field =
     selectedSearchField.value !== "all" ? selectedSearchField.value : undefined;
-  const nextQuery: Record<string, any> = { ...route.query, page: "1" };
+  const nextQuery: Record<string, unknown> = { ...route.query, page: "1" };
   if (search) nextQuery.search = search;
   else delete nextQuery.search;
   if (field) nextQuery.searchField = field;
@@ -510,14 +503,16 @@ const activeFilters = computed(() => props.activeFilters || []);
 const hasCreateAction = computed(
   () =>
     Array.isArray(props.config?.actions) &&
-    (props.config.actions as any[]).some((a) => a?.name === "create"),
+    (props.config.actions as unknown[]).some(
+      (a) => (a as { name?: string })?.name === "create",
+    ),
 );
 const searchableFieldOptions = computed<{ key: string; label: string }[]>(
   () => {
     const cfg = uiConfig.value;
     if (!cfg?.views?.list) return [];
     const explicit = cfg.views.list.searchableFields as string[] | undefined;
-    const columns = (cfg.views.list.columns || []) as any[];
+    const columns = (cfg.views.list.columns || []) as unknown[];
     const fromColumns = columns
       .filter(
         (c) =>
@@ -540,7 +535,7 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(
 // create form sidebar
 const showFormSidebar = ref(false);
 const formSidebarTitle = ref("Add New");
-const formSidebarData = ref<Record<string, any>>({});
+const formSidebarData = ref<Record<string, unknown>>({});
 const formSidebarLoading = ref(false);
 const formSidebarSubmitText = ref("Create");
 const formSidebarLoadingText = ref("Creating...");
@@ -551,7 +546,7 @@ function closeFormSidebar() {
   showFormSidebar.value = false;
   formSidebarData.value = {};
 }
-function handleFormSubmit(data: Record<string, any>) {
+function handleFormSubmit(data: Record<string, unknown>) {
   emit("action", "create", data);
   closeFormSidebar();
 }
@@ -565,7 +560,7 @@ const layoutMenuItems = computed(() => [
 ]);
 function handleLayoutSelect(key: string) {
   if (!["list", "gallery", "calendar", "kanban"].includes(key)) return;
-  const nextQuery: Record<string, any> = { view: key };
+  const nextQuery: Record<string, unknown> = { view: key };
   router.replace({ query: nextQuery }).catch(() => {});
 }
 
@@ -597,8 +592,8 @@ function syncFiltersFromQuery() {
     filterTo.value = to;
 
     // sync default field filters from URL
-    const next: Record<string, any> = {};
-    for (const f of listFilters.value as any[]) {
+    const next: Record<string, unknown> = {};
+    for (const f of listFilters.value as FilterArray) {
       const base = `filters[${f.field}]`;
       const eq = q[base];
       const b = q[`${base}[$between]`];
@@ -650,19 +645,19 @@ function onTimeWindowChange(payload: {
   from?: string;
   to?: string;
 }) {
-  if (payload.preset) filterPreset.value = payload.preset as any;
+  if (payload.preset) filterPreset.value = payload.preset as string;
   if (payload.from !== undefined) filterFrom.value = payload.from;
   if (payload.to !== undefined) filterTo.value = payload.to;
 }
 function applyFilters() {
-  const payload: Record<string, any> = {
+  const payload: Record<string, unknown> = {
     preset: filterPreset.value,
     from: filterFrom.value,
     to: filterTo.value,
   };
   // Translate localFilterValues into backend-friendly filters
-  const filters: Record<string, any> = {};
-  for (const f of listFilters.value as any[]) {
+  const filters: Record<string, unknown> = {};
+  for (const f of listFilters.value as FilterArray) {
     const v = localFilterValues.value[f.field];
     if (!v) continue;
     if (f.type === "number") {
@@ -695,14 +690,14 @@ function applyFilters() {
     }
   }
   if (Object.keys(filters).length > 0) payload.filters = filters;
-  emit("filters-change", payload as any);
+  emit("filters-change", payload);
   closeFilters();
 }
 
-const listFilters = computed<any[]>(
+const listFilters = computed<FilterArray>(
   () => uiConfig.value?.views?.list?.defaultFilters || [],
 );
-const localFilterValues = ref<Record<string, any>>({});
+const localFilterValues = ref<Record<string, unknown>>({});
 function onLocalValueChange(field: string, e: Event) {
   const value = (e.target as HTMLSelectElement).value;
   localFilterValues.value[field] = {
@@ -718,8 +713,7 @@ function onLocalNumberChange(field: string, key: "min" | "max", e: Event) {
     [key]: value,
   };
 }
-function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
-  const value = (e.target as HTMLInputElement).value;
+function onLocalDateChange(field: string, key: "from" | "to", value: string) {
   localFilterValues.value[field] = {
     ...(localFilterValues.value[field] || {}),
     [key]: value,
@@ -729,7 +723,7 @@ function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
 // existing gallery logic below (unchanged)
 
 // Removed unused handleAction to satisfy type checks
-const handleItemClick = (item: any) => emit("item-click", item);
+const handleItemClick = (item: unknown) => emit("item-click", item);
 const getInitials = (name: string) =>
   !name
     ? "?"
@@ -823,8 +817,9 @@ function handleSortChange(newValue: string) {
 }
 
 // Media preview helpers
-const previewUrl = (item: any): string | null => {
-  const key = (props.config as any)?.imageField || "thumbnailUrl";
+const previewUrl = (item: unknown): string | null => {
+  const key =
+    (props.config as { imageField?: string })?.imageField || "thumbnailUrl";
   const value = item?.[key];
   if (!value) return null;
   return String(value);
@@ -854,7 +849,7 @@ const getFileExtension = (url: string | undefined): string => {
   return last.toLowerCase();
 };
 
-const mediaFormat = (item: any): string => {
+const mediaFormat = (item: unknown): string => {
   const fmt = String(item?.format || "").toLowerCase();
   if (fmt) return fmt.toUpperCase();
   const url = String(item?.fileUrl || item?.url || previewUrl(item) || "");
@@ -879,7 +874,7 @@ const mediaKind = (value: string | null | undefined): MediaKind => {
   return "other";
 };
 
-const primaryMediaValue = (item: any): string | null => {
+const primaryMediaValue = (item: unknown): string | null => {
   const ct = String(item?.contentType || "");
   if (ct) return ct;
   const fmt = String(item?.format || "");
@@ -888,7 +883,7 @@ const primaryMediaValue = (item: any): string | null => {
   return url || null;
 };
 
-const mediaSrc = (item: any): string | null => {
+const mediaSrc = (item: unknown): string | null => {
   // Prefer explicit preview/thumbnail for images, else fileUrl
   const p = previewUrl(item);
   if (p && isImage(p)) return p;
@@ -899,7 +894,7 @@ const mediaSrc = (item: any): string | null => {
   return null;
 };
 
-const posterUrl = (item: any): string | null => {
+const posterUrl = (item: unknown): string | null => {
   const thumb = String(item?.thumbnailUrl || "");
   if (thumb) return thumb;
   const p = previewUrl(item);

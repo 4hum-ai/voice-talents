@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ stats: any[]; data: any[] }>();
-const getStatValue = (stat: any) =>
+const props = defineProps<{ stats: unknown[]; data: unknown[] }>();
+const getStatValue = (stat: unknown) =>
   stat.computed ? props.data?.length || 0 : stat.value || 0;
 </script>

@@ -12,7 +12,7 @@ import { useResourceService } from "./useResourceService";
 type VisitEntry = {
   resource: string;
   id: string;
-  data: any;
+  data: unknown;
   lastVisited: number;
   count: number;
 };
@@ -22,8 +22,8 @@ type ActivityEntry = {
   id: string;
   action: "create" | "update" | "delete";
   at: number;
-  beforeData?: any;
-  afterData?: any;
+  beforeData?: unknown;
+  afterData?: unknown;
 };
 
 const VISITS_KEY = "md_admin_recent_visits";
@@ -52,7 +52,8 @@ function writeJson<T>(key: string, value: T) {
 }
 
 function getLimit(): number {
-  const env: any = (import.meta as any).env || {};
+  const env: Record<string, unknown> =
+    (import.meta as { env?: Record<string, unknown> }).env || {};
   const n = Number(env?.VITE_DASHBOARD_ACTIVITY_LIMIT);
   return Number.isFinite(n) && n > 0 ? n : 10;
 }
@@ -82,7 +83,11 @@ export function useActivity() {
     started.value = false;
   };
 
-  const recordVisit = (entry: { resource: string; id: string; data: any }) => {
+  const recordVisit = (entry: {
+    resource: string;
+    id: string;
+    data: unknown;
+  }) => {
     const limit = getLimit();
     const list = readJson<VisitEntry[]>(VISITS_KEY, []);
     const idx = list.findIndex(
@@ -152,7 +157,7 @@ export function useActivity() {
         await service.remove(entry.resource, entry.id);
         toast.push({
           id: Math.random().toString(36).slice(2),
-          type: "success" as any,
+          type: "success" as const,
           title: "Reverted creation",
           position: "tr",
           body: `${entry.resource} ${entry.id} deleted`,
@@ -161,7 +166,7 @@ export function useActivity() {
         await service.update(entry.resource, entry.id, entry.beforeData);
         toast.push({
           id: Math.random().toString(36).slice(2),
-          type: "success" as any,
+          type: "success" as const,
           title: "Reverted update",
           position: "tr",
           body: `${entry.resource} ${entry.id} restored`,
@@ -170,19 +175,19 @@ export function useActivity() {
         await service.create(entry.resource, entry.beforeData);
         toast.push({
           id: Math.random().toString(36).slice(2),
-          type: "success" as any,
+          type: "success" as const,
           title: "Reverted deletion",
           position: "tr",
           body: `${entry.resource} ${entry.id} recreated`,
         });
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.push({
         id: Math.random().toString(36).slice(2),
-        type: "error" as any,
+        type: "error" as const,
         title: "Revert failed",
         position: "tr",
-        body: e?.message || "Operation failed",
+        body: (e as Error)?.message || "Operation failed",
       });
       throw e;
     }

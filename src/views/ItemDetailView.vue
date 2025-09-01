@@ -57,9 +57,9 @@ const id = computed(() => {
   return raw ? String(raw) : "";
 });
 
-const item = ref<Record<string, any> | null>(null);
+const item = ref<Record<string, unknown> | null>(null);
 const { get: getUiConfig } = useUiConfig();
-const uiConfig = ref<any | null>(null);
+const uiConfig = ref<unknown | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 let currentAbort: AbortController | null = null;
@@ -98,8 +98,8 @@ async function load() {
     } catch {
       /* ignore */
     }
-  } catch (e: any) {
-    error.value = e?.message || "Failed to load item";
+  } catch (e: unknown) {
+    error.value = (e as Error)?.message || "Failed to load item";
   } finally {
     loading.value = false;
   }
@@ -129,15 +129,15 @@ async function confirmDelete() {
     // mark the list route as stale so keep-alive list refreshes on activation
     stale.mark(`path:/${resource.value}`);
     router.push({ path: `/${resource.value}` });
-  } catch (e: any) {
-    error.value = e?.message || "Delete failed";
+  } catch (e: unknown) {
+    error.value = (e as Error)?.message || "Delete failed";
   } finally {
     loading.value = false;
     confirmOpen.value = false;
   }
 }
 
-async function onUpdate(data: Record<string, any>) {
+async function onUpdate(data: Record<string, unknown>) {
   if (!id.value) return;
   loading.value = true;
   error.value = null;
@@ -148,8 +148,8 @@ async function onUpdate(data: Record<string, any>) {
     // mark the list route as stale so it refreshes on activation
     stale.mark(`path:/${resource.value}`);
     await load();
-  } catch (e: any) {
-    error.value = e?.message || "Update failed";
+  } catch (e: unknown) {
+    error.value = (e as Error)?.message || "Update failed";
   } finally {
     loading.value = false;
   }

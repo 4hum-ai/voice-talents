@@ -22,9 +22,8 @@
           >
             + Add
           </button>
-          <button
+          <IconButton
             v-if="hasCreateAction"
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none sm:hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             aria-label="Add"
             @click="openCreate()"
           >
@@ -38,12 +37,8 @@
                 d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
               />
             </svg>
-          </button>
-          <button
-            class="focus:ring-primary-500 inline-flex h-9 w-9 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 focus:ring-2 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Search"
-            @click="openSearch"
-          >
+          </IconButton>
+          <IconButton aria-label="Search" @click="openSearch">
             <svg
               class="h-5 w-5"
               viewBox="0 0 24 24"
@@ -56,7 +51,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-          </button>
+          </IconButton>
           <ActionsMenu
             :items="layoutMenuItems"
             size="md"
@@ -319,20 +314,14 @@
             </select>
           </template>
           <template v-else-if="f.type === 'date'">
-            <div class="flex items-center gap-2">
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.from ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'from', $event)"
-              />
-              <input
-                type="date"
-                :value="localFilterValues[f.field]?.to ?? ''"
-                class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                @change="onLocalDateChange(f.field, 'to', $event)"
-              />
-            </div>
+            <DateRangeInput
+              :from="localFilterValues[f.field]?.from ?? ''"
+              :to="localFilterValues[f.field]?.to ?? ''"
+              @update:from="
+                (value) => onLocalDateChange(f.field, 'from', value)
+              "
+              @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
+            />
           </template>
         </div>
       </div>
@@ -351,33 +340,45 @@ import SearchInput from "@/components/atoms/SearchInput.vue";
 import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
 import FilterSidebar from "@/components/molecules/FilterSidebar.vue";
 import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
+import IconButton from "@/components/atoms/IconButton.vue";
+import DateRangeInput from "@/components/atoms/DateRangeInput.vue";
+import type {
+  DataArray,
+  ActionArray,
+  UiConfig,
+  FilterArray,
+  ColumnArray,
+} from "@/types/common";
 
 interface Props {
-  data: any[];
+  data: DataArray;
   config: {
-    columns: any[];
+    columns: ColumnArray;
     groupByField: string;
     cardTitleField: string;
     cardDescriptionField?: string;
-    actions?: any[];
+    actions?: ActionArray;
   };
   resourceName?: string;
-  uiConfig?: any;
+  uiConfig?: UiConfig;
   loading?: boolean;
   activeFilters?: { key: string; label: string }[];
 }
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  (e: "action", action: string, item?: any): void;
-  (e: "item-click", item: any): void;
-  (e: "status-change", payload: { item: any; from: string; to: string }): void;
+  (e: "action", action: string, item?: unknown): void;
+  (e: "item-click", item: unknown): void;
+  (
+    e: "status-change",
+    payload: { item: unknown; from: string; to: string },
+  ): void;
   (
     e: "filters-change",
     payload: { from?: string; to?: string; preset?: string },
   ): void;
   (e: "clear-filter", key: string): void;
   (e: "clear-all-filters"): void;
-  (e: "create", data: Record<string, any>): void;
+  (e: "create", data: Record<string, unknown>): void;
 }>();
 
 const route = useRoute();
@@ -399,7 +400,7 @@ function handleSearchInput() {
   const search = searchQuery.value?.trim() || "";
   const field =
     selectedSearchField.value !== "all" ? selectedSearchField.value : undefined;
-  const nextQuery: Record<string, any> = { ...route.query, page: "1" };
+  const nextQuery: Record<string, unknown> = { ...route.query, page: "1" };
   if (search) nextQuery.search = search;
   else delete nextQuery.search;
   if (field) nextQuery.searchField = field;
@@ -420,13 +421,13 @@ const layoutMenuItems = computed(() => [
 ]);
 function handleLayoutSelect(key: string) {
   if (!["list", "gallery", "calendar", "kanban"].includes(key)) return;
-  const nextQuery: Record<string, any> = { view: key };
+  const nextQuery: Record<string, unknown> = { view: key };
   router.replace({ query: nextQuery }).catch(() => {});
 }
 
 const showFormSidebar = ref(false);
 const formSidebarTitle = ref("Add New");
-const formSidebarData = ref<Record<string, any>>({});
+const formSidebarData = ref<Record<string, unknown>>({});
 const formSidebarLoading = ref(false);
 const formSidebarSubmitText = ref("Create");
 const formSidebarLoadingText = ref("Creating...");
@@ -437,7 +438,7 @@ function closeFormSidebar() {
   showFormSidebar.value = false;
   formSidebarData.value = {};
 }
-function handleFormSubmit(data: Record<string, any>) {
+function handleFormSubmit(data: Record<string, unknown>) {
   emit("create", data);
   closeFormSidebar();
 }
@@ -458,10 +459,10 @@ function clearFilters() {
   filterFrom.value = undefined;
   filterTo.value = undefined;
 }
-const listFilters = computed<any[]>(
+const listFilters = computed<FilterArray>(
   () => uiConfig.value?.views?.list?.defaultFilters || [],
 );
-const localFilterValues = ref<Record<string, any>>({});
+const localFilterValues = ref<Record<string, unknown>>({});
 function onLocalValueChange(field: string, e: Event) {
   const value = (e.target as HTMLSelectElement).value;
   localFilterValues.value[field] = {
@@ -477,8 +478,7 @@ function onLocalNumberChange(field: string, key: "min" | "max", e: Event) {
     [key]: value,
   };
 }
-function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
-  const value = (e.target as HTMLInputElement).value;
+function onLocalDateChange(field: string, key: "from" | "to", value: string) {
   localFilterValues.value[field] = {
     ...(localFilterValues.value[field] || {}),
     [key]: value,
@@ -487,7 +487,7 @@ function onLocalDateChange(field: string, key: "from" | "to", e: Event) {
 
 // existing Kanban logic
 
-const items = ref<any[]>([]);
+const items = ref<unknown[]>([]);
 watch(
   () => props.data,
   (newData) => {
@@ -502,7 +502,7 @@ const getKanbanCount = (columnValue: string) =>
 const getKanbanItems = (columnValue: string) =>
   items.value.filter((item) => item[props.config.groupByField] === columnValue);
 
-const handleItemClick = (item: any) => emit("item-click", item);
+const handleItemClick = (item: unknown) => emit("item-click", item);
 
 const selectedPreset = ref<"all" | "7d" | "30d" | "90d" | "custom">("all");
 const fromISO = ref<string | undefined>(undefined);
@@ -515,7 +515,13 @@ function onTimeWindowChange(payload: {
   from?: string;
   to?: string;
 }) {
-  if (payload.preset) selectedPreset.value = payload.preset as any;
+  if (payload.preset)
+    selectedPreset.value = payload.preset as
+      | "all"
+      | "7d"
+      | "30d"
+      | "90d"
+      | "custom";
   if ("from" in payload) fromISO.value = payload.from;
   if ("to" in payload) toISO.value = payload.to;
   emit("filters-change", {
@@ -568,8 +574,8 @@ const setColumnRef = (value: string, el: HTMLElement | null) => {
 
 const cardElRefs = reactive<Record<string, { el: HTMLElement | null }>>({});
 const draggableMap = new Map<string, ReturnType<typeof useDraggable>>();
-const cardStyleRefs = reactive<Record<string, any>>({});
-const baseDragStyleRefs = reactive<Record<string, any>>({});
+const cardStyleRefs = reactive<Record<string, unknown>>({});
+const baseDragStyleRefs = reactive<Record<string, unknown>>({});
 const draggingItemId = ref<string | null>(null);
 const lastPointer = ref<{ x: number; y: number } | null>(null);
 const dragMeta = reactive<Record<string, { width: number; height: number }>>(
@@ -606,7 +612,7 @@ const setCardRef = (id: string, el: HTMLElement | null) => {
       },
       onEnd: () => {
         handleDropFromDraggable(id);
-        baseDragStyleRefs[id] = undefined as any;
+        baseDragStyleRefs[id] = undefined as unknown;
       },
     });
     draggableMap.set(id, instance);
@@ -671,7 +677,9 @@ const activeFilters = computed(() => props.activeFilters || []);
 const hasCreateAction = computed(
   () =>
     Array.isArray(props.config?.actions) &&
-    (props.config.actions as any[]).some((a) => a?.name === "create"),
+    (props.config.actions as ActionArray).some(
+      (a) => (a as { name?: string })?.name === "create",
+    ),
 );
 
 const searchableFieldOptions = computed<{ key: string; label: string }[]>(
@@ -679,7 +687,7 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(
     const cfg = uiConfig.value;
     if (!cfg?.views?.list) return [];
     const explicit = cfg.views.list.searchableFields as string[] | undefined;
-    const columns = (cfg.views.list.columns || []) as any[];
+    const columns = (cfg.views.list.columns || []) as ColumnArray;
     const fromColumns = columns
       .filter(
         (c) =>
@@ -700,13 +708,13 @@ const searchableFieldOptions = computed<{ key: string; label: string }[]>(
 );
 
 function applyFilters() {
-  const payload: Record<string, any> = {
+  const payload: Record<string, unknown> = {
     preset: selectedPreset.value,
     from: fromISO.value,
     to: toISO.value,
   };
-  const filters: Record<string, any> = {};
-  for (const f of listFilters.value as any[]) {
+  const filters: Record<string, unknown> = {};
+  for (const f of listFilters.value as FilterArray) {
     const v = localFilterValues.value[f.field];
     if (!v) continue;
     if (f.type === "number") {
@@ -739,6 +747,14 @@ function applyFilters() {
     }
   }
   if (Object.keys(filters).length > 0) payload.filters = filters;
-  emit("filters-change", payload as any);
+  emit(
+    "filters-change",
+    payload as {
+      from?: string;
+      to?: string;
+      preset?: string;
+      filters?: Record<string, unknown>;
+    },
+  );
 }
 </script>
