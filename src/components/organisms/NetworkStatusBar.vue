@@ -6,16 +6,9 @@
       role="status"
       aria-live="polite"
     >
-      <div
-        class="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2"
-      >
-        <span
-          class="inline-block h-2 w-2 animate-pulse rounded-full bg-white"
-        />
-        <span
-          >You're offline. Some features are unavailable until connection is
-          restored.</span
-        >
+      <div class="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2">
+        <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-white" />
+        <span>You're offline. Some features are unavailable until connection is restored.</span>
       </div>
     </div>
   </transition>
@@ -24,13 +17,13 @@
 </template>
 
 <script setup lang="ts">
-import { useNetwork } from "@/composables/useNetwork";
+import { useNetwork } from '@/composables/useNetwork'
 
-const { isOnline } = useNetwork();
+const { isOnline } = useNetwork()
 </script>
 
 <style scoped>
-@reference '../../assets/styles/main.css';
+@reference '@/style.css';
 
 .fade-enter-active,
 .fade-leave-active {

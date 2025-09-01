@@ -38,6 +38,6 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ title: string; show: boolean }>();
-defineEmits(["close", "clear", "apply"]);
+defineProps<{ title: string; show: boolean }>()
+defineEmits(['close', 'clear', 'apply'])
 </script>

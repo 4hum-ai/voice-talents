@@ -125,13 +125,7 @@
           ]
         }
       ],
-      "searchableFields": [
-        "organizationName",
-        "contactName",
-        "contactEmail",
-        "role",
-        "department"
-      ],
+      "searchableFields": ["organizationName", "contactName", "contactEmail", "role", "department"],
       "pageSize": 20,
       "actions": [
         {

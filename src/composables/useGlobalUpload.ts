@@ -1,41 +1,39 @@
-import { reactive, readonly } from "vue";
+import { reactive, readonly } from 'vue'
 
-export type UploadStatus = "pending" | "uploading" | "completed" | "failed";
+export type UploadStatus = 'pending' | 'uploading' | 'completed' | 'failed'
 
 export interface UploadItem {
-  id: string;
-  fileName: string;
-  size: number;
-  type: string;
-  progress: number; // 0-100
-  status: UploadStatus;
-  error?: string;
+  id: string
+  fileName: string
+  size: number
+  type: string
+  progress: number // 0-100
+  status: UploadStatus
+  error?: string
 }
 
-const state = reactive<{ queue: UploadItem[] }>({ queue: [] });
+const state = reactive<{ queue: UploadItem[] }>({ queue: [] })
 
 export function useGlobalUpload() {
-  function add(
-    item: Omit<UploadItem, "progress" | "status"> & Partial<UploadItem>,
-  ) {
+  function add(item: Omit<UploadItem, 'progress' | 'status'> & Partial<UploadItem>) {
     const next: UploadItem = {
       progress: 0,
-      status: "pending",
+      status: 'pending',
       ...item,
-    } as UploadItem;
-    state.queue.push(next);
-    return next.id;
+    } as UploadItem
+    state.queue.push(next)
+    return next.id
   }
   function update(id: string, patch: Partial<UploadItem>) {
-    const it = state.queue.find((q) => q.id === id);
-    if (it) Object.assign(it, patch);
+    const it = state.queue.find((q) => q.id === id)
+    if (it) Object.assign(it, patch)
   }
   function remove(id: string) {
-    const i = state.queue.findIndex((q) => q.id === id);
-    if (i >= 0) state.queue.splice(i, 1);
+    const i = state.queue.findIndex((q) => q.id === id)
+    if (i >= 0) state.queue.splice(i, 1)
   }
   function clearCompleted() {
-    state.queue = state.queue.filter((q) => q.status !== "completed");
+    state.queue = state.queue.filter((q) => q.status !== 'completed')
   }
   return {
     queue: readonly(state.queue),
@@ -43,5 +41,5 @@ export function useGlobalUpload() {
     update,
     remove,
     clearCompleted,
-  };
+  }
 }

@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <AppBar
-      :loading="loading"
-      :show-back="Boolean(onBack)"
-      @back="onBack && onBack()"
-    >
+    <AppBar :loading="loading" :show-back="Boolean(onBack)" @back="onBack && onBack()">
       <template #title>
         <slot name="title">
           {{ title }}
@@ -23,11 +19,7 @@
         >
           Edit
         </button>
-        <ActionsMenu
-          :items="actionMenuItems"
-          size="md"
-          @select="handleActionMenuSelect"
-        />
+        <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
       </template>
     </AppBar>
 
@@ -42,18 +34,16 @@
     <main class="p-4">
       <div v-if="loading" class="space-y-6">
         <div v-if="detailSections && detailSections.length" class="space-y-6">
-          <Card
+          <section
             v-for="(section, sIdx) in detailSections"
             :key="`skeleton-sec-${sIdx}`"
-            variant="elevated"
+            class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
           >
             <div
               v-if="section.title"
               class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
             >
-              <div
-                class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-              />
+              <div class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
             </div>
             <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
               <div
@@ -61,32 +51,23 @@
                 :key="`skeleton-field-${sIdx}-${i}`"
                 class="flex flex-col gap-2"
               >
-                <div
-                  class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-                />
-                <div
-                  class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-                />
+                <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
-          </Card>
+          </section>
         </div>
-        <Card v-else padding="md">
+        <div
+          v-else
+          class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+        >
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div
-              v-for="i in 8"
-              :key="`skeleton-kv-${i}`"
-              class="flex flex-col gap-2"
-            >
-              <div
-                class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-              />
-              <div
-                class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"
-              />
+            <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
+              <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
             </div>
           </div>
-        </Card>
+        </div>
       </div>
       <div v-else-if="error" class="text-error-600 dark:text-error-400 text-sm">
         {{ error }}
@@ -95,27 +76,17 @@
         <slot name="details" :item="item">
           <!-- Use configured detailView when available -->
           <div v-if="detailSections && detailSections.length" class="space-y-6">
-            <Card
-              v-for="(section, sIdx) in detailSections"
-              :key="`sec-${sIdx}`"
-              variant="elevated"
-            >
+            <Card v-for="(section, sIdx) in detailSections" :key="`sec-${sIdx}`" variant="elevated">
               <div
                 v-if="section.title"
                 class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
               >
-                <h3
-                  class="text-sm font-semibold text-gray-900 dark:text-gray-100"
-                >
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {{ section.title }}
                 </h3>
               </div>
               <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
-                <div
-                  v-for="field in section.fields || []"
-                  :key="field.key"
-                  class="flex flex-col"
-                >
+                <div v-for="field in section.fields || []" :key="field.key" class="flex flex-col">
                   <span class="text-xs text-gray-500 dark:text-gray-400">{{
                     field.label || formatKey(String(field.key))
                   }}</span>
@@ -123,7 +94,7 @@
                     :value="item?.[field.key]"
                     :type="field.type"
                     :formatter="field.formatter"
-                    :currency-code="currencyCode(item)"
+                    :currency-code="currencyCode(item || {})"
                     :field-key="field.key"
                   />
                 </div>
@@ -131,23 +102,21 @@
             </Card>
           </div>
           <!-- Fallback to naive key/value rendering in a single card -->
-          <Card v-else padding="md">
+          <div
+            v-else
+            class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+          >
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div
-                v-for="(value, key) in displayPairs"
-                :key="String(key)"
-                class="flex flex-col"
-              >
+              <div v-for="(value, key) in displayPairs" :key="String(key)" class="flex flex-col">
                 <span class="text-xs text-gray-500 dark:text-gray-400">{{
                   formatKey(String(key))
                 }}</span>
-                <span
-                  class="text-sm break-all text-gray-900 dark:text-gray-100"
-                  >{{ formatValue(value) }}</span
-                >
+                <span class="text-sm break-all text-gray-900 dark:text-gray-100">{{
+                  formatValue(value)
+                }}</span>
               </div>
             </div>
-          </Card>
+          </div>
         </slot>
       </div>
     </main>
@@ -166,24 +135,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import Breadcrumbs from "@/components/molecules/Breadcrumbs.vue";
-import FieldValue from "@/components/atoms/FieldValue.vue";
-import DynamicFormSidebar from "@/components/molecules/DynamicFormSidebar.vue";
-import ActionsMenu from "@/components/atoms/ActionsMenu.vue";
-import AppBar from "@/components/molecules/AppBar.vue";
-import Card from "@/components/atoms/Card.vue";
+import { computed, ref } from 'vue'
+import Breadcrumbs, { BreadcrumbItem } from '@/components/molecules/Breadcrumbs.vue'
+import FieldValue from '@/components/atoms/FieldValue.vue'
+import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
+import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
+import Card from '@/components/atoms/Card.vue'
+import { UiConfig } from '@/types/ui-config'
 
 interface Props {
-  resourceName: string;
-  item?: Record<string, any> | null;
-  loading?: boolean;
-  error?: string | null;
-  enableEdit?: boolean;
-  enableDelete?: boolean;
-  onBack?: () => void;
-  uiConfig?: any;
-  customEditHandler?: boolean;
+  resourceName: string
+  item?: Record<string, unknown> | null
+  loading?: boolean
+  error?: string | null
+  enableEdit?: boolean
+  enableDelete?: boolean
+  onBack?: () => void
+  uiConfig: UiConfig | null
+  customEditHandler?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -192,81 +162,77 @@ const props = withDefaults(defineProps<Props>(), {
   error: null,
   enableEdit: true,
   enableDelete: true,
-});
+})
 
-const emit = defineEmits(["edit", "delete", "update"]);
+const emit = defineEmits(['edit', 'delete', 'update'])
 
-const title = computed(
-  () => props.item?.name || props.item?.title || "Details",
-);
-const subtitle = computed(() => props.item?.id);
+const title = computed(() => props.item?.name || props.item?.title || 'Details')
+const subtitle = computed(() => props.item?.id)
 
-const displayPairs = computed(() => props.item || {});
+const displayPairs = computed(() => props.item || {})
 
-const breadcrumbs = computed(() => [
-  { label: "Dashboard", to: "/" },
-  { label: props.uiConfig?.displayName, to: `/${props.resourceName}` },
+const breadcrumbs = computed((): BreadcrumbItem[] => [
+  { label: 'Dashboard', to: '/' },
+  { label: props.uiConfig?.displayName || '', to: `/${props.resourceName}` },
   { label: String(title.value) },
-]);
+])
 
 const formatKey = (k: string) =>
   k
-    .replace(/_/g, " ")
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/^./, (s) => s.toUpperCase());
-const formatValue = (v: any) => {
-  if (v === null || v === undefined) return "-";
-  if (typeof v === "object") return JSON.stringify(v);
-  return String(v);
-};
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, (s) => s.toUpperCase())
+const formatValue = (v: unknown) => {
+  if (v === null || v === undefined) return '-'
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
+}
 
-const detailSections = computed(
-  () => props.uiConfig?.detailView?.sections || [],
-);
-const currencyCode = (obj: any): string | undefined => {
-  const code = obj?.currency;
-  return typeof code === "string" && code.length >= 3 ? code : undefined;
-};
+const detailSections = computed(() => props.uiConfig?.detailView?.sections || [])
+const currencyCode = (obj: Record<string, unknown>): string | undefined => {
+  const code = obj?.currency
+  return typeof code === 'string' && code.length >= 3 ? code : undefined
+}
 
 // Actions menu items (e.g., Delete lives here now)
-type ActionMenuItem = { key: string; label: string; description?: string };
+type ActionMenuItem = { key: string; label: string; description?: string }
 const actionMenuItems = computed<ActionMenuItem[]>(() => {
-  const items: ActionMenuItem[] = [];
-  if (props.enableDelete) items.push({ key: "delete", label: "Delete" });
-  return items;
-});
+  const items: ActionMenuItem[] = []
+  if (props.enableDelete) items.push({ key: 'delete', label: 'Delete' })
+  return items
+})
 
 // Edit sidebar state
-const showFormSidebar = ref(false);
-const formSidebarTitle = ref("");
-const formSidebarData = ref<Record<string, any>>({});
-const formSidebarLoading = ref(false);
-const formSidebarSubmitText = ref("Save changes");
-const formSidebarLoadingText = ref("Saving...");
+const showFormSidebar = ref(false)
+const formSidebarTitle = ref('')
+const formSidebarData = ref<Record<string, unknown>>({})
+const formSidebarLoading = ref(false)
+const formSidebarSubmitText = ref('Save changes')
+const formSidebarLoadingText = ref('Saving...')
 
 function handleEdit() {
   if (props.customEditHandler) {
-    emit("edit");
-    return;
+    emit('edit')
+    return
   }
-  formSidebarTitle.value = `Edit ${props.uiConfig?.displayName?.slice(0, -1) || "Item"}`;
-  formSidebarSubmitText.value = "Save changes";
-  formSidebarLoadingText.value = "Saving...";
-  formSidebarData.value = { ...(props.item || {}) };
-  showFormSidebar.value = true;
+  formSidebarTitle.value = `Edit ${props.uiConfig?.displayName?.slice(0, -1) || 'Item'}`
+  formSidebarSubmitText.value = 'Save changes'
+  formSidebarLoadingText.value = 'Saving...'
+  formSidebarData.value = { ...(props.item || {}) }
+  showFormSidebar.value = true
 }
 
 function closeFormSidebar() {
-  showFormSidebar.value = false;
-  formSidebarData.value = {};
+  showFormSidebar.value = false
+  formSidebarData.value = {}
 }
 
-function handleFormSubmit(data: Record<string, any>) {
-  emit("update", data);
-  closeFormSidebar();
+function handleFormSubmit(data: Record<string, unknown>) {
+  emit('update', data)
+  closeFormSidebar()
 }
 
 function handleActionMenuSelect(key: string) {
-  if (key === "delete") emit("delete");
+  if (key === 'delete') emit('delete')
 }
 </script>

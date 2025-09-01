@@ -1,54 +1,32 @@
-import pluginJs from "@eslint/js";
-import pluginVue from "eslint-plugin-vue";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import vueParser from "vue-eslint-parser";
+import js from '@eslint/js'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
+import pluginVue from 'eslint-plugin-vue'
+import { defineConfig } from 'eslint/config'
 
-export default [
-  // Ignore build and config outputs
+export default defineConfig([
   {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
+    plugins: { js },
+    extends: ['js/recommended'],
     ignores: [
-      "dist/**",
-      "dist-electron/**",
-      "release/**",
-      "tailwind.config.js",
-      "vite.config.ts",
-      "*.config.*",
+      '.eslintrc.cjs',
+      '*.config.*',
+      'dist-electron/**',
+      'dist/**',
+      'docs/typedoc',
+      'docs/typedoc/assets/*',
+      'release/**',
+      'tailwind.config.js',
+      'vite.config.ts',
     ],
+    languageOptions: { globals: globals.browser },
   },
-  pluginJs.configs.recommended,
-  ...pluginVue.configs["flat/recommended"],
-  // Enable TypeScript rules and parsing for TS and Vue SFCs
+  tseslint.configs.recommended,
+  pluginVue.configs['flat/essential'],
   {
-    files: ["**/*.ts", "**/*.vue"],
-    languageOptions: {
-      parser: vueParser,
-      parserOptions: {
-        parser: tsParser,
-        ecmaVersion: "latest",
-        sourceType: "module",
-        extraFileExtensions: [".vue"],
-      },
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-    },
-    rules: {
-      // Use TS plugin for unused vars; disable base rules that misreport in TS context
-      "no-undef": "off",
-      "no-unused-vars": "off",
-      "vue/multi-word-component-names": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-require-imports": "off",
-      "@typescript-eslint/no-empty-object-type": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_",
-        },
-      ],
-    },
+    files: ['**/*.vue'],
+    languageOptions: { parserOptions: { parser: tseslint.parser } },
+    rules: { 'vue/multi-word-component-names': 'off' },
   },
-];
+])

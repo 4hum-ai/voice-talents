@@ -1,7 +1,7 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Schedule X Calendar default theme */
-@import "@schedule-x/theme-default/dist/index.css";
+@import '@schedule-x/theme-default/dist/index.css';
 
 @theme {
   --color-gray-50: #f9fafb;
@@ -139,19 +139,19 @@
   --color-purple-900: #581c87;
   --color-purple-950: #3b0764;
 
-  --font-family-netflix: "Netflix Sans", Arial, sans-serif;
-  --font-family-sans: "Inter", system-ui, sans-serif;
+  --font-family-netflix: 'Netflix Sans', Arial, sans-serif;
+  --font-family-sans: 'Inter', system-ui, sans-serif;
 }
 
 /* Base styles */
 @layer base {
   html {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   body {
     @apply bg-gray-50 text-gray-900 dark:bg-black dark:text-white;
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   * {
@@ -318,11 +318,7 @@
   }
 
   .gradient-overlay {
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.8) 100%
-    );
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
   }
 
   .netflix-gradient {
@@ -395,7 +391,7 @@
 /* Custom admin dashboard styles */
 @layer base {
   html {
-    font-family: "Inter Variable", system-ui, sans-serif;
+    font-family: 'Inter Variable', system-ui, sans-serif;
   }
 
   body {

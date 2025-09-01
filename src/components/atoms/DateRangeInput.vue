@@ -17,13 +17,13 @@
 
 <script setup lang="ts">
 interface Props {
-  from?: string;
-  to?: string;
+  from?: string
+  to?: string
 }
 
-defineProps<Props>();
+defineProps<Props>()
 defineEmits<{
-  "update:from": [value: string];
-  "update:to": [value: string];
-}>();
+  'update:from': [value: string]
+  'update:to': [value: string]
+}>()
 </script>

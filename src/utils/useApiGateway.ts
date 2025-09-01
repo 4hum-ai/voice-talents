@@ -1,107 +1,56 @@
-import { getAuth } from "firebase/auth";
-import { useEventBus } from "@vueuse/core";
+import { getAuth } from 'firebase/auth'
+import { useEventBus } from '@vueuse/core'
 import {
   EVENT_HTTP_ACTIVE,
   EVENT_HTTP_ERROR,
   type HttpActivePayload,
   type HttpErrorPayload,
-} from "@/types/events";
+} from '@/types/events'
 
-/**
- * Configuration options for creating an API client
- */
 export interface ApiClientOptions {
   /** Base URL for the API */
-  baseUrl: string;
+  baseUrl: string
   /** Default headers to include in all requests */
-  defaultHeaders?: Record<string, string>;
+  defaultHeaders?: Record<string, string>
   /** Default timeout in milliseconds for requests */
-  timeoutMs?: number;
+  timeoutMs?: number
 }
 
-/**
- * Extended request options that include timeout configuration
- */
 export interface RequestOptions extends RequestInit {
   /** Request timeout in milliseconds */
-  timeoutMs?: number;
+  timeoutMs?: number
 }
 
-/**
- * API client interface providing HTTP request capabilities
- */
 export interface ApiClient {
   /** Make HTTP requests to the API */
-  request: (path: string, options?: RequestOptions) => Promise<Response>;
+  request: (path: string, options?: RequestOptions) => Promise<Response>
   /** Base URL of the API client */
-  baseUrl: string;
+  baseUrl: string
 }
 
-/**
- * Join base URL and path, handling trailing slashes properly
- * @param baseUrl - Base URL (e.g., "https://api.example.com")
- * @param path - Path to append (e.g., "/users" or "users")
- * @returns Properly joined URL
- *
- * @example
- * ```typescript
- * joinUrl("https://api.example.com", "/users"); // "https://api.example.com/users"
- * joinUrl("https://api.example.com/", "users"); // "https://api.example.com/users"
- * ```
- */
 function joinUrl(baseUrl: string, path: string): string {
-  const base = baseUrl.replace(/\/$/, "");
-  const suffix = path.startsWith("/") ? path : `/${path}`;
-  return `${base}${suffix}`;
+  const base = baseUrl.replace(/\/$/, '')
+  const suffix = path.startsWith('/') ? path : `/${path}`
+  return `${base}${suffix}`
 }
 
-/**
- * Build authentication header using Firebase token
- * @returns Promise resolving to authorization header object or empty object if no token
- *
- * @example
- * ```typescript
- * const headers = await buildAuthHeader();
- * // Returns: { Authorization: "Bearer <firebase-token>" } or {}
- * ```
- */
 async function buildAuthHeader(): Promise<Record<string, string>> {
   try {
-    const auth = getAuth();
-    const firebaseUser = auth.currentUser;
-    const token = await firebaseUser?.getIdToken();
-    if (token) return { Authorization: `Bearer ${token}` };
-  } catch (_) {
+    const auth = getAuth()
+    const firebaseUser = auth.currentUser
+    const token = await firebaseUser?.getIdToken()
+    if (token) return { Authorization: `Bearer ${token}` }
+  } catch {
     // Ignore auth header build failures; proceed without auth
   }
-  return {};
+  return {}
 }
 
-/**
- * Create an API client with authentication, error handling, and request tracking
- *
- * @param options - Configuration options for the API client
- * @returns API client instance
- *
- * @example
- * ```typescript
- * const client = createApiClient({
- *   baseUrl: "https://api.example.com",
- *   defaultHeaders: { "X-API-Version": "v1" },
- *   timeoutMs: 10000
- * });
- *
- * const response = await client.request("/users", {
- *   method: "GET",
- *   timeoutMs: 5000
- * });
- * ```
- */
 export function createApiClient(options: ApiClientOptions): ApiClient {
-  const { baseUrl, defaultHeaders = {}, timeoutMs } = options;
-  const activeBus = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE);
-  const errorBus = useEventBus<HttpErrorPayload>(EVENT_HTTP_ERROR);
-  let activeRequests = 0;
+  const { baseUrl, defaultHeaders = {}, timeoutMs } = options
+  const activeBus = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE)
+  const errorBus = useEventBus<HttpErrorPayload>(EVENT_HTTP_ERROR)
+  let activeRequests = 0
 
   /**
    * Make HTTP requests with automatic authentication, error handling, and retry logic
@@ -127,88 +76,85 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
    * });
    * ```
    */
-  const request = async (
-    path: string,
-    opts: RequestOptions = {},
-  ): Promise<Response> => {
-    const url = joinUrl(baseUrl, path);
-    const authHeader = await buildAuthHeader();
+  const request = async (path: string, opts: RequestOptions = {}): Promise<Response> => {
+    const url = joinUrl(baseUrl, path)
+    const authHeader = await buildAuthHeader()
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...defaultHeaders,
       ...authHeader,
       ...(opts.headers as Record<string, string> | undefined),
-    };
-
-    // Prefer caller-provided AbortSignal. If none, optionally create a timeout-based signal.
-    const computedSignal = opts.signal
-      ? opts.signal
-      : typeof AbortSignal !== "undefined" && (AbortSignal as any).timeout
-        ? (opts.timeoutMs ?? timeoutMs)
-          ? (AbortSignal as any).timeout(opts.timeoutMs ?? timeoutMs)
-          : undefined
-        : undefined;
-
-    let response: Response;
-    // mark start
-    activeRequests += 1;
-    activeBus.emit({ active: activeRequests });
-    try {
-      response = await fetch(url, { ...opts, headers, signal: computedSignal });
-    } catch (error: any) {
-      // Suppress toasts for intentional aborts
-      if (error?.name !== "AbortError") {
-        errorBus.emit({
-          method: String(opts.method ?? "GET"),
-          path,
-          message: String(error?.message ?? "Request failed"),
-        });
-      }
-      throw error;
-    } finally {
-      // mark end
-      activeRequests = Math.max(0, activeRequests - 1);
-      activeBus.emit({ active: activeRequests });
     }
 
-    // Handle 401 Unauthorized with token refresh
+    // Prefer caller-provided AbortSignal. If none, optionally create a timeout-based signal.
+    const timeoutValue = opts.timeoutMs ?? timeoutMs
+    const computedSignal = opts.signal
+      ? opts.signal
+      : typeof AbortSignal !== 'undefined' &&
+          (AbortSignal as { timeout?: (ms: number) => AbortSignal }).timeout
+        ? timeoutValue
+          ? (AbortSignal as { timeout: (ms: number) => AbortSignal }).timeout(timeoutValue)
+          : undefined
+        : undefined
+
+    let response: Response
+    // mark start
+    activeRequests += 1
+    activeBus.emit({ active: activeRequests })
+    try {
+      response = await fetch(url, { ...opts, headers, signal: computedSignal })
+    } catch (error: unknown) {
+      // Suppress toasts for intentional aborts
+      if ((error as Error)?.name !== 'AbortError') {
+        errorBus.emit({
+          method: String(opts.method ?? 'GET'),
+          path,
+          message: String((error as Error)?.message ?? 'Request failed'),
+        })
+      }
+      throw error
+    } finally {
+      // mark end
+      activeRequests = Math.max(0, activeRequests - 1)
+      activeBus.emit({ active: activeRequests })
+    }
+
     if (response.status === 401) {
       try {
-        const refreshed = await getAuth().currentUser?.getIdToken(true);
+        const refreshed = await getAuth().currentUser?.getIdToken(true)
         if (refreshed) {
           const retryHeaders = {
             ...headers,
             Authorization: `Bearer ${refreshed}`,
-          };
+          }
           // mark start for retry
-          activeRequests += 1;
-          activeBus.emit({ active: activeRequests });
+          activeRequests += 1
+          activeBus.emit({ active: activeRequests })
           try {
             response = await fetch(url, {
               ...opts,
               headers: retryHeaders,
               signal: computedSignal,
-            });
+            })
           } finally {
-            activeRequests = Math.max(0, activeRequests - 1);
-            activeBus.emit({ active: activeRequests });
+            activeRequests = Math.max(0, activeRequests - 1)
+            activeBus.emit({ active: activeRequests })
           }
         }
-      } catch (_) {
+      } catch {
         // Token refresh failed; return original unauthorized response
       }
     }
 
     // Do not toast for HTTP error statuses here; let callers decide contextually.
+    return response
+  }
 
-    return response;
-  };
-
-  return { request, baseUrl };
+  return { request, baseUrl }
 }
 
 /** Cache of API clients by base path */
-const clientsByBase: Record<string, ApiClient> = {};
+const clientsByBase: Record<string, ApiClient> = {}
 
 /**
  * API Gateway composable for making authenticated HTTP requests
@@ -267,26 +213,27 @@ const clientsByBase: Record<string, ApiClient> = {};
  * // Later: controller.abort();
  * ```
  */
-export function useApiGateway(base: string = "movie"): ApiClient {
+export function useApiGateway(base: string = 'movie'): ApiClient {
   // Allow env override for base path when provided
-  const envBasePath = (import.meta as any).env?.VITE_API_BASE_PATH as
+  const envBasePath = (import.meta as { env?: Record<string, unknown> }).env?.VITE_API_BASE_PATH as
     | string
-    | undefined;
+    | undefined
   const normalizedBase =
     envBasePath && envBasePath.length > 0
-      ? envBasePath.replace(/^\/+/, "").replace(/\/+$/, "")
-      : base.replace(/^\/+/, "").replace(/\/+$/, "");
+      ? envBasePath.replace(/^\/+/, '').replace(/\/+$/, '')
+      : base.replace(/^\/+/, '').replace(/\/+$/, '')
 
-  if (clientsByBase[normalizedBase]) return clientsByBase[normalizedBase];
-  const API_BASE = (import.meta as any).env?.VITE_PUBLIC_API_URL as
+  if (clientsByBase[normalizedBase]) return clientsByBase[normalizedBase]
+  const API_BASE = (import.meta as { env?: Record<string, unknown> }).env?.VITE_PUBLIC_API_URL as
     | string
-    | undefined;
-  let baseUrl = "";
+    | undefined
+  let baseUrl = ''
   if (API_BASE && /^https?:\/\//i.test(API_BASE)) {
-    const root = API_BASE.replace(/\/$/, "");
-    baseUrl = `${root}/${normalizedBase}`;
+    const root = API_BASE.replace(/\/$/, '')
+    baseUrl = `${root}/${normalizedBase}`
   }
-  const client = createApiClient({ baseUrl });
-  clientsByBase[normalizedBase] = client;
-  return client;
+
+  const client = createApiClient({ baseUrl })
+  clientsByBase[normalizedBase] = client
+  return client
 }
