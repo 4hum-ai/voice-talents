@@ -147,7 +147,7 @@ export interface ViewsConfig {
   gallery?: GalleryViewConfig;
 }
 
-export interface ModuleUIConfig {
+export interface ResourceUIConfig {
   displayName: string;
   description?: string;
   icon?: string;
@@ -161,4 +161,4 @@ export interface UiFeaturesConfig {
   stats?: any;
 }
 
-export type UiConfig = ModuleUIConfig & { features?: UiFeaturesConfig };
+export type UiConfig = ResourceUIConfig & { features?: UiFeaturesConfig };

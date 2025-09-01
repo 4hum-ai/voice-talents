@@ -6,7 +6,7 @@
           <div
             class="truncate text-base font-semibold text-gray-900 dark:text-gray-100"
           >
-            {{ uiConfig?.displayName || moduleName }}
+            {{ uiConfig?.displayName || resourceName }}
           </div>
           <div class="truncate text-xs text-gray-500 dark:text-gray-400">
             {{ uiConfig?.description }}
@@ -81,7 +81,7 @@
             <SearchInput
               ref="searchInputRef"
               v-model="searchQuery"
-              :placeholder="`Search ${moduleName}...`"
+              :placeholder="`Search ${resourceName}...`"
               @update:model-value="handleSearchInputDebounced"
             />
             <div class="hidden items-center gap-2 sm:flex">
@@ -173,7 +173,7 @@ type Props = {
     endDateField?: string;
     actions?: any[];
   };
-  moduleName?: string;
+  resourceName?: string;
   uiConfig?: any;
   loading?: boolean;
 };
@@ -268,7 +268,7 @@ function handleItemClick(item: any) {
 }
 
 // appbar aux state
-const moduleName = computed(() => props.moduleName || "");
+const resourceName = computed(() => props.resourceName || "");
 const uiConfig = computed(() => props.uiConfig);
 const loading = computed(() => !!props.loading);
 const hasCreateAction = computed(

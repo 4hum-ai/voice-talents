@@ -1,6 +1,6 @@
 <template>
   <ItemDetailTemplate
-    :module-name="module"
+    :resource-name="resource"
     :item="item"
     :loading="loading"
     :error="error"
@@ -32,19 +32,19 @@ import {
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ItemDetailTemplate from "@/components/templates/ItemDetailTemplate.vue";
-import { useMovieService } from "@/composables/useMovieService";
+import { useResourceService } from "@/composables/useResourceService";
 import { useUiConfig } from "@/composables/useUiConfig";
 import ConfirmModal from "@/components/molecules/ConfirmModal.vue";
 import { useActivity } from "@/composables/useActivity";
 import { useStaleStore } from "@/stores/stale";
 
-const movie = useMovieService();
+const api = useResourceService();
 const activity = useActivity();
 const route = useRoute();
 const router = useRouter();
 const stale = useStaleStore();
 
-const module = computed(() =>
+const resource = computed(() =>
   String(
     route.meta?.module ||
       route.params.module ||
@@ -76,21 +76,25 @@ async function load() {
     if (!uiConfig.value) {
       currentAbort?.abort();
       currentAbort = new AbortController();
-      uiConfig.value = await getUiConfig(module.value, {
+      uiConfig.value = await getUiConfig(resource.value, {
         signal: currentAbort.signal,
       });
     }
     currentAbort?.abort();
     currentAbort = new AbortController();
-    const res = await movie.getModuleItem(
-      module.value,
+    const res = await api.getById(
+      resource.value,
       id.value,
       currentAbort.signal,
     );
     item.value = res;
     lastLoadedId.value = id.value;
     try {
-      activity.recordVisit({ module: module.value, id: id.value, data: res });
+      activity.recordVisit({
+        resource: resource.value,
+        id: id.value,
+        data: res,
+      });
     } catch {
       /* ignore */
     }
@@ -121,10 +125,10 @@ async function confirmDelete() {
   try {
     currentAbort?.abort();
     currentAbort = new AbortController();
-    await movie.deleteModuleItem(module.value, id.value, currentAbort.signal);
+    await api.remove(resource.value, id.value, currentAbort.signal);
     // mark the list route as stale so keep-alive list refreshes on activation
-    stale.mark(`path:/${module.value}`);
-    router.push({ path: `/${module.value}` });
+    stale.mark(`path:/${resource.value}`);
+    router.push({ path: `/${resource.value}` });
   } catch (e: any) {
     error.value = e?.message || "Delete failed";
   } finally {
@@ -140,14 +144,9 @@ async function onUpdate(data: Record<string, any>) {
   try {
     currentAbort?.abort();
     currentAbort = new AbortController();
-    await movie.updateModuleItem(
-      module.value,
-      id.value,
-      data,
-      currentAbort.signal,
-    );
+    await api.update(resource.value, id.value, data, currentAbort.signal);
     // mark the list route as stale so it refreshes on activation
-    stale.mark(`path:/${module.value}`);
+    stale.mark(`path:/${resource.value}`);
     await load();
   } catch (e: any) {
     error.value = e?.message || "Update failed";
@@ -168,7 +167,7 @@ onDeactivated(() => {
   isActive.value = false;
 });
 
-watch([module, id], () => {
+watch([resource, id], () => {
   if (!isActive.value) return;
   if (!id.value) return;
   load();

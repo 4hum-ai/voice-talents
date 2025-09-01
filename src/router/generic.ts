@@ -9,7 +9,7 @@ export const genericRoutes: RouteRecordRaw[] = [
   {
     path: "/:module",
     component: () => import("../views/ItemListView.vue"),
-    meta: { title: "Module", requiresAuth: true, keepAlive: true },
+    meta: { title: "Resource", requiresAuth: true, keepAlive: true },
   },
   {
     path: "/:module/:id",

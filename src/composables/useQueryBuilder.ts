@@ -13,7 +13,7 @@ export interface QueryState {
 }
 
 export function useQueryBuilder(options: {
-  module: () => string;
+  resource: () => string;
   uiConfig: () => UiConfig | null | undefined;
   defaultLimit?: number;
 }) {
@@ -155,7 +155,7 @@ export function useQueryBuilder(options: {
       delete nextQuery.to;
       for (const k of [betweenKey, gteKey, lteKey]) delete nextQuery[k];
 
-      // Remove existing defaultFilters for this module from URL
+      // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig();
       const fields = (cfg?.views?.list?.defaultFilters || []).map(
         (f: any) => f.field,
@@ -212,7 +212,7 @@ export function useQueryBuilder(options: {
   function setFilters(nextFilters: Record<string, any>) {
     try {
       const nextQuery: Record<string, any> = { ...route.query };
-      // Remove existing defaultFilters for this module from URL
+      // Remove existing defaultFilters for this resource from URL
       const cfg = options.uiConfig();
       const fields = (cfg?.views?.list?.defaultFilters || []).map(
         (f: any) => f.field,
@@ -318,7 +318,7 @@ export function useQueryBuilder(options: {
         acc[k] = String(q[k]);
         return acc;
       }, {});
-    const mod = String(options.module());
+    const mod = String(options.resource());
     return JSON.stringify({
       mod,
       sort,

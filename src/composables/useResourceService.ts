@@ -2,7 +2,7 @@ import { useApiGateway } from "@/utils/useApiGateway";
 import { useEventBus } from "@vueuse/core";
 import { EVENT_CRUD, type CrudEventPayload } from "@/types/events";
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResult<T> {
   data: T[];
   pagination: {
     page: number;
@@ -10,14 +10,6 @@ export interface PaginatedResponse<T> {
     total: number;
     totalPages: number;
   };
-}
-
-export interface AdminModuleInfo {
-  name: string;
-  displayName: string;
-  description?: string;
-  icon?: string;
-  path: string;
 }
 
 export class ConnectionError extends Error {
@@ -30,9 +22,9 @@ export class ConnectionError extends Error {
   }
 }
 
-export function useMovieService() {
-  const client = useApiGateway();
-  const bus = useEventBus<CrudEventPayload>(EVENT_CRUD);
+export function useResourceService(base: string = "movie/api") {
+  const client = useApiGateway(base);
+  const crudBus = useEventBus<CrudEventPayload>(EVENT_CRUD);
 
   const request = async <T>(
     endpoint: string,
@@ -74,7 +66,7 @@ export function useMovieService() {
         /Failed to fetch|NetworkError/.test(String(error))
       ) {
         throw new ConnectionError(
-          "Unable to reach Movie Service. Check connectivity and URL.",
+          "Unable to reach API. Check connectivity and URL.",
           error,
         );
       }
@@ -82,11 +74,13 @@ export function useMovieService() {
     }
   };
 
-  const get = <T>(
-    endpoint: string,
-    params?: Record<string, any>,
+  // Removed helper methods (get/post/put/del) in favor of direct request usage
+
+  const list = async (
+    resource: string,
+    query?: Record<string, any>,
     signal?: AbortSignal,
-  ): Promise<T> => {
+  ): Promise<PaginatedResult<any>> => {
     const toSearchParams = (input: Record<string, any>): URLSearchParams => {
       const search = new URLSearchParams();
       const append = (key: string, value: any) => {
@@ -94,7 +88,6 @@ export function useMovieService() {
         if (value instanceof Date) {
           search.append(key, value.toISOString());
         } else if (Array.isArray(value)) {
-          // Join arrays by comma for $in / $between and similar cases
           search.append(key, value.map((v) => String(v)).join(","));
         } else {
           search.append(key, String(value));
@@ -110,47 +103,15 @@ export function useMovieService() {
           append(prefix, value);
           return;
         }
-        // Object: recurse with bracket notation e.g. filters[field][$gte]
         Object.entries(value).forEach(([k, v]) => build(`${prefix}[${k}]`, v));
       };
       Object.entries(input).forEach(([k, v]) => build(k, v));
       return search;
     };
-    const search = params ? toSearchParams(params) : new URLSearchParams();
+    const search = query ? toSearchParams(query) : new URLSearchParams();
     const q = search.toString();
-    const path = q ? `${endpoint}?${q}` : endpoint;
-    return request<T>(path, { signal });
-  };
-
-  const post = <T>(
-    endpoint: string,
-    data?: any,
-    signal?: AbortSignal,
-  ): Promise<T> =>
-    request<T>(endpoint, {
-      method: "POST",
-      body: data ? JSON.stringify(data) : undefined,
-      signal,
-    });
-  const put = <T>(
-    endpoint: string,
-    data?: any,
-    signal?: AbortSignal,
-  ): Promise<T> =>
-    request<T>(endpoint, {
-      method: "PUT",
-      body: data ? JSON.stringify(data) : undefined,
-      signal,
-    });
-  const del = <T>(endpoint: string, signal?: AbortSignal): Promise<T> =>
-    request<T>(endpoint, { method: "DELETE", signal });
-
-  const listModuleItems = async (
-    module: string,
-    params?: Record<string, any>,
-    signal?: AbortSignal,
-  ): Promise<PaginatedResponse<any>> => {
-    const payload = await get<any>(`/api/${module}`, params, signal);
+    const path = q ? `/${resource}?${q}` : `/${resource}`;
+    const payload = await request<any>(path, { signal });
     const pg = payload?.pagination ?? {};
     const page = Number(pg.page ?? payload.page ?? 1) || 1;
     const limit = Number(pg.limit ?? payload.limit ?? 20) || 20;
@@ -165,96 +126,106 @@ export function useMovieService() {
     };
   };
 
-  const getModuleItem = async (
-    module: string,
+  const getById = async (
+    resource: string,
     id: string,
     signal?: AbortSignal,
   ): Promise<any> => {
-    const payload = await get<any>(`/api/${module}/${id}`, undefined, signal);
+    const payload = await request<any>(`/${resource}/${id}`, { signal });
     return payload?.data ?? payload;
   };
 
-  // getModuleUiConfig moved to useUiConfig
-
-  const createModuleItem = async (
-    module: string,
-    data: any,
+  const create = async (
+    resource: string,
+    body: any,
     signal?: AbortSignal,
   ): Promise<any> => {
-    const result = (await post<any>(`/api/${module}`, data, signal)).data;
+    const payload = await request<any>(`/${resource}`, {
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+      signal,
+    });
+    const result = payload.data;
     try {
-      const payload: CrudEventPayload = {
-        module,
+      crudBus.emit({
+        resource,
         id: String(result?.id ?? result?._id ?? ""),
         action: "create",
         afterData: result,
         at: Date.now(),
-      };
-      bus.emit(payload);
+      });
     } catch {
       /* ignore */
     }
     return result;
   };
-  const updateModuleItem = async (
-    module: string,
+
+  const update = async (
+    resource: string,
     id: string,
-    data: any,
+    body: any,
     signal?: AbortSignal,
   ): Promise<any> => {
     let beforeData: any = null;
     try {
-      beforeData = await getModuleItem(module, id, signal);
+      beforeData = await getById(resource, id, signal);
     } catch {
       /* ignore */
     }
-    const result = (await put<any>(`/api/${module}/${id}`, data, signal)).data;
+    const payload = await request<any>(`/${resource}/${id}`, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+      signal,
+    });
+    const result = payload.data;
     try {
-      const payload: CrudEventPayload = {
-        module,
+      crudBus.emit({
+        resource,
         id: String(id),
         action: "update",
         beforeData,
         afterData: result,
         at: Date.now(),
-      };
-      bus.emit(payload);
+      });
     } catch {
       /* ignore */
     }
     return result;
   };
-  const deleteModuleItem = async (
-    module: string,
+
+  const remove = async (
+    resource: string,
     id: string,
     signal?: AbortSignal,
   ): Promise<void> => {
     let beforeData: any = null;
     try {
-      beforeData = await getModuleItem(module, id, signal);
+      beforeData = await getById(resource, id, signal);
     } catch {
       /* ignore */
     }
-    await del<void>(`/api/${module}/${id}`, signal);
+    await request<void>(`/${resource}/${id}`, {
+      method: "DELETE",
+      signal,
+    });
     try {
-      const payload: CrudEventPayload = {
-        module,
+      crudBus.emit({
+        resource,
         id: String(id),
         action: "delete",
         beforeData,
         at: Date.now(),
-      };
-      bus.emit(payload);
+      });
     } catch {
       /* ignore */
     }
   };
 
   return {
-    listModuleItems,
-    getModuleItem,
-    createModuleItem,
-    updateModuleItem,
-    deleteModuleItem,
+    list,
+    getById,
+    create,
+    update,
+    remove,
   };
 }

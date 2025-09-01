@@ -31,12 +31,12 @@ export type HttpErrorPayload = {
 
 /**
  * CRUD activity payload for create/update/delete notifications.
- * Publishers: `src/composables/useMovieService.ts`
+ * Publishers: `src/composables/useResourceService.ts`
  * Consumers: `src/composables/useActivity.ts`
  */
 export type CrudAction = "create" | "update" | "delete";
 export interface CrudEventPayload {
-  module: string;
+  resource: string;
   id: string;
   action: CrudAction;
   beforeData?: any;

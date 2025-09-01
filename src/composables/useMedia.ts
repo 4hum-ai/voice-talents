@@ -1,5 +1,5 @@
 import { ref, computed, readonly } from "vue";
-import { useMovieService } from "@/composables/useMovieService";
+import { useResourceService } from "@/composables/useResourceService";
 import { useToast } from "@/composables/useToast";
 
 export interface PaginatedResponse<T> {
@@ -45,8 +45,7 @@ function transformPaginatedResponse<T>(response: any): PaginatedResponse<T> {
 }
 
 export function useMedia() {
-  const { listModuleItems, createModuleItem, updateModuleItem } =
-    useMovieService();
+  const { list, create, update } = useResourceService();
   const { push } = useToast();
 
   const media = ref<MediaItem[]>([]);
@@ -73,7 +72,7 @@ export function useMedia() {
       if (options?.search) params.search = options.search;
       if (options?.filters) Object.assign(params, options.filters);
 
-      const raw = await listModuleItems("media", params);
+      const raw = await list("media", params);
       const result: PaginatedResponse<MediaItem> =
         transformPaginatedResponse<MediaItem>(raw);
       media.value = result.data as MediaItem[];
@@ -125,7 +124,7 @@ export function useMedia() {
       relationships: params.relationships || [],
       metadata: params.metadata || {},
     };
-    const created = (await createModuleItem("media", payload)) as MediaItem;
+    const created = (await create("media", payload)) as MediaItem;
     return created;
   }
 
@@ -144,7 +143,7 @@ export function useMedia() {
     });
   }
 
-  async function uploadViaMediaModule(
+  async function uploadViaMediaResource(
     file: File,
     opts: {
       type?: string;
@@ -193,7 +192,7 @@ export function useMedia() {
 
     // Always try to complete the upload to finalize metadata
     try {
-      await updateModuleItem("media", mediaRecord.id, {
+      await update("media", mediaRecord.id, {
         status: "completed",
         fileSize: file.size,
       });
@@ -226,6 +225,6 @@ export function useMedia() {
     nextPage,
     previousPage,
     // upload helpers
-    uploadViaMediaModule,
+    uploadViaMediaResource,
   };
 }

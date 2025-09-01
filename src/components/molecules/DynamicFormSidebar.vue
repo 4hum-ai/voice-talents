@@ -355,7 +355,7 @@ const handleSubmit = () => {
 
 import { useMedia } from "@/composables/useMedia";
 import { useToast } from "@/composables/useToast";
-const { uploadViaMediaModule } = useMedia();
+const { uploadViaMediaResource } = useMedia();
 const { push } = useToast();
 const uploading = reactive<Record<string, boolean>>({});
 
@@ -365,7 +365,7 @@ async function onFileSelected(field: FormField, e: Event) {
   if (!file) return;
   try {
     uploading[field.key] = true;
-    const result = await uploadViaMediaModule(file, { type: "poster" });
+    const result = await uploadViaMediaResource(file, { type: "poster" });
     formData[field.key] = result.fileUrl;
     setFieldError(field);
     push({

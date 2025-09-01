@@ -1,5 +1,4 @@
 import { reactive, readonly, computed } from "vue";
-// import { useMovieService } from '@/composables/useMovieService'
 import { useApiGateway } from "@/utils/useApiGateway";
 import type { UiConfig } from "@/types/ui-config";
 
@@ -38,15 +37,15 @@ const localPath = (() => {
 })();
 
 // Shared singleton cache across composable instances
-type AdminModuleInfo = {
+export type AdminResourceInfo = {
   name: string;
   displayName: string;
   description?: string;
   icon?: string;
   path: string;
 };
-let cachedModules: AdminModuleInfo[] | null = null;
-let modulesPromise: Promise<AdminModuleInfo[]> | null = null;
+let cachedResources: AdminResourceInfo[] | null = null;
+let modulesPromise: Promise<AdminResourceInfo[]> | null = null;
 
 export function useUiConfig() {
   // movie service kept available for future extension; not used in current flow
@@ -86,21 +85,21 @@ export function useUiConfig() {
     }
   };
 
-  const setConfig = (moduleName: string, cfg: UiConfig) => {
-    state.configs[moduleName] = cfg;
+  const setConfig = (resourceName: string, cfg: UiConfig) => {
+    state.configs[resourceName] = cfg;
     saveToCache();
   };
 
-  const getConfig = (moduleName: string): UiConfig | null => {
-    return state.configs[moduleName] || null;
+  const getConfig = (resourceName: string): UiConfig | null => {
+    return state.configs[resourceName] || null;
   };
   const modules = computed(() => Object.keys(state.configs));
 
   const fetchconfigFromLocal = async (
-    moduleName: string,
+    resourceName: string,
     signal?: AbortSignal,
   ): Promise<UiConfig | null> => {
-    const res = await fetch(`/ui-configs/${moduleName}.json`, {
+    const res = await fetch(`/ui-configs/${resourceName}.json`, {
       cache: "no-store",
       signal,
     });
@@ -114,10 +113,10 @@ export function useUiConfig() {
     }
   };
 
-  const listModules = async (
+  const listResources = async (
     opts: { force?: boolean; signal?: AbortSignal } = {},
-  ): Promise<AdminModuleInfo[]> => {
-    if (!opts.force && cachedModules) return cachedModules;
+  ): Promise<AdminResourceInfo[]> => {
+    if (!opts.force && cachedResources) return cachedResources;
     if (!opts.force && modulesPromise) return modulesPromise;
     modulesPromise = (async () => {
       // Try local index first
@@ -129,13 +128,13 @@ export function useUiConfig() {
         if (res.ok) {
           const contentType = res.headers.get("content-type") || "";
           if (!/application\/json/.test(contentType)) {
-            return cachedModules ?? [];
+            return cachedResources ?? [];
           }
           const json = await res.json().catch(() => null);
           const modules = Array.isArray(json?.modules) ? json.modules : [];
           if (modules.length > 0) {
-            cachedModules = modules as AdminModuleInfo[];
-            return cachedModules;
+            cachedResources = modules as AdminResourceInfo[];
+            return cachedResources;
           }
         }
       } catch {
@@ -143,7 +142,7 @@ export function useUiConfig() {
       }
       if (configFromLocal) {
         // local-only mode: do not hit backend
-        return cachedModules ?? [];
+        return cachedResources ?? [];
       }
       // Fallback to backend
       try {
@@ -151,15 +150,16 @@ export function useUiConfig() {
           method: "GET",
           signal: opts.signal,
         });
-        if (!res.ok) return cachedModules ?? [];
+        if (!res.ok) return cachedResources ?? [];
         const contentType = res.headers.get("content-type") || "";
-        if (!/application\/json/.test(contentType)) return cachedModules ?? [];
+        if (!/application\/json/.test(contentType))
+          return cachedResources ?? [];
         const payload = await res.json().catch(() => null);
         const modules = Array.isArray(payload?.modules) ? payload.modules : [];
-        cachedModules = modules as AdminModuleInfo[];
-        return cachedModules;
+        cachedResources = modules as AdminResourceInfo[];
+        return cachedResources;
       } catch {
-        return cachedModules ?? [];
+        return cachedResources ?? [];
       }
     })();
     const result = await modulesPromise;
@@ -168,25 +168,25 @@ export function useUiConfig() {
   };
 
   const get = async (
-    moduleName: string,
+    resourceName: string,
     opts: GetUiConfigOptions = {},
   ): Promise<UiConfig | null> => {
     if (!opts.force) {
-      const cached = getConfig(moduleName);
+      const cached = getConfig(resourceName);
       if (cached) return cached;
     }
 
     // Try local JSON next
-    const localCfg = await fetchconfigFromLocal(moduleName, opts.signal);
+    const localCfg = await fetchconfigFromLocal(resourceName, opts.signal);
     if (localCfg) {
-      setConfig(moduleName, localCfg);
+      setConfig(resourceName, localCfg);
       return localCfg;
     }
 
     // Fallback to backend
     try {
       const res = await api.request(
-        `/api/admin-ui/modules/${moduleName}/config`,
+        `/api/admin-ui/modules/${resourceName}/config`,
         { method: "GET", signal: opts.signal },
       );
       if (!res.ok) return null;
@@ -194,7 +194,7 @@ export function useUiConfig() {
       if (!/application\/json/.test(contentType)) return null;
       const payload = await res.json().catch(() => null);
       const cfg = (payload as any)?.config ?? payload;
-      if (cfg) setConfig(moduleName, cfg);
+      if (cfg) setConfig(resourceName, cfg);
       return cfg ?? null;
     } catch {
       return null;
@@ -213,13 +213,13 @@ export function useUiConfig() {
           return;
         }
       }
-      // Load module list via unified helper
-      let moduleNames: string[] = [];
-      const moduleInfos = await listModules({ force: true });
-      moduleNames = moduleInfos.map((m) => m.name);
+      // Load resource list via unified helper
+      let resourceNames: string[] = [];
+      const moduleInfos = await listResources({ force: true });
+      resourceNames = moduleInfos.map((m) => m.name);
 
       // Load each module's UI config based on env preference
-      for (const name of moduleNames) {
+      for (const name of resourceNames) {
         if (!name) continue;
         if (configFromLocal) {
           const cfg = await fetchconfigFromLocal(name);
@@ -242,7 +242,7 @@ export function useUiConfig() {
             }
           }
         } catch {
-          /* ignore single module failure */
+          /* ignore single resource failure */
         }
       }
       state.initialized = true;
@@ -253,5 +253,5 @@ export function useUiConfig() {
     }
   };
 
-  return { get, modules, init, listModules, state: readonly(state) };
+  return { get, modules, init, listResources, state: readonly(state) };
 }
