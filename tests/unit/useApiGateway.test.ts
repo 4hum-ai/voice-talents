@@ -16,7 +16,7 @@ vi.mock("@/composables/useToast", () => ({
 }));
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var fetch: any;
 }
 

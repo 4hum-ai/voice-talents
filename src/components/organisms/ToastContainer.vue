@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-@reference '../../assets/styles/main.css';
+@reference '@/style.css';
 
 /* Toast item styling */
 .toast-item {

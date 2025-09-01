@@ -151,8 +151,8 @@ const updatePosition = async () => {
 
 const onSelect = (item: MenuItem) => emit("select", item.key);
 
-const onWindowKeydown = (_e: KeyboardEvent) => {};
-const onDocumentClick = (_e: MouseEvent) => {};
+const onWindowKeydown = () => {};
+const onDocumentClick = () => {};
 
 // Floating autoUpdate tied to presence of trigger and items
 const stopWatch = watch(
@@ -166,7 +166,7 @@ const stopWatch = watch(
       cleanup.value = null;
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 onMounted(() => {

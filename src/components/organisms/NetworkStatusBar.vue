@@ -30,7 +30,7 @@ const { isOnline } = useNetwork();
 </script>
 
 <style scoped>
-@reference '../../assets/styles/main.css';
+@reference '@/style.css';
 
 .fade-enter-active,
 .fade-leave-active {

@@ -285,7 +285,7 @@ const badgeClass = computed(() => {
   const v = String(props.value || "").toLowerCase();
   if (
     ["active", "success", "paid", "publisher", "large", "enterprise"].includes(
-      v,
+      v
     )
   )
     return "bg-green-100 text-green-800";
