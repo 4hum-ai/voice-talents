@@ -1,11 +1,11 @@
-import { IToastMessage, ToastTheme } from "@/types/toast";
-import { ref, Ref } from "vue";
+import { IToastMessage, ToastTheme } from '@/types/toast'
+import { ref, Ref } from 'vue'
 
 /** Reactive array of toast messages */
-const messages: Ref<IToastMessage[]> = ref([]);
+const messages: Ref<IToastMessage[]> = ref([])
 
 /** Current toast theme */
-export const theme: ToastTheme = "light";
+export const theme: ToastTheme = 'light'
 
 /**
  * Toast notification composable for managing application-wide toast messages
@@ -61,8 +61,8 @@ export const useToast = () => {
    * ```
    */
   const push = (message: IToastMessage) => {
-    messages.value.push(message);
-  };
+    messages.value.push(message)
+  }
 
   /**
    * Remove a specific toast message by ID
@@ -74,8 +74,8 @@ export const useToast = () => {
    * ```
    */
   const remove = (id: string) => {
-    messages.value = messages.value.filter((msg) => msg.id !== id);
-  };
+    messages.value = messages.value.filter((msg) => msg.id !== id)
+  }
 
   /**
    * Clear all toast messages
@@ -86,8 +86,8 @@ export const useToast = () => {
    * ```
    */
   const clear = () => {
-    messages.value = [];
-  };
+    messages.value = []
+  }
 
   return {
     /** Clear all toast messages */
@@ -98,5 +98,5 @@ export const useToast = () => {
     remove,
     /** Reactive array of all toast messages */
     messages,
-  };
-};
+  }
+}

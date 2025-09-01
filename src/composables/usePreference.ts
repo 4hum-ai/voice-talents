@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref, watch } from 'vue'
 
 /**
  * Safely get a value from localStorage, handling errors gracefully
@@ -7,9 +7,9 @@ import { ref, watch } from "vue";
  */
 function safeGet(key: string): string | null {
   try {
-    return window.localStorage.getItem(key);
+    return window.localStorage.getItem(key)
   } catch {
-    return null;
+    return null
   }
 }
 
@@ -20,9 +20,9 @@ function safeGet(key: string): string | null {
  */
 function safeSet(key: string, value: string): void {
   try {
-    window.localStorage.setItem(key, value);
+    window.localStorage.setItem(key, value)
   } catch {
-    void 0;
+    void 0
   }
 }
 
@@ -32,9 +32,9 @@ function safeSet(key: string, value: string): void {
  */
 function safeRemove(key: string): void {
   try {
-    window.localStorage.removeItem(key);
+    window.localStorage.removeItem(key)
   } catch {
-    void 0;
+    void 0
   }
 }
 
@@ -80,23 +80,19 @@ function safeRemove(key: string): void {
  * ```
  */
 export function usePreference(key: string, defaultValue?: string) {
-  const valueRef = ref<string | null>(safeGet(key));
+  const valueRef = ref<string | null>(safeGet(key))
   if (valueRef.value == null && defaultValue !== undefined) {
-    valueRef.value = defaultValue;
+    valueRef.value = defaultValue
   }
 
   // Watch for changes and sync with localStorage
   watch(valueRef, (v) => {
-    if (
-      v == null ||
-      v === "" ||
-      (defaultValue !== undefined && v === defaultValue)
-    ) {
-      safeRemove(key);
+    if (v == null || v === '' || (defaultValue !== undefined && v === defaultValue)) {
+      safeRemove(key)
     } else {
-      safeSet(key, String(v));
+      safeSet(key, String(v))
     }
-  });
+  })
 
   /**
    * Set the preference value
@@ -109,8 +105,8 @@ export function usePreference(key: string, defaultValue?: string) {
    * ```
    */
   const set = (v: string | null | undefined) => {
-    valueRef.value = v == null ? null : String(v);
-  };
+    valueRef.value = v == null ? null : String(v)
+  }
 
   /**
    * Get the current preference value
@@ -121,7 +117,7 @@ export function usePreference(key: string, defaultValue?: string) {
    * const currentValue = preference.get();
    * ```
    */
-  const get = () => valueRef.value;
+  const get = () => valueRef.value
 
   /**
    * Remove the preference (resets to default value)
@@ -131,7 +127,7 @@ export function usePreference(key: string, defaultValue?: string) {
    * preference.remove();
    * ```
    */
-  const remove = () => set(null);
+  const remove = () => set(null)
 
   return {
     /** Get current preference value */
@@ -142,5 +138,5 @@ export function usePreference(key: string, defaultValue?: string) {
     remove,
     /** Reactive preference value */
     value: valueRef,
-  };
+  }
 }

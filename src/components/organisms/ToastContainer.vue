@@ -27,11 +27,7 @@
 
   <!-- Bottom Right -->
   <div class="fixed right-4 bottom-4 z-50 flex flex-col-reverse gap-4">
-    <TransitionGroup
-      name="toast-br"
-      tag="div"
-      class="flex flex-col-reverse gap-4"
-    >
+    <TransitionGroup name="toast-br" tag="div" class="flex flex-col-reverse gap-4">
       <ToastMessage
         v-for="message in brMessages"
         :key="message.id"
@@ -44,11 +40,7 @@
 
   <!-- Bottom Left -->
   <div class="fixed bottom-4 left-4 z-50 flex flex-col-reverse gap-4">
-    <TransitionGroup
-      name="toast-bl"
-      tag="div"
-      class="flex flex-col-reverse gap-4"
-    >
+    <TransitionGroup name="toast-bl" tag="div" class="flex flex-col-reverse gap-4">
       <ToastMessage
         v-for="message in blMessages"
         :key="message.id"
@@ -61,52 +53,44 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import ToastMessage from "../molecules/ToastMessage.vue";
-import { useToast } from "@/composables/useToast";
-import { onMounted, onBeforeUnmount } from "vue";
-import { useEventBus } from "@vueuse/core";
-import { EVENT_HTTP_ERROR, type HttpErrorPayload } from "@/types/events";
+import { computed } from 'vue'
+import ToastMessage from '../molecules/ToastMessage.vue'
+import { useToast } from '@/composables/useToast'
+import { onMounted, onBeforeUnmount } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import { EVENT_HTTP_ERROR, type HttpErrorPayload } from '@/types/events'
 
 // Composables
-const { messages, remove } = useToast();
-const errorBus = useEventBus<HttpErrorPayload>(EVENT_HTTP_ERROR);
-let offHttpError: (() => void) | null = null;
+const { messages, remove } = useToast()
+const errorBus = useEventBus<HttpErrorPayload>(EVENT_HTTP_ERROR)
+let offHttpError: (() => void) | null = null
 
 // Computed properties for each position
-const trMessages = computed(() =>
-  messages.value.filter((msg) => msg.position === "tr"),
-);
+const trMessages = computed(() => messages.value.filter((msg) => msg.position === 'tr'))
 
-const tlMessages = computed(() =>
-  messages.value.filter((msg) => msg.position === "tl"),
-);
+const tlMessages = computed(() => messages.value.filter((msg) => msg.position === 'tl'))
 
-const brMessages = computed(() =>
-  messages.value.filter((msg) => msg.position === "br"),
-);
+const brMessages = computed(() => messages.value.filter((msg) => msg.position === 'br'))
 
-const blMessages = computed(() =>
-  messages.value.filter((msg) => msg.position === "bl"),
-);
+const blMessages = computed(() => messages.value.filter((msg) => msg.position === 'bl'))
 
 onMounted(() => {
   offHttpError = errorBus.on(({ method, path, message }) => {
-    const { push } = useToast();
+    const { push } = useToast()
     push({
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      type: "error",
-      position: "tr",
-      title: "Network error",
+      type: 'error',
+      position: 'tr',
+      title: 'Network error',
       body: `${method} ${path}: ${message}`,
       timeout: 6000,
-    });
-  });
-});
+    })
+  })
+})
 
 onBeforeUnmount(() => {
-  if (offHttpError) offHttpError();
-});
+  if (offHttpError) offHttpError()
+})
 </script>
 
 <style scoped>

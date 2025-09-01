@@ -1,5 +1,5 @@
-import { ref, readonly, computed } from "vue";
-import { initializeApp, type FirebaseApp } from "firebase/app";
+import { ref, readonly, computed } from 'vue'
+import { initializeApp, type FirebaseApp } from 'firebase/app'
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -14,28 +14,28 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   type User as FirebaseUser,
-} from "firebase/auth";
+  AuthProvider,
+} from 'firebase/auth'
 
 /**
  * Represents an authenticated user in the application
  */
 export interface AuthUser {
   /** Unique user identifier */
-  id: string;
+  id: string
   /** User's email address */
-  email: string;
+  email: string
   /** User's display name (optional) */
-  displayName?: string;
+  displayName?: string
   /** URL to user's profile photo (optional) */
-  photoURL?: string;
+  photoURL?: string
 }
 
 /**
  * Firebase configuration object
  */
 const firebaseConfig = {
-  apiKey: (import.meta as { env?: Record<string, unknown> }).env
-    ?.VITE_FIREBASE_API_KEY as string,
+  apiKey: (import.meta as { env?: Record<string, unknown> }).env?.VITE_FIREBASE_API_KEY as string,
   authDomain: (import.meta as { env?: Record<string, unknown> }).env
     ?.VITE_FIREBASE_AUTH_DOMAIN as string,
   projectId: (import.meta as { env?: Record<string, unknown> }).env
@@ -44,12 +44,11 @@ const firebaseConfig = {
     ?.VITE_FIREBASE_STORAGE_BUCKET as string,
   messagingSenderId: (import.meta as { env?: Record<string, unknown> }).env
     ?.VITE_FIREBASE_MESSAGING_SENDER_ID as string,
-  appId: (import.meta as { env?: Record<string, unknown> }).env
-    ?.VITE_FIREBASE_APP_ID as string,
-};
+  appId: (import.meta as { env?: Record<string, unknown> }).env?.VITE_FIREBASE_APP_ID as string,
+}
 
-let app: FirebaseApp | null = null;
-let authInstance: ReturnType<typeof getAuth> | null = null;
+let app: FirebaseApp | null = null
+let authInstance: ReturnType<typeof getAuth> | null = null
 
 /**
  * Ensures Firebase Auth is properly initialized
@@ -57,13 +56,13 @@ let authInstance: ReturnType<typeof getAuth> | null = null;
  */
 function ensureAuthInitialized() {
   if (!app) {
-    app = initializeApp(firebaseConfig);
+    app = initializeApp(firebaseConfig)
   }
   if (!authInstance) {
-    authInstance = getAuth(app);
-    void setPersistence(authInstance, browserLocalPersistence).catch(() => {});
+    authInstance = getAuth(app)
+    void setPersistence(authInstance, browserLocalPersistence).catch(() => {})
   }
-  return authInstance;
+  return authInstance
 }
 
 /**
@@ -99,9 +98,9 @@ function ensureAuthInitialized() {
  * ```
  */
 export function useAuth() {
-  const isLoading = ref(true);
-  const error = ref<string | null>(null);
-  const user = ref<AuthUser | null>(null);
+  const isLoading = ref(true)
+  const error = ref<string | null>(null)
+  const user = ref<AuthUser | null>(null)
 
   /**
    * Converts Firebase user object to application AuthUser interface
@@ -111,11 +110,11 @@ export function useAuth() {
   const convertFirebaseUser = (firebaseUser: FirebaseUser): AuthUser => {
     return {
       id: firebaseUser.uid,
-      email: firebaseUser.email || "",
+      email: firebaseUser.email || '',
       displayName: firebaseUser.displayName || undefined,
       photoURL: firebaseUser.photoURL || undefined,
-    };
-  };
+    }
+  }
 
   /**
    * Get the current authenticated user
@@ -130,22 +129,22 @@ export function useAuth() {
    * ```
    */
   const getCurrentUser = async (): Promise<AuthUser | null> => {
-    const auth = ensureAuthInitialized();
+    const auth = ensureAuthInitialized()
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-          const converted = convertFirebaseUser(firebaseUser);
-          user.value = converted;
-          resolve(converted);
+          const converted = convertFirebaseUser(firebaseUser)
+          user.value = converted
+          resolve(converted)
         } else {
-          user.value = null;
-          resolve(null);
+          user.value = null
+          resolve(null)
         }
-        isLoading.value = false;
-        unsubscribe();
-      });
-    });
-  };
+        isLoading.value = false
+        unsubscribe()
+      })
+    })
+  }
 
   /**
    * Subscribe to authentication state changes
@@ -167,15 +166,15 @@ export function useAuth() {
    * ```
    */
   const subscribe = (cb: (u: AuthUser | null) => void): (() => void) => {
-    const auth = ensureAuthInitialized();
+    const auth = ensureAuthInitialized()
     const off = onAuthStateChanged(auth, (firebaseUser) => {
-      const converted = firebaseUser ? convertFirebaseUser(firebaseUser) : null;
-      user.value = converted;
-      cb(converted);
-      isLoading.value = false;
-    });
-    return off;
-  };
+      const converted = firebaseUser ? convertFirebaseUser(firebaseUser) : null
+      user.value = converted
+      cb(converted)
+      isLoading.value = false
+    })
+    return off
+  }
 
   /**
    * Login with email and password
@@ -196,18 +195,18 @@ export function useAuth() {
    */
   const login = async (email: string, password: string): Promise<AuthUser> => {
     try {
-      error.value = null;
-      const auth = ensureAuthInitialized();
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const converted = convertFirebaseUser(cred.user);
-      user.value = converted;
-      return converted;
+      error.value = null
+      const auth = ensureAuthInitialized()
+      const cred = await signInWithEmailAndPassword(auth, email, password)
+      const converted = convertFirebaseUser(cred.user)
+      user.value = converted
+      return converted
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Login failed";
-      error.value = message;
-      throw new Error(message);
+      const message = err instanceof Error ? err.message : 'Login failed'
+      error.value = message
+      throw new Error(message)
     }
-  };
+  }
 
   /**
    * Login with Google OAuth
@@ -228,25 +227,24 @@ export function useAuth() {
    * ```
    */
   const loginWithGoogle = async (): Promise<{
-    user: AuthUser;
-    newUser?: boolean;
+    user: AuthUser
+    newUser?: boolean
   }> => {
     try {
-      error.value = null;
-      const auth = ensureAuthInitialized();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const converted = convertFirebaseUser(result.user);
-      const info = getAdditionalUserInfo(result);
-      user.value = converted;
-      return { user: converted, newUser: info?.isNewUser };
+      error.value = null
+      const auth = ensureAuthInitialized()
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      const converted = convertFirebaseUser(result.user)
+      const info = getAdditionalUserInfo(result)
+      user.value = converted
+      return { user: converted, newUser: info?.isNewUser }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Google login failed";
-      error.value = message;
-      throw new Error(message);
+      const message = err instanceof Error ? err.message : 'Google login failed'
+      error.value = message
+      throw new Error(message)
     }
-  };
+  }
 
   /**
    * Login with OAuth provider (Google, GitHub, Microsoft, Apple)
@@ -265,43 +263,37 @@ export function useAuth() {
    * ```
    */
   const loginWithOAuth = async (
-    providerName: "google" | "github" | "microsoft" | "apple",
+    providerName: 'google' | 'github' | 'microsoft' | 'apple',
   ): Promise<{ user: AuthUser; newUser?: boolean }> => {
     try {
-      error.value = null;
-      const auth = ensureAuthInitialized();
-      let providerInstance:
-        | GoogleAuthProvider
-        | GithubAuthProvider
-        | OAuthProvider;
+      error.value = null
+      const auth = ensureAuthInitialized()
+      let providerInstance: GoogleAuthProvider | GithubAuthProvider | OAuthProvider
       switch (providerName) {
-        case "google":
-          providerInstance = new GoogleAuthProvider();
-          break;
-        case "github":
-          providerInstance = new GithubAuthProvider();
-          break;
-        case "microsoft":
-          providerInstance = new OAuthProvider("microsoft.com");
-          break;
-        case "apple":
-          providerInstance = new OAuthProvider("apple.com");
-          break;
+        case 'google':
+          providerInstance = new GoogleAuthProvider()
+          break
+        case 'github':
+          providerInstance = new GithubAuthProvider()
+          break
+        case 'microsoft':
+          providerInstance = new OAuthProvider('microsoft.com')
+          break
+        case 'apple':
+          providerInstance = new OAuthProvider('apple.com')
+          break
       }
-      const result = await signInWithPopup(
-        auth,
-        providerInstance as AuthProvider,
-      );
-      const converted = convertFirebaseUser(result.user);
-      const info = getAdditionalUserInfo(result);
-      user.value = converted;
-      return { user: converted, newUser: info?.isNewUser };
+      const result = await signInWithPopup(auth, providerInstance as AuthProvider)
+      const converted = convertFirebaseUser(result.user)
+      const info = getAdditionalUserInfo(result)
+      user.value = converted
+      return { user: converted, newUser: info?.isNewUser }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "OAuth login failed";
-      error.value = message;
-      throw new Error(message);
+      const message = err instanceof Error ? err.message : 'OAuth login failed'
+      error.value = message
+      throw new Error(message)
     }
-  };
+  }
 
   /**
    * Logout the current user
@@ -320,21 +312,21 @@ export function useAuth() {
    */
   const logout = async (): Promise<void> => {
     try {
-      error.value = null;
-      const auth = ensureAuthInitialized();
-      await signOut(auth);
-      user.value = null;
+      error.value = null
+      const auth = ensureAuthInitialized()
+      await signOut(auth)
+      user.value = null
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Logout failed";
-      error.value = message;
-      throw new Error(message);
+      const message = err instanceof Error ? err.message : 'Logout failed'
+      error.value = message
+      throw new Error(message)
     }
-  };
+  }
 
   /**
    * Computed property indicating if user is authenticated
    */
-  const isAuthenticated = computed(() => !!user.value);
+  const isAuthenticated = computed(() => !!user.value)
 
   /**
    * Set authentication persistence mode
@@ -349,12 +341,11 @@ export function useAuth() {
    * await auth.setPersistenceMode('session');
    * ```
    */
-  const setPersistenceMode = async (mode: "local" | "session") => {
-    const auth = ensureAuthInitialized();
-    const persistence =
-      mode === "local" ? browserLocalPersistence : browserSessionPersistence;
-    await setPersistence(auth, persistence).catch(() => {});
-  };
+  const setPersistenceMode = async (mode: 'local' | 'session') => {
+    const auth = ensureAuthInitialized()
+    const persistence = mode === 'local' ? browserLocalPersistence : browserSessionPersistence
+    await setPersistence(auth, persistence).catch(() => {})
+  }
 
   return {
     /** Current authenticated user (readonly) */
@@ -379,5 +370,5 @@ export function useAuth() {
     logout,
     /** Set persistence mode */
     setPersistenceMode,
-  };
+  }
 }

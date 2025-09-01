@@ -1,12 +1,12 @@
-import { onMounted, onUnmounted, ref, Ref } from "vue";
+import { onMounted, onUnmounted, ref, Ref } from 'vue'
 
 /**
  * Network status information
  */
 export type NetworkStatus = {
   /** Reactive boolean indicating if the device is online */
-  isOnline: Ref<boolean>;
-};
+  isOnline: Ref<boolean>
+}
 
 /**
  * Network connectivity monitoring composable
@@ -47,38 +47,36 @@ export type NetworkStatus = {
  * ```
  */
 export function useNetwork(): NetworkStatus {
-  const isOnline = ref<boolean>(
-    typeof navigator !== "undefined" ? navigator.onLine : true,
-  );
+  const isOnline = ref<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true)
 
   /**
    * Handle online event - update state when connection is restored
    */
   function handleOnline() {
-    isOnline.value = true;
+    isOnline.value = true
   }
 
   /**
    * Handle offline event - update state when connection is lost
    */
   function handleOffline() {
-    isOnline.value = false;
+    isOnline.value = false
   }
 
   onMounted(() => {
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
     // Sync initial state in case it changed before mount
-    isOnline.value = navigator.onLine;
-  });
+    isOnline.value = navigator.onLine
+  })
 
   onUnmounted(() => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  });
+    window.removeEventListener('online', handleOnline)
+    window.removeEventListener('offline', handleOffline)
+  })
 
   return {
     /** Reactive boolean indicating if the device is online */
     isOnline,
-  };
+  }
 }

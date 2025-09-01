@@ -16,36 +16,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useEventBus } from "@vueuse/core";
-import { EVENT_HTTP_ACTIVE, type HttpActivePayload } from "@/types/events";
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useEventBus } from '@vueuse/core'
+import { EVENT_HTTP_ACTIVE, type HttpActivePayload } from '@/types/events'
 
-const isActive = ref(false);
-let active = 0;
-let showTimer: number | null = null;
+const isActive = ref(false)
+let active = 0
+let showTimer: number | null = null
 
-const { on } = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE);
-let offActive: (() => void) | null = null;
+const { on } = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE)
+let offActive: (() => void) | null = null
 
 function handleActive(payload: { active: number }) {
-  active = Math.max(0, Number(payload?.active || 0));
+  active = Math.max(0, Number(payload?.active || 0))
   // Small delay to prevent flicker on very fast requests
   if (active > 0) {
-    if (showTimer) window.clearTimeout(showTimer);
-    showTimer = window.setTimeout(() => (isActive.value = true), 120);
+    if (showTimer) window.clearTimeout(showTimer)
+    showTimer = window.setTimeout(() => (isActive.value = true), 120)
   } else {
-    if (showTimer) window.clearTimeout(showTimer);
-    showTimer = null;
-    isActive.value = false;
+    if (showTimer) window.clearTimeout(showTimer)
+    showTimer = null
+    isActive.value = false
   }
 }
 
 onMounted(() => {
-  offActive = on(handleActive);
-});
+  offActive = on(handleActive)
+})
 onBeforeUnmount(() => {
-  if (offActive) offActive();
-});
+  if (offActive) offActive()
+})
 </script>
 
 <style scoped>

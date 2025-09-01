@@ -11,19 +11,19 @@ For the definitive list of channels, payloads, publishers, and consumers, see `s
 Use VueUse directly with shared types:
 
 ```ts
-import { useEventBus } from "@vueuse/core";
-import { EVENT_HTTP_ACTIVE, type HttpActivePayload } from "@/types/events";
+import { useEventBus } from '@vueuse/core'
+import { EVENT_HTTP_ACTIVE, type HttpActivePayload } from '@/types/events'
 
-const activeBus = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE);
+const activeBus = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE)
 
 // emit
-activeBus.emit({ active: 3 });
+activeBus.emit({ active: 3 })
 
 // listen
 const off = activeBus.on(({ active }) => {
   // ...
-});
-off();
+})
+off()
 ```
 
 For new channels, add constants and types in `src/types/events.ts` and document them here.

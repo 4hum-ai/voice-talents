@@ -1,10 +1,8 @@
 <template>
   <div class="inline-flex items-center gap-2">
-    <span
-      v-if="label"
-      class="hidden text-xs text-gray-500 sm:inline dark:text-gray-400"
-      >{{ label }}</span
-    >
+    <span v-if="label" class="hidden text-xs text-gray-500 sm:inline dark:text-gray-400">{{
+      label
+    }}</span>
     <div class="relative">
       <select
         :id="id"
@@ -26,7 +24,7 @@
           {{ placeholder }}
         </option>
         <option v-for="opt in options" :key="opt.key" :value="opt.key">
-          {{ opt.key === modelValue ? "✓ " + opt.label : opt.label }}
+          {{ opt.key === modelValue ? '✓ ' + opt.label : opt.label }}
         </option>
       </select>
       <svg
@@ -46,31 +44,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue'
 
-type Option = { key: string; label: string };
+type Option = { key: string; label: string }
 
 const props = defineProps<{
-  options: Option[];
-  modelValue: string;
-  label?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  name?: string;
-  id?: string;
-  ariaLabel?: string;
-}>();
+  options: Option[]
+  modelValue: string
+  label?: string
+  placeholder?: string
+  disabled?: boolean
+  name?: string
+  id?: string
+  ariaLabel?: string
+}>()
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string): void;
-}>();
+  (e: 'update:modelValue', value: string): void
+}>()
 
 const selectedLabel = computed(
-  () => props.options.find((o) => o.key === props.modelValue)?.label ?? "",
-);
+  () => props.options.find((o) => o.key === props.modelValue)?.label ?? '',
+)
 
 function onChange(event: Event) {
-  const value = (event.target as HTMLSelectElement).value;
-  emit("update:modelValue", value);
+  const value = (event.target as HTMLSelectElement).value
+  emit('update:modelValue', value)
 }
 </script>

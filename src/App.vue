@@ -14,25 +14,23 @@
     >
       <div class="flex flex-col items-center gap-3">
         <LoadingSpinner size="md" color="gray" />
-        <div class="text-sm text-gray-600 dark:text-gray-300">
-          Loading UI Configuration…
-        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-300">Loading UI Configuration…</div>
       </div>
     </div>
   </router-view>
 </template>
 
 <script setup lang="ts">
-import ToastContainer from "@/components/organisms/ToastContainer.vue";
-import NetworkStatusBar from "@/components/organisms/NetworkStatusBar.vue";
-import GlobalProgressBar from "@/components/organisms/GlobalProgressBar.vue";
-import GlobalUploadBar from "@/components/organisms/GlobalUploadBar.vue";
-import GlobalMediaPlayer from "@/components/organisms/GlobalMediaPlayer.vue";
-import LoadingSpinner from "@/components/atoms/LoadingSpinner.vue";
-import { computed } from "vue";
-import { useUiConfig } from "@/composables/useUiConfig";
-const cachedViews = ["Dashboard", "ItemListView", "ItemDetailView"];
+import ToastContainer from '@/components/organisms/ToastContainer.vue'
+import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue'
+import GlobalProgressBar from '@/components/organisms/GlobalProgressBar.vue'
+import GlobalUploadBar from '@/components/organisms/GlobalUploadBar.vue'
+import GlobalMediaPlayer from '@/components/organisms/GlobalMediaPlayer.vue'
+import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
+import { computed } from 'vue'
+import { useUiConfig } from '@/composables/useUiConfig'
+const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
 
-const { state: uiState } = useUiConfig();
-const isBootLoading = computed(() => !uiState.initialized || uiState.loading);
+const { state: uiState } = useUiConfig()
+const isBootLoading = computed(() => !uiState.initialized || uiState.loading)
 </script>

@@ -16,13 +16,9 @@
           </div>
           <div class="mt-1 flex items-center gap-2">
             <div class="h-1 w-full rounded bg-gray-200">
-              <div
-                class="bg-primary-600 h-1 rounded"
-                :style="{ width: `${it.progress}%` }"
-              />
+              <div class="bg-primary-600 h-1 rounded" :style="{ width: `${it.progress}%` }" />
             </div>
-            <span
-              class="w-10 text-right text-gray-600 tabular-nums dark:text-gray-300"
+            <span class="w-10 text-right text-gray-600 tabular-nums dark:text-gray-300"
               >{{ it.progress }}%</span
             >
           </div>
@@ -37,17 +33,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useGlobalUpload } from "@/composables/useGlobalUpload";
+import { computed } from 'vue'
+import { useGlobalUpload } from '@/composables/useGlobalUpload'
 
-const up = useGlobalUpload();
-const items = computed(() => [...(up.queue as unknown[])]);
+const up = useGlobalUpload()
+const items = computed(() => [...(up.queue as unknown[])])
 
 function prettySize(bytes: number): string {
-  const sizes = ["B", "KB", "MB", "GB"];
-  if (!bytes) return "0 B";
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  if (!bytes) return '0 B'
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`
 }
 </script>
 

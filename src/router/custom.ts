@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from 'vue-router'
 
 // Place any app-specific routes here. Keep generic routes in generic.ts.
 export const customRoutes: RouteRecordRaw[] = [
@@ -8,4 +8,4 @@ export const customRoutes: RouteRecordRaw[] = [
   //   component: () => import("../views/DubbingEditor.vue"),
   //   meta: { title: "Dubbing Editor", requiresAuth: true },
   // },
-];
+]
