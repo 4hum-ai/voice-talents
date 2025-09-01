@@ -1,6 +1,6 @@
 {
-  "src/**/*.{js,ts,vue}": ["eslint --fix", "prettier --write ."],
-  "src/**/*.{js,ts,vue,css,md,json}": ["prettier --write ."],
-  "tests/**/*.{js,ts,vue}": ["eslint --fix", "prettier --write ."],
-  "tests/**/*.{js,ts,vue,css,md,json}": ["prettier --write ."]
+  "src/**/*.{js,ts,vue}": ["eslint --fix", "prettier --write"],
+  "src/**/*.{js,ts,vue,css,md,json}": ["prettier --write"],
+  "tests/**/*.{js,ts,vue}": ["eslint --fix", "prettier --write"],
+  "tests/**/*.{js,ts,vue,css,md,json}": ["prettier --write"]
 }

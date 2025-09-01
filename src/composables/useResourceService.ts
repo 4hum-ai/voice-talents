@@ -1,39 +1,32 @@
-import { useApiGateway } from "@/utils/useApiGateway";
-import { useEventBus } from "@vueuse/core";
-import { EVENT_CRUD, type CrudEventPayload } from "@/types/events";
-import type { ResourceQuery } from "@/types/query";
-import { ref, computed, type Ref, type ComputedRef } from "vue";
+import { useApiGateway } from '@/utils/useApiGateway'
+import { useEventBus } from '@vueuse/core'
+import { EVENT_CRUD, type CrudEventPayload } from '@/types/events'
+import type { ResourceQuery } from '@/types/query'
+import { ref, computed, type Ref, type ComputedRef } from 'vue'
 
-/**
- * Represents a paginated result from an API response
- */
 export interface PaginatedResult<T> {
   /** Array of items returned from the API */
-  data: T[];
+  data: T[]
   /** Pagination metadata */
   pagination: {
     /** Current page number */
-    page: number;
+    page: number
     /** Number of items per page */
-    limit: number;
+    limit: number
     /** Total number of items available */
-    total: number;
+    total: number
     /** Total number of pages */
-    totalPages: number;
-  };
+    totalPages: number
+  }
 }
 
-/**
- * Custom error class for connection-related errors
- */
 export class ConnectionError extends Error {
   constructor(
     message: string,
-    /** The original error that caused this connection error */
     public originalError?: Error,
   ) {
-    super(message);
-    this.name = "ConnectionError";
+    super(message)
+    this.name = 'ConnectionError'
   }
 }
 
@@ -41,74 +34,57 @@ export class ConnectionError extends Error {
  * Supported resource types for the API
  * Extend this type as new resources are added
  */
-export type ResourceType = "titles" | "organizations" | string; // Allow custom resources
+export type ResourceType = 'titles' | 'organizations' | string // Allow custom resources
 
 /**
  * Resource service interface providing CRUD operations with reactive state management
  */
-export interface ResourceService<T = any> {
+export interface ResourceService<T = unknown> {
   /** Fetch a paginated list of items */
   list: (
     resource: ResourceType,
     query?: ResourceQuery,
     signal?: AbortSignal,
-  ) => Promise<PaginatedResult<T>>;
+  ) => Promise<PaginatedResult<T>>
   /** Fetch a single item by ID */
-  getById: (
-    resource: ResourceType,
-    id: string,
-    signal?: AbortSignal,
-  ) => Promise<T>;
+  getById: (resource: ResourceType, id: string, signal?: AbortSignal) => Promise<T>
   /** Create a new item */
-  create: (
-    resource: ResourceType,
-    body: any,
-    signal?: AbortSignal,
-  ) => Promise<T>;
+  create: (resource: ResourceType, body: unknown, signal?: AbortSignal) => Promise<T>
   /** Update an existing item */
-  update: (
-    resource: ResourceType,
-    id: string,
-    body: any,
-    signal?: AbortSignal,
-  ) => Promise<T>;
+  update: (resource: ResourceType, id: string, body: unknown, signal?: AbortSignal) => Promise<T>
   /** Delete an item */
-  remove: (
-    resource: ResourceType,
-    id: string,
-    signal?: AbortSignal,
-  ) => Promise<void>;
+  remove: (resource: ResourceType, id: string, signal?: AbortSignal) => Promise<void>
 
   /** Reactive boolean indicating if any operation is currently loading */
-  isLoading: Ref<boolean>;
+  isLoading: Ref<boolean>
   /** Check if a specific operation is loading */
-  isOperationLoading: (operation: string) => boolean;
+  isOperationLoading: (operation: string) => boolean
 
   /** Reactive array of items from list operations */
-  items: Ref<T[]>;
+  items: Ref<T[]>
   /** Reactive single item from getById operations */
-  item: Ref<T | null>;
+  item: Ref<T | null>
   /** Reactive pagination information */
   pagination: Ref<{
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  }>;
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }>
   /** Reactive error message */
-  error: Ref<string | null>;
+  error: Ref<string | null>
 
   /** Computed boolean indicating if there are items */
-  hasItems: ComputedRef<boolean>;
+  hasItems: ComputedRef<boolean>
   /** Computed boolean indicating if no items and not loading */
-  isEmpty: ComputedRef<boolean>;
+  isEmpty: ComputedRef<boolean>
   /** Computed boolean indicating if there's an error */
-  hasError: ComputedRef<boolean>;
+  hasError: ComputedRef<boolean>
 
   /** Clear the current error */
-  clearError: () => void;
+  clearError: () => void
   /** Reset all data to initial state */
-  clearData: () => void;
+  clearData: () => void
 }
 
 /**
@@ -131,19 +107,17 @@ export interface ResourceService<T = any> {
  * const api = useResourceService<Title>();
  * ```
  */
-export function useResourceService(base: string = "movie/api") {
-  const client = useApiGateway(base);
-  const crudBus = useEventBus<CrudEventPayload>(EVENT_CRUD);
+export function useResourceService(base: string = 'movie/api') {
+  const client = useApiGateway(base)
+  const crudBus = useEventBus<CrudEventPayload>(EVENT_CRUD)
 
   // Loading state management
-  const loadingStates = ref<Record<string, boolean>>({});
+  const loadingStates = ref<Record<string, boolean>>({})
 
   /**
    * Computed property indicating if any operation is currently loading
    */
-  const isLoading = computed(() =>
-    Object.values(loadingStates.value).some(Boolean),
-  );
+  const isLoading = computed(() => Object.values(loadingStates.value).some(Boolean))
 
   /**
    * Set loading state for a specific operation
@@ -152,11 +126,11 @@ export function useResourceService(base: string = "movie/api") {
    */
   const setLoading = (operation: string, loading: boolean) => {
     if (loading) {
-      loadingStates.value[operation] = true;
+      loadingStates.value[operation] = true
     } else {
-      delete loadingStates.value[operation];
+      delete loadingStates.value[operation]
     }
-  };
+  }
 
   /**
    * Check if a specific operation is currently loading
@@ -170,40 +144,39 @@ export function useResourceService(base: string = "movie/api") {
    * const isUpdating = api.isOperationLoading("update:titles:123");
    * ```
    */
-  const isOperationLoading = (operation: string) =>
-    loadingStates.value[operation] || false;
+  const isOperationLoading = (operation: string) => loadingStates.value[operation] || false
 
   // Reactive data management
-  const items = ref<any[]>([]);
-  const item = ref<any>(null);
+  const items = ref<unknown[]>([])
+  const item = ref<unknown>(null)
   const pagination = ref<{
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
+    page: number
+    limit: number
+    total: number
+    totalPages: number
   }>({
     page: 1,
     limit: 20,
     total: 0,
     totalPages: 0,
-  });
-  const error = ref<string | null>(null);
+  })
+  const error = ref<string | null>(null)
 
   // Computed helpers
   /**
    * Computed boolean indicating if there are items in the list
    */
-  const hasItems = computed(() => items.value.length > 0);
+  const hasItems = computed(() => items.value.length > 0)
 
   /**
    * Computed boolean indicating if there are no items and not currently loading
    */
-  const isEmpty = computed(() => !isLoading.value && items.value.length === 0);
+  const isEmpty = computed(() => !isLoading.value && items.value.length === 0)
 
   /**
    * Computed boolean indicating if there's an error
    */
-  const hasError = computed(() => error.value !== null);
+  const hasError = computed(() => error.value !== null)
 
   /**
    * Internal request method with error handling and connection error detection
@@ -218,150 +191,112 @@ export function useResourceService(base: string = "movie/api") {
     options: RequestInit & { signal?: AbortSignal } = {},
   ): Promise<T> => {
     try {
-      const res = await client.request(endpoint, options);
+      const res = await client.request(endpoint, options)
       if (!res.ok) {
-        let message = `HTTP error! status: ${res.status}`;
-        const contentType = res.headers.get("content-type") || "";
+        let message = `HTTP error! status: ${res.status}`
+        const contentType = res.headers.get('content-type') || ''
         if (/application\/json/.test(contentType)) {
           try {
-            const err = await res.json();
-            message = err.message || err.error || message;
+            const err: unknown = await res.json()
+            if (err && typeof err === 'object') {
+              message =
+                (err as { message?: string }).message ||
+                (err as { error?: string }).error ||
+                message
+            }
           } catch {
-            void 0;
+            /* ignore */
           }
         } else {
-          const text = await res.text().catch(() => "");
-          if (text?.startsWith("<!doctype") || text?.startsWith("<!DOCTYPE")) {
+          const text = await res.text().catch(() => '')
+          if (text?.startsWith('<!doctype') || text?.startsWith('<!DOCTYPE')) {
             message =
-              "Received HTML from server. Check VITE_PUBLIC_API_URL; the dev server likely returned index.html for a bad URL.";
+              'Received HTML from server. Check VITE_PUBLIC_API_URL; the dev server likely returned index.html for a bad URL.'
           }
         }
-        throw new Error(message);
+        throw new Error(message)
       }
-      const contentType = res.headers.get("content-type") || "";
+      const contentType = res.headers.get('content-type') || ''
       if (!/application\/json/.test(contentType)) {
-        const text = await res.text().catch(() => "");
+        const text = await res.text().catch(() => '')
         throw new Error(
-          "Server returned non-JSON response. Verify API base URL and endpoint. Sample: " +
+          'Server returned non-JSON response. Verify API base URL and endpoint. Sample: ' +
             text.slice(0, 120),
-        );
+        )
       }
-      return await res.json();
-    } catch (error: any) {
+      return await res.json()
+    } catch (error: unknown) {
       if (
-        error?.name === "AbortError" ||
+        (error as Error)?.name === 'AbortError' ||
         /Failed to fetch|NetworkError/.test(String(error))
       ) {
-        throw new ConnectionError(
-          "Unable to reach API. Check connectivity and URL.",
-          error,
-        );
+        throw new ConnectionError('Unable to reach API. Check connectivity and URL.', error)
       }
-      throw error;
+      throw error
     }
-  };
+  }
 
-  /**
-   * Fetch a paginated list of items with search, filtering, and pagination support
-   *
-   * @param resource - Resource type to fetch (e.g., "titles", "organizations")
-   * @param query - Optional query parameters for search, filtering, and pagination
-   * @param signal - Optional AbortSignal for request cancellation
-   * @returns Promise resolving to paginated result
-   *
-   * @example
-   * ```typescript
-   * // Basic list
-   * const result = await api.list("titles", { page: 1, limit: 20 });
-   *
-   * // With search
-   * const result = await api.list("titles", {
-   *   search: "action movie",
-   *   page: 1,
-   *   limit: 20
-   * });
-   *
-   * // With advanced filtering
-   * const result = await api.list("titles", {
-   *   search: "action",
-   *   searchFields: ["title", "description"],
-   *   filters: { year: 2024, genre: "action" },
-   *   sort: "title:asc",
-   *   page: 1,
-   *   limit: 20
-   * });
-   * ```
-   */
-  const list = async (
-    resource: ResourceType,
-    query?: ResourceQuery,
+  const list = async <T = Record<string, unknown>>(
+    resource: string,
+    query?: Record<string, unknown>,
     signal?: AbortSignal,
-  ): Promise<PaginatedResult<any>> => {
-    const operation = `list:${resource}`;
-    setLoading(operation, true);
-    error.value = null;
+  ): Promise<PaginatedResult<T>> => {
+    const operation = `list:${resource}`
+    setLoading(operation, true)
+    error.value = null
     try {
       const toSearchParams = (input: ResourceQuery): URLSearchParams => {
-        const search = new URLSearchParams();
-        const append = (key: string, value: any) => {
-          if (value === undefined || value === null) return;
+        const search = new URLSearchParams()
+        const append = (key: string, value: unknown) => {
+          if (value === undefined || value === null) return
           if (value instanceof Date) {
-            search.append(key, value.toISOString());
+            search.append(key, value.toISOString())
           } else if (Array.isArray(value)) {
-            search.append(key, value.map((v) => String(v)).join(","));
+            search.append(key, value.map((v) => String(v)).join(','))
           } else {
-            search.append(key, String(value));
+            search.append(key, String(value))
           }
-        };
-        const build = (prefix: string, value: any) => {
-          if (value === undefined || value === null) return;
-          if (
-            value instanceof Date ||
-            typeof value !== "object" ||
-            Array.isArray(value)
-          ) {
-            append(prefix, value);
-            return;
+        }
+        const build = (prefix: string, value: unknown) => {
+          if (value === undefined || value === null) return
+          if (value instanceof Date || typeof value !== 'object' || Array.isArray(value)) {
+            append(prefix, value)
+            return
           }
-          Object.entries(value).forEach(([k, v]) =>
-            build(`${prefix}[${k}]`, v),
-          );
-        };
-        Object.entries(input).forEach(([k, v]) => build(k, v));
-        return search;
-      };
-      const search = query ? toSearchParams(query) : new URLSearchParams();
-      const q = search.toString();
-      const path = q ? `/${resource}?${q}` : `/${resource}`;
-      const payload = await request<any>(path, { signal });
-      const pg = payload?.pagination ?? {};
-      const page = Number(pg.page ?? payload.page ?? 1) || 1;
-      const limit = Number(pg.limit ?? payload.limit ?? 20) || 20;
-      const total = Number(pg.total ?? payload.total ?? 0) || 0;
+          Object.entries(value).forEach(([k, v]) => build(`${prefix}[${k}]`, v))
+        }
+        Object.entries(input).forEach(([k, v]) => build(k, v))
+        return search
+      }
+      const search = query ? toSearchParams(query) : new URLSearchParams()
+      const q = search.toString()
+      const path = q ? `/${resource}?${q}` : `/${resource}`
+      const payload = await request<unknown>(path, { signal })
+      const pg = payload?.pagination ?? {}
+      const page = Number(pg.page ?? payload.page ?? 1) || 1
+      const limit = Number(pg.limit ?? payload.limit ?? 20) || 20
+      const total = Number(pg.total ?? payload.total ?? 0) || 0
       const totalPages =
-        Number(
-          pg.totalPages ??
-            payload.totalPages ??
-            Math.ceil(total / (limit || 1)),
-        ) || Math.max(1, Math.ceil(total / (limit || 1)));
+        Number(pg.totalPages ?? payload.totalPages ?? Math.ceil(total / (limit || 1))) ||
+        Math.max(1, Math.ceil(total / (limit || 1)))
 
       const result = {
         data: payload.data || [],
         pagination: { page, limit, total, totalPages },
-      };
+      }
 
       // Update reactive data
-      items.value = result.data;
-      pagination.value = result.pagination;
+      items.value = result.data
+      pagination.value = result.pagination
 
-      return result;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to load data";
-      throw err;
+      return result
+    } catch (err: unknown) {
+      error.value = (err as Error)?.message || 'Failed to load data'
+      throw err
     } finally {
-      setLoading(operation, false);
+      setLoading(operation, false)
     }
-  };
+  }
 
   /**
    * Fetch a single item by its ID
@@ -381,25 +316,25 @@ export function useResourceService(base: string = "movie/api") {
     resource: ResourceType,
     id: string,
     signal?: AbortSignal,
-  ): Promise<any> => {
-    const operation = `get:${resource}:${id}`;
-    setLoading(operation, true);
-    error.value = null;
+  ): Promise<unknown> => {
+    const operation = `get:${resource}:${id}`
+    setLoading(operation, true)
+    error.value = null
     try {
-      const payload = await request<any>(`/${resource}/${id}`, { signal });
-      const result = payload?.data ?? payload;
+      const payload = await request<unknown>(`/${resource}/${id}`, { signal })
+      const result = payload?.data ?? payload
 
       // Update reactive data
-      item.value = result;
+      item.value = result
 
-      return result;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to load item";
-      throw err;
+      return result
+    } catch (err: unknown) {
+      error.value = (err as Error)?.message || 'Failed to load item'
+      throw err
     } finally {
-      setLoading(operation, false);
+      setLoading(operation, false)
     }
-  };
+  }
 
   /**
    * Create a new item
@@ -421,43 +356,43 @@ export function useResourceService(base: string = "movie/api") {
    */
   const create = async (
     resource: ResourceType,
-    body: any,
+    body: unknown,
     signal?: AbortSignal,
-  ): Promise<any> => {
-    const operation = `create:${resource}`;
-    setLoading(operation, true);
-    error.value = null;
+  ): Promise<unknown> => {
+    const operation = `create:${resource}`
+    setLoading(operation, true)
+    error.value = null
     try {
-      const payload = await request<any>(`/${resource}`, {
-        method: "POST",
+      const payload = await request<unknown>(`/${resource}`, {
+        method: 'POST',
         body: body ? JSON.stringify(body) : undefined,
         signal,
-      });
-      const result = payload.data;
+      })
+      const result = payload.data
 
       // Update reactive data - add to items list
-      items.value.unshift(result);
-      pagination.value.total += 1;
+      items.value.unshift(result)
+      pagination.value.total += 1
 
       try {
         crudBus.emit({
           resource,
-          id: String(result?.id ?? result?._id ?? ""),
-          action: "create",
+          id: String(result?.id ?? result?._id ?? ''),
+          action: 'create',
           afterData: result,
           at: Date.now(),
-        });
+        })
       } catch {
         /* ignore */
       }
-      return result;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to create item";
-      throw err;
+      return result
+    } catch (err: unknown) {
+      error.value = (err as Error)?.message || 'Failed to create item'
+      throw err
     } finally {
-      setLoading(operation, false);
+      setLoading(operation, false)
     }
-  };
+  }
 
   /**
    * Update an existing item
@@ -479,59 +414,60 @@ export function useResourceService(base: string = "movie/api") {
   const update = async (
     resource: ResourceType,
     id: string,
-    body: any,
+    body: unknown,
     signal?: AbortSignal,
-  ): Promise<any> => {
-    const operation = `update:${resource}:${id}`;
-    setLoading(operation, true);
-    error.value = null;
+  ): Promise<unknown> => {
+    const operation = `update:${resource}:${id}`
+    setLoading(operation, true)
+    error.value = null
     try {
-      let beforeData: any = null;
+      let beforeData: unknown = null
       try {
-        beforeData = await getById(resource, id, signal);
+        beforeData = await getById(resource, id, signal)
       } catch {
         /* ignore */
       }
-      const payload = await request<any>(`/${resource}/${id}`, {
-        method: "PUT",
+      const payload = await request<unknown>(`/${resource}/${id}`, {
+        method: 'PUT',
         body: body ? JSON.stringify(body) : undefined,
         signal,
-      });
-      const result = payload.data;
+      })
+      const result = payload.data
 
       // Update reactive data
       if (item.value?.id === id || item.value?._id === id) {
-        item.value = result;
+        item.value = result
       }
 
       // Update in items list if present
       const itemIndex = items.value.findIndex(
-        (i: any) => i.id === id || i._id === id,
-      );
+        (i: unknown) =>
+          (i as { id?: unknown; _id?: unknown }).id === id || (i as { _id?: unknown })._id === id,
+      )
       if (itemIndex !== -1) {
-        items.value[itemIndex] = result;
+        items.value[itemIndex] = result
       }
 
       try {
         crudBus.emit({
           resource,
           id: String(id),
-          action: "update",
+          action: 'update',
           beforeData,
           afterData: result,
           at: Date.now(),
-        });
+        })
       } catch {
         /* ignore */
       }
-      return result;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to update item";
-      throw err;
+      return result
+    } catch (err: unknown) {
+      error.value = (err as Error)?.message || 'Failed to update item'
+      throw err
     } finally {
-      setLoading(operation, false);
+      setLoading(operation, false)
     }
-  };
+  }
 
   /**
    * Delete an item
@@ -552,53 +488,54 @@ export function useResourceService(base: string = "movie/api") {
     id: string,
     signal?: AbortSignal,
   ): Promise<void> => {
-    const operation = `delete:${resource}:${id}`;
-    setLoading(operation, true);
-    error.value = null;
+    const operation = `delete:${resource}:${id}`
+    setLoading(operation, true)
+    error.value = null
     try {
-      let beforeData: any = null;
+      let beforeData: unknown = null
       try {
-        beforeData = await getById(resource, id, signal);
+        beforeData = await getById(resource, id, signal)
       } catch {
         /* ignore */
       }
       await request<void>(`/${resource}/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
         signal,
-      });
+      })
 
       // Update reactive data
       if (item.value?.id === id || item.value?._id === id) {
-        item.value = null;
+        item.value = null
       }
 
       // Remove from items list
       const itemIndex = items.value.findIndex(
-        (i: any) => i.id === id || i._id === id,
-      );
+        (i: unknown) =>
+          (i as { id?: unknown; _id?: unknown }).id === id || (i as { _id?: unknown })._id === id,
+      )
       if (itemIndex !== -1) {
-        items.value.splice(itemIndex, 1);
-        pagination.value.total = Math.max(0, pagination.value.total - 1);
+        items.value.splice(itemIndex, 1)
+        pagination.value.total = Math.max(0, pagination.value.total - 1)
       }
 
       try {
         crudBus.emit({
           resource,
           id: String(id),
-          action: "delete",
+          action: 'delete',
           beforeData,
           at: Date.now(),
-        });
+        })
       } catch {
         /* ignore */
       }
-    } catch (err: any) {
-      error.value = err?.message || "Failed to delete item";
-      throw err;
+    } catch (err: unknown) {
+      error.value = (err as Error)?.message || 'Failed to delete item'
+      throw err
     } finally {
-      setLoading(operation, false);
+      setLoading(operation, false)
     }
-  };
+  }
 
   /**
    * Clear the current error state
@@ -609,8 +546,8 @@ export function useResourceService(base: string = "movie/api") {
    * ```
    */
   const clearError = () => {
-    error.value = null;
-  };
+    error.value = null
+  }
 
   /**
    * Reset all data to initial state
@@ -626,19 +563,18 @@ export function useResourceService(base: string = "movie/api") {
    * ```
    */
   const clearData = () => {
-    items.value = [];
-    item.value = null;
+    items.value = []
+    item.value = null
     pagination.value = {
       page: 1,
       limit: 20,
       total: 0,
       totalPages: 0,
-    };
-    error.value = null;
-  };
+    }
+    error.value = null
+  }
 
   return {
-    // Methods
     list,
     getById,
     create,
@@ -663,5 +599,5 @@ export function useResourceService(base: string = "movie/api") {
     // Utility methods
     clearError,
     clearData,
-  };
+  }
 }

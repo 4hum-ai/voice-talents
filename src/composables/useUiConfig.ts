@@ -1,140 +1,139 @@
-import { reactive, readonly, computed } from "vue";
-import { useApiGateway } from "@/utils/useApiGateway";
-import type { UiConfig } from "@/types/ui-config";
+import { reactive, readonly, computed } from 'vue'
+import { useApiGateway } from '@/utils/useApiGateway'
+import type { UiConfig } from '@/types/ui-config'
 
 export interface GetUiConfigOptions {
-  force?: boolean;
-  signal?: AbortSignal;
+  force?: boolean
+  signal?: AbortSignal
 }
 
 type UiConfigState = {
-  configs: Record<string, UiConfig>;
-  initialized: boolean;
-  loading: boolean;
-  error: string | null;
-};
+  configs: Record<string, UiConfig>
+  initialized: boolean
+  loading: boolean
+  error: string | null
+}
 
 const state = reactive<UiConfigState>({
   configs: {},
   initialized: false,
   loading: false,
   error: null,
-});
+})
 
-const LOCAL_STORAGE_KEY = "admin-ui:configs";
+const LOCAL_STORAGE_KEY = 'admin-ui:configs'
 
 const configFromLocal = (() => {
-  const env: any = (import.meta as any).env || {};
+  const env: Record<string, unknown> = (import.meta as { env?: Record<string, unknown> }).env || {}
   return (
-    env?.VITE_ADMIN_UI_CONFIG_FROM_LOCAL === "true" ||
-    env?.VITE_ADMIN_UI_CONFIG_FROM_LOCAL === true
-  );
-})();
+    env?.VITE_ADMIN_UI_CONFIG_FROM_LOCAL === 'true' || env?.VITE_ADMIN_UI_CONFIG_FROM_LOCAL === true
+  )
+})()
 const localPath = (() => {
-  const env: any = (import.meta as any).env || {};
+  const env: Record<string, unknown> = (import.meta as { env?: Record<string, unknown> }).env || {}
   // Path to modules index file served from public. Default to /ui-configs/index.json
-  return env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH || "/ui-configs/index.json";
-})();
+  return (env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH as string) || '/ui-configs/index.json'
+})()
 
 // Shared singleton cache across composable instances
 export type AdminResourceInfo = {
-  name: string;
-  displayName: string;
-  description?: string;
-  icon?: string;
-  path: string;
-};
-let cachedResources: AdminResourceInfo[] | null = null;
-let modulesPromise: Promise<AdminResourceInfo[]> | null = null;
+  name: string
+  displayName: string
+  description?: string
+  icon?: string
+  path: string
+}
+let cachedResources: AdminResourceInfo[] | null = null
+let modulesPromise: Promise<AdminResourceInfo[]> | null = null
 
 export function useUiConfig() {
-  // movie service kept available for future extension; not used in current flow
-  // const movie = useMovieService()
-  const api = useApiGateway();
+  const api = useApiGateway()
 
   const loadFromCache = () => {
     try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object") {
-        const incoming = parsed as Record<string, any>;
-        const normalized: Record<string, UiConfig> = {};
-        let mutated = false;
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (parsed && typeof parsed === 'object') {
+        const incoming = parsed as Record<string, unknown>
+        const normalized: Record<string, UiConfig> = {}
+        let mutated = false
         for (const [mod, cfg] of Object.entries(incoming)) {
           const flat =
-            cfg && typeof cfg === "object" && "config" in cfg
-              ? (cfg as any).config
-              : cfg;
-          if (flat !== cfg) mutated = true;
-          normalized[mod] = flat as UiConfig;
+            cfg && typeof cfg === 'object' && 'config' in cfg
+              ? (cfg as { config: unknown }).config
+              : cfg
+          if (flat !== cfg) mutated = true
+          normalized[mod] = flat
         }
-        state.configs = normalized;
-        if (mutated) saveToCache();
+        state.configs = normalized
+        if (mutated) saveToCache()
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   const saveToCache = () => {
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state.configs));
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state.configs))
     } catch {
       /* ignore */
     }
-  };
+  }
 
   const setConfig = (resourceName: string, cfg: UiConfig) => {
-    state.configs[resourceName] = cfg;
-    saveToCache();
-  };
+    state.configs[resourceName] = cfg
+    saveToCache()
+  }
 
   const getConfig = (resourceName: string): UiConfig | null => {
-    return state.configs[resourceName] || null;
-  };
-  const modules = computed(() => Object.keys(state.configs));
+    return state.configs[resourceName] || null
+  }
+  const modules = computed(() => Object.keys(state.configs))
 
   const fetchconfigFromLocal = async (
     resourceName: string,
     signal?: AbortSignal,
   ): Promise<UiConfig | null> => {
     const res = await fetch(`/ui-configs/${resourceName}.json`, {
-      cache: "no-store",
+      cache: 'no-store',
       signal,
-    });
-    if (!res.ok) return null;
-    const contentType = res.headers.get("content-type") || "";
-    if (!/application\/json/.test(contentType)) return null;
+    })
+    if (!res.ok) return null
+    const contentType = res.headers.get('content-type') || ''
+    if (!/application\/json/.test(contentType)) return null
     try {
-      return (await res.json()) as UiConfig;
+      return (await res.json()) as UiConfig
     } catch {
-      return null;
+      return null
     }
-  };
+  }
 
   const listResources = async (
     opts: { force?: boolean; signal?: AbortSignal } = {},
   ): Promise<AdminResourceInfo[]> => {
-    if (!opts.force && cachedResources) return cachedResources;
-    if (!opts.force && modulesPromise) return modulesPromise;
+    if (!opts.force && cachedResources) return cachedResources
+    if (!opts.force && modulesPromise) return modulesPromise
     modulesPromise = (async () => {
       // Try local index first
       try {
         const res = await fetch(localPath, {
-          cache: "no-store",
+          cache: 'no-store',
           signal: opts.signal,
-        });
+        })
         if (res.ok) {
-          const contentType = res.headers.get("content-type") || "";
+          const contentType = res.headers.get('content-type') || ''
           if (!/application\/json/.test(contentType)) {
-            return cachedResources ?? [];
+            return cachedResources ?? []
           }
-          const json = await res.json().catch(() => null);
-          const modules = Array.isArray(json?.modules) ? json.modules : [];
+          const json: unknown = await res.json().catch(() => null)
+          const modules = Array.isArray((json as { modules?: unknown })?.modules)
+            ? ((json as { modules: AdminResourceInfo[] }).modules ?? [])
+            : []
           if (modules.length > 0) {
-            cachedResources = modules as AdminResourceInfo[];
-            return cachedResources;
+            cachedResources = modules
+            return cachedResources
           }
         }
       } catch {
@@ -142,116 +141,114 @@ export function useUiConfig() {
       }
       if (configFromLocal) {
         // local-only mode: do not hit backend
-        return cachedResources ?? [];
+        return cachedResources ?? []
       }
       // Fallback to backend
       try {
         const res = await api.request(`/api/admin-ui/modules`, {
-          method: "GET",
+          method: 'GET',
           signal: opts.signal,
-        });
-        if (!res.ok) return cachedResources ?? [];
-        const contentType = res.headers.get("content-type") || "";
-        if (!/application\/json/.test(contentType))
-          return cachedResources ?? [];
-        const payload = await res.json().catch(() => null);
-        const modules = Array.isArray(payload?.modules) ? payload.modules : [];
-        cachedResources = modules as AdminResourceInfo[];
-        return cachedResources;
+        })
+        if (!res.ok) return cachedResources ?? []
+        const contentType = res.headers.get('content-type') || ''
+        if (!/application\/json/.test(contentType)) return cachedResources ?? []
+        const payload: unknown = await res.json().catch(() => null)
+        const modules = Array.isArray((payload as { modules?: unknown })?.modules)
+          ? ((payload as { modules: AdminResourceInfo[] }).modules ?? [])
+          : []
+        cachedResources = modules
+        return cachedResources
       } catch {
-        return cachedResources ?? [];
+        return cachedResources ?? []
       }
-    })();
-    const result = await modulesPromise;
-    modulesPromise = null;
-    return result;
-  };
+    })()
+    const result = await modulesPromise
+    modulesPromise = null
+    return result
+  }
 
   const get = async (
     resourceName: string,
     opts: GetUiConfigOptions = {},
   ): Promise<UiConfig | null> => {
     if (!opts.force) {
-      const cached = getConfig(resourceName);
-      if (cached) return cached;
+      const cached = getConfig(resourceName)
+      if (cached) return cached
     }
 
     // Try local JSON next
-    const localCfg = await fetchconfigFromLocal(resourceName, opts.signal);
+    const localCfg = await fetchconfigFromLocal(resourceName, opts.signal)
     if (localCfg) {
-      setConfig(resourceName, localCfg);
-      return localCfg;
+      setConfig(resourceName, localCfg)
+      return localCfg
     }
 
     // Fallback to backend
     try {
-      const res = await api.request(
-        `/api/admin-ui/modules/${resourceName}/config`,
-        { method: "GET", signal: opts.signal },
-      );
-      if (!res.ok) return null;
-      const contentType = res.headers.get("content-type") || "";
-      if (!/application\/json/.test(contentType)) return null;
-      const payload = await res.json().catch(() => null);
-      const cfg = (payload as any)?.config ?? payload;
-      if (cfg) setConfig(resourceName, cfg);
-      return cfg ?? null;
+      const res = await api.request(`/api/admin-ui/modules/${resourceName}/config`, {
+        method: 'GET',
+        signal: opts.signal,
+      })
+      if (!res.ok) return null
+      const contentType = res.headers.get('content-type') || ''
+      if (!/application\/json/.test(contentType)) return null
+      const payload = await res.json().catch(() => null)
+      const cfg = (payload as { config?: unknown })?.config ?? payload
+      if (cfg) setConfig(resourceName, cfg)
+      return cfg ?? null
     } catch {
-      return null;
+      return null
     }
-  };
+  }
 
   const init = async (opts: { force?: boolean } = {}) => {
-    if (state.initialized && !opts.force) return;
-    state.loading = true;
-    state.error = null;
+    if (state.initialized && !opts.force) return
+    state.loading = true
+    state.error = null
     try {
       if (!opts.force) {
-        loadFromCache();
+        loadFromCache()
         if (Object.keys(state.configs).length > 0) {
-          state.initialized = true;
-          return;
+          state.initialized = true
+          return
         }
       }
       // Load resource list via unified helper
-      let resourceNames: string[] = [];
-      const moduleInfos = await listResources({ force: true });
-      resourceNames = moduleInfos.map((m) => m.name);
+      let resourceNames: string[] = []
+      const moduleInfos = await listResources({ force: true })
+      resourceNames = moduleInfos.map((m) => m.name)
 
       // Load each module's UI config based on env preference
       for (const name of resourceNames) {
-        if (!name) continue;
+        if (!name) continue
         if (configFromLocal) {
-          const cfg = await fetchconfigFromLocal(name);
+          const cfg = await fetchconfigFromLocal(name)
           if (cfg) {
-            setConfig(name, cfg);
-            continue;
+            setConfig(name, cfg)
+            continue
           }
         }
         try {
-          const res = await api.request(
-            `/api/admin-ui/modules/${name}/config`,
-            { method: "GET" },
-          );
+          const res = await api.request(`/api/admin-ui/modules/${name}/config`, { method: 'GET' })
           if (res.ok) {
-            const contentType = res.headers.get("content-type") || "";
+            const contentType = res.headers.get('content-type') || ''
             if (/application\/json/.test(contentType)) {
-              const payload = await res.json().catch(() => null);
-              const remoteCfg = (payload as any)?.config ?? payload;
-              if (remoteCfg) setConfig(name, remoteCfg as any);
+              const payload = await res.json().catch(() => null)
+              const remoteCfg = (payload as { config?: unknown })?.config ?? payload
+              if (remoteCfg) setConfig(name, remoteCfg as UiConfig)
             }
           }
         } catch {
           /* ignore single resource failure */
         }
       }
-      state.initialized = true;
-    } catch (e: any) {
-      state.error = e?.message || "Failed to initialize UI configs";
+      state.initialized = true
+    } catch (e: unknown) {
+      state.error = (e as Error)?.message || 'Failed to initialize UI configs'
     } finally {
-      state.loading = false;
+      state.loading = false
     }
-  };
+  }
 
-  return { get, modules, init, listResources, state: readonly(state) };
+  return { get, modules, init, listResources, state: readonly(state) }
 }

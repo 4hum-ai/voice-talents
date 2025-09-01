@@ -19,7 +19,7 @@ export type QueryOperator =
 export interface QueryFilter {
   field: string;
   operator: QueryOperator;
-  value: any;
+  value: unknown;
 }
 
 // Date range filter structure (commonly used in the admin app)
@@ -36,7 +36,7 @@ export type FieldFilter =
   | boolean
   | Date
   | DateRangeFilter
-  | Record<string, any>;
+  | Record<string, unknown>;
 
 // Main query parameters structure
 export interface ResourceQuery {
@@ -56,7 +56,7 @@ export interface ResourceQuery {
   filters?: Record<string, FieldFilter>;
 
   // Additional query parameters
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Specific query types for common operations

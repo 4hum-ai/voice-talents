@@ -20,18 +20,18 @@
 
 <script setup lang="ts">
 interface Props {
-  label?: string;
-  closable?: boolean;
-  closeAriaLabel?: string;
+  label?: string
+  closable?: boolean
+  closeAriaLabel?: string
 }
 
 withDefaults(defineProps<Props>(), {
   label: undefined,
   closable: false,
-  closeAriaLabel: "Remove",
-});
+  closeAriaLabel: 'Remove',
+})
 
-defineEmits(["close"]);
+defineEmits(['close'])
 </script>
 
 <style scoped></style>
