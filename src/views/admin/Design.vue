@@ -230,7 +230,6 @@
                           @per-page-change="handlePerPageChange"
                           @confirm="handleConfirm"
                           @cancel="handleCancel"
-                          @close="handleMediaPlayerClose"
                         />
                       </div>
 
@@ -244,16 +243,16 @@
                         </button>
                       </div>
 
-                      <!-- Show Media Player Button for GlobalMediaPlayer -->
+                      <!-- Show Video Player Button -->
                       <div
-                        v-if="componentConfig.id === 'global-media-player'"
+                        v-if="componentConfig.id === 'video-player'"
                         class="space-y-2 text-center"
                       >
                         <button
-                          @click="showMediaPlayer()"
+                          @click="showVideoPlayer()"
                           class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 shadow-sm transition-colors"
                         >
-                          Show Inline Player
+                          Show Video Player
                         </button>
                       </div>
                     </div>
@@ -281,7 +280,7 @@ import Accordion from '@/components/atoms/Accordion.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
-import GlobalMediaPlayer from '@/components/organisms/GlobalMediaPlayer.vue'
+import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
 
 // Single source of truth for component definitions
 interface ComponentDefinition {
@@ -388,18 +387,17 @@ const componentDefinitions: ComponentDefinition[] = [
     },
   },
   {
-    id: 'global-media-player',
-    title: 'Global Media Player',
-    description: 'Advanced video player with HLS support, subtitles, and custom controls',
-    componentName: 'GlobalMediaPlayer',
-    component: GlobalMediaPlayer,
+    id: 'video-player',
+    title: 'Video Player',
+    description:
+      'Advanced video player with HLS support, subtitles, custom controls, and PiP support',
+    componentName: 'VideoPlayer',
+    component: VideoPlayer,
     section: 'organisms',
     defaultProps: {
-      visible: false,
       url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       title: 'Sample Video',
       subtitleUrl: '',
-      mode: 'inline',
     },
   },
   {
@@ -589,22 +587,12 @@ const showConfirmModal = () => {
   }
 }
 
-// Show media player for testing
-const showMediaPlayer = () => {
-  const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
-  if (mediaPlayerConfig) {
-    mediaPlayerConfig.props.visible = true
-    mediaPlayerConfig.props.mode = 'inline'
-    updateJsonFromProps(mediaPlayerConfig)
-  }
-}
-
-// Handle media player close event
-const handleMediaPlayerClose = () => {
-  const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
-  if (mediaPlayerConfig) {
-    mediaPlayerConfig.props.visible = false
-    updateJsonFromProps(mediaPlayerConfig)
+// Show video player for testing
+const showVideoPlayer = () => {
+  const videoPlayerConfig = componentConfigs.find((c) => c.id === 'video-player')
+  if (videoPlayerConfig) {
+    // VideoPlayer is always visible when rendered, no need to toggle
+    console.log('Video player is now visible')
   }
 }
 </script>
