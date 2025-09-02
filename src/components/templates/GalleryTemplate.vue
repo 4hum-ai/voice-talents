@@ -133,16 +133,12 @@
             class="relative flex aspect-square items-center justify-center bg-gray-100 dark:bg-gray-800"
           >
             <template v-if="mediaKind(mediaSrc(item)) === 'image' && mediaSrc(item)">
-              <img :src="mediaSrc(item) || undefined" alt="" class="h-full w-full object-cover" />
+              <Image :src="mediaSrc(item) || ''" alt="" class="h-full w-full object-cover" />
             </template>
 
             <template v-else-if="mediaKind(primaryMediaValue(item)) === 'video'">
               <template v-if="posterUrl(item)">
-                <img
-                  :src="posterUrl(item) || undefined"
-                  alt=""
-                  class="h-full w-full object-cover"
-                />
+                <Image :src="posterUrl(item) || ''" alt="" class="h-full w-full object-cover" />
               </template>
               <template v-else>
                 <div class="h-full w-full bg-gray-200 dark:bg-gray-700" />
@@ -346,6 +342,7 @@ import PlayIcon from '~icons/mdi/play-circle-outline'
 import MusicIcon from '~icons/mdi/music-note-outline'
 import type { DataArray, DataItem, ActionArray, FilterPreset } from '@/types/common'
 import type { UiConfig, ColumnConfig, FilterConfig } from '@/types/ui-config'
+import Image from '@/components/molecules/Image.vue'
 
 // props/emits
 

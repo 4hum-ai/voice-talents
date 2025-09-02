@@ -5,9 +5,9 @@
     :aria-label="isImageVisible ? undefined : ariaLabel"
     role="img"
   >
-    <img
+    <Image
       v-if="isImageVisible"
-      :src="src"
+      :src="src || ''"
       :alt="altAttr"
       class="h-full w-full object-cover"
       @error="onImgError"
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import Image from '@/components/molecules/Image.vue'
 
 interface Props {
   label?: string

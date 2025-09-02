@@ -55,7 +55,7 @@
             <!-- Single file preview -->
             <div v-if="previews.length === 1" class="space-y-3">
               <div class="overflow-hidden rounded-lg border bg-black/5 dark:bg-white/5">
-                <img
+                <Image
                   v-if="previews[0].kind === 'image'"
                   :src="previews[0].url"
                   alt="preview"
@@ -232,6 +232,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import Image from '@/components/molecules/Image.vue'
 import TagInput from '@/components/atoms/TagInput.vue'
 import { useMedia } from '@/composables/useMedia'
 import { useGlobalUpload } from '@/composables/useGlobalUpload'

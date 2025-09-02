@@ -10,6 +10,7 @@
     :loading="loading"
     :decoding="decoding"
     :referrerpolicy="shouldSetReferrerPolicy ? 'no-referrer' : undefined"
+    @error="$emit('error')"
     v-bind="$attrs"
   />
 </template>
@@ -25,6 +26,11 @@ import {
   type ImageTransformOptions,
   type ResponsiveBreakpoint,
 } from '@/utils/imageTransform'
+
+// Define emits
+defineEmits<{
+  (e: 'error'): void
+}>()
 
 interface Props {
   /** Source image URL */

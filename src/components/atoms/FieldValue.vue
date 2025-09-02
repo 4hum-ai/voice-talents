@@ -89,7 +89,7 @@
     objectValue
   }}</span>
   <span v-else-if="displayKind === 'image'" class="inline-flex items-center">
-    <img
+    <Image
       :src="String(value)"
       alt=""
       class="h-10 w-10 rounded bg-gray-100 object-cover dark:bg-gray-800"
@@ -106,11 +106,11 @@
     <span v-if="country.code" class="shrink-0">
       <picture>
         <source :srcset="`https://flagcdn.com/${country.code}.svg`" type="image/svg+xml" />
-        <img
+        <Image
           :src="`https://flagcdn.com/24x18/${country.code}.png`"
           alt=""
-          width="24"
-          height="18"
+          :width="24"
+          :height="18"
           class="rounded-sm"
         />
       </picture>
@@ -121,6 +121,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import Image from '@/components/molecules/Image.vue'
 import { getCountryByAny } from '@/utils/countries'
 
 interface Props {

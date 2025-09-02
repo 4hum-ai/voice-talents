@@ -230,11 +230,11 @@
                             :srcset="`https://flagcdn.com/${countryCode(item[column.key])}.svg`"
                             type="image/svg+xml"
                           />
-                          <img
+                          <Image
                             :src="`https://flagcdn.com/24x18/${countryCode(item[column.key])}.png`"
                             alt=""
-                            width="24"
-                            height="18"
+                            :width="24"
+                            :height="18"
                             class="rounded-sm"
                           />
                         </picture>
@@ -244,7 +244,7 @@
                       </span>
                     </div>
                     <div v-else-if="column.type === 'image'" class="flex items-center">
-                      <img
+                      <Image
                         :src="getItemString(item, column.key)"
                         alt=""
                         class="h-8 w-8 rounded bg-gray-100 object-cover dark:bg-gray-800"
@@ -430,6 +430,7 @@ import { toDate } from '@/utils/date'
 import { LocationQuery, useRoute, useRouter } from 'vue-router'
 import type { DataArray, ActionArray, DataItem, FilterPreset } from '@/types/common'
 import { ColumnConfig, FilterConfig, UiConfig } from '@/types/ui-config'
+import Image from '@/components/molecules/Image.vue'
 
 type Props = {
   data: DataArray
