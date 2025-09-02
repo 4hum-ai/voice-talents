@@ -414,7 +414,14 @@ const activeComponentId = ref('image')
 
 // Generate sidebar sections from component definitions
 const sidebarSections = computed(() => {
-  const sections = new Map<string, { id: string; title: string; items: { id: string; title: string; description: string; action: () => void }[] }>()
+  const sections = new Map<
+    string,
+    {
+      id: string
+      title: string
+      items: { id: string; title: string; description: string; action: () => void }[]
+    }
+  >()
 
   // Initialize sections
   sections.set('atoms', { id: 'atoms', title: 'Atoms', items: [] })
