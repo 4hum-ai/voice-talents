@@ -9,6 +9,13 @@ A studio for movies localization using Voice AI technologies.
 - Pinia (state), Vue Router
 - Firebase Auth
 
+### Development Guidelines
+
+- **Icons**: Use Material Design Icons (MDI) via unplugin-icons. See [Icon Usage Guide](docs/ICON_USAGE.md) for conventions.
+- **Styling**: Tailwind CSS classes only
+- **State Management**: Pinia stores
+- **API**: Use composables and services, not direct fetch calls
+
 ### Quick start
 
 ```bash

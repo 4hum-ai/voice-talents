@@ -137,24 +137,39 @@
             </template>
 
             <template v-else-if="mediaKind(primaryMediaValue(item)) === 'video'">
-              <template v-if="posterUrl(item)">
-                <Image :src="posterUrl(item) || ''" alt="" class="h-full w-full object-cover" />
+              <!-- Show video player if this item is active, otherwise show poster/thumbnail -->
+              <template v-if="activeVideo && activeVideo.item.id === item.id">
+                <div class="h-full w-full bg-black">
+                  <VideoPlayer
+                    :url="activeVideo.url"
+                    :title="activeVideo.title"
+                    subtitle-url=""
+                    mode="inline"
+                    @close="closeVideo"
+                  />
+                </div>
               </template>
               <template v-else>
-                <div class="h-full w-full bg-gray-200 dark:bg-gray-700" />
+                <template v-if="posterUrl(item)">
+                  <Image :src="posterUrl(item) || ''" alt="" class="h-full w-full object-cover" />
+                </template>
+                <template v-else>
+                  <div class="h-full w-full bg-gray-200 dark:bg-gray-700" />
+                </template>
+                <button
+                  type="button"
+                  class="absolute inset-0 grid place-items-center"
+                  aria-label="Play video"
+                  @click="handleVideoClick(item, $event)"
+                >
+                  <PlayIcon class="h-12 w-12 text-white/90 drop-shadow" aria-hidden="true" />
+                </button>
+                <span
+                  class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+                >
+                  {{ mediaFormat(item) }}
+                </span>
               </template>
-              <button
-                type="button"
-                class="absolute inset-0 grid place-items-center"
-                aria-label="Play video"
-              >
-                <PlayIcon class="h-12 w-12 text-white/90 drop-shadow" aria-hidden="true" />
-              </button>
-              <span
-                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
-              >
-                {{ mediaFormat(item) }}
-              </span>
             </template>
 
             <template v-else-if="mediaKind(primaryMediaValue(item)) === 'audio'">
@@ -343,6 +358,7 @@ import MusicIcon from '~icons/mdi/music-note-outline'
 import type { DataArray, DataItem, ActionArray, FilterPreset } from '@/types/common'
 import type { UiConfig, ColumnConfig, FilterConfig } from '@/types/ui-config'
 import Image from '@/components/molecules/Image.vue'
+import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
 
 // props/emits
 
@@ -619,6 +635,34 @@ function onLocalDateChange(field: string, key: 'from' | 'to', value: string) {
 
 // Removed unused handleAction to satisfy type checks
 const handleItemClick = (item: unknown) => emit('item-click', item)
+
+// Video player state
+const activeVideo = ref<{ item: DataItem; url: string; title: string; posterUrl?: string } | null>(
+  null,
+)
+
+// Handle video item click
+const handleVideoClick = (item: DataItem, event: Event) => {
+  event.stopPropagation() // Prevent item-click emit
+
+  const videoUrl = String(item?.fileUrl || item?.url || '')
+  const title = String(item?.[titleField.value] || 'Video')
+  const poster = posterUrl(item)
+
+  if (videoUrl) {
+    activeVideo.value = {
+      item,
+      url: videoUrl,
+      title,
+      posterUrl: poster || undefined,
+    }
+  }
+}
+
+// Close video player
+const closeVideo = () => {
+  activeVideo.value = null
+}
 const getInitials = (name: unknown) =>
   !name
     ? '?'
