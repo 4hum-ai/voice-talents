@@ -1,40 +1,236 @@
 <template>
-  <input
-    :type="type"
-    :value="modelValue"
-    :placeholder="placeholder"
-    :class="inputClasses"
-    @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-  />
+  <div class="w-full">
+    <label v-if="label" :for="inputId" :class="labelClasses">
+      {{ label }}
+      <span v-if="required" class="ml-1 text-red-500">*</span>
+    </label>
+
+    <div class="relative">
+      <!-- Icon prefix -->
+      <div
+        v-if="prefixIcon"
+        class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+      >
+        <component :is="prefixIcon" class="h-4 w-4 text-gray-400" />
+      </div>
+
+      <input
+        :id="inputId"
+        :type="type"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :required="required"
+        :disabled="disabled"
+        :readonly="readonly"
+        :class="inputClasses"
+        @input="handleInput"
+        @blur="handleBlur"
+        @focus="handleFocus"
+      />
+
+      <!-- Icon suffix -->
+      <div
+        v-if="suffixIcon"
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+      >
+        <component :is="suffixIcon" class="h-4 w-4 text-gray-400" />
+      </div>
+
+      <!-- Password toggle for password type -->
+      <button
+        v-if="type === 'password' && showPasswordToggle"
+        type="button"
+        class="absolute inset-y-0 right-0 flex items-center pr-3"
+        @click="togglePassword"
+      >
+        <svg
+          v-if="!showPassword"
+          class="h-4 w-4 text-gray-400 hover:text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+          />
+        </svg>
+        <svg
+          v-else
+          class="h-4 w-4 text-gray-400 hover:text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Help text -->
+    <p v-if="helpText" :class="helpTextClasses">
+      {{ helpText }}
+    </p>
+
+    <!-- Error message -->
+    <p v-if="error" :class="errorClasses">
+      {{ error }}
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, type Component } from 'vue'
 
 interface Props {
   modelValue: string
-  type?: 'text' | 'email' | 'password' | 'number' | 'date'
+  /** Input type */
+  type?:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'date'
+    | 'datetime-local'
+    | 'time'
+    | 'tel'
+    | 'url'
+    | 'search'
+  /** Placeholder text */
   placeholder?: string
+  /** Input size */
   size?: 'sm' | 'md' | 'lg'
+  /** Label text */
+  label?: string
+  /** Whether the field is required */
+  required?: boolean
+  /** Whether the field is disabled */
+  disabled?: boolean
+  /** Whether the field is readonly */
+  readonly?: boolean
+  /** Help text below the input */
+  helpText?: string
+  /** Error message */
+  error?: string
+  /** Prefix icon component */
+  prefixIcon?: Component
+  /** Suffix icon component */
+  suffixIcon?: Component
+  /** Whether to show password toggle for password type */
+  showPasswordToggle?: boolean
+  /** Validation state */
+  validationState?: 'default' | 'success' | 'error' | 'warning'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
   size: 'md',
+  showPasswordToggle: true,
+  validationState: 'default',
 })
+
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+  blur: [event: FocusEvent]
+  focus: [event: FocusEvent]
+}>()
+
+const inputId = `input-${Math.random().toString(36).substr(2, 9)}`
+const showPassword = ref(false)
 
 const inputClasses = computed(() => {
   const base =
-    'rounded-md border border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100'
+    'w-full rounded-md border bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500'
+
   const sizes = {
     sm: 'px-2 py-1 text-xs',
-    md: 'px-2 py-1.5 text-sm',
-    lg: 'px-3 py-2 text-base',
+    md: 'px-3 py-2 text-sm',
+    lg: 'px-4 py-3 text-base',
+  }
+
+  const padding = props.prefixIcon ? 'pl-10' : 'pl-3'
+  const paddingRight =
+    props.suffixIcon || (props.type === 'password' && props.showPasswordToggle) ? 'pr-10' : 'pr-3'
+
+  let borderClasses =
+    'border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400'
+
+  if (props.validationState === 'success') {
+    borderClasses =
+      'border-green-300 focus:border-green-500 focus:ring-green-500 dark:border-green-600 dark:focus:border-green-400 dark:focus:ring-green-400'
+  } else if (props.validationState === 'error') {
+    borderClasses =
+      'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-600 dark:focus:border-red-400 dark:focus:ring-red-400'
+  } else if (props.validationState === 'warning') {
+    borderClasses =
+      'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-600 dark:focus:border-yellow-400 dark:focus:ring-yellow-400'
+  }
+
+  return `${base} ${sizes[props.size]} ${padding} ${paddingRight} ${borderClasses}`
+})
+
+const labelClasses = computed(() => {
+  const base = 'block font-medium text-gray-700 dark:text-gray-300'
+  const sizes = {
+    sm: 'text-xs mb-1',
+    md: 'text-sm mb-2',
+    lg: 'text-base mb-2',
   }
   return `${base} ${sizes[props.size]}`
 })
 
-defineEmits<{
-  'update:modelValue': [value: string]
-}>()
+const helpTextClasses = computed(() => {
+  const base = 'mt-1 text-gray-500 dark:text-gray-400'
+  const sizes = {
+    sm: 'text-xs',
+    md: 'text-xs',
+    lg: 'text-sm',
+  }
+  return `${base} ${sizes[props.size]}`
+})
+
+const errorClasses = computed(() => {
+  const base = 'mt-1 text-red-600 dark:text-red-400'
+  const sizes = {
+    sm: 'text-xs',
+    md: 'text-xs',
+    lg: 'text-sm',
+  }
+  return `${base} ${sizes[props.size]}`
+})
+
+const handleInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  emit('update:modelValue', target.value)
+}
+
+const handleBlur = (event: FocusEvent) => {
+  emit('blur', event)
+}
+
+const handleFocus = (event: FocusEvent) => {
+  emit('focus', event)
+}
+
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+  // Change input type
+  const input = document.getElementById(inputId) as HTMLInputElement
+  if (input) {
+    input.type = showPassword.value ? 'text' : 'password'
+  }
+}
 </script>
