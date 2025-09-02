@@ -242,6 +242,25 @@
                           Show Modal
                         </button>
                       </div>
+
+                      <!-- Show Media Player Button for GlobalMediaPlayer -->
+                      <div
+                        v-if="componentConfig.id === 'global-media-player'"
+                        class="space-y-2 text-center"
+                      >
+                        <button
+                          @click="showMediaPlayer('modal')"
+                          class="bg-primary text-primary-foreground hover:bg-primary/90 mr-2 rounded-md px-4 py-2 shadow-sm transition-colors"
+                        >
+                          Show Modal Player
+                        </button>
+                        <button
+                          @click="showMediaPlayer('inline')"
+                          class="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md px-4 py-2 shadow-sm transition-colors"
+                        >
+                          Show Inline Player
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -267,6 +286,7 @@ import Accordion from '@/components/atoms/Accordion.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
+import GlobalMediaPlayer from '@/components/organisms/GlobalMediaPlayer.vue'
 
 // Single source of truth for component definitions
 interface ComponentDefinition {
@@ -370,6 +390,21 @@ const componentDefinitions: ComponentDefinition[] = [
       placeholder: 'Enter JSON...',
       rows: 4,
       readonly: false,
+    },
+  },
+  {
+    id: 'global-media-player',
+    title: 'Global Media Player',
+    description: 'Advanced video player with HLS support, subtitles, and custom controls',
+    componentName: 'GlobalMediaPlayer',
+    component: GlobalMediaPlayer,
+    section: 'organisms',
+    defaultProps: {
+      visible: false,
+      url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      title: 'Sample Video',
+      subtitleUrl: '',
+      mode: 'modal',
     },
   },
   {
@@ -556,6 +591,16 @@ const showConfirmModal = () => {
   if (confirmModalConfig) {
     confirmModalConfig.props.open = true
     updateJsonFromProps(confirmModalConfig)
+  }
+}
+
+// Show media player for testing
+const showMediaPlayer = (mode: 'modal' | 'inline') => {
+  const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
+  if (mediaPlayerConfig) {
+    mediaPlayerConfig.props.visible = true
+    mediaPlayerConfig.props.mode = mode
+    updateJsonFromProps(mediaPlayerConfig)
   }
 }
 </script>
