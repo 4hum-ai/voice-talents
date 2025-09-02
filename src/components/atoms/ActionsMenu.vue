@@ -24,7 +24,7 @@
         <div
           ref="itemsEl"
           :style="floatingStyles"
-          class="ring-opacity-5 fixed z-50 min-w-[16rem] rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
+          class="ring-opacity-5 fixed z-50 min-w-[16rem] transform-gpu rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
         >
           <!-- Header (optional) -->
           <div
@@ -141,7 +141,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem as HMenuItem, TransitionRoot } from '@headlessui/vue'
-import { computePosition, flip, shift, offset, autoUpdate } from '@floating-ui/dom'
 
 export interface MenuItem {
   key: string
@@ -175,7 +174,6 @@ const emit = defineEmits<{
 const rootEl = ref<HTMLElement | null>(null)
 const buttonEl = ref<HTMLElement | null>(null)
 const itemsEl = ref<HTMLElement | null>(null)
-const cleanup = ref<(() => void) | null>(null)
 const floatingStyles = ref<Record<string, string>>({})
 const isDestroyed = ref(false)
 const buttonAriaLabel = computed(() => 'Open actions menu')
@@ -205,12 +203,32 @@ const updatePosition = async () => {
   if (!buttonEl.value || !itemsEl.value || isDestroyed.value) return
 
   try {
-    const { x, y } = await computePosition(buttonEl.value, itemsEl.value, {
-      strategy: 'fixed',
-      middleware: [offset(8), flip(), shift({ padding: 8 })],
-    })
+    // Get button dimensions and position
+    const buttonRect = buttonEl.value.getBoundingClientRect()
+    const menuWidth = 256 // min-w-[16rem] = 16 * 16 = 256px
+
+    // Calculate position to ensure menu appears to the left of the button
+    let targetX = buttonRect.left - menuWidth - 8 // 8px gap
+    let targetY = buttonRect.top + 8 // 8px below button
+
+    // Ensure menu doesn't go off-screen to the left
+    if (targetX < 8) {
+      targetX = 8
+    }
+
+    // Ensure menu doesn't go off-screen to the bottom
+    if (targetY + 200 > window.innerHeight) {
+      // Assume menu height ~200px
+      targetY = buttonRect.top - 200 - 8
+    }
+
     if (!isDestroyed.value) {
-      floatingStyles.value = { position: 'fixed', left: `${x}px`, top: `${y}px` }
+      floatingStyles.value = {
+        position: 'fixed',
+        left: `${targetX}px`,
+        top: `${targetY}px`,
+        transform: 'none', // Override any transform
+      }
     }
   } catch (error) {
     // Handle positioning errors gracefully
@@ -232,28 +250,29 @@ const onSelect = (item: MenuItem) => {
   emit('select', item.key)
 }
 
-const onWindowKeydown = () => {}
-const onDocumentClick = () => {}
+const onWindowKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    // Close menu on escape key
+    // This will be handled by Headless UI automatically
+  }
+}
 
-// Floating autoUpdate tied to presence of trigger and items
+const onDocumentClick = (event: MouseEvent) => {
+  // Close menu when clicking outside
+  if (rootEl.value && !rootEl.value.contains(event.target as Node)) {
+    // This will be handled by Headless UI automatically
+  }
+}
+
+// Update position when button or items change
 const stopWatch = watch(
   [buttonEl, itemsEl],
   ([btn, items]) => {
     if (isDestroyed.value) return
 
-    cleanup.value?.()
     if (btn && items) {
-      try {
-        cleanup.value = autoUpdate(btn, items, updatePosition)
-        updatePosition()
-      } catch (error) {
-        if (!isDestroyed.value) {
-          console.warn('Failed to setup floating UI:', error)
-        }
-        cleanup.value = null
-      }
-    } else {
-      cleanup.value = null
+      // Update position immediately when elements are available
+      updatePosition()
     }
   },
   { immediate: true },
@@ -342,10 +361,6 @@ onBeforeUnmount(() => {
     window.removeEventListener('keydown', onWindowKeydown)
     document.removeEventListener('click', onDocumentClick)
     stopWatch()
-    if (cleanup.value) {
-      cleanup.value()
-      cleanup.value = null
-    }
   } catch (error) {
     console.warn('Error during ActionsMenu cleanup:', error)
   }
