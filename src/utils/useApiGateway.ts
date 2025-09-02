@@ -26,6 +26,14 @@ export interface ApiClient {
   request: (path: string, options?: RequestOptions) => Promise<Response>
   /** Base URL of the API client */
   baseUrl: string
+  /** Convenience method for GET requests */
+  get: (path: string, options?: RequestOptions) => Promise<Response>
+  /** Convenience method for POST requests */
+  post: (path: string, body?: unknown, options?: RequestOptions) => Promise<Response>
+  /** Convenience method for PUT requests */
+  put: (path: string, body?: unknown, options?: RequestOptions) => Promise<Response>
+  /** Convenience method for DELETE requests */
+  delete: (path: string, options?: RequestOptions) => Promise<Response>
 }
 
 function joinUrl(baseUrl: string, path: string): string {
@@ -150,7 +158,28 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     return response
   }
 
-  return { request, baseUrl }
+  // Convenience methods
+  const get = (path: string, options?: RequestOptions) =>
+    request(path, { ...options, method: 'GET' })
+
+  const post = (path: string, body?: unknown, options?: RequestOptions) =>
+    request(path, {
+      ...options,
+      method: 'POST',
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+  const put = (path: string, body?: unknown, options?: RequestOptions) =>
+    request(path, {
+      ...options,
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+  const deleteMethod = (path: string, options?: RequestOptions) =>
+    request(path, { ...options, method: 'DELETE' })
+
+  return { request, get, post, put, delete: deleteMethod, baseUrl }
 }
 
 /** Cache of API clients by base path */

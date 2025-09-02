@@ -89,6 +89,8 @@
       </template>
     </AppBar>
 
+    <div class="pt-24"></div>
+
     <main class="p-4">
       <div
         v-if="activeFilters && activeFilters.length > 0"

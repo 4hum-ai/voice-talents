@@ -10,7 +10,18 @@
       <div class="flex items-center gap-2">
         <!-- Icon -->
         <div v-if="icon" :class="['flex-shrink-0 rounded-lg p-2', iconClasses]">
-          <component :is="icon" :class="['text-white', sizeClasses.icon]" aria-hidden="true" />
+          <Icon
+            v-if="typeof icon === 'string'"
+            :name="icon"
+            :class="['text-white', sizeClasses.icon]"
+            aria-hidden="true"
+          />
+          <component
+            v-else
+            :is="icon"
+            :class="['text-white', sizeClasses.icon]"
+            aria-hidden="true"
+          />
         </div>
 
         <!-- Title -->
@@ -49,6 +60,7 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-vue-next'
+import Icon from '@/components/atoms/Icon.vue'
 
 interface Props {
   /** Metric title */
@@ -58,7 +70,7 @@ interface Props {
   /** Metric subtitle */
   subtitle?: string
   /** Metric icon */
-  icon?: Component
+  icon?: string | Component
   /** Icon background color variant */
   iconVariant?: 'primary' | 'success' | 'warning' | 'error' | 'info'
   /** Trend information */

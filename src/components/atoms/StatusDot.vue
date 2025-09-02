@@ -19,28 +19,7 @@ import { computed } from 'vue'
 
 interface Props {
   /** Status type */
-  status?:
-    | 'active'
-    | 'success'
-    | 'paid'
-    | 'online'
-    | 'pending'
-    | 'warning'
-    | 'inactive'
-    | 'offline'
-    | 'suspended'
-    | 'error'
-    | 'failed'
-    | 'draft'
-    | 'published'
-    | 'archived'
-    | 'processing'
-    | 'completed'
-    | 'queued'
-    | 'cancelled'
-    | 'needs_review'
-    | 'approved'
-    | 'rejected'
+  status?: string
   /** Size variant */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   /** Whether to animate the dot */
