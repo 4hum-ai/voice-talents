@@ -117,11 +117,38 @@
     </span>
     <span class="text-sm text-gray-900 dark:text-gray-100">{{ country.name || textValue }}</span>
   </span>
+
+  <!-- NEW: Language display -->
+  <span v-else-if="displayKind === 'language'" class="inline-flex items-center">
+    <LanguageDisplay :value="String(value)" :show-code="true" size="sm" />
+  </span>
+
+  <!-- NEW: Percentage display -->
+  <span v-else-if="displayKind === 'percentage'" class="text-sm text-gray-900 dark:text-gray-100">
+    {{ percentageValue }}
+  </span>
+
+  <!-- NEW: Progress display -->
+  <span v-else-if="displayKind === 'progress'" class="inline-flex items-center gap-2">
+    <ProgressIndicator :value="Number(value)" size="sm" :show-label="true" />
+  </span>
+
+  <!-- NEW: Duration display -->
+  <span v-else-if="displayKind === 'duration'" class="text-sm text-gray-900 dark:text-gray-100">
+    {{ durationValue }}
+  </span>
+
+  <!-- NEW: File size display -->
+  <span v-else-if="displayKind === 'fileSize'" class="text-sm text-gray-900 dark:text-gray-100">
+    {{ fileSizeValue }}
+  </span>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import Image from '@/components/molecules/Image.vue'
+import LanguageDisplay from './LanguageDisplay.vue'
+import ProgressIndicator from '@/components/molecules/ProgressIndicator.vue'
 import { getCountryByAny } from '@/utils/countries'
 
 interface Props {
@@ -137,7 +164,19 @@ interface Props {
     | 'array'
     | 'object'
     | 'color'
-  formatter?: 'rating' | 'status' | 'date' | 'currency' | 'badge' | 'country' | 'number'
+  formatter?:
+    | 'rating'
+    | 'status'
+    | 'date'
+    | 'currency'
+    | 'badge'
+    | 'country'
+    | 'number'
+    | 'language'
+    | 'percentage'
+    | 'progress'
+    | 'duration'
+    | 'fileSize'
   currencyCode?: string
   fieldKey?: string
 }
@@ -281,6 +320,48 @@ const objectValue = computed(() => {
   } catch {
     return String(props.value)
   }
+})
+
+// NEW: Percentage value computation
+const percentageValue = computed(() => {
+  const raw = props.value
+  const n = typeof raw === 'string' ? parseFloat(raw) : typeof raw === 'number' ? raw : Number.NaN
+  if (!Number.isFinite(n)) return '-'
+  return `${n.toFixed(1)}%`
+})
+
+// NEW: Duration value computation
+const durationValue = computed(() => {
+  const raw = props.value
+  const n = typeof raw === 'string' ? parseFloat(raw) : typeof raw === 'number' ? raw : Number.NaN
+  if (!Number.isFinite(n)) return '-'
+
+  const hours = Math.floor(n / 3600)
+  const minutes = Math.floor((n % 3600) / 60)
+  const seconds = Math.floor(n % 60)
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${seconds}s`
+  } else if (minutes > 0) {
+    return `${minutes}m ${seconds}s`
+  } else {
+    return `${seconds}s`
+  }
+})
+
+// NEW: File size value computation
+const fileSizeValue = computed(() => {
+  const raw = props.value
+  const n = typeof raw === 'string' ? parseFloat(raw) : typeof raw === 'number' ? raw : Number.NaN
+  if (!Number.isFinite(n)) return '-'
+
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+  if (n === 0) return '0 B'
+
+  const i = Math.floor(Math.log(n) / Math.log(1024))
+  const size = n / Math.pow(1024, i)
+
+  return `${size.toFixed(1)} ${sizes[i]}`
 })
 
 const normalizedHref = computed(() => {
