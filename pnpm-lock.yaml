@@ -47,9 +47,6 @@ importers:
       hls.js:
         specifier: ^1.6.11
         version: 1.6.11
-      lucide-vue-next:
-        specifier: ^0.460.0
-        version: 0.460.0(vue@3.5.20(typescript@5.9.2))
       pinia:
         specifier: ^2.1.7
         version: 2.3.1(typescript@5.9.2)(vue@3.5.20(typescript@5.9.2))
@@ -2001,11 +1998,6 @@ packages:
 
   loupe@2.3.7:
     resolution: {integrity: sha512-zSMINGVYkdpYSOBmLi0D1Uo7JU9nVdQKrHxC8eYlV+9YKK9WePqAlL7lSlorG/U2Fw1w0hTBmaa/jrQ3UbPHtA==}
-
-  lucide-vue-next@0.460.0:
-    resolution: {integrity: sha512-IhM1tm3gPhc3u6RagNra4W6Oe48Mz0l3fAJzk0oSLzsRQqt3WU3XiX5ngRyjIs8fzCtvgzu7fC6Qk7XVhS00DQ==}
-    peerDependencies:
-      vue: '>=3.0.1'
 
   magic-string@0.25.9:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}
@@ -4618,10 +4610,6 @@ snapshots:
   loupe@2.3.7:
     dependencies:
       get-func-name: 2.0.2
-
-  lucide-vue-next@0.460.0(vue@3.5.20(typescript@5.9.2)):
-    dependencies:
-      vue: 3.5.20(typescript@5.9.2)
 
   magic-string@0.25.9:
     dependencies:

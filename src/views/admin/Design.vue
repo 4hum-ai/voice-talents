@@ -250,22 +250,10 @@
                         class="space-y-2 text-center"
                       >
                         <button
-                          @click="showMediaPlayer('modal')"
-                          class="bg-primary text-primary-foreground hover:bg-primary/90 mr-2 rounded-md px-4 py-2 shadow-sm transition-colors"
-                        >
-                          Show Modal Player
-                        </button>
-                        <button
-                          @click="showMediaPlayer('inline')"
-                          class="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md px-4 py-2 shadow-sm transition-colors"
+                          @click="showMediaPlayer()"
+                          class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 shadow-sm transition-colors"
                         >
                           Show Inline Player
-                        </button>
-                        <button
-                          @click="showMediaPlayerPip()"
-                          class="rounded-md bg-green-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-green-700"
-                        >
-                          Show PiP Player
                         </button>
                       </div>
                     </div>
@@ -411,10 +399,7 @@ const componentDefinitions: ComponentDefinition[] = [
       url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       title: 'Sample Video',
       subtitleUrl: '',
-      mode: 'modal',
-      pipMode: false,
-      pipPosition: { x: 100, y: 100 },
-      pipSize: 'small',
+      mode: 'inline',
     },
   },
   {
@@ -605,25 +590,11 @@ const showConfirmModal = () => {
 }
 
 // Show media player for testing
-const showMediaPlayer = (mode: 'modal' | 'inline') => {
+const showMediaPlayer = () => {
   const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
   if (mediaPlayerConfig) {
     mediaPlayerConfig.props.visible = true
-    mediaPlayerConfig.props.mode = mode
-    mediaPlayerConfig.props.pipMode = false
-    updateJsonFromProps(mediaPlayerConfig)
-  }
-}
-
-// Show media player in PiP mode for testing
-const showMediaPlayerPip = () => {
-  const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
-  if (mediaPlayerConfig) {
-    mediaPlayerConfig.props.visible = true
-    mediaPlayerConfig.props.mode = 'modal'
-    mediaPlayerConfig.props.pipMode = true
-    mediaPlayerConfig.props.pipPosition = { x: 100, y: 100 }
-    mediaPlayerConfig.props.pipSize = 'small'
+    mediaPlayerConfig.props.mode = 'inline'
     updateJsonFromProps(mediaPlayerConfig)
   }
 }
