@@ -96,11 +96,10 @@
     />
   </span>
   <span v-else-if="displayKind === 'video'" class="inline-flex items-center">
-    <video
-      :src="String(value)"
-      class="h-16 w-24 rounded bg-gray-100 object-cover dark:bg-gray-800"
-      controls
-    />
+    <VideoPlayer :url="String(value)" :title="String(value)" subtitle-url="" mode="inline" />
+  </span>
+  <span v-else-if="displayKind === 'audio'" class="inline-flex items-center">
+    <AudioPlayer :url="String(value)" :title="String(value)" mode="inline" />
   </span>
   <span v-else-if="displayKind === 'country'" class="inline-flex items-center gap-2">
     <span v-if="country.code" class="shrink-0">
@@ -149,6 +148,8 @@ import { computed } from 'vue'
 import Image from '@/components/molecules/Image.vue'
 import LanguageDisplay from './LanguageDisplay.vue'
 import ProgressIndicator from '@/components/molecules/ProgressIndicator.vue'
+import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
+import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
 import { getCountryByAny } from '@/utils/countries'
 
 interface Props {
@@ -177,6 +178,8 @@ interface Props {
     | 'progress'
     | 'duration'
     | 'fileSize'
+    | 'audio'
+    | 'video'
   currencyCode?: string
   fieldKey?: string
 }
@@ -196,10 +199,44 @@ const displayKind = computed(() => {
   if (looksEmail) return 'email'
   if (looksPhone) return 'phone'
   if (props.type) return props.type
-  // basic heuristic: show video if URL ends with a known extension
+
+  // Media type detection based on file extensions and URLs
   const v = String(props.value || '').toLowerCase()
-  if (v.endsWith('.mp4') || v.endsWith('.webm') || v.endsWith('.mov') || v.includes('video='))
+
+  // Video detection
+  if (
+    v.endsWith('.mp4') ||
+    v.endsWith('.webm') ||
+    v.endsWith('.mov') ||
+    v.endsWith('.avi') ||
+    v.endsWith('.mkv') ||
+    v.includes('video=') ||
+    v.includes('.m3u8')
+  )
     return 'video'
+
+  // Audio detection
+  if (
+    v.endsWith('.mp3') ||
+    v.endsWith('.wav') ||
+    v.endsWith('.aac') ||
+    v.endsWith('.flac') ||
+    v.includes('audio=')
+  )
+    return 'audio'
+
+  // Image detection (if not already handled by type)
+  if (
+    props.type !== 'image' &&
+    (v.endsWith('.jpg') ||
+      v.endsWith('.jpeg') ||
+      v.endsWith('.png') ||
+      v.endsWith('.webp') ||
+      v.endsWith('.gif') ||
+      v.includes('image='))
+  )
+    return 'image'
+
   return 'text'
 })
 

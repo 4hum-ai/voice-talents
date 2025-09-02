@@ -281,6 +281,7 @@ import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
+import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
 
 // Single source of truth for component definitions
 interface ComponentDefinition {
@@ -398,6 +399,22 @@ const componentDefinitions: ComponentDefinition[] = [
       url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       title: 'Sample Video',
       subtitleUrl: '',
+    },
+  },
+  {
+    id: 'audio-player',
+    title: 'Audio Player',
+    description: 'Professional audio player with progress controls, volume, and keyboard shortcuts',
+    componentName: 'AudioPlayer',
+    component: AudioPlayer,
+    section: 'organisms',
+    defaultProps: {
+      url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+      title: 'Sample Audio',
+      mode: 'inline',
+      autoplay: false,
+      loop: false,
+      preload: 'metadata',
     },
   },
   {

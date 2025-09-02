@@ -173,23 +173,40 @@
             </template>
 
             <template v-else-if="mediaKind(primaryMediaValue(item)) === 'audio'">
-              <div
-                class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700"
-              >
-                <MusicIcon class="h-10 w-10 text-gray-600 dark:text-gray-300" aria-hidden="true" />
-              </div>
-              <button
-                type="button"
-                class="absolute inset-0 grid place-items-center"
-                aria-label="Play audio"
-              >
-                <PlayIcon class="h-12 w-12 text-white/90 drop-shadow" aria-hidden="true" />
-              </button>
-              <span
-                class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
-              >
-                {{ mediaFormat(item) }}
-              </span>
+              <!-- Show audio player if this item is active, otherwise show audio icon -->
+              <template v-if="activeAudio && activeAudio.item.id === item.id">
+                <div class="h-full w-full bg-black">
+                  <AudioPlayer
+                    :url="activeAudio.url"
+                    :title="activeAudio.title"
+                    mode="inline"
+                    @close="closeAudio"
+                  />
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  class="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700"
+                >
+                  <MusicIcon
+                    class="h-10 w-10 text-gray-600 dark:text-gray-300"
+                    aria-hidden="true"
+                  />
+                </div>
+                <button
+                  type="button"
+                  class="absolute inset-0 grid place-items-center"
+                  aria-label="Play audio"
+                  @click="handleAudioClick(item, $event)"
+                >
+                  <PlayIcon class="h-12 w-12 text-white/90 drop-shadow" aria-hidden="true" />
+                </button>
+                <span
+                  class="absolute top-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-white uppercase"
+                >
+                  {{ mediaFormat(item) }}
+                </span>
+              </template>
             </template>
 
             <template v-else>
@@ -359,6 +376,7 @@ import type { DataArray, DataItem, ActionArray, FilterPreset } from '@/types/com
 import type { UiConfig, ColumnConfig, FilterConfig } from '@/types/ui-config'
 import Image from '@/components/molecules/Image.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
+import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
 
 // props/emits
 
@@ -634,7 +652,14 @@ function onLocalDateChange(field: string, key: 'from' | 'to', value: string) {
 // existing gallery logic below (unchanged)
 
 // Removed unused handleAction to satisfy type checks
-const handleItemClick = (item: unknown) => emit('item-click', item)
+const handleItemClick = (item: unknown) => {
+  // Only emit if it's not a video or audio item
+  const dataItem = item as DataItem
+  const mediaType = mediaKind(primaryMediaValue(dataItem))
+  if (mediaType !== 'video' && mediaType !== 'audio') {
+    emit('item-click', item)
+  }
+}
 
 // Video player state
 const activeVideo = ref<{ item: DataItem; url: string; title: string; posterUrl?: string } | null>(
@@ -662,6 +687,34 @@ const handleVideoClick = (item: DataItem, event: Event) => {
 // Close video player
 const closeVideo = () => {
   activeVideo.value = null
+}
+
+// Audio player state
+const activeAudio = ref<{ item: DataItem; url: string; title: string; posterUrl?: string } | null>(
+  null,
+)
+
+// Handle audio item click
+const handleAudioClick = (item: DataItem, event: Event) => {
+  event.stopPropagation() // Prevent item-click emit
+
+  const audioUrl = String(item?.fileUrl || item?.url || '')
+  const title = String(item?.[titleField.value] || 'Audio')
+  const poster = posterUrl(item)
+
+  if (audioUrl) {
+    activeAudio.value = {
+      item,
+      url: audioUrl,
+      title,
+      posterUrl: poster || undefined,
+    }
+  }
+}
+
+// Close audio player
+const closeAudio = () => {
+  activeAudio.value = null
 }
 const getInitials = (name: unknown) =>
   !name
