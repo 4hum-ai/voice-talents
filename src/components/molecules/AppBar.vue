@@ -1,6 +1,9 @@
 <template>
   <div
-    class="fixed relative inset-x-0 top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80"
+    :class="[
+      'border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80',
+      fixed ? 'fixed inset-x-0 top-0 z-40' : 'relative',
+    ]"
   >
     <div class="flex items-center justify-between px-4 py-3">
       <div class="flex min-w-0 items-center gap-3">
@@ -39,11 +42,14 @@ import IconButton from '@/components/atoms/IconButton.vue'
 interface Props {
   loading?: boolean
   showBack?: boolean
+  /** Whether the AppBar should be fixed at the top of the viewport */
+  fixed?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   loading: false,
   showBack: false,
+  fixed: true,
 })
 
 defineEmits(['back'])

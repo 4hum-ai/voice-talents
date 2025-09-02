@@ -27,8 +27,21 @@
         <div
           ref="itemsEl"
           :style="floatingStyles"
-          class="ring-opacity-5 fixed z-50 min-w-[12rem] rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
+          class="ring-opacity-5 fixed z-50 min-w-[16rem] rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
         >
+          <!-- Header (optional) -->
+          <div
+            v-if="title || subtitle"
+            class="border-b border-gray-200 px-4 py-2 dark:border-gray-700"
+          >
+            <h3 v-if="title" class="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {{ title }}
+            </h3>
+            <p v-if="subtitle" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ subtitle }}
+            </p>
+          </div>
+
           <div class="py-1" role="none">
             <HMenuItem v-for="item in items" :key="item.key" v-slot="{ active }">
               <button
@@ -37,6 +50,7 @@
                   'group flex w-full items-start gap-3 text-left focus:outline-none',
                   itemPadding,
                   active ? 'bg-gray-50 dark:bg-gray-700' : '',
+                  item.key === activeItemKey ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                 ]"
                 @click="onSelect(item)"
               >
@@ -45,11 +59,26 @@
                     <span class="truncate text-sm text-gray-800 dark:text-gray-100">{{
                       item.label
                     }}</span>
-                    <span
-                      v-if="item.value"
-                      class="ml-4 shrink-0 text-xs text-gray-500 dark:text-gray-400"
-                      >{{ item.value }}</span
-                    >
+                    <div class="flex items-center gap-2">
+                      <span
+                        v-if="item.value"
+                        class="ml-4 shrink-0 text-xs text-gray-500 dark:text-gray-400"
+                        >{{ item.value }}</span
+                      >
+                      <!-- Active indicator -->
+                      <svg
+                        v-if="item.key === activeItemKey"
+                        class="h-4 w-4 text-blue-600 dark:text-blue-400"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </div>
                   </div>
                   <p
                     v-if="item.description"
@@ -78,11 +107,15 @@ export interface MenuItem {
   description?: string
   value?: string
   disabled?: boolean
+  action?: () => void // Custom action function
 }
 
 const props = defineProps<{
   items: MenuItem[]
   size?: 'sm' | 'md' | 'lg' | 'xl'
+  title?: string
+  subtitle?: string
+  activeItemKey?: string
 }>()
 const emit = defineEmits<{ (e: 'select', key: string): void }>()
 
@@ -123,7 +156,14 @@ const updatePosition = async () => {
   floatingStyles.value = { position: 'fixed', left: `${x}px`, top: `${y}px` }
 }
 
-const onSelect = (item: MenuItem) => emit('select', item.key)
+const onSelect = (item: MenuItem) => {
+  // Execute custom action if provided
+  if (item.action) {
+    item.action()
+  }
+  // Emit the select event for backward compatibility
+  emit('select', item.key)
+}
 
 const onWindowKeydown = () => {}
 const onDocumentClick = () => {}
