@@ -19,21 +19,7 @@ import { computed } from 'vue'
 
 interface Props {
   /** Status type */
-  status?:
-    | 'active'
-    | 'success'
-    | 'paid'
-    | 'online'
-    | 'pending'
-    | 'warning'
-    | 'inactive'
-    | 'offline'
-    | 'suspended'
-    | 'error'
-    | 'failed'
-    | 'draft'
-    | 'published'
-    | 'archived'
+  status?: string
   /** Size variant */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   /** Whether to animate the dot */
@@ -70,6 +56,20 @@ const dotClasses = computed(() => {
       return `${baseClasses} bg-blue-500`
     case 'archived':
       return `${baseClasses} bg-purple-500`
+    case 'processing':
+      return `${baseClasses} bg-blue-500`
+    case 'completed':
+      return `${baseClasses} bg-green-500`
+    case 'queued':
+      return `${baseClasses} bg-gray-400`
+    case 'cancelled':
+      return `${baseClasses} bg-red-500`
+    case 'needs_review':
+      return `${baseClasses} bg-yellow-500`
+    case 'approved':
+      return `${baseClasses} bg-green-500`
+    case 'rejected':
+      return `${baseClasses} bg-red-500`
     default:
       return `${baseClasses} bg-gray-400`
   }

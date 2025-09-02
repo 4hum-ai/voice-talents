@@ -27,7 +27,7 @@
         <div
           ref="itemsEl"
           :style="floatingStyles"
-          class="ring-opacity-5 fixed z-50 min-w-[16rem] rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
+          class="ring-opacity-5 fixed z-50 min-w-[16rem] transform-gpu rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:ring-white/10"
         >
           <!-- Header (optional) -->
           <div
@@ -43,19 +43,17 @@
           </div>
 
           <div class="py-1" role="none">
-            <HMenuItem v-for="(item, index) in allItems" :key="item.key" v-slot="{ active }">
+            <HMenuItem v-for="(item, index) in allItems" :key="item.key" as="button">
               <!-- Divider -->
               <div
                 v-if="item.divider && index > 0"
                 class="my-1 border-t border-gray-200 dark:border-gray-700"
               />
 
-              <button
-                type="button"
+              <div
                 :class="[
                   'group flex w-full items-start gap-3 text-left focus:outline-none',
                   itemPadding,
-                  active ? 'bg-gray-50 dark:bg-gray-700' : '',
                   item.key === activeItemKey ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                   item.disabled ? 'cursor-not-allowed opacity-50' : '',
                   item.variant === 'danger' ? 'text-red-700 dark:text-red-400' : '',
@@ -63,7 +61,6 @@
                   item.variant === 'warning' ? 'text-yellow-700 dark:text-yellow-400' : '',
                   item.variant === 'info' ? 'text-blue-700 dark:text-blue-400' : '',
                 ]"
-                :disabled="item.disabled"
                 @click="onSelect(item)"
               >
                 <!-- Icon -->
@@ -130,7 +127,7 @@
                     {{ item.description }}
                   </p>
                 </div>
-              </button>
+              </div>
             </HMenuItem>
           </div>
         </div>
@@ -178,6 +175,7 @@ const buttonEl = ref<HTMLElement | null>(null)
 const itemsEl = ref<HTMLElement | null>(null)
 const cleanup = ref<(() => void) | null>(null)
 const floatingStyles = ref<Record<string, string>>({})
+const isDestroyed = ref(false)
 const buttonAriaLabel = computed(() => 'Open actions menu')
 const size = computed(() => props.size || 'md')
 const triggerClass = computed(() => {
@@ -202,15 +200,36 @@ const itemPadding = computed(() => {
 })
 
 const updatePosition = async () => {
-  if (!buttonEl.value || !itemsEl.value) return
-  const { x, y } = await computePosition(buttonEl.value, itemsEl.value, {
-    strategy: 'fixed',
-    middleware: [offset(8), flip(), shift({ padding: 8 })],
-  })
-  floatingStyles.value = { position: 'fixed', left: `${x}px`, top: `${y}px` }
+  if (!buttonEl.value || !itemsEl.value || isDestroyed.value) return
+
+  try {
+    const { x, y } = await computePosition(buttonEl.value, itemsEl.value, {
+      strategy: 'fixed',
+      placement: 'bottom-end', // Position to the left of the button
+      middleware: [
+        offset({ mainAxis: 8, crossAxis: -8 }), // Offset down and to the left
+        flip({
+          fallbackPlacements: ['bottom-start', 'top-end', 'top-start'],
+          fallbackAxisSideDirection: 'start',
+        }),
+        shift({ padding: 8 }),
+      ],
+    })
+    if (!isDestroyed.value) {
+      floatingStyles.value = { position: 'fixed', left: `${x}px`, top: `${y}px` }
+    }
+  } catch (error) {
+    // Handle positioning errors gracefully
+    if (!isDestroyed.value) {
+      console.warn('Failed to position menu:', error)
+      floatingStyles.value = {}
+    }
+  }
 }
 
 const onSelect = (item: MenuItem) => {
+  if (isDestroyed.value) return
+
   // Execute custom action if provided
   if (item.action) {
     item.action()
@@ -219,17 +238,35 @@ const onSelect = (item: MenuItem) => {
   emit('select', item.key)
 }
 
-const onWindowKeydown = () => {}
-const onDocumentClick = () => {}
+const onWindowKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    // Close menu on escape key
+    // This will be handled by Headless UI automatically
+  }
+}
+
+const onDocumentClick = () => {
+  // Close menu when clicking outside - Headless UI handles this automatically
+  // This function is kept for potential future use but currently not needed
+}
 
 // Floating autoUpdate tied to presence of trigger and items
 const stopWatch = watch(
   [buttonEl, itemsEl],
   ([btn, items]) => {
+    if (isDestroyed.value) return
+
     cleanup.value?.()
     if (btn && items) {
-      cleanup.value = autoUpdate(btn, items, updatePosition)
-      updatePosition()
+      try {
+        cleanup.value = autoUpdate(btn, items, updatePosition)
+        updatePosition()
+      } catch (error) {
+        if (!isDestroyed.value) {
+          console.warn('Failed to setup floating UI:', error)
+        }
+        cleanup.value = null
+      }
     } else {
       cleanup.value = null
     }
@@ -315,10 +352,18 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onWindowKeydown)
-  document.removeEventListener('click', onDocumentClick)
-  stopWatch()
-  cleanup.value?.()
+  isDestroyed.value = true
+  try {
+    window.removeEventListener('keydown', onWindowKeydown)
+    document.removeEventListener('click', onDocumentClick)
+    stopWatch()
+    if (cleanup.value) {
+      cleanup.value()
+      cleanup.value = null
+    }
+  } catch (error) {
+    console.warn('Error during ActionsMenu cleanup:', error)
+  }
 })
 </script>
 

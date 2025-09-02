@@ -86,7 +86,7 @@
       </template>
     </AppBar>
 
-    <main class="space-y-6 p-4">
+    <main class="space-y-10 p-4">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div class="text-sm text-gray-600 dark:text-gray-300">Time window</div>
         <div class="flex items-center gap-2">

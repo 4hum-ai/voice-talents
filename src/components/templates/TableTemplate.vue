@@ -89,7 +89,7 @@
       </template>
     </AppBar>
 
-    <main class="p-4">
+    <main class="space-y-10 p-4">
       <div
         v-if="activeFilters && activeFilters.length > 0"
         class="mb-3 flex flex-wrap items-center gap-2"
