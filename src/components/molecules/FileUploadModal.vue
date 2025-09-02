@@ -30,6 +30,7 @@
             class="grid min-h-[200px] place-items-center rounded-lg border-2 border-dashed sm:h-full"
             @dragover.prevent
             @drop.prevent="onDrop"
+            v-show="allowDragDrop"
           >
             <div class="text-center">
               <div class="text-sm text-gray-600 dark:text-gray-300">Drag & drop files</div>
@@ -52,8 +53,8 @@
           </div>
 
           <div v-else class="overflow-y-auto sm:h-full">
-            <!-- Single file preview -->
-            <div v-if="previews.length === 1" class="space-y-3">
+            <!-- File previews based on mode -->
+            <div v-if="previewMode === 'single' && previews.length === 1" class="space-y-3">
               <div class="overflow-hidden rounded-lg border bg-black/5 dark:bg-white/5">
                 <Image
                   v-if="previews[0].kind === 'image'"
@@ -104,8 +105,8 @@
               </div>
             </div>
 
-            <!-- Multi file list -->
-            <div v-else class="space-y-3">
+            <!-- Multi file list (default mode) -->
+            <div v-else-if="previewMode === 'single'" class="space-y-3">
               <div class="flex items-center justify-between">
                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Selected files ({{ files.length }})
@@ -150,36 +151,53 @@
         </div>
         <div class="col-span-1 overflow-y-auto p-4 sm:col-span-2 sm:p-6">
           <div class="space-y-3">
-            <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Type</label>
+            <!-- Dynamic form fields -->
+            <div
+              v-for="field in typeof formFields === 'function' ? formFields() : formFields"
+              :key="field.key"
+            >
+              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">
+                {{ field.label }}
+                <span v-if="field.required" class="text-red-500">*</span>
+              </label>
+
+              <!-- Text input -->
+              <input
+                v-if="field.type === 'text'"
+                v-model="formData[field.key]"
+                :placeholder="field.placeholder"
+                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              />
+
+              <!-- Select input -->
               <select
-                v-model="form.type"
+                v-else-if="field.type === 'select'"
+                v-model="formData[field.key]"
                 class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               >
-                <option value="original">Original</option>
-                <option value="dubbed">Dubbed</option>
-                <option value="trailer">Trailer</option>
-                <option value="voice_over">Voice Over</option>
-                <option value="subtitle">Subtitle</option>
+                <option v-for="option in field.options" :key="option" :value="option">
+                  {{ option }}
+                </option>
               </select>
+
+              <!-- Textarea input -->
+              <textarea
+                v-else-if="field.type === 'textarea'"
+                v-model="formData[field.key]"
+                :placeholder="field.placeholder"
+                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                rows="3"
+              />
+
+              <!-- Tags input -->
+              <TagInput
+                v-else-if="field.type === 'tags'"
+                v-model="formData[field.key] as string[]"
+                :placeholder="field.placeholder || 'Add tag and press Enter'"
+              />
             </div>
 
-            <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Language</label>
-              <select
-                v-model="form.language"
-                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-              >
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-                <option value="zh">Chinese</option>
-                <option value="hi">Hindi</option>
-              </select>
-            </div>
+            <!-- Duration display (if available) -->
             <div v-if="previews.length === 1 && previews[0].duration !== undefined">
               <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Duration</label>
               <input
@@ -189,18 +207,6 @@
                 disabled
                 class="w-full cursor-not-allowed rounded-md border bg-gray-50 px-2 py-1.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
               />
-            </div>
-            <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Description</label>
-              <textarea
-                v-model="form.description"
-                rows="4"
-                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-              />
-            </div>
-            <div>
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Tags</label>
-              <TagInput v-model="form.tags" placeholder="Add tag and press Enter" />
             </div>
           </div>
           <div
@@ -234,11 +240,123 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Image from '@/components/molecules/Image.vue'
 import TagInput from '@/components/atoms/TagInput.vue'
+
 import { useMedia } from '@/composables/useMedia'
 import { useGlobalUpload } from '@/composables/useGlobalUpload'
 
-type Props = { title?: string; accept?: string }
-withDefaults(defineProps<Props>(), { accept: 'video/*,audio/*,.vtt,.srt' })
+interface Props {
+  /** Modal title */
+  title?: string
+  /** Accepted file types */
+  accept?: string
+  /** Supported file types with metadata */
+  fileTypes?: FileType[]
+  /** Maximum file size in bytes */
+  maxFileSize?: number
+  /** Maximum number of files */
+  maxFiles?: number
+  /** Show upload progress */
+  showProgress?: boolean
+  /** Enable drag & drop */
+  allowDragDrop?: boolean
+  /** Custom validation rules */
+  customValidation?: ValidationRule[]
+  /** Custom upload handler */
+  uploadHandler?: (files: File[]) => Promise<void>
+  /** Dynamic form fields */
+  formFields?: (() => FormField[]) | FormField[]
+  /** Show file preview */
+  showPreview?: boolean
+  /** Preview layout mode */
+  previewMode?: 'grid' | 'list' | 'single'
+}
+
+interface FileType {
+  extension: string
+  mimeType: string
+  label: string
+  icon: string
+  maxSize?: number
+  allowedTypes?: string[]
+}
+
+interface ValidationRule {
+  validate: (file: File) => boolean | string // true = valid, string = error message
+  message: string
+}
+
+interface FormField {
+  key: string
+  label: string
+  type: 'text' | 'select' | 'textarea' | 'tags'
+  required?: boolean
+  options?: string[] // for select fields
+  placeholder?: string
+  value?: string | string[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  accept: 'video/*,audio/*,.vtt,.srt',
+  maxFiles: 10,
+  showProgress: true,
+  allowDragDrop: true,
+  showPreview: true,
+  previewMode: 'single',
+  formFields: () => [
+    {
+      key: 'type',
+      label: 'Type',
+      type: 'select' as const,
+      value: 'original',
+      options: ['original', 'dubbed', 'trailer', 'voice_over', 'subtitle'],
+    },
+    {
+      key: 'language',
+      label: 'Language',
+      type: 'select' as const,
+      value: 'en',
+      options: ['en', 'es', 'fr', 'de', 'ja', 'ko', 'zh', 'hi'],
+    },
+    {
+      key: 'description',
+      label: 'Description',
+      type: 'textarea' as const,
+      placeholder: 'Enter description',
+      value: '',
+    },
+    {
+      key: 'format',
+      label: 'Format',
+      type: 'select' as const,
+      value: 'mp4',
+      options: [
+        'mp4',
+        'mov',
+        'mkv',
+        'avi',
+        'webm',
+        'm3u8',
+        'mp3',
+        'wav',
+        'aac',
+        'flac',
+        'srt',
+        'vtt',
+        'ass',
+        'ssa',
+        'jpg',
+        'png',
+        'webp',
+      ],
+    },
+    {
+      key: 'tags',
+      label: 'Tags',
+      type: 'tags' as const,
+      value: [],
+    },
+  ],
+})
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'uploaded', p: { count: number }): void
@@ -246,18 +364,14 @@ const emit = defineEmits<{
 
 const files = ref<File[]>([])
 const fileInput = ref<HTMLInputElement | null>(null)
-const form = ref<{
-  type: string
-  language: string
-  description?: string
-  format: string
-  tags: string[]
-}>({
-  type: 'original',
-  language: 'en',
-  description: '',
-  format: 'mp4',
-  tags: [],
+const formData = ref<Record<string, string | string[]>>({})
+
+// Initialize form data from formFields
+const fields = typeof props.formFields === 'function' ? props.formFields() : props.formFields
+fields.forEach((field) => {
+  if (field.value !== undefined) {
+    formData.value[field.key] = field.value
+  }
 })
 const uploading = ref(false)
 const progress = ref(0)
@@ -274,26 +388,6 @@ const previews = ref<
   }>
 >([])
 
-const formatOptions = [
-  'mp4',
-  'mov',
-  'mkv',
-  'avi',
-  'webm',
-  'm3u8',
-  'mp3',
-  'wav',
-  'aac',
-  'flac',
-  'srt',
-  'vtt',
-  'ass',
-  'ssa',
-  'jpg',
-  'png',
-  'webp',
-]
-
 const { uploadViaMediaResource } = useMedia()
 const uploader = useGlobalUpload()
 
@@ -308,14 +402,23 @@ function onDrop(e: DragEvent) {
 }
 
 function setFiles(list: File[]) {
-  files.value = list
-  totalSize.value = list.reduce((acc, f) => acc + (f.size || 0), 0)
-  // default format from first file extension
-  const ext = (list[0]?.name.split('.').pop() || '').toLowerCase()
-  if (ext && formatOptions.includes(ext)) form.value.format = ext as string
-  // build previews
+  // Validate files
+  const validationResults = validateFiles(list)
+  const validFiles = validationResults.filter((r) => r.valid).map((r) => r.file)
+
+  if (validFiles.length === 0) {
+    // Show error for invalid files
+    const invalidFiles = validationResults.filter((r) => !r.valid)
+    console.error('File validation failed:', invalidFiles)
+    return
+  }
+
+  files.value = validFiles
+  totalSize.value = validFiles.reduce((acc, f) => acc + (f.size || 0), 0)
+
+  // Build previews
   previews.value.forEach((p: { url: string }) => URL.revokeObjectURL(p.url))
-  previews.value = list.map((f) => {
+  previews.value = validFiles.map((f) => {
     const url = URL.createObjectURL(f)
     const m = (f.type || '').split('/')[0]
     const kind =
@@ -350,9 +453,88 @@ function setFiles(list: File[]) {
   })
 }
 
+// Enhanced file validation
+function validateFiles(files: File[]): ValidationResult[] {
+  const results: ValidationResult[] = []
+
+  for (const file of files) {
+    // Check max files limit
+    if (files.length > props.maxFiles) {
+      results.push({
+        file,
+        valid: false,
+        error: `Maximum ${props.maxFiles} files allowed`,
+      })
+      continue
+    }
+
+    // Check file size
+    if (props.maxFileSize && file.size > props.maxFileSize) {
+      results.push({
+        file,
+        valid: false,
+        error: `File size exceeds ${formatFileSize(props.maxFileSize)}`,
+      })
+      continue
+    }
+
+    // Custom validation rules
+    let customValidationFailed = false
+    for (const rule of props.customValidation || []) {
+      const result = rule.validate(file)
+      if (result !== true) {
+        results.push({
+          file,
+          valid: false,
+          error: String(result),
+        })
+        customValidationFailed = true
+        break
+      }
+    }
+
+    if (customValidationFailed) continue
+
+    // All validations passed
+    results.push({ file, valid: true })
+  }
+
+  return results
+}
+
+interface ValidationResult {
+  file: File
+  valid: boolean
+  error?: string
+}
+
+function formatFileSize(bytes: number): string {
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  if (!bytes) return '0 B'
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`
+}
+
 async function upload() {
   if (!files.value.length) return
-  // Enqueue all files and close immediately; progress is tracked globally
+
+  // Use custom upload handler if provided
+  if (props.uploadHandler) {
+    try {
+      uploading.value = true
+      await props.uploadHandler(files.value)
+      emit('uploaded', { count: files.value.length })
+      emit('close')
+    } catch (error) {
+      console.error('Custom upload failed:', error)
+      // Don't close modal on error, let user handle it
+    } finally {
+      uploading.value = false
+    }
+    return
+  }
+
+  // Default upload behavior (existing logic)
   for (const f of files.value) {
     const id = `${Date.now()}-${f.name}-${Math.random().toString(36).slice(2)}`
     uploader.add({
@@ -377,18 +559,37 @@ async function upload() {
 
 async function doUpload(id: string, f: File) {
   uploader.update(id, { status: 'uploading', progress: 5 })
-  await uploadViaMediaResource(f, {
-    type: form.value.type,
-    format: form.value.format,
-    language: form.value.language,
-    description: form.value.description || undefined,
-    tags: form.value.tags,
-    metadata: collectMetadataForFile(f.name),
-    duration: (() => {
-      const p = previews.value.find((x) => x.name === f.name)
-      return p?.duration !== undefined ? Math.round(p.duration) : undefined
-    })(),
+
+  // Build metadata from form data
+  const metadata: Record<string, unknown> = {}
+  const fields = typeof props.formFields === 'function' ? props.formFields() : props.formFields
+  fields.forEach((field) => {
+    const value = formData.value[field.key]
+    if (value !== undefined && value !== '') {
+      metadata[field.key] = value
+    }
   })
+
+  // Add file-specific metadata
+  metadata.fileName = f.name
+  metadata.fileSize = f.size
+  metadata.fileType = f.type
+
+  // Add duration if available
+  const p = previews.value.find((x) => x.name === f.name)
+  if (p?.duration !== undefined) {
+    metadata.duration = Math.round(p.duration)
+  }
+
+  await uploadViaMediaResource(f, {
+    type: String(formData.value.type || 'original'),
+    format: String(formData.value.format || 'mp4'),
+    language: String(formData.value.language || 'en'),
+    description: formData.value.description ? String(formData.value.description) : undefined,
+    tags: Array.isArray(formData.value.tags) ? (formData.value.tags as string[]) : [],
+    metadata,
+  })
+
   uploader.update(id, { status: 'completed', progress: 100 })
 }
 
@@ -438,12 +639,4 @@ onMounted(() => {
     document.body.style.overflow = prev
   })
 })
-
-function collectMetadataForFile(name: string): Record<string, unknown> | undefined {
-  const p = previews.value.find((x) => x.name === name)
-  if (!p) return undefined
-  const md: Record<string, unknown> = {}
-  if (p.duration !== undefined) md.duration = Math.round(p.duration)
-  return Object.keys(md).length ? md : undefined
-}
 </script>
