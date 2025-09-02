@@ -261,6 +261,12 @@
                         >
                           Show Inline Player
                         </button>
+                        <button
+                          @click="showMediaPlayerPip()"
+                          class="rounded-md bg-green-600 px-4 py-2 text-white shadow-sm transition-colors hover:bg-green-700"
+                        >
+                          Show PiP Player
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -406,6 +412,9 @@ const componentDefinitions: ComponentDefinition[] = [
       title: 'Sample Video',
       subtitleUrl: '',
       mode: 'modal',
+      pipMode: false,
+      pipPosition: { x: 100, y: 100 },
+      pipSize: 'small',
     },
   },
   {
@@ -601,6 +610,20 @@ const showMediaPlayer = (mode: 'modal' | 'inline') => {
   if (mediaPlayerConfig) {
     mediaPlayerConfig.props.visible = true
     mediaPlayerConfig.props.mode = mode
+    mediaPlayerConfig.props.pipMode = false
+    updateJsonFromProps(mediaPlayerConfig)
+  }
+}
+
+// Show media player in PiP mode for testing
+const showMediaPlayerPip = () => {
+  const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
+  if (mediaPlayerConfig) {
+    mediaPlayerConfig.props.visible = true
+    mediaPlayerConfig.props.mode = 'modal'
+    mediaPlayerConfig.props.pipMode = true
+    mediaPlayerConfig.props.pipPosition = { x: 100, y: 100 }
+    mediaPlayerConfig.props.pipSize = 'small'
     updateJsonFromProps(mediaPlayerConfig)
   }
 }

@@ -151,6 +151,20 @@
             </svg>
           </button>
 
+          <!-- Picture-in-Picture -->
+          <button
+            @click="togglePip"
+            class="text-white transition-colors hover:text-blue-400"
+            :class="{ 'text-blue-400': isPipMode }"
+            :aria-label="isPipMode ? 'Exit picture-in-picture' : 'Enter picture-in-picture'"
+          >
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"
+              />
+            </svg>
+          </button>
+
           <!-- Fullscreen -->
           <button
             @click="toggleFullscreen"
@@ -227,6 +241,7 @@ const isFullscreen = ref(false)
 const isSeeking = ref(false)
 const showControls = ref(true)
 const subtitlesEnabled = ref(true)
+const isPipMode = ref(false)
 
 // Video state
 const currentTime = ref(0)
@@ -322,6 +337,31 @@ const toggleSubtitles = () => {
   if (track) {
     track.mode = track.mode === 'showing' ? 'hidden' : 'showing'
     subtitlesEnabled.value = track.mode === 'showing'
+  }
+}
+
+const togglePip = async () => {
+  if (!videoRef.value) return
+
+  try {
+    if (!isPipMode.value) {
+      // Enter PiP mode
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture()
+      }
+      if (videoRef.value.requestPictureInPicture) {
+        await videoRef.value.requestPictureInPicture()
+        isPipMode.value = true
+      }
+    } else {
+      // Exit PiP mode
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture()
+        isPipMode.value = false
+      }
+    }
+  } catch (error) {
+    console.warn('PiP not supported or failed:', error)
   }
 }
 
@@ -432,6 +472,11 @@ const onFullscreenChange = () => {
   isFullscreen.value = !!document.fullscreenElement
 }
 
+// PiP change listener
+const onPipChange = () => {
+  isPipMode.value = !!document.pictureInPictureElement
+}
+
 // Watch for URL changes
 watch(
   () => props.url,
@@ -449,6 +494,8 @@ onMounted(() => {
   }
 
   document.addEventListener('fullscreenchange', onFullscreenChange)
+  document.addEventListener('enterpictureinpicture', onPipChange)
+  document.addEventListener('leavepictureinpicture', onPipChange)
 
   // Keyboard shortcuts
   const handleKeydown = (event: KeyboardEvent) => {
@@ -475,6 +522,10 @@ onMounted(() => {
         event.preventDefault()
         toggleFullscreen()
         break
+      case 'KeyP':
+        event.preventDefault()
+        togglePip()
+        break
     }
   }
 
@@ -482,6 +533,8 @@ onMounted(() => {
 
   onBeforeUnmount(() => {
     document.removeEventListener('fullscreenchange', onFullscreenChange)
+    document.removeEventListener('enterpictureinpicture', onPipChange)
+    document.removeEventListener('leavepictureinpicture', onPipChange)
     document.removeEventListener('keydown', handleKeydown)
 
     if (hls) {

@@ -15,15 +15,10 @@ const props = defineProps<Props>()
 const iconComponent = computed(() => {
   const iconName = props.name
 
-  // Handle different icon collections
+  // Handle mdi collection prefix
   if (iconName.startsWith('mdi:')) {
     const iconPath = iconName.replace('mdi:', '')
     return () => import(`~icons/mdi/${iconPath}`)
-  }
-
-  if (iconName.startsWith('lucide:')) {
-    const iconPath = iconName.replace('lucide:', '')
-    return () => import(`~icons/lucide/${iconPath}`)
   }
 
   // Default to mdi if no collection specified
