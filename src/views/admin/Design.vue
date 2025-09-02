@@ -230,6 +230,7 @@
                           @per-page-change="handlePerPageChange"
                           @confirm="handleConfirm"
                           @cancel="handleCancel"
+                          @close="handleMediaPlayerClose"
                         />
                       </div>
 
@@ -600,6 +601,15 @@ const showMediaPlayer = (mode: 'modal' | 'inline') => {
   if (mediaPlayerConfig) {
     mediaPlayerConfig.props.visible = true
     mediaPlayerConfig.props.mode = mode
+    updateJsonFromProps(mediaPlayerConfig)
+  }
+}
+
+// Handle media player close event
+const handleMediaPlayerClose = () => {
+  const mediaPlayerConfig = componentConfigs.find((c) => c.id === 'global-media-player')
+  if (mediaPlayerConfig) {
+    mediaPlayerConfig.props.visible = false
     updateJsonFromProps(mediaPlayerConfig)
   }
 }

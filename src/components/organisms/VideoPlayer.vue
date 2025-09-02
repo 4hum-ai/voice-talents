@@ -269,7 +269,7 @@ const initializeVideo = async () => {
         })
       })
 
-      hls.on(Hls.Events.ERROR, (event, data) => {
+      hls.on(Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) {
           error.value = `HLS Error: ${data.details}`
           loading.value = false
