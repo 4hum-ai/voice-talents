@@ -5,7 +5,14 @@ import Icons from 'unplugin-icons/vite'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [tailwindcss(), vue(), Icons()],
+  plugins: [
+    tailwindcss(),
+    vue(),
+    Icons({
+      autoInstall: true,
+      collections: ['mdi'],
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

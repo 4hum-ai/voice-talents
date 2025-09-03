@@ -59,7 +59,9 @@
 
 <script setup lang="ts">
 import { computed, type Component } from 'vue'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-vue-next'
+import TrendingUpIcon from '~icons/mdi/trending-up'
+import TrendingDownIcon from '~icons/mdi/trending-down'
+import MinusIcon from '~icons/mdi/minus'
 import Icon from '@/components/atoms/Icon.vue'
 
 interface Props {
@@ -100,11 +102,11 @@ const trendIcon = computed(() => {
 
   switch (props.trend.direction) {
     case 'up':
-      return TrendingUp
+      return TrendingUpIcon
     case 'down':
-      return TrendingDown
+      return TrendingDownIcon
     default:
-      return Minus
+      return MinusIcon
   }
 })
 

@@ -43,9 +43,9 @@ importers:
       firebase:
         specifier: ^11.8.1
         version: 11.10.0
-      lucide-vue-next:
-        specifier: ^0.460.0
-        version: 0.460.0(vue@3.5.20(typescript@5.9.2))
+      hls.js:
+        specifier: ^1.6.11
+        version: 1.6.11
       pinia:
         specifier: ^2.1.7
         version: 2.3.1(typescript@5.9.2)(vue@3.5.20(typescript@5.9.2))
@@ -64,6 +64,9 @@ importers:
       vue-router:
         specifier: ^4.2.5
         version: 4.5.1(vue@3.5.20(typescript@5.9.2))
+      webvtt:
+        specifier: ^0.0.2
+        version: 0.0.2
       wrangler:
         specifier: 3.90.0
         version: 3.90.0
@@ -2286,6 +2289,13 @@ packages:
         integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==,
       }
 
+  commander@1.0.5:
+    resolution:
+      {
+        integrity: sha512-Iil6cZ1vitahfQSTrGO3L4v3dtvnfyGpKkXN+aJV9uR24JYxhM9bUfBLat65nU7cIXzOcnkjGtfdCuqaO1caIQ==,
+      }
+    engines: { node: '>= 0.6.x' }
+
   commander@14.0.0:
     resolution:
       {
@@ -2813,6 +2823,12 @@ packages:
       }
     hasBin: true
 
+  hls.js@1.6.11:
+    resolution:
+      {
+        integrity: sha512-tdDwOAgPGXohSiNE4oxGr3CI9Hx9lsGLFe6TULUvRk2TfHS+w1tSAJntrvxsHaxvjtr6BXsDZM7NOqJFhU4mmg==,
+      }
+
   html-escaper@2.0.2:
     resolution:
       {
@@ -3021,6 +3037,12 @@ packages:
         integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==,
       }
 
+  keypress@0.1.0:
+    resolution:
+      {
+        integrity: sha512-x0yf9PL/nx9Nw9oLL8ZVErFAk85/lslwEP7Vz7s5SI1ODXZIgit3C5qyWjw4DxOuO/3Hb4866SQh28a1V1d+WA==,
+      }
+
   keyv@4.5.4:
     resolution:
       {
@@ -3210,14 +3232,6 @@ packages:
       {
         integrity: sha512-zSMINGVYkdpYSOBmLi0D1Uo7JU9nVdQKrHxC8eYlV+9YKK9WePqAlL7lSlorG/U2Fw1w0hTBmaa/jrQ3UbPHtA==,
       }
-
-  lucide-vue-next@0.460.0:
-    resolution:
-      {
-        integrity: sha512-IhM1tm3gPhc3u6RagNra4W6Oe48Mz0l3fAJzk0oSLzsRQqt3WU3XiX5ngRyjIs8fzCtvgzu7fC6Qk7XVhS00DQ==,
-      }
-    peerDependencies:
-      vue: '>=3.0.1'
 
   magic-string@0.25.9:
     resolution:
@@ -4338,6 +4352,13 @@ packages:
         integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==,
       }
     engines: { node: '>=0.8.0' }
+
+  webvtt@0.0.2:
+    resolution:
+      {
+        integrity: sha512-dGq4uZux3SB09XwCw3zr8D/bGTA1CHC4iHs9a6PkgRIV18uahpJsYJlt55ETwkzHnIuQBSIlO5rYtvwWNTuwvQ==,
+      }
+    hasBin: true
 
   which@2.0.2:
     resolution:
@@ -5752,6 +5773,10 @@ snapshots:
 
   colorette@2.0.20: {}
 
+  commander@1.0.5:
+    dependencies:
+      keypress: 0.1.0
+
   commander@14.0.0: {}
 
   concat-map@0.0.1: {}
@@ -6106,6 +6131,8 @@ snapshots:
 
   he@1.2.0: {}
 
+  hls.js@1.6.11: {}
+
   html-escaper@2.0.2: {}
 
   http-parser-js@0.5.10: {}
@@ -6194,6 +6221,8 @@ snapshots:
   json-schema-traverse@0.4.1: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
+
+  keypress@0.1.0: {}
 
   keyv@4.5.4:
     dependencies:
@@ -6309,10 +6338,6 @@ snapshots:
   loupe@2.3.7:
     dependencies:
       get-func-name: 2.0.2
-
-  lucide-vue-next@0.460.0(vue@3.5.20(typescript@5.9.2)):
-    dependencies:
-      vue: 3.5.20(typescript@5.9.2)
 
   magic-string@0.25.9:
     dependencies:
@@ -6923,6 +6948,10 @@ snapshots:
       websocket-extensions: 0.1.4
 
   websocket-extensions@0.1.4: {}
+
+  webvtt@0.0.2:
+    dependencies:
+      commander: 1.0.5
 
   which@2.0.2:
     dependencies:
