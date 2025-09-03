@@ -1,46 +1,55 @@
 # Refactoring Summary: Separating Backend Resource Types into Models
 
 ## Overview
+
 This document summarizes the refactoring work done to separate backend resource types from general utility types in the studio project.
 
 ## What Was Changed
 
 ### 1. Created New Models Directory
+
 - **Location**: `src/models/`
 - **Purpose**: Contains domain entities and business logic types
 
 ### 2. New Model Files Created
 
 #### `BaseEntity.ts`
+
 - Common fields used across all domain entities
 - `id`, `createdAt`, `updatedAt`, `createdBy`, `updatedBy`
 
 #### `User.ts`
+
 - User domain model with role and status types
 - Extends `BaseEntity`
 - Fields: name, email, role, status, avatar, phone, timezone, language, organizationId, etc.
 
 #### `Organization.ts`
+
 - Organization domain model with type and status types
 - Extends `BaseEntity`
 - Fields: name, type, status, email, website, phone, country, address, companySize, industry, etc.
 
 #### `Title.ts`
+
 - Title domain model for movies, series, episodes, documentaries
 - Extends `BaseEntity`
 - Fields: name, type, status, description, year, director, duration, genre, language, rating, etc.
 
 #### `Media.ts`
+
 - Media domain model for files and assets
 - Extends `BaseEntity`
 - Fields: fileName, type, format, status, language, fileSize, duration, resolution, etc.
 
 #### `Contact.ts`
+
 - Contact domain model for contact information
 - Extends `BaseEntity`
 - Fields: name, email, phone, role, department, status, address, city, state, country, etc.
 
 #### `index.ts`
+
 - Exports all models for easy importing
 
 ### 3. What Stayed in Types Directory
@@ -74,6 +83,7 @@ The following utility types remain in `src/types/` as they are not domain entiti
 ## Usage Examples
 
 ### Importing Models
+
 ```typescript
 // Import specific models
 import type { User, Organization, Title } from '@/models'
@@ -83,6 +93,7 @@ import * as Models from '@/models'
 ```
 
 ### Type Safety
+
 ```typescript
 // Strongly typed user data
 const user: User = {
@@ -92,7 +103,7 @@ const user: User = {
   role: 'admin',
   status: 'active',
   createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z'
+  updatedAt: '2024-01-01T00:00:00Z',
 }
 
 // Type-safe organization operations

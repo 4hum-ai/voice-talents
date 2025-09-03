@@ -5,6 +5,7 @@ This document outlines the standardized approach for using icons in the Movie Du
 ## 🎯 **Icon System Overview**
 
 We use **unplugin-icons** with **Material Design Icons (MDI)** as our primary icon system. This approach provides:
+
 - Consistent icon usage across all components
 - Optimal performance with tree-shaking
 - Type-safe icon imports
@@ -31,9 +32,9 @@ export default defineConfig({
   plugins: [
     Icons({
       autoInstall: true,
-      collections: ['mdi']
-    })
-  ]
+      collections: ['mdi'],
+    }),
+  ],
 })
 ```
 
@@ -60,6 +61,7 @@ import GridIcon from '~icons/mdi/view-grid'
 ```
 
 **Benefits:**
+
 - 🚀 **Best Performance**: Static analysis and tree-shaking
 - 🎯 **Type Safety**: Full TypeScript support
 - 📦 **Bundle Optimization**: Icons bundled with components
@@ -83,11 +85,13 @@ const iconName = computed(() => `mdi:${props.iconType}`)
 ```
 
 **When to use:**
+
 - Icon names come from API/database
 - Conditional icon rendering based on user input
 - Dynamic icon selection at runtime
 
 **When NOT to use:**
+
 - Static icons known at build time
 - Icons used multiple times in the same component
 - Performance-critical components
@@ -95,16 +99,21 @@ const iconName = computed(() => `mdi:${props.iconType}`)
 ## 🎨 **Icon Styling Guidelines**
 
 ### **Size Classes**
+
 Use Tailwind size classes for consistent icon sizing:
 
 ```vue
 <!-- ✅ Consistent sizing -->
-<PlayIcon class="h-4 w-4" />      <!-- Small -->
-<SearchIcon class="h-5 w-5" />    <!-- Medium -->
-<CloseIcon class="h-6 w-6" />     <!-- Large -->
+<PlayIcon class="h-4 w-4" />
+<!-- Small -->
+<SearchIcon class="h-5 w-5" />
+<!-- Medium -->
+<CloseIcon class="h-6 w-6" />
+<!-- Large -->
 ```
 
 ### **Color Classes**
+
 Use semantic Tailwind color classes:
 
 ```vue
@@ -116,6 +125,7 @@ Use semantic Tailwind color classes:
 ```
 
 ### **Accessibility**
+
 Always include proper accessibility attributes:
 
 ```vue
@@ -127,11 +137,13 @@ Always include proper accessibility attributes:
 ## 🔍 **Finding MDI Icons**
 
 ### **Iconify Collections**
+
 Browse available MDI icons at: https://icon-sets.iconify.design/mdi/
 
 ### **Common Icon Categories**
 
 #### **Navigation & Actions**
+
 - `mdi:chevron-left` - Back/Previous
 - `mdi:chevron-right` - Next/Forward
 - `mdi:close` - Close/Remove
@@ -139,6 +151,7 @@ Browse available MDI icons at: https://icon-sets.iconify.design/mdi/
 - `mdi:minus` - Remove/Delete
 
 #### **Search & Filter**
+
 - `mdi:magnify` - Search
 - `mdi:filter` - Filter
 - `mdi:sort` - Sort
@@ -146,6 +159,7 @@ Browse available MDI icons at: https://icon-sets.iconify.design/mdi/
 - `mdi:view-list` - List view
 
 #### **Media & Content**
+
 - `mdi:play-circle-outline` - Play
 - `mdi:pause` - Pause
 - `mdi:stop` - Stop
@@ -154,6 +168,7 @@ Browse available MDI icons at: https://icon-sets.iconify.design/mdi/
 - `mdi:image` - Image
 
 #### **Status & Feedback**
+
 - `mdi:check-circle-outline` - Success
 - `mdi:error-outline` - Error
 - `mdi:warning-outline` - Warning
@@ -163,12 +178,14 @@ Browse available MDI icons at: https://icon-sets.iconify.design/mdi/
 ## ❌ **What NOT to Do**
 
 ### **Avoid Direct lucide-vue-next Imports**
+
 ```vue
 <!-- ❌ DON'T DO THIS -->
 import { TrendingUp } from 'lucide-vue-next'
 ```
 
 ### **Avoid Inline SVGs**
+
 ```vue
 <!-- ❌ DON'T DO THIS -->
 <svg class="h-5 w-5" viewBox="0 0 24 24">
@@ -177,14 +194,17 @@ import { TrendingUp } from 'lucide-vue-next'
 ```
 
 ### **Avoid Generic Icon Names**
+
 ```vue
 <!-- ❌ DON'T DO THIS -->
-<Icon name="play" />  <!-- Missing collection prefix -->
+<Icon name="play" />
+<!-- Missing collection prefix -->
 ```
 
 ## 🔄 **Migration Guide**
 
 ### **From lucide-vue-next to MDI**
+
 ```vue
 <!-- Before -->
 import { TrendingUp } from 'lucide-vue-next'
@@ -194,6 +214,7 @@ import TrendingUpIcon from '~icons/mdi/trending-up'
 ```
 
 ### **From Inline SVG to MDI**
+
 ```vue
 <!-- Before -->
 <svg class="h-5 w-5" viewBox="0 0 24 24">
@@ -208,6 +229,7 @@ import PlusIcon from '~icons/mdi/plus'
 ## 🧪 **Testing Icons**
 
 ### **Component Testing**
+
 ```typescript
 // ✅ Test icon rendering
 import { mount } from '@vue/test-utils'
@@ -218,10 +240,11 @@ expect(wrapper.exists()).toBe(true)
 ```
 
 ### **Icon Props Testing**
+
 ```typescript
 // ✅ Test icon component with dynamic names
 const wrapper = mount(Icon, {
-  props: { name: 'mdi:play' }
+  props: { name: 'mdi:play' },
 })
 expect(wrapper.exists()).toBe(true)
 ```
@@ -229,6 +252,7 @@ expect(wrapper.exists()).toBe(true)
 ## 📚 **Examples by Component Type**
 
 ### **Button Icons**
+
 ```vue
 <IconButton aria-label="Add item" @click="addItem">
   <PlusIcon class="h-4 w-4" />
@@ -236,6 +260,7 @@ expect(wrapper.exists()).toBe(true)
 ```
 
 ### **Form Icons**
+
 ```vue
 <div class="relative">
   <SearchIcon class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -244,6 +269,7 @@ expect(wrapper.exists()).toBe(true)
 ```
 
 ### **Status Icons**
+
 ```vue
 <div class="flex items-center gap-2">
   <SuccessIcon class="h-5 w-5 text-green-600" />
@@ -254,16 +280,19 @@ expect(wrapper.exists()).toBe(true)
 ## 🚨 **Troubleshooting**
 
 ### **Icon Not Loading**
+
 1. Check if icon name exists in MDI collection
 2. Verify import path: `~icons/mdi/icon-name`
 3. Ensure Vite configuration includes MDI collection
 
 ### **Build Errors**
+
 1. Verify all icon imports are valid
 2. Check for typos in icon names
 3. Ensure unplugin-icons is properly configured
 
 ### **Performance Issues**
+
 1. Use direct imports instead of Icon component for static icons
 2. Avoid importing unused icons
 3. Check bundle size with build analysis tools

@@ -5,15 +5,18 @@ Welcome to the Movie Dubie Studio documentation. This directory contains compreh
 ## 📚 **Available Documentation**
 
 ### **Core Guidelines**
+
 - **[Icon Usage Guide](ICON_USAGE.md)** - Complete icon usage conventions and best practices
 - **[Icon Quick Reference](ICON_QUICK_REFERENCE.md)** - Fast reference for common icon patterns
 
 ### **Architecture & Patterns**
+
 - **Component Structure** - Atomic design principles and component organization
 - **State Management** - Pinia store patterns and data flow
 - **API Integration** - Service layer and composable patterns
 
 ### **Development Workflow**
+
 - **Code Style** - TypeScript, Vue 3, and Tailwind conventions
 - **Testing** - Unit and integration testing strategies
 - **Build & Deploy** - Vite configuration and deployment processes
@@ -27,14 +30,17 @@ Welcome to the Movie Dubie Studio documentation. This directory contains compreh
 ## 🔍 **Finding What You Need**
 
 ### **For UI Development**
+
 - Start with [Icon Quick Reference](ICON_QUICK_REFERENCE.md)
 - Reference [Icon Usage Guide](ICON_USAGE.md) for detailed patterns
 
 ### **For Architecture Decisions**
+
 - Review component structure and state management patterns
 - Check existing implementations for guidance
 
 ### **For Troubleshooting**
+
 - Check the troubleshooting sections in relevant guides
 - Review component examples for working patterns
 
