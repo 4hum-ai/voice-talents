@@ -10,6 +10,8 @@
  * - Custom domain configuration via environment variables
  */
 
+import { useCdn } from '@/composables/useCdn'
+
 export interface ImageTransformOptions {
   width?: number
   height?: number
@@ -47,8 +49,7 @@ export function transformImageUrl(
   if (!sourceUrl) return ''
 
   // Check if transformations are disabled via environment
-  // Note: import.meta.env is not available during type checking, so we'll default to enabled
-  const transformationsEnabled = true
+  const { enabled: transformationsEnabled } = useCdn()
   if (!transformationsEnabled) {
     return sourceUrl
   }
@@ -113,9 +114,8 @@ export function transformImageUrl(
 
   // Build CDN URL
   const optionsString = optionStrings.join(',')
-  const basePath = domain
-    ? `https://${domain}/cdn-cgi/image`
-    : `https://${getCdnDomain()}/cdn-cgi/image`
+  const { domain: cdnDomain } = useCdn()
+  const basePath = domain ? `https://${domain}/cdn-cgi/image` : `https://${cdnDomain}/cdn-cgi/image`
   return `${basePath}/${optionsString}/${encodeURI(sourceUrl)}`
 }
 
@@ -181,11 +181,9 @@ export const RESPONSIVE_SIZES = {
 
 /**
  * Get the default CDN domain from environment variables
+ * @deprecated Use useCdn().domain instead
  */
 export function getCdnDomain(): string | undefined {
-  // Note: import.meta.env is not available during type checking, so we'll return a placeholder
-  // In runtime, this will be replaced with the actual environment variable
-  const domain = 'placeholder-domain.com'
-  console.log('CDN domain from env:', domain)
+  const { domain } = useCdn()
   return domain
 }

@@ -185,7 +185,7 @@ export function useUiConfig() {
 
     // Fallback to backend
     try {
-      const res = await api.request(`/api/admin-ui/modules/${resourceName}/config`, {
+      const res = await api.request(`/static/ui-configs/${resourceName}.json`, {
         method: 'GET',
         signal: opts.signal,
       })
@@ -229,7 +229,7 @@ export function useUiConfig() {
           }
         }
         try {
-          const res = await api.request(`/api/admin-ui/modules/${name}/config`, { method: 'GET' })
+          const res = await api.request(`/static/ui-configs/${name}.json`, { method: 'GET' })
           if (res.ok) {
             const contentType = res.headers.get('content-type') || ''
             if (/application\/json/.test(contentType)) {

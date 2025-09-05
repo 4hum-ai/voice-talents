@@ -124,7 +124,7 @@
     <!-- Hidden audio element -->
     <audio
       ref="audioElement"
-      :src="url"
+      :src="cdnAudioUrl"
       :preload="preload"
       @loadedmetadata="onAudioLoaded"
       @timeupdate="onTimeUpdate"
@@ -137,6 +137,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useCdn } from '@/composables/useCdn'
 import PlayIcon from '~icons/mdi/play'
 import PauseIcon from '~icons/mdi/pause'
 import MusicIcon from '~icons/mdi/music-note'
@@ -171,6 +172,9 @@ const emit = defineEmits<{
   (e: 'error', error: string): void
 }>()
 
+// CDN composable
+const { getCdnUrl } = useCdn()
+
 // Refs
 const audioElement = ref<HTMLAudioElement | null>(null)
 const progressInput = ref<HTMLInputElement | null>(null)
@@ -188,6 +192,12 @@ const format = ref<string>('')
 const progressPercent = computed(() => {
   if (!duration.value) return 0
   return (currentTime.value / duration.value) * 100
+})
+
+// Transform audio URL to use CDN
+const cdnAudioUrl = computed(() => {
+  if (!props.url) return ''
+  return getCdnUrl(props.url)
 })
 
 // Methods

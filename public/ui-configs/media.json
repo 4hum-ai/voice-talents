@@ -1,7 +1,7 @@
 {
   "displayName": "Media",
-  "description": "Manage media files and assets",
-  "icon": "image",
+  "description": "Manage media files, videos, audio, and subtitles",
+  "icon": "video",
   "views": {
     "list": {
       "columns": [
@@ -12,7 +12,7 @@
           "sortable": true,
           "filterable": true,
           "searchable": true,
-          "width": "20%",
+          "width": "25%",
           "titleField": "fileName",
           "subtitleField": "type"
         },
@@ -22,7 +22,8 @@
           "type": "text",
           "sortable": true,
           "filterable": true,
-          "width": "10%",
+          "width": "12%",
+          "align": "center",
           "formatter": "badge"
         },
         {
@@ -31,8 +32,17 @@
           "type": "text",
           "sortable": true,
           "filterable": true,
-          "width": "10%",
-          "formatter": "badge"
+          "width": "8%",
+          "align": "center"
+        },
+        {
+          "key": "language",
+          "label": "Language",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "8%",
+          "align": "center"
         },
         {
           "key": "fileSize",
@@ -40,6 +50,7 @@
           "type": "number",
           "sortable": true,
           "width": "10%",
+          "align": "right",
           "formatter": "number"
         },
         {
@@ -48,7 +59,7 @@
           "type": "number",
           "sortable": true,
           "width": "10%",
-          "formatter": "number"
+          "align": "center"
         },
         {
           "key": "status",
@@ -57,23 +68,16 @@
           "sortable": true,
           "filterable": true,
           "width": "10%",
+          "align": "center",
           "formatter": "status"
-        },
-        {
-          "key": "language",
-          "label": "Language",
-          "type": "text",
-          "sortable": true,
-          "filterable": true,
-          "width": "10%",
-          "formatter": "badge"
         },
         {
           "key": "createdAt",
           "label": "Created",
           "type": "date",
           "sortable": true,
-          "width": "10%",
+          "width": "12%",
+          "align": "center",
           "formatter": "date"
         }
       ],
@@ -81,17 +85,41 @@
         "field": "createdAt",
         "direction": "desc"
       },
-      "searchableFields": ["fileName", "description", "tags"],
+      "defaultFilters": [
+        {
+          "field": "type",
+          "type": "select",
+          "label": "Type",
+          "options": [
+            { "value": "dubbed", "label": "Dubbed" },
+            { "value": "trailer", "label": "Trailer" },
+            { "value": "voice_over", "label": "Voice Over" },
+            { "value": "subtitle", "label": "Subtitle" },
+            { "value": "original", "label": "Original" }
+          ]
+        },
+        {
+          "field": "status",
+          "type": "select",
+          "label": "Status",
+          "options": [
+            { "value": "pending", "label": "Pending" },
+            { "value": "processing", "label": "Processing" },
+            { "value": "completed", "label": "Completed" },
+            { "value": "failed", "label": "Failed" }
+          ]
+        }
+      ],
+      "searchableFields": ["fileName", "description"],
       "pageSize": 20,
       "actions": [
         {
           "name": "create",
-          "label": "Upload",
+          "label": "Add Media",
           "type": "button",
           "icon": "plus",
           "variant": "primary",
-          "permission": "media:create",
-          "mode": "upload"
+          "permission": "media:create"
         },
         {
           "name": "view",
@@ -122,36 +150,10 @@
     "kanban": {
       "groupByField": "status",
       "columns": [
-        {
-          "value": "pending",
-          "label": "Pending",
-          "color": "#fbbf24"
-        },
-        {
-          "value": "processing",
-          "label": "Processing",
-          "color": "#3b82f6"
-        },
-        {
-          "value": "completed",
-          "label": "Completed",
-          "color": "#22c55e"
-        },
-        {
-          "value": "failed",
-          "label": "Failed",
-          "color": "#ef4444"
-        },
-        {
-          "value": "reviewed",
-          "label": "Reviewed",
-          "color": "#8b5cf6"
-        },
-        {
-          "value": "approved",
-          "label": "Approved",
-          "color": "#10b981"
-        }
+        { "value": "pending", "label": "Pending", "color": "#fbbf24" },
+        { "value": "processing", "label": "Processing", "color": "#3b82f6" },
+        { "value": "completed", "label": "Completed", "color": "#22c55e" },
+        { "value": "failed", "label": "Failed", "color": "#ef4444" }
       ],
       "cardTitleField": "fileName",
       "cardDescriptionField": "type"
@@ -164,114 +166,64 @@
     "calendar": {
       "dateField": "createdAt",
       "titleField": "fileName",
-      "colorField": "status",
-      "descriptionField": "type"
+      "colorField": "type",
+      "descriptionField": "format"
     }
   },
   "detailView": {
     "sections": [
       {
-        "title": "Basic Information",
+        "title": "File Information",
         "fields": [
-          {
-            "key": "fileName",
-            "label": "File Name",
-            "type": "text"
-          },
+          { "key": "fileName", "label": "File Name", "type": "text" },
           {
             "key": "type",
             "label": "Type",
             "type": "text",
             "formatter": "badge"
           },
-          {
-            "key": "format",
-            "label": "Format",
-            "type": "text",
-            "formatter": "badge"
-          },
+          { "key": "format", "label": "Format", "type": "text" },
           {
             "key": "fileSize",
-            "label": "Size",
+            "label": "File Size",
             "type": "number",
             "formatter": "number"
-          },
-          {
-            "key": "duration",
-            "label": "Duration",
-            "type": "number",
-            "formatter": "number"
-          },
+          }
+        ]
+      },
+      {
+        "title": "Media Details",
+        "fields": [
+          { "key": "language", "label": "Language", "type": "text" },
+          { "key": "duration", "label": "Duration", "type": "number" },
+          { "key": "contentType", "label": "Content Type", "type": "text" },
           {
             "key": "status",
             "label": "Status",
             "type": "text",
             "formatter": "status"
-          },
-          {
-            "key": "language",
-            "label": "Language",
-            "type": "text",
-            "formatter": "badge"
           }
         ]
       },
       {
-        "title": "Technical",
+        "title": "URLs",
         "fields": [
-          {
-            "key": "resolution",
-            "label": "Resolution",
-            "type": "text"
-          },
-          {
-            "key": "bitrate",
-            "label": "Bitrate",
-            "type": "number"
-          },
-          {
-            "key": "frameRate",
-            "label": "Frame Rate",
-            "type": "number"
-          },
-          {
-            "key": "sampleRate",
-            "label": "Sample Rate",
-            "type": "number"
-          },
-          {
-            "key": "channels",
-            "label": "Channels",
-            "type": "number"
-          }
+          { "key": "fileUrl", "label": "File URL", "type": "url" },
+          { "key": "thumbnailUrl", "label": "Thumbnail URL", "type": "url" },
+          { "key": "previewUrl", "label": "Preview URL", "type": "url" }
         ]
       },
       {
         "title": "Metadata",
         "fields": [
-          {
-            "key": "description",
-            "label": "Description",
-            "type": "text"
-          },
+          { "key": "description", "label": "Description", "type": "text" },
           {
             "key": "tags",
             "label": "Tags",
             "type": "array",
             "formatter": "badge"
           },
-          {
-            "key": "createdAt",
-            "label": "Created At",
-            "type": "date",
-            "formatter": "date"
-          },
-          {
-            "key": "updatedAt",
-            "label": "Updated At",
-            "type": "date",
-            "formatter": "date"
-          }
+          { "key": "relationships", "label": "Relationships", "type": "array" }
         ]
       }
     ]
@@ -290,55 +242,20 @@
         "key": "type",
         "label": "Type",
         "type": "select",
+        "required": true,
         "options": [
-          {
-            "value": "dubbed",
-            "label": "Dubbed"
-          },
-          {
-            "value": "trailer",
-            "label": "Trailer"
-          },
-          {
-            "value": "voice_over",
-            "label": "Voice Over"
-          },
-          {
-            "value": "subtitle",
-            "label": "Subtitle"
-          },
-          {
-            "value": "original",
-            "label": "Original"
-          },
-          {
-            "value": "behind_scenes",
-            "label": "Behind Scenes"
-          },
-          {
-            "value": "interview",
-            "label": "Interview"
-          },
-          {
-            "value": "promo",
-            "label": "Promo"
-          },
-          {
-            "value": "recording",
-            "label": "Recording"
-          },
-          {
-            "value": "mixing",
-            "label": "Mixing"
-          },
-          {
-            "value": "master",
-            "label": "Master"
-          },
-          {
-            "value": "poster",
-            "label": "Poster"
-          }
+          { "value": "dubbed", "label": "Dubbed" },
+          { "value": "trailer", "label": "Trailer" },
+          { "value": "voice_over", "label": "Voice Over" },
+          { "value": "subtitle", "label": "Subtitle" },
+          { "value": "original", "label": "Original" },
+          { "value": "behind_scenes", "label": "Behind Scenes" },
+          { "value": "interview", "label": "Interview" },
+          { "value": "promo", "label": "Promo" },
+          { "value": "recording", "label": "Recording" },
+          { "value": "mixing", "label": "Mixing" },
+          { "value": "master", "label": "Master" },
+          { "value": "poster", "label": "Poster" }
         ]
       },
       {
@@ -346,121 +263,60 @@
         "label": "Format",
         "type": "select",
         "options": [
-          {
-            "value": "mp4",
-            "label": "MP4"
-          },
-          {
-            "value": "avi",
-            "label": "AVI"
-          },
-          {
-            "value": "mov",
-            "label": "MOV"
-          },
-          {
-            "value": "mkv",
-            "label": "MKV"
-          },
-          {
-            "value": "mp3",
-            "label": "MP3"
-          },
-          {
-            "value": "wav",
-            "label": "WAV"
-          },
-          {
-            "value": "aac",
-            "label": "AAC"
-          },
-          {
-            "value": "flac",
-            "label": "FLAC"
-          },
-          {
-            "value": "srt",
-            "label": "SRT"
-          },
-          {
-            "value": "vtt",
-            "label": "VTT"
-          },
-          {
-            "value": "ass",
-            "label": "ASS"
-          },
-          {
-            "value": "ssa",
-            "label": "SSA"
-          },
-          {
-            "value": "jpg",
-            "label": "JPG"
-          },
-          {
-            "value": "png",
-            "label": "PNG"
-          },
-          {
-            "value": "webp",
-            "label": "WEBP"
-          },
-          {
-            "value": "m3u8",
-            "label": "M3U8"
-          }
+          { "value": "mp4", "label": "MP4" },
+          { "value": "avi", "label": "AVI" },
+          { "value": "mov", "label": "MOV" },
+          { "value": "mkv", "label": "MKV" },
+          { "value": "mp3", "label": "MP3" },
+          { "value": "wav", "label": "WAV" },
+          { "value": "aac", "label": "AAC" },
+          { "value": "flac", "label": "FLAC" },
+          { "value": "srt", "label": "SRT" },
+          { "value": "vtt", "label": "VTT" },
+          { "value": "ass", "label": "ASS" },
+          { "value": "ssa", "label": "SSA" },
+          { "value": "jpg", "label": "JPG" },
+          { "value": "png", "label": "PNG" },
+          { "value": "webp", "label": "WebP" },
+          { "value": "m3u8", "label": "M3U8" }
         ]
-      },
-      {
-        "key": "fileSize",
-        "label": "Size",
-        "type": "number",
-        "placeholder": "Enter file size in bytes"
-      },
-      {
-        "key": "duration",
-        "label": "Duration",
-        "type": "number",
-        "placeholder": "Enter duration in seconds"
       },
       {
         "key": "language",
         "label": "Language",
         "type": "select",
         "options": [
-          {
-            "value": "en",
-            "label": "English"
-          },
-          {
-            "value": "es",
-            "label": "Spanish"
-          },
-          {
-            "value": "fr",
-            "label": "French"
-          },
-          {
-            "value": "de",
-            "label": "German"
-          },
-          {
-            "value": "ja",
-            "label": "Japanese"
-          },
-          {
-            "value": "ko",
-            "label": "Korean"
-          },
-          {
-            "value": "zh",
-            "label": "Chinese"
-          },
-          {
-            "value": "hi",
-            "label": "Hindi"
-          }
+          { "value": "en", "label": "English" },
+          { "value": "es", "label": "Spanish" },
+          { "value": "fr", "label": "French" },
+          { "value": "de", "label": "German" },
+          { "value": "ja", "label": "Japanese" },
+          { "value": "ko", "label": "Korean" },
+          { "value": "zh", "label": "Chinese" },
+          { "value": "hi", "label": "Hindi" }
+        ]
+      },
+      {
+        "key": "fileSize",
+        "label": "File Size (bytes)",
+        "type": "number",
+        "placeholder": "Enter file size"
+      },
+      {
+        "key": "duration",
+        "label": "Duration (seconds)",
+        "type": "number",
+        "placeholder": "Enter duration"
+      },
+      {
+        "key": "status",
+        "label": "Status",
+        "type": "select",
+        "options": [
+          { "value": "pending", "label": "Pending" },
+          { "value": "processing", "label": "Processing" },
+          { "value": "completed", "label": "Completed" },
+          { "value": "failed", "label": "Failed" }
         ]
       },
       {
@@ -473,7 +329,7 @@
         "key": "tags",
         "label": "Tags",
         "type": "multiselect",
-        "placeholder": "Select tags"
+        "options": []
       }
     ]
   }

@@ -214,6 +214,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
+import { useCdn } from '@/composables/useCdn'
 import Hls from 'hls.js'
 
 interface Props {
@@ -226,6 +227,9 @@ interface Props {
 const props = defineProps<Props>()
 // emit is used in the template for close button
 const emit = defineEmits<{ close: [] }>()
+
+// CDN composable
+const { getCdnUrl } = useCdn()
 
 // Refs
 const videoRef = ref<HTMLVideoElement>()
@@ -256,6 +260,12 @@ let hls: Hls | null = null
 // Computed
 const isHLS = computed(() => props.url.includes('.m3u8') || props.url.includes('.m3u'))
 
+// Transform video URL to use CDN
+const cdnVideoUrl = computed(() => {
+  if (!props.url) return ''
+  return getCdnUrl(props.url)
+})
+
 // Methods
 const initializeVideo = async () => {
   if (!videoRef.value) return
@@ -273,7 +283,7 @@ const initializeVideo = async () => {
         backBufferLength: 90,
       })
 
-      hls.loadSource(props.url)
+      hls.loadSource(cdnVideoUrl.value)
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -292,7 +302,7 @@ const initializeVideo = async () => {
       })
     } else {
       // Standard video
-      video.src = props.url
+      video.src = cdnVideoUrl.value
       video.load()
 
       video.onloadeddata = () => {

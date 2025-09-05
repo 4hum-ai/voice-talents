@@ -17,12 +17,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useCdn } from '@/composables/useCdn'
 import {
   transformImageUrl,
   generateSrcset,
   RESPONSIVE_BREAKPOINTS,
   RESPONSIVE_SIZES,
-  getCdnDomain,
   type ImageTransformOptions,
   type ResponsiveBreakpoint,
 } from '@/utils/imageTransform'
@@ -31,6 +31,9 @@ import {
 defineEmits<{
   (e: 'error'): void
 }>()
+
+// CDN composable
+const { domain: cdnDomain } = useCdn()
 
 interface Props {
   /** Source image URL */
@@ -149,7 +152,7 @@ const computedSizes = computed((): string => {
  * Transform image URL to use CDN
  */
 const transformedSrc = computed(() => {
-  return transformImageUrl(props.src, imageOptions.value, props.domain || getCdnDomain())
+  return transformImageUrl(props.src, imageOptions.value, props.domain || cdnDomain)
 })
 
 /**
@@ -162,7 +165,7 @@ const srcset = computed(() => {
     props.src,
     imageOptions.value,
     computedBreakpoints.value,
-    props.domain || getCdnDomain(),
+    props.domain || cdnDomain,
   )
 })
 
@@ -179,7 +182,6 @@ const imageClasses = computed(() => {
  */
 const shouldSetReferrerPolicy = computed(() => {
   const currentDomain = window.location.hostname
-  const cdnDomain = getCdnDomain()
 
   // Only set referrerpolicy when domains are different
   return cdnDomain && currentDomain !== cdnDomain

@@ -6,9 +6,6 @@ import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
-    plugins: { js },
-    extends: ['js/recommended'],
     ignores: [
       '.eslintrc.cjs',
       '*.config.*',
@@ -20,6 +17,11 @@ export default defineConfig([
       'tailwind.config.js',
       'vite.config.ts',
     ],
+  },
+  {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
+    plugins: { js },
+    extends: ['js/recommended'],
     languageOptions: { globals: globals.browser },
   },
   tseslint.configs.recommended,

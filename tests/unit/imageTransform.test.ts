@@ -9,6 +9,16 @@ import {
   type ResponsiveBreakpoint,
 } from '../../src/utils/imageTransform'
 
+// Mock the useCdn composable
+vi.mock('@/composables/useCdn', () => ({
+  useCdn: () => ({
+    domain: 'test-cdn.com',
+    enabled: true,
+    getCdnUrl: vi.fn(),
+    getCdnDomain: vi.fn(() => 'test-cdn.com'),
+  }),
+}))
+
 describe('imageTransform', () => {
   beforeEach(() => {
     // No environment variable mocking needed - tests will use actual values
@@ -257,24 +267,10 @@ describe('imageTransform', () => {
   })
 
   describe('getCdnDomain', () => {
-    it('returns domain from environment variable', () => {
-      const result = getCdnDomain()
-      // Use actual value from environment instead of test-domain.com
-      expect(result).toBeTruthy()
-      expect(typeof result).toBe('string')
-    })
-
-    it('returns empty string when environment variable is not set', () => {
-      // Since we can't easily mock the environment, we'll test the actual behavior
+    it('returns domain from useCdn composable', () => {
       const result = getCdnDomain()
       expect(result).toBeTruthy()
       expect(typeof result).toBe('string')
-    })
-
-    it('logs domain to console', () => {
-      const consoleSpy = vi.spyOn(console, 'log')
-      getCdnDomain()
-      expect(consoleSpy).toHaveBeenCalledWith('CDN domain from env:', expect.any(String))
     })
   })
 
