@@ -13,7 +13,7 @@
         </div>
       </template>
     </AppBar>
-    <div class="h-4" />
+    <div class="h-16" />
     <main class="p-6">
       <section v-if="isLoading" class="mt-6">
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

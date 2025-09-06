@@ -1,61 +1,198 @@
-## Cursor Rules for Admin UI
+# Cursor Rules for Admin UI
 
-### Purpose
+## 1. MANDATORY Development Workflow for AI
 
-This is a low‑code Vue 3 + TypeScript admin UI.
+**🚨 CRITICAL: NO EXCEPTIONS - HUMAN APPROVAL REQUIRED FOR ALL WORK**
 
-## 1. Development Workflow for AI
+### Workflow Steps (MUST BE FOLLOWED IN ORDER):
 
-**plan** (need human approval) → **implement** → **write tests** (if needed) → **update docs** (if needed) → **git commit**
+1. **📋 PLAN PHASE** (MANDATORY - NO IMPLEMENTATION WITHOUT THIS)
+   - Create detailed plan with todos using `todo_write` tool
+   - Break down task into specific, actionable items
+   - Include estimated complexity and dependencies
+   - Present plan to human for approval
+   - **WAIT FOR EXPLICIT HUMAN APPROVAL** before proceeding
 
-1. **Plan**: Create a detailed plan with todos and get human approval before starting implementation
-2. **Implement**: Follow the coding conventions and architecture patterns outlined below
-3. **Write Tests**: Add unit tests for new functionality when appropriate
-4. **Update Docs**: Update relevant documentation if the changes affect the system architecture or usage
-5. **Git Commit**: Create a descriptive commit message following conventional commit format
+2. **✅ APPROVAL CHECKPOINT** (MANDATORY)
+   - Human must explicitly approve the plan
+   - If human requests changes, revise plan and re-present
+   - Only proceed to implementation after receiving approval
 
-## 2. Notes
+3. **🔨 IMPLEMENT PHASE** (Only after approval)
+   - Follow the coding conventions and architecture patterns outlined below
+   - Update todos as work progresses
+   - Mark completed todos as done
 
-### Architecture map
+4. **🧪 TEST PHASE** (If needed)
+   - Add unit tests for new functionality when appropriate
+   - Update todos to reflect testing status
+
+5. **📚 DOCS PHASE** (If needed)
+   - Update relevant documentation if changes affect system architecture or usage
+   - Update todos to reflect documentation status
+
+6. **💾 COMMIT PHASE** (MANDATORY - Final Step)
+   - Create descriptive commit message following conventional commit format
+   - Push to github
+
+## 2. Architecture & Patterns
+
+### Architecture Map
 
 - Entry: `src/main.ts` (Pinia, Router, Theme init)
 - Routing: `src/router/index.ts`
 - State: `src/stores/auth.ts`
+- API Service: `src/composables/useResourceService.ts`
 - API gateway: `src/utils/useApiGateway.ts` (fetch + Firebase token)
+- CDN service: `src/composables/useCdn.ts` (load files from CDN instead of origin)
+- Media players: `src/components/organisms/VideoPlayer.vue`, `src/components/organisms/AudioPlayer.vue`
+- Image optimization: Use `<Image>` component for optimization and image transformation
 - Views: `src/views/ItemListView.vue`, `src/views/ItemDetailView.vue`
 - Shared components in atomic design: `src/components/{atoms,molecules,organisms,templates}`
 
-### Data contracts
+### Design Patterns
 
-- UI config: `GET /api/admin-ui/modules/:module/config` with keys used by templates (list/kanban/gallery/calendar/detail/form). Keep keys stable.
-- Data: `/api/:module` list supports `page, limit, search, searchFields, sort, preset, from, to`. Detail at `/api/:module/:id`. CRUD returns `{ data }`.
+- **Composition API**: Use `<script setup lang="ts">` exclusively
+- **Atomic Design**: Strict component hierarchy (atoms → molecules → organisms → templates)
+- **Service Layer**: All API calls through `useResourceService` composables
+- **State Management**: Pinia stores for global state, local state in components
+- **Error Boundaries**: Graceful error handling with user-friendly messages
 
-### Coding conventions
+## 3. Coding Conventions
 
+### Language & Framework
 - Language: TypeScript, Vue 3 SFC `<script setup lang="ts">`
 - State: Pinia stores under `src/stores/*`
 - Composables: `src/composables/*` return plain functions/objects and avoid side effects on import
 - Styling: Tailwind classes only; do not add global CSS unless in `src/style.css`
-- Errors: Surface via `useToast.push(...)` not `alert()`
-- Auth: Use `useAuthStore` and `useAuth` for any auth changes
-- API: Use `useMovieService` methods; do not fetch directly in components
-- Routing: Add or change routes only in `src/router/index.ts`
-- Indentation: match existing style; avoid reformatting unrelated code
+- API: Use `useResourceService` methods; do not fetch directly in components
+- CDN: Use `useCdn()` composable to load files from CDN instead of origin
+- Media: Use `VideoPlayer` and `AudioPlayer` components for media playback with CDN by default.
+- Images: Use `<Image>` component for optimization and image transformation
+- Routing: `src/router/custom.ts` for custom routes and `src/router/generic.ts` for generic routes that support low-code backend
+- Icons: Use `unplugin-icons` with mdi iconset `@iconify-json/mdi`
 
-### Icons
+### Component Development
+- Use atomic design principles strictly
+- Props should be typed with interfaces: `defineProps<PropsInterface>()`
+- Emit events with proper typing: `defineEmits<EmitsInterface>()`
+- Use `ref()` and `reactive()` appropriately for state
+- Prefer composition over inheritance
+- Keep components focused and single-purpose
+- Use `computed()` for derived state
+- Use `watch()` and `watchEffect()` for side effects
 
-- Default source: `unplugin-icons` with Iconify collections (configured in `vite.config.ts` via `Icons()`). Prefer `mdi` (`@iconify-json/mdi`) to match existing usage.
-- Import pattern (explicit, per-component):
-  - In `<script setup>`:
-    ```ts
-    import CheckIcon from "~icons/mdi/check-circle-outline";
-    ```
-  - In template:
-    ```vue
-    <CheckIcon class="h-5 w-5 text-green-600" aria-hidden="true" />
-    ```
-- Sizing & color: use Tailwind classes (`w-4 h-4`, `text-muted-foreground`, etc.). Avoid inline `width`/`height` unless required.
-- Accessibility: decorative icons must include `aria-hidden="true"`. If conveying meaning, add `role="img"` and `aria-label`.
-- Do not: use `<i-*>` shorthand components (not enabled). Do not fetch remote SVGs or embed external URLs.
-- Lucide: when needed, prefer Iconify path `~icons/lucide/{name}`. Only use `lucide-vue-next` direct imports if an icon is missing from Iconify, e.g. `import { ArrowRight } from "lucide-vue-next"` and register/use locally.
-- Adding new sets: add `@iconify-json/{collection}` as a devDependency, then import with `~icons/{collection}/{icon-name}`. Keep imports on-demand; no global icon registry.
+### Error Handling
+- Use try-catch blocks in composables and async functions
+- Surface errors via `useToast.push()` with appropriate severity levels
+- Log errors to console in development mode
+- Handle network errors gracefully with retry logic
+- Provide fallback UI for error states
+- Never use `alert()` or `console.error()` for user-facing errors
+
+### Performance
+- Use `v-memo` for expensive list rendering
+- Implement proper loading states with skeleton loaders
+- Lazy load heavy components with `defineAsyncComponent()`
+- Optimize images with proper sizing and lazy loading
+- Use `shallowRef()` for large objects that don't need deep reactivity
+- Debounce search inputs and API calls
+- Implement virtual scrolling for large lists
+
+## 4. Testing Strategy
+
+### Testing Approach
+- Unit tests for composables and utilities (Vitest)
+- Component tests for complex interactions (Vue Test Utils)
+- Integration tests for API flows
+- E2E tests for critical user journeys (Playwright)
+
+### Test Structure
+- Tests in `tests/unit/` directory
+- Mock external dependencies
+- Test error scenarios and edge cases
+- Maintain test coverage above 80%
+- Use descriptive test names and organize with `describe()` blocks
+
+## 5. Code Quality
+
+### TypeScript
+- Strict mode enabled
+- No `any` types without explicit justification
+- Use proper type guards and assertions
+- Define interfaces for all data structures
+- Use generic types for reusable components
+
+### Code Organization
+- One component per file
+- Group related composables together
+- Use barrel exports (`index.ts`) for clean imports
+- Keep files under 300 lines when possible
+- Use meaningful variable and function names
+
+### Documentation
+- JSDoc comments for complex functions
+- README updates for architectural changes
+- Inline comments for business logic
+- Type definitions serve as documentation
+
+## 6. Security & Best Practices
+
+### Security
+- Sanitize user inputs
+- Validate API responses
+- Use proper authentication tokens
+- Implement proper CORS policies
+- Never expose sensitive data in client code
+
+### Accessibility
+- Use semantic HTML elements
+- Provide proper ARIA labels
+- Ensure keyboard navigation
+- Maintain color contrast ratios
+- Test with screen readers
+
+### Performance Monitoring
+- Use browser dev tools for performance analysis
+- Monitor bundle size and loading times
+- Implement proper caching strategies
+- Use service workers for offline functionality
+- Monitor Core Web Vitals
+
+## 7. AI Collaboration Guidelines
+
+### 🎯 MANDATORY AI BEHAVIOR
+- **ALWAYS** start with planning phase using `todo_write` tool
+- **ALWAYS** wait for explicit human approval before any implementation
+- **ALWAYS** explain what you're about to do before doing it
+- **ALWAYS** ask for clarification if requirements are ambiguous
+- **NEVER** assume you have permission to proceed
+- **NEVER** skip the approval checkpoint
+
+### Communication
+- Always explain the reasoning behind code decisions
+- Provide context for complex implementations
+- Suggest alternatives when appropriate
+- Ask clarifying questions for ambiguous requirements
+- **Explicitly state when you're waiting for approval**
+
+### Code Generation
+- Generate complete, runnable code
+- Include proper error handling
+- Add appropriate TypeScript types
+- Follow the established patterns in the codebase
+- Provide examples for complex usage
+- **Only generate code after receiving explicit approval**
+
+### Review Process
+- Always review generated code before implementation
+- Test functionality thoroughly
+- Ensure consistency with existing codebase
+- Update documentation as needed
+- Consider edge cases and error scenarios
+
+### 🚨 COMPLIANCE ENFORCEMENT
+- If you catch yourself about to implement without approval, STOP immediately
+- If you realize you skipped the planning phase, STOP and restart with planning
+- If human asks you to do something, respond with "I'll create a plan for that and wait for your approval"
+- Always use phrases like "I'm waiting for your approval to proceed" or "Please approve this plan so I can continue"

@@ -24,7 +24,7 @@
     </AppBar>
 
     <!-- Spacer to offset the fixed app bar height -->
-    <div class="h-4" />
+    <div class="h-16" />
 
     <!-- Breadcrumbs under the app bar -->
     <div class="px-4 py-2">
