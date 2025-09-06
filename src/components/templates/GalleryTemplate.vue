@@ -335,12 +335,9 @@ const closeAudio = () => {
 }
 
 const handleItemClick = (item: unknown) => {
-  // Only emit if it's not a video or audio item
-  const dataItem = item as DataItem
-  const mediaType = mediaKind(primaryMediaValue(dataItem))
-  if (mediaType !== 'video' && mediaType !== 'audio') {
-    emit('item-click', item)
-  }
+  // Always emit item-click for detail view navigation
+  // The play buttons use @click.stop to prevent this event when playing media
+  emit('item-click', item)
 }
 
 // Sort functionality
