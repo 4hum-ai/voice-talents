@@ -99,6 +99,27 @@
                     @blur="onBlur(field)"
                     @input="onInput(field)"
                   />
+
+                  <!-- Resource selector input -->
+                  <ResourceSelector
+                    v-else-if="field.type === 'resource'"
+                    v-model="formData[field.key] as string | number | undefined"
+                    :resource-type="field.resourceType || 'media'"
+                    :display-field="field.displayField || 'name'"
+                    :value-field="field.valueField || 'id'"
+                    :subtitle-field="field.subtitleField"
+                    :label="field.label"
+                    :placeholder="field.placeholder"
+                    :required="field.required"
+                    :searchable="field.searchable !== false"
+                    :search-placeholder="field.searchPlaceholder"
+                    :query="field.query"
+                    :help-text="field.helpText"
+                    :error="shouldShowError(field) ? errors[field.key] : undefined"
+                    :validation-state="getValidationState(field)"
+                    @blur="onBlur(field)"
+                    @input="onInput(field)"
+                  />
                 </div>
               </div>
             </form>
@@ -140,6 +161,7 @@ import SelectInput from '@/components/atoms/SelectInput.vue'
 import Textarea from '@/components/atoms/Textarea.vue'
 import FileInput from '@/components/atoms/FileInput.vue'
 import Checkbox from '@/components/atoms/Checkbox.vue'
+import ResourceSelector from '@/components/atoms/ResourceSelector.vue'
 
 const props = withDefaults(
   defineProps<{

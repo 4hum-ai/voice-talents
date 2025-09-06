@@ -210,10 +210,16 @@
     "fields": [
       {
         "key": "mediaId",
-        "label": "Media ID",
-        "type": "text",
+        "label": "Media",
+        "type": "resource",
+        "resourceType": "media",
+        "displayField": "fileName",
+        "valueField": "id",
+        "subtitleField": "type",
         "required": true,
-        "placeholder": "Enter media ID"
+        "searchable": true,
+        "searchPlaceholder": "Search media files...",
+        "placeholder": "Select media file"
       },
       {
         "key": "relationshipType",
@@ -247,10 +253,19 @@
       },
       {
         "key": "entityId",
-        "label": "Entity ID",
-        "type": "text",
+        "label": "Related Entity",
+        "type": "resource",
+        "resourceType": "titles",
+        "displayField": "title",
+        "valueField": "id",
+        "subtitleField": "type",
         "required": true,
-        "placeholder": "Enter entity ID"
+        "searchable": true,
+        "searchPlaceholder": "Search titles...",
+        "placeholder": "Select related entity",
+        "query": {
+          "type": "movie"
+        }
       },
       {
         "key": "metadata",

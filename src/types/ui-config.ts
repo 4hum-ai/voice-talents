@@ -126,6 +126,7 @@ export interface FormField {
     | 'file'
     | 'url'
     | 'color'
+    | 'resource'
     // extention from frontend, need adding back to backend
     | 'email'
   required?: boolean
@@ -133,6 +134,14 @@ export interface FormField {
   options?: Array<{ value: string; label: string }>
   placeholder?: string
   helpText?: string
+  // Resource selector specific fields
+  resourceType?: string
+  displayField?: string
+  valueField?: string
+  subtitleField?: string
+  searchable?: boolean
+  searchPlaceholder?: string
+  query?: Record<string, unknown>
 }
 export interface FormViewConfig {
   fields: FormField[]
