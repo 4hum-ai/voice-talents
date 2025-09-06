@@ -1,22 +1,12 @@
 {
-  "src/**/*.{ts,vue}": [
-    "vue-tsc --noEmit --skipLibCheck",
-    "eslint --fix",
-    "prettier --write"
-  ],
-  "src/**/*.{js}": [
+  "src/**/*.{js,ts,vue}": [
     "eslint --fix",
     "prettier --write"
   ],
   "src/**/*.{css,md,json}": [
     "prettier --write"
   ],
-  "tests/**/*.{ts,vue}": [
-    "vue-tsc --noEmit --skipLibCheck",
-    "eslint --fix",
-    "prettier --write"
-  ],
-  "tests/**/*.{js}": [
+  "tests/**/*.{js,ts,vue}": [
     "eslint --fix",
     "prettier --write"
   ],

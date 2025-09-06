@@ -1,1 +1,7 @@
+# Run type checking on the entire project first
+echo "🔍 Running type check..."
+pnpm type-check
+
+# Then run lint-staged for linting and formatting
+echo "🔧 Running lint-staged..."
 pnpm exec lint-staged --config .lintstagedrc

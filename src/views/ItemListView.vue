@@ -155,9 +155,7 @@
         :ui-config="uiConfig"
         :loading="loading"
         @item-click="(item: unknown) => onAction('view', item)"
-        @status-change="
-          (payload: { item: DataItem; from: string; to: string }) => onKanbanStatusChange(payload)
-        "
+        @status-change="onKanbanStatusChange"
       />
       <CalendarTemplate
         v-else-if="currentView === 'calendar' && uiConfig?.views?.calendar"
@@ -215,14 +213,14 @@
             <div class="flex items-center gap-2">
               <input
                 type="number"
-                :value="(localFilterValues[f.field] as { min?: number })?.min ?? ''"
+                :value="getFilterMinValue(f.field)"
                 placeholder="Min"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'min', $event)"
               />
               <input
                 type="number"
-                :value="(localFilterValues[f.field] as { max?: number })?.max ?? ''"
+                :value="getFilterMaxValue(f.field)"
                 placeholder="Max"
                 class="w-1/2 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 @input="onLocalNumberChange(f.field, 'max', $event)"
@@ -231,7 +229,7 @@
           </template>
           <template v-else-if="f.type === 'select'">
             <select
-              :value="(localFilterValues[f.field] as { value?: string })?.value ?? ''"
+              :value="getFilterStringValue(f.field)"
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
@@ -247,7 +245,7 @@
           </template>
           <template v-else-if="f.type === 'boolean'">
             <select
-              :value="(localFilterValues[f.field] as { value?: string })?.value ?? ''"
+              :value="getFilterStringValue(f.field)"
               class="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               @change="onLocalValueChange(f.field, $event)"
             >
@@ -258,8 +256,8 @@
           </template>
           <template v-else-if="f.type === 'date'">
             <DateRangeInput
-              :from="(localFilterValues[f.field] as { from?: string })?.from ?? ''"
-              :to="(localFilterValues[f.field] as { to?: string })?.to ?? ''"
+              :from="getFilterFromValue(f.field)"
+              :to="getFilterToValue(f.field)"
               @update:from="(value) => onLocalDateChange(f.field, 'from', value)"
               @update:to="(value) => onLocalDateChange(f.field, 'to', value)"
             />
@@ -438,6 +436,32 @@ const listFilters = computed<FilterConfig[]>(
   () => uiConfig.value?.views?.list?.defaultFilters || [],
 )
 const localFilterValues = ref<Record<string, unknown>>({})
+
+// Helper functions to safely extract filter values
+function getFilterMinValue(field: string): string {
+  const value = localFilterValues.value[field] as { min?: number } | undefined
+  return value?.min?.toString() ?? ''
+}
+
+function getFilterMaxValue(field: string): string {
+  const value = localFilterValues.value[field] as { max?: number } | undefined
+  return value?.max?.toString() ?? ''
+}
+
+function getFilterStringValue(field: string): string {
+  const value = localFilterValues.value[field] as { value?: string } | undefined
+  return value?.value ?? ''
+}
+
+function getFilterFromValue(field: string): string {
+  const value = localFilterValues.value[field] as { from?: string } | undefined
+  return value?.from ?? ''
+}
+
+function getFilterToValue(field: string): string {
+  const value = localFilterValues.value[field] as { to?: string } | undefined
+  return value?.to ?? ''
+}
 
 function openFilters() {
   syncFiltersFromQuery()
