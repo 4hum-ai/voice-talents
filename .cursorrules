@@ -4,6 +4,18 @@
 
 This is a low‑code Vue 3 + TypeScript admin UI.
 
+## 1. Development Workflow for AI
+
+**plan** (need human approval) → **implement** → **write tests** (if needed) → **update docs** (if needed) → **git commit**
+
+1. **Plan**: Create a detailed plan with todos and get human approval before starting implementation
+2. **Implement**: Follow the coding conventions and architecture patterns outlined below
+3. **Write Tests**: Add unit tests for new functionality when appropriate
+4. **Update Docs**: Update relevant documentation if the changes affect the system architecture or usage
+5. **Git Commit**: Create a descriptive commit message following conventional commit format
+
+## 2. Notes
+
 ### Architecture map
 
 - Entry: `src/main.ts` (Pinia, Router, Theme init)
