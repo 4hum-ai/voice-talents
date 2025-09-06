@@ -9,6 +9,8 @@
     @update="onUpdate"
     @edit="onEdit"
     @delete="onDelete"
+    @reference-click="onReferenceClick"
+    @related-item-click="onRelatedItemClick"
   />
   <ConfirmModal
     :open="confirmOpen"
@@ -143,6 +145,14 @@ async function onUpdate(data: Record<string, unknown>) {
   } finally {
     loading.value = false
   }
+}
+
+function onReferenceClick(referenceType: string, referenceId: string) {
+  router.push(`/${referenceType}/${referenceId}`)
+}
+
+function onRelatedItemClick(resourceType: string, itemId: string) {
+  router.push(`/${resourceType}/${itemId}`)
 }
 
 onActivated(() => {

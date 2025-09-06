@@ -95,7 +95,10 @@ export interface DetailField {
     | 'url'
     | 'array'
     | 'object'
+    | 'ref'
   formatter?: 'rating' | 'status' | 'date' | 'currency' | 'badge' | 'country' | 'number'
+  /** The resource type this field references (only used when type is 'ref') */
+  refTo?: string
 }
 export interface DetailSection {
   title: string

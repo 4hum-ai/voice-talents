@@ -1,7 +1,10 @@
 <template>
-  <span v-if="displayKind === 'text'" class="text-sm text-gray-900 dark:text-gray-100">{{
-    textValue
-  }}</span>
+  <span
+    v-if="displayKind === 'text'"
+    :class="['text-sm text-gray-900 dark:text-gray-100', referenceClasses]"
+    @click="handleReferenceClick"
+    >{{ textValue }}</span
+  >
   <span v-else-if="displayKind === 'boolean'" class="text-sm text-gray-900 dark:text-gray-100">{{
     value ? 'Yes' : 'No'
   }}</span>
@@ -175,6 +178,7 @@ interface Props {
     | 'array'
     | 'object'
     | 'color'
+    | 'ref'
   formatter?:
     | 'rating'
     | 'status'
@@ -192,14 +196,25 @@ interface Props {
     | 'video'
   currencyCode?: string
   fieldKey?: string
+  /** The resource type this field references (only used when type is 'ref') */
+  refTo?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {})
+
+const emit = defineEmits<{
+  'reference-click': [referenceType: string, referenceId: string]
+}>()
 
 const displayKind = computed(() => {
   if (props.formatter) {
     if (props.formatter === 'number') return 'number'
     return props.formatter
+  }
+
+  // Handle ref type - it displays as text but with reference behavior
+  if (props.type === 'ref') {
+    return 'text'
   }
 
   // If type is explicitly set, use it (except for 'url' which needs detection)
@@ -458,4 +473,22 @@ async function copy(text: string) {
     void 0
   }
 }
+
+// Handle reference clicks
+const handleReferenceClick = () => {
+  if (props.type === 'ref' && props.refTo) {
+    const referenceId = String(props.value || '')
+    if (referenceId) {
+      emit('reference-click', props.refTo, referenceId)
+    }
+  }
+}
+
+// Computed class for clickable references
+const referenceClasses = computed(() => {
+  if (props.type === 'ref' && props.refTo) {
+    return 'cursor-pointer text-primary-600 hover:text-primary-800 hover:underline dark:text-primary-400 dark:hover:text-primary-200'
+  }
+  return ''
+})
 </script>

@@ -167,7 +167,12 @@
         "title": "Relationship Information",
         "fields": [
           { "key": "id", "label": "ID", "type": "text" },
-          { "key": "mediaId", "label": "Media ID", "type": "text" },
+          {
+            "key": "mediaId",
+            "label": "Media ID",
+            "type": "ref",
+            "refTo": "media"
+          },
           {
             "key": "relationshipType",
             "label": "Relationship Type",
@@ -182,7 +187,8 @@
           {
             "key": "entityId",
             "label": "Entity ID",
-            "type": "text"
+            "type": "ref",
+            "refTo": "titles"
           }
         ]
       },
