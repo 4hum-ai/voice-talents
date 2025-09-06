@@ -36,6 +36,7 @@ This document summarizes the CDN refactoring implementation that separates CDN f
 ## Architecture Benefits
 
 ### **Before (Monolithic)**
+
 ```
 imageTransform.ts
 ├── Image transformation logic
@@ -45,6 +46,7 @@ imageTransform.ts
 ```
 
 ### **After (Separated)**
+
 ```
 useCdn.ts (Composable)
 ├── CDN domain management
@@ -60,17 +62,19 @@ imageTransform.ts
 ## Usage Examples
 
 ### **Images (with transformations)**
+
 ```typescript
 import { transformImageUrl } from '@/utils/imageTransform'
 
-const optimizedImage = transformImageUrl(imageUrl, { 
-  width: 300, 
-  height: 200, 
-  format: 'webp' 
+const optimizedImage = transformImageUrl(imageUrl, {
+  width: 300,
+  height: 200,
+  format: 'webp',
 })
 ```
 
 ### **Audio/Video (simple CDN replacement)**
+
 ```typescript
 import { useCdn } from '@/composables/useCdn'
 
@@ -80,6 +84,7 @@ const cdnVideo = getCdnUrl(videoUrl)
 ```
 
 ### **Direct function imports**
+
 ```typescript
 import { getCdnUrl, getCdnDomain } from '@/composables/useCdn'
 

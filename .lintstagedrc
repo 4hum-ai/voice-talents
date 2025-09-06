@@ -1,16 +1,4 @@
 {
-  "src/**/*.{js,ts,vue}": [
-    "eslint --fix",
-    "prettier --write"
-  ],
-  "src/**/*.{css,md,json}": [
-    "prettier --write"
-  ],
-  "tests/**/*.{js,ts,vue}": [
-    "eslint --fix",
-    "prettier --write"
-  ],
-  "tests/**/*.{css,md,json}": [
-    "prettier --write"
-  ]
+  "**/*.{js,ts,vue}": ["eslint --fix", "prettier --write"],
+  "**/*.{css,md,json}": ["prettier --write"]
 }
