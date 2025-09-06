@@ -1,0 +1,263 @@
+{
+  "displayName": "Media Relationships",
+  "description": "Manage relationships between media files and other entities",
+  "icon": "link",
+  "views": {
+    "list": {
+      "columns": [
+        {
+          "key": "id",
+          "label": "ID",
+          "type": "text",
+          "sortable": true,
+          "width": "15%",
+          "titleField": "id"
+        },
+        {
+          "key": "mediaId",
+          "label": "Media ID",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "searchable": true,
+          "width": "20%",
+          "subtitleField": "relationshipType"
+        },
+        {
+          "key": "relationshipType",
+          "label": "Relationship Type",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "15%",
+          "align": "center",
+          "formatter": "badge"
+        },
+        {
+          "key": "entityType",
+          "label": "Entity Type",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "15%",
+          "align": "center"
+        },
+        {
+          "key": "entityId",
+          "label": "Entity ID",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "searchable": true,
+          "width": "20%"
+        },
+        {
+          "key": "createdAt",
+          "label": "Created",
+          "type": "date",
+          "sortable": true,
+          "width": "15%",
+          "align": "center",
+          "formatter": "date"
+        }
+      ],
+      "defaultSort": {
+        "field": "createdAt",
+        "direction": "desc"
+      },
+      "defaultFilters": [
+        {
+          "field": "relationshipType",
+          "type": "select",
+          "label": "Relationship Type",
+          "options": [
+            { "value": "belongs_to", "label": "Belongs To" },
+            { "value": "references", "label": "References" },
+            { "value": "derived_from", "label": "Derived From" },
+            { "value": "version_of", "label": "Version Of" },
+            { "value": "part_of", "label": "Part Of" },
+            { "value": "related_to", "label": "Related To" }
+          ]
+        },
+        {
+          "field": "entityType",
+          "type": "select",
+          "label": "Entity Type",
+          "options": [
+            { "value": "movie", "label": "Movie" },
+            { "value": "series", "label": "Series" },
+            { "value": "episode", "label": "Episode" },
+            { "value": "character", "label": "Character" },
+            { "value": "scene", "label": "Scene" },
+            { "value": "actor", "label": "Actor" },
+            { "value": "director", "label": "Director" },
+            { "value": "genre", "label": "Genre" }
+          ]
+        }
+      ],
+      "searchableFields": ["mediaId", "entityId"],
+      "pageSize": 20,
+      "actions": [
+        {
+          "name": "create",
+          "label": "Add Relationship",
+          "type": "button",
+          "icon": "plus",
+          "variant": "primary",
+          "permission": "media-relationships:create"
+        },
+        {
+          "name": "view",
+          "label": "View",
+          "type": "button",
+          "icon": "eye",
+          "variant": "secondary",
+          "permission": "media-relationships:read"
+        },
+        {
+          "name": "edit",
+          "label": "Edit",
+          "type": "button",
+          "icon": "edit",
+          "variant": "secondary",
+          "permission": "media-relationships:update"
+        },
+        {
+          "name": "delete",
+          "label": "Delete",
+          "type": "button",
+          "icon": "trash",
+          "variant": "danger",
+          "permission": "media-relationships:delete"
+        }
+      ]
+    },
+    "kanban": {
+      "groupByField": "relationshipType",
+      "columns": [
+        { "value": "belongs_to", "label": "Belongs To", "color": "#22c55e" },
+        { "value": "references", "label": "References", "color": "#3b82f6" },
+        {
+          "value": "derived_from",
+          "label": "Derived From",
+          "color": "#fbbf24"
+        },
+        { "value": "version_of", "label": "Version Of", "color": "#8b5cf6" },
+        { "value": "part_of", "label": "Part Of", "color": "#ef4444" },
+        { "value": "related_to", "label": "Related To", "color": "#06b6d4" }
+      ],
+      "cardTitleField": "mediaId",
+      "cardDescriptionField": "entityId"
+    },
+    "gallery": {
+      "titleField": "mediaId",
+      "descriptionField": "relationshipType",
+      "imageField": null
+    },
+    "calendar": {
+      "dateField": "createdAt",
+      "titleField": "mediaId",
+      "colorField": "relationshipType",
+      "descriptionField": "entityId"
+    }
+  },
+  "detailView": {
+    "sections": [
+      {
+        "title": "Relationship Information",
+        "fields": [
+          { "key": "id", "label": "ID", "type": "text" },
+          { "key": "mediaId", "label": "Media ID", "type": "text" },
+          {
+            "key": "relationshipType",
+            "label": "Relationship Type",
+            "type": "text",
+            "formatter": "badge"
+          },
+          {
+            "key": "entityType",
+            "label": "Entity Type",
+            "type": "text"
+          },
+          {
+            "key": "entityId",
+            "label": "Entity ID",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "title": "Metadata",
+        "fields": [
+          {
+            "key": "metadata",
+            "label": "Metadata",
+            "type": "json",
+            "formatter": "json"
+          }
+        ]
+      },
+      {
+        "title": "Timestamps",
+        "fields": [
+          { "key": "createdAt", "label": "Created At", "type": "date", "formatter": "datetime" },
+          { "key": "updatedAt", "label": "Updated At", "type": "date", "formatter": "datetime" }
+        ]
+      }
+    ]
+  },
+  "formView": {
+    "fields": [
+      {
+        "key": "mediaId",
+        "label": "Media ID",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter media ID"
+      },
+      {
+        "key": "relationshipType",
+        "label": "Relationship Type",
+        "type": "select",
+        "required": true,
+        "options": [
+          { "value": "belongs_to", "label": "Belongs To" },
+          { "value": "references", "label": "References" },
+          { "value": "derived_from", "label": "Derived From" },
+          { "value": "version_of", "label": "Version Of" },
+          { "value": "part_of", "label": "Part Of" },
+          { "value": "related_to", "label": "Related To" }
+        ]
+      },
+      {
+        "key": "entityType",
+        "label": "Entity Type",
+        "type": "select",
+        "required": true,
+        "options": [
+          { "value": "movie", "label": "Movie" },
+          { "value": "series", "label": "Series" },
+          { "value": "episode", "label": "Episode" },
+          { "value": "character", "label": "Character" },
+          { "value": "scene", "label": "Scene" },
+          { "value": "actor", "label": "Actor" },
+          { "value": "director", "label": "Director" },
+          { "value": "genre", "label": "Genre" }
+        ]
+      },
+      {
+        "key": "entityId",
+        "label": "Entity ID",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter entity ID"
+      },
+      {
+        "key": "metadata",
+        "label": "Metadata",
+        "type": "json",
+        "placeholder": "Enter metadata as JSON object"
+      }
+    ]
+  }
+}

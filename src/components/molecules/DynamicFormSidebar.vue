@@ -28,103 +28,77 @@
           <div class="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
             <form class="space-y-6 px-6 py-6" @submit.prevent="handleSubmit">
               <div class="space-y-4">
-                <div v-for="field in resolvedForm.fields" :key="field.key" class="space-y-2">
-                  <label
-                    :for="field.key"
-                    class="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                    >{{ field.label
-                    }}<span v-if="field.required" class="text-red-500">*</span></label
-                  >
-                  <input
-                    v-if="field.type === 'text' || field.type === 'email' || field.type === 'url'"
-                    :id="field.key"
-                    v-model="formData[field.key]"
-                    :type="inputType(field)"
-                    :placeholder="field.placeholder"
-                    :class="inputClass(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-                  <input
-                    v-else-if="field.type === 'number'"
-                    :id="field.key"
-                    v-model.number="formData[field.key]"
-                    type="number"
-                    :placeholder="field.placeholder"
-                    :class="inputClass(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-                  <input
-                    v-else-if="field.type === 'date'"
-                    :id="field.key"
-                    v-model="formData[field.key]"
-                    type="date"
-                    :class="inputClass(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-                  <select
-                    v-else-if="field.type === 'select'"
-                    :id="field.key"
-                    v-model="formData[field.key]"
-                    :class="inputClass(field)"
-                    @blur="onBlur(field)"
-                    @change="onInput(field)"
-                  >
-                    <option :value="undefined">
-                      {{ field.placeholder || `Select ${field.label.toLowerCase()}` }}
-                    </option>
-                    <option v-for="opt in field.options || []" :key="opt.value" :value="opt.value">
-                      {{ opt.label }}
-                    </option>
-                  </select>
-                  <textarea
-                    v-else-if="field.type === 'textarea'"
-                    :id="field.key"
+                <div v-for="field in resolvedForm.fields" :key="field.key">
+                  <!-- Text, Email, URL, Number, Date inputs -->
+                  <FormInput
+                    v-if="['text', 'email', 'url', 'number', 'date'].includes(field.type)"
                     v-model="formData[field.key] as string"
+                    :type="getFormInputType(field)"
+                    :label="field.label"
                     :placeholder="field.placeholder"
-                    rows="3"
-                    :class="textareaClass(field)"
+                    :required="field.required"
+                    :help-text="field.helpText"
+                    :error="shouldShowError(field) ? errors[field.key] : undefined"
+                    :validation-state="getValidationState(field)"
                     @blur="onBlur(field)"
                     @input="onInput(field)"
                   />
-                  <div v-else-if="field.type === 'file'" class="space-y-2">
-                    <input
-                      :id="field.key"
-                      type="file"
-                      :class="inputClass(field)"
-                      @change="onFileSelected(field, $event)"
-                    />
-                    <div v-if="uploading[field.key]" class="text-xs text-gray-500">
-                      Uploading...
-                    </div>
-                    <div
-                      v-else-if="formData[field.key] && typeof formData[field.key] === 'string'"
-                      class="text-xs break-all text-gray-500"
-                    >
-                      {{ formData[field.key] }}
-                    </div>
-                  </div>
-                  <div v-else-if="field.type === 'boolean'" class="flex items-center">
-                    <input
-                      :id="field.key"
-                      v-model="formData[field.key]"
-                      type="checkbox"
-                      class="h-4 w-4 rounded border-gray-300 bg-white text-red-600 focus:ring-red-500 dark:border-gray-700 dark:bg-gray-800"
-                      @change="onInput(field)"
-                    /><label
-                      :for="field.key"
-                      class="ml-2 block text-sm text-gray-900 dark:text-gray-100"
-                      >{{ field.label }}</label
-                    >
-                  </div>
-                  <p v-if="field.helpText" class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ field.helpText }}
-                  </p>
-                  <p v-if="shouldShowError(field)" class="text-xs text-red-600">
-                    {{ errors[field.key] }}
-                  </p>
+
+                  <!-- Select input -->
+                  <SelectInput
+                    v-else-if="field.type === 'select'"
+                    v-model="formData[field.key] as string | number | boolean | undefined"
+                    :options="field.options || []"
+                    :label="field.label"
+                    :placeholder="field.placeholder"
+                    :required="field.required"
+                    :help-text="field.helpText"
+                    :error="shouldShowError(field) ? errors[field.key] : undefined"
+                    :validation-state="getValidationState(field)"
+                    @blur="onBlur(field)"
+                    @input="onInput(field)"
+                  />
+
+                  <!-- Textarea input -->
+                  <Textarea
+                    v-else-if="field.type === 'textarea'"
+                    v-model="formData[field.key] as string"
+                    :label="field.label"
+                    :placeholder="field.placeholder"
+                    :required="field.required"
+                    :help-text="field.helpText"
+                    :error="shouldShowError(field) ? errors[field.key] : undefined"
+                    :validation-state="getValidationState(field)"
+                    @blur="onBlur(field)"
+                    @input="onInput(field)"
+                  />
+
+                  <!-- File input -->
+                  <FileInput
+                    v-else-if="field.type === 'file'"
+                    v-model="formData[field.key] as string"
+                    :label="field.label"
+                    :required="field.required"
+                    :help-text="field.helpText"
+                    :error="shouldShowError(field) ? errors[field.key] : undefined"
+                    :validation-state="getValidationState(field)"
+                    :button-text="field.placeholder || 'Choose File'"
+                    @blur="onBlur(field)"
+                    @input="onInput(field)"
+                  />
+
+                  <!-- Checkbox input -->
+                  <Checkbox
+                    v-else-if="field.type === 'boolean'"
+                    v-model="formData[field.key] as boolean"
+                    :label="field.label"
+                    :required="field.required"
+                    :help-text="field.helpText"
+                    :error="shouldShowError(field) ? errors[field.key] : undefined"
+                    :validation-state="getValidationState(field)"
+                    @blur="onBlur(field)"
+                    @input="onInput(field)"
+                  />
                 </div>
               </div>
             </form>
@@ -161,6 +135,11 @@
 import { reactive, computed, ref } from 'vue'
 import { countries } from '@/utils/countries'
 import FileUploadModal from '@/components/molecules/FileUploadModal.vue'
+import FormInput from '@/components/atoms/FormInput.vue'
+import SelectInput from '@/components/atoms/SelectInput.vue'
+import Textarea from '@/components/atoms/Textarea.vue'
+import FileInput from '@/components/atoms/FileInput.vue'
+import Checkbox from '@/components/atoms/Checkbox.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -205,24 +184,34 @@ const resolvedForm = computed<FormViewConfig>(() => {
   return base
 })
 
-const inputBase =
-  'block w-full px-3 py-2 border rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:border-red-500 border-gray-300 dark:border-gray-700'
 const touched = reactive<Record<string, boolean>>({})
 const submitted = ref(false)
 const shouldShowError = (field: FormField) =>
   (touched[field.key] || submitted.value) && !!errors[field.key]
-const inputClass = (field: FormField) => [
-  inputBase,
-  shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : '',
-]
-const textareaClass = (field: FormField) => [
-  inputBase,
-  'min-h-[96px]',
-  shouldShowError(field) ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : '',
-]
-const inputType = (field: FormField) => {
+
+const getValidationState = (field: FormField): 'default' | 'success' | 'error' | 'warning' => {
+  if (shouldShowError(field)) return 'error'
+  return 'default'
+}
+
+const getFormInputType = (
+  field: FormField,
+):
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'number'
+  | 'date'
+  | 'datetime-local'
+  | 'time'
+  | 'tel'
+  | 'url'
+  | 'search' => {
   if (field.type === 'text' && field.key === 'email') return 'email'
-  return field.type
+  if (field.type === 'number') return 'number'
+  if (field.type === 'date') return 'date'
+  if (field.type === 'url') return 'url'
+  return 'text'
 }
 
 const validators = {
@@ -285,41 +274,5 @@ const handleSubmit = () => {
   emit('submit', { ...formData })
 }
 
-import { useMedia } from '@/composables/useMedia'
-import { useToast } from '@/composables/useToast'
 import { FormField, FormViewConfig } from '@/types/ui-config'
-const { uploadViaMediaResource } = useMedia()
-const { push } = useToast()
-const uploading = reactive<Record<string, boolean>>({})
-
-async function onFileSelected(field: FormField, e: Event) {
-  const input = e.target as HTMLInputElement
-  const file = input.files && input.files[0]
-  if (!file) return
-  try {
-    uploading[field.key] = true
-    const result = await uploadViaMediaResource(file, { type: 'poster' })
-    formData[field.key] = result.fileUrl
-    setFieldError(field)
-    push({
-      id: `${Date.now()}-${field.key}` as string,
-      type: 'success',
-      title: 'Upload complete',
-      body: `${file.name} uploaded`,
-      position: 'tr',
-      timeout: 4000,
-    })
-  } catch (err: unknown) {
-    push({
-      id: `${Date.now()}-${field.key}-err` as string,
-      type: 'error',
-      title: 'Upload failed',
-      body: (err as Error)?.message || 'Unable to upload file',
-      position: 'tr',
-      timeout: 6000,
-    })
-  } finally {
-    uploading[field.key] = false
-  }
-}
 </script>
