@@ -91,15 +91,24 @@
   <span v-else-if="displayKind === 'image'" class="inline-flex items-center">
     <Image
       :src="String(value)"
-      alt=""
-      class="h-10 w-10 rounded bg-gray-100 object-cover dark:bg-gray-800"
+      alt="Image"
+      :width="40"
+      :height="40"
+      preset="thumbnail"
+      :class="imageClasses"
     />
   </span>
-  <span v-else-if="displayKind === 'video'" class="inline-flex items-center">
-    <VideoPlayer :url="String(value)" :title="String(value)" subtitle-url="" mode="inline" />
+  <span v-else-if="displayKind === 'video'" class="inline-flex w-full items-center">
+    <VideoPlayer :url="String(value)" :title="String(value)" mode="inline" />
   </span>
-  <span v-else-if="displayKind === 'audio'" class="inline-flex items-center">
-    <AudioPlayer :url="String(value)" :title="String(value)" mode="inline" />
+  <span v-else-if="displayKind === 'audio'" class="inline-flex w-full items-center">
+    <AudioPlayer
+      :url="String(value)"
+      :title="String(value)"
+      mode="inline"
+      :autoplay="false"
+      :loop="false"
+    />
   </span>
   <span v-else-if="displayKind === 'country'" class="inline-flex items-center gap-2">
     <span v-if="country.code" class="shrink-0">
@@ -161,6 +170,7 @@ interface Props {
     | 'boolean'
     | 'image'
     | 'video'
+    | 'audio'
     | 'url'
     | 'array'
     | 'object'
@@ -191,6 +201,12 @@ const displayKind = computed(() => {
     if (props.formatter === 'number') return 'number'
     return props.formatter
   }
+
+  // If type is explicitly set, use it (except for 'url' which needs detection)
+  if (props.type && props.type !== 'url') {
+    return props.type
+  }
+
   // Heuristics for email/phone based on key/name and value shape
   const key = (props.fieldKey || '').toLowerCase()
   const val = String(props.value || '')
@@ -198,7 +214,6 @@ const displayKind = computed(() => {
   const looksPhone = key.includes('phone') || /^\+?[0-9()\-\s]{7,}$/.test(val)
   if (looksEmail) return 'email'
   if (looksPhone) return 'phone'
-  if (props.type) return props.type
 
   // Media type detection based on file extensions and URLs
   const v = String(props.value || '').toLowerCase()
@@ -210,8 +225,14 @@ const displayKind = computed(() => {
     v.endsWith('.mov') ||
     v.endsWith('.avi') ||
     v.endsWith('.mkv') ||
+    v.endsWith('.m4v') ||
+    v.endsWith('.3gp') ||
+    v.endsWith('.flv') ||
     v.includes('video=') ||
-    v.includes('.m3u8')
+    v.includes('.m3u8') ||
+    v.includes('youtube.com') ||
+    v.includes('youtu.be') ||
+    v.includes('vimeo.com')
   )
     return 'video'
 
@@ -221,23 +242,45 @@ const displayKind = computed(() => {
     v.endsWith('.wav') ||
     v.endsWith('.aac') ||
     v.endsWith('.flac') ||
-    v.includes('audio=')
+    v.endsWith('.ogg') ||
+    v.endsWith('.m4a') ||
+    v.endsWith('.wma') ||
+    v.includes('audio=') ||
+    v.includes('soundcloud.com') ||
+    v.includes('spotify.com')
   )
     return 'audio'
 
-  // Image detection (if not already handled by type)
+  // Image detection
   if (
-    props.type !== 'image' &&
-    (v.endsWith('.jpg') ||
-      v.endsWith('.jpeg') ||
-      v.endsWith('.png') ||
-      v.endsWith('.webp') ||
-      v.endsWith('.gif') ||
-      v.includes('image='))
+    v.endsWith('.jpg') ||
+    v.endsWith('.jpeg') ||
+    v.endsWith('.png') ||
+    v.endsWith('.webp') ||
+    v.endsWith('.gif') ||
+    v.endsWith('.svg') ||
+    v.endsWith('.bmp') ||
+    v.endsWith('.tiff') ||
+    v.endsWith('.ico') ||
+    v.includes('image=') ||
+    v.includes('imgur.com') ||
+    v.includes('unsplash.com') ||
+    v.includes('pixabay.com')
   )
     return 'image'
 
+  // If type is 'url' but no media detected, show as URL
+  if (props.type === 'url') {
+    return 'url'
+  }
+
   return 'text'
+})
+
+// Computed property for image classes
+const imageClasses = computed(() => {
+  const baseClasses = 'h-10 w-10 rounded bg-gray-100 object-cover dark:bg-gray-800'
+  return baseClasses
 })
 
 const textValue = computed(() => {

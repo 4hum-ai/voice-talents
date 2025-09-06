@@ -14,7 +14,18 @@ export interface ActionConfig {
 export interface ColumnConfig {
   key: string
   label: string
-  type: 'text' | 'number' | 'date' | 'boolean' | 'image' | 'url' | 'array' | 'object' | 'color'
+  type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'boolean'
+    | 'image'
+    | 'video'
+    | 'audio'
+    | 'url'
+    | 'array'
+    | 'object'
+    | 'color'
   sortable?: boolean
   filterable?: boolean
   searchable?: boolean
@@ -73,7 +84,17 @@ export interface GalleryViewConfig {
 export interface DetailField {
   key: string
   label: string
-  type: 'text' | 'number' | 'date' | 'boolean' | 'image' | 'url' | 'array' | 'object'
+  type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'boolean'
+    | 'image'
+    | 'video'
+    | 'audio'
+    | 'url'
+    | 'array'
+    | 'object'
   formatter?: 'rating' | 'status' | 'date' | 'currency' | 'badge' | 'country' | 'number'
 }
 export interface DetailSection {
