@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 
 interface Props {
   name: string
@@ -18,10 +18,10 @@ const iconComponent = computed(() => {
   // Handle mdi collection prefix
   if (iconName.startsWith('mdi:')) {
     const iconPath = iconName.replace('mdi:', '')
-    return () => import(/* @vite-ignore */ `~icons/mdi/${iconPath}`)
+    return defineAsyncComponent(() => import(/* @vite-ignore */ `~icons/mdi/${iconPath}`))
   }
 
   // Default to mdi if no collection specified
-  return () => import(/* @vite-ignore */ `~icons/mdi/${iconName}`)
+  return defineAsyncComponent(() => import(/* @vite-ignore */ `~icons/mdi/${iconName}`))
 })
 </script>
