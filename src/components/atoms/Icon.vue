@@ -18,10 +18,10 @@ const iconComponent = computed(() => {
   // Handle mdi collection prefix
   if (iconName.startsWith('mdi:')) {
     const iconPath = iconName.replace('mdi:', '')
-    return () => import(`~icons/mdi/${iconPath}`)
+    return () => import(/* @vite-ignore */ `~icons/mdi/${iconPath}`)
   }
 
   // Default to mdi if no collection specified
-  return () => import(`~icons/mdi/${iconName}`)
+  return () => import(/* @vite-ignore */ `~icons/mdi/${iconName}`)
 })
 </script>
