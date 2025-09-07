@@ -154,6 +154,73 @@
                               <option value="png">PNG</option>
                             </select>
 
+                            <!-- Select for icon names -->
+                            <select
+                              v-else-if="key === 'name'"
+                              v-model="componentConfig.props[key]"
+                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                              @change="updateJsonFromProps(componentConfig)"
+                            >
+                              <option value="mdi:heart">Heart</option>
+                              <option value="mdi:star">Star</option>
+                              <option value="mdi:home">Home</option>
+                              <option value="mdi:search">Search</option>
+                              <option value="mdi:plus">Plus</option>
+                              <option value="mdi:close">Close</option>
+                              <option value="mdi:play">Play</option>
+                              <option value="mdi:pause">Pause</option>
+                              <option value="mdi:settings">Settings</option>
+                              <option value="mdi:user">User</option>
+                              <option value="mdi:email">Email</option>
+                              <option value="mdi:phone">Phone</option>
+                              <option value="mdi:calendar">Calendar</option>
+                              <option value="mdi:clock">Clock</option>
+                              <option value="mdi:check">Check</option>
+                              <option value="mdi:alert">Alert</option>
+                              <option value="mdi:information">Information</option>
+                              <option value="mdi:warning">Warning</option>
+                              <option value="mdi:error">Error</option>
+                              <option value="mdi:success">Success</option>
+                            </select>
+
+                            <!-- Select for icon sizes -->
+                            <select
+                              v-else-if="key === 'size'"
+                              v-model="componentConfig.props[key]"
+                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                              @change="updateIconClass(componentConfig)"
+                            >
+                              <option value="h-4 w-4">Small (16px)</option>
+                              <option value="h-5 w-5">Medium (20px)</option>
+                              <option value="h-6 w-6">Large (24px)</option>
+                              <option value="h-8 w-8">Extra Large (32px)</option>
+                              <option value="h-10 w-10">2XL (40px)</option>
+                              <option value="h-12 w-12">3XL (48px)</option>
+                            </select>
+
+                            <!-- Select for icon colors -->
+                            <select
+                              v-else-if="key === 'color'"
+                              v-model="componentConfig.props[key]"
+                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                              @change="updateIconClass(componentConfig)"
+                            >
+                              <option value="text-gray-500">Gray</option>
+                              <option value="text-red-500">Red</option>
+                              <option value="text-blue-500">Blue</option>
+                              <option value="text-green-500">Green</option>
+                              <option value="text-yellow-500">Yellow</option>
+                              <option value="text-purple-500">Purple</option>
+                              <option value="text-pink-500">Pink</option>
+                              <option value="text-indigo-500">Indigo</option>
+                              <option value="text-orange-500">Orange</option>
+                              <option value="text-teal-500">Teal</option>
+                              <option value="text-foreground">Foreground</option>
+                              <option value="text-muted-foreground">Muted</option>
+                              <option value="text-primary">Primary</option>
+                              <option value="text-secondary">Secondary</option>
+                            </select>
+
                             <!-- Range for quality -->
                             <div v-else-if="key === 'quality'" class="space-y-2">
                               <input
@@ -282,6 +349,7 @@ import Sidebar from '@/components/atoms/Sidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
 import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
+import Icon from '@/components/atoms/Icon.vue'
 
 // Single source of truth for component definitions
 interface ComponentDefinition {
@@ -428,6 +496,20 @@ const componentDefinitions: ComponentDefinition[] = [
       title: 'Accordion Section',
       count: 3,
       defaultOpen: false,
+    },
+  },
+  {
+    id: 'icon',
+    title: 'Icon',
+    description: 'Dynamic icon component using Material Design Icons (MDI)',
+    componentName: 'Icon',
+    component: Icon,
+    section: 'atoms',
+    defaultProps: {
+      name: 'mdi:heart',
+      class: 'h-6 w-6 text-red-500',
+      size: 'h-6 w-6',
+      color: 'text-red-500',
     },
   },
 ]
@@ -610,6 +692,16 @@ const showVideoPlayer = () => {
   if (videoPlayerConfig) {
     // VideoPlayer is always visible when rendered, no need to toggle
     console.log('Video player is now visible')
+  }
+}
+
+// Update icon class when size or color changes
+const updateIconClass = (config: ComponentConfig) => {
+  if (config.id === 'icon') {
+    const size = config.props.size || 'h-6 w-6'
+    const color = config.props.color || 'text-red-500'
+    config.props.class = `${size} ${color}`
+    updateJsonFromProps(config)
   }
 }
 </script>
