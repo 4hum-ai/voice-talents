@@ -164,13 +164,13 @@
                               <option value="mdi:heart">Heart</option>
                               <option value="mdi:star">Star</option>
                               <option value="mdi:home">Home</option>
-                              <option value="mdi:search">Search</option>
+                              <option value="mdi:magnify">Search</option>
                               <option value="mdi:plus">Plus</option>
                               <option value="mdi:close">Close</option>
                               <option value="mdi:play">Play</option>
                               <option value="mdi:pause">Pause</option>
-                              <option value="mdi:settings">Settings</option>
-                              <option value="mdi:user">User</option>
+                              <option value="mdi:cog">Settings</option>
+                              <option value="mdi:account">User</option>
                               <option value="mdi:email">Email</option>
                               <option value="mdi:phone">Phone</option>
                               <option value="mdi:calendar">Calendar</option>
@@ -180,7 +180,17 @@
                               <option value="mdi:information">Information</option>
                               <option value="mdi:warning">Warning</option>
                               <option value="mdi:error">Error</option>
-                              <option value="mdi:success">Success</option>
+                              <option value="mdi:check-circle">Success</option>
+                              <option value="mdi:download">Download</option>
+                              <option value="mdi:upload">Upload</option>
+                              <option value="mdi:edit">Edit</option>
+                              <option value="mdi:delete">Delete</option>
+                              <option value="mdi:save">Save</option>
+                              <option value="mdi:refresh">Refresh</option>
+                              <option value="mdi:menu">Menu</option>
+                              <option value="mdi:dots-vertical">More</option>
+                              <option value="mdi:share">Share</option>
+                              <option value="mdi:bookmark">Bookmark</option>
                             </select>
 
                             <!-- Select for icon sizes -->
@@ -188,37 +198,15 @@
                               v-else-if="key === 'size'"
                               v-model="componentConfig.props[key]"
                               class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateIconClass(componentConfig)"
+                              @change="updateJsonFromProps(componentConfig)"
                             >
-                              <option value="h-4 w-4">Small (16px)</option>
-                              <option value="h-5 w-5">Medium (20px)</option>
-                              <option value="h-6 w-6">Large (24px)</option>
-                              <option value="h-8 w-8">Extra Large (32px)</option>
-                              <option value="h-10 w-10">2XL (40px)</option>
-                              <option value="h-12 w-12">3XL (48px)</option>
-                            </select>
-
-                            <!-- Select for icon colors -->
-                            <select
-                              v-else-if="key === 'color'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateIconClass(componentConfig)"
-                            >
-                              <option value="text-gray-500">Gray</option>
-                              <option value="text-red-500">Red</option>
-                              <option value="text-blue-500">Blue</option>
-                              <option value="text-green-500">Green</option>
-                              <option value="text-yellow-500">Yellow</option>
-                              <option value="text-purple-500">Purple</option>
-                              <option value="text-pink-500">Pink</option>
-                              <option value="text-indigo-500">Indigo</option>
-                              <option value="text-orange-500">Orange</option>
-                              <option value="text-teal-500">Teal</option>
-                              <option value="text-foreground">Foreground</option>
-                              <option value="text-muted-foreground">Muted</option>
-                              <option value="text-primary">Primary</option>
-                              <option value="text-secondary">Secondary</option>
+                              <option value="1rem">Small (16px)</option>
+                              <option value="1.25rem">Medium (20px)</option>
+                              <option value="1.5rem">Large (24px)</option>
+                              <option value="2rem">Extra Large (32px)</option>
+                              <option value="2.5rem">2XL (40px)</option>
+                              <option value="3rem">3XL (48px)</option>
+                              <option value="4rem">4XL (64px)</option>
                             </select>
 
                             <!-- Range for quality -->
@@ -501,15 +489,13 @@ const componentDefinitions: ComponentDefinition[] = [
   {
     id: 'icon',
     title: 'Icon',
-    description: 'Dynamic icon component using Material Design Icons (MDI)',
+    description: 'Dynamic icon component using Material Design Icons (MDI) loaded from server',
     componentName: 'Icon',
     component: Icon,
     section: 'atoms',
     defaultProps: {
       name: 'mdi:heart',
-      class: 'h-6 w-6 text-red-500',
-      size: 'h-6 w-6',
-      color: 'text-red-500',
+      size: '2rem',
     },
   },
 ]
@@ -692,16 +678,6 @@ const showVideoPlayer = () => {
   if (videoPlayerConfig) {
     // VideoPlayer is always visible when rendered, no need to toggle
     console.log('Video player is now visible')
-  }
-}
-
-// Update icon class when size or color changes
-const updateIconClass = (config: ComponentConfig) => {
-  if (config.id === 'icon') {
-    const size = config.props.size || 'h-6 w-6'
-    const color = config.props.color || 'text-red-500'
-    config.props.class = `${size} ${color}`
-    updateJsonFromProps(config)
   }
 }
 </script>
