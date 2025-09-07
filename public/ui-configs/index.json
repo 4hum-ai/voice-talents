@@ -20,7 +20,7 @@
       "name": "organization-contacts",
       "displayName": "Organization Contacts",
       "description": "Manage contacts associated with organizations",
-      "icon": "address-book",
+      "icon": "book-open-variant",
       "path": "/api/organization-contacts",
       "configUrl": "/static/ui-configs/organization-contacts.json"
     },
@@ -36,14 +36,14 @@
       "name": "payouts",
       "displayName": "Payouts",
       "description": "Manage publisher payouts and payment processing",
-      "icon": "currency-dollar",
+      "icon": "currency-usd",
       "path": "/api/payouts",
       "configUrl": "/static/ui-configs/payouts.json"
     },
     {
       "name": "profile-title-lists",
-      "displayName": "profile-title-lists",
-      "description": "",
+      "displayName": "Profile Title Lists",
+      "description": "Manage title watch lists for user profiles",
       "icon": "database",
       "path": "/api/profile-title-lists",
       "configUrl": "/static/ui-configs/profile-title-lists.json"
@@ -52,7 +52,7 @@
       "name": "profiles",
       "displayName": "Profiles",
       "description": "User profiles for personalized viewing experience",
-      "icon": "user-circle",
+      "icon": "account-circle",
       "path": "/api/profiles",
       "configUrl": "/static/ui-configs/profiles.json"
     },
@@ -76,7 +76,7 @@
       "name": "revenues",
       "displayName": "Revenues",
       "description": "Track revenue streams from content monetization",
-      "icon": "chart-bar",
+      "icon": "chart-line",
       "path": "/api/revenues",
       "configUrl": "/static/ui-configs/revenues.json"
     },
@@ -116,7 +116,7 @@
       "name": "media",
       "displayName": "Media",
       "description": "Manage media files including videos, audio, subtitles and images",
-      "icon": "video-camera",
+      "icon": "video",
       "path": "/api/media",
       "configUrl": "/static/ui-configs/media.json"
     },

@@ -31,7 +31,7 @@ const configFromLocal = (() => {
 })()
 const localPath = (() => {
   const env: Record<string, unknown> = (import.meta as { env?: Record<string, unknown> }).env || {}
-  // Path to modules index file served from public. Default to /ui-configs/index.json
+  // Path to models index file served from public. Default to /ui-configs/index.json
   return (env?.VITE_ADMIN_UI_CONFIG_LOCAL_PATH as string) || '/ui-configs/index.json'
 })()
 
@@ -44,7 +44,7 @@ export type AdminResourceInfo = {
   path: string
 }
 let cachedResources: AdminResourceInfo[] | null = null
-let modulesPromise: Promise<AdminResourceInfo[]> | null = null
+let modelsPromise: Promise<AdminResourceInfo[]> | null = null
 
 export function useUiConfig() {
   const api = useApiGateway()
@@ -90,7 +90,7 @@ export function useUiConfig() {
   const getConfig = (resourceName: string): UiConfig | null => {
     return state.configs[resourceName] || null
   }
-  const modules = computed(() => Object.keys(state.configs))
+  const models = computed(() => Object.keys(state.configs))
 
   const fetchconfigFromLocal = async (
     resourceName: string,
@@ -114,8 +114,8 @@ export function useUiConfig() {
     opts: { force?: boolean; signal?: AbortSignal } = {},
   ): Promise<AdminResourceInfo[]> => {
     if (!opts.force && cachedResources) return cachedResources
-    if (!opts.force && modulesPromise) return modulesPromise
-    modulesPromise = (async () => {
+    if (!opts.force && modelsPromise) return modelsPromise
+    modelsPromise = (async () => {
       // Try local index first
       try {
         const res = await fetch(localPath, {
@@ -128,11 +128,11 @@ export function useUiConfig() {
             return cachedResources ?? []
           }
           const json: unknown = await res.json().catch(() => null)
-          const modules = Array.isArray((json as { modules?: unknown })?.modules)
-            ? ((json as { modules: AdminResourceInfo[] }).modules ?? [])
+          const models = Array.isArray((json as { models?: unknown })?.models)
+            ? ((json as { models: AdminResourceInfo[] }).models ?? [])
             : []
-          if (modules.length > 0) {
-            cachedResources = modules
+          if (models.length > 0) {
+            cachedResources = models
             return cachedResources
           }
         }
@@ -145,7 +145,7 @@ export function useUiConfig() {
       }
       // Fallback to backend
       try {
-        const res = await api.request(`/api/admin-ui/modules`, {
+        const res = await api.request(`/api/admin-ui/models`, {
           method: 'GET',
           signal: opts.signal,
         })
@@ -153,17 +153,17 @@ export function useUiConfig() {
         const contentType = res.headers.get('content-type') || ''
         if (!/application\/json/.test(contentType)) return cachedResources ?? []
         const payload: unknown = await res.json().catch(() => null)
-        const modules = Array.isArray((payload as { modules?: unknown })?.modules)
-          ? ((payload as { modules: AdminResourceInfo[] }).modules ?? [])
+        const models = Array.isArray((payload as { models?: unknown })?.models)
+          ? ((payload as { models: AdminResourceInfo[] }).models ?? [])
           : []
-        cachedResources = modules
+        cachedResources = models
         return cachedResources
       } catch {
         return cachedResources ?? []
       }
     })()
-    const result = await modulesPromise
-    modulesPromise = null
+    const result = await modelsPromise
+    modelsPromise = null
     return result
   }
 
@@ -250,5 +250,5 @@ export function useUiConfig() {
     }
   }
 
-  return { get, modules, init, listResources, state: readonly(state) }
+  return { get, models, init, listResources, state: readonly(state) }
 }
