@@ -307,6 +307,10 @@ const menuItems = computed(() => [
     label: loadingCounts.value ? 'Refreshing…' : 'Refresh Stats',
   },
   {
+    key: 'reload-ui-config',
+    label: 'Reload UI Config',
+  },
+  {
     key: 'toggle-theme',
     label: isDark.value ? 'Switch to Light' : 'Switch to Dark',
   },
@@ -315,6 +319,10 @@ const menuItems = computed(() => [
 
 const onMenuSelect = async (key: string) => {
   if (key === 'refresh-stats') {
+    await loadCounts()
+  } else if (key === 'reload-ui-config') {
+    uiConfig.clearCache()
+    await uiConfig.init({ force: true })
     await loadCounts()
   } else if (key === 'toggle-theme') {
     toggleTheme()

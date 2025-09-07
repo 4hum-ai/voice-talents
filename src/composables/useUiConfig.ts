@@ -82,6 +82,16 @@ export function useUiConfig() {
     }
   }
 
+  const clearCache = () => {
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY)
+      state.configs = {}
+      state.initialized = false
+    } catch {
+      /* ignore */
+    }
+  }
+
   const setConfig = (resourceName: string, cfg: UiConfig) => {
     state.configs[resourceName] = cfg
     saveToCache()
@@ -250,5 +260,5 @@ export function useUiConfig() {
     }
   }
 
-  return { get, models, init, listResources, state: readonly(state) }
+  return { get, models, init, listResources, clearCache, state: readonly(state) }
 }
