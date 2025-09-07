@@ -74,7 +74,7 @@
                     <Icon
                       v-if="m.icon"
                       :name="m.icon"
-                      class="h-6 w-6 text-gray-600 dark:text-gray-300"
+                      class="text-primary-600 dark:text-primary-400 h-6 w-6"
                     />
                     <Avatar
                       v-else
