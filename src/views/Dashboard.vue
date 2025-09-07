@@ -71,7 +71,13 @@
               <div class="flex items-start gap-3">
                 <div class="h-10 w-10 flex-none overflow-hidden">
                   <div class="grid h-full w-full place-items-center">
+                    <Icon
+                      v-if="m.icon"
+                      :name="m.icon"
+                      class="h-6 w-6 text-gray-600 dark:text-gray-300"
+                    />
                     <Avatar
+                      v-else
                       :label="m.displayName || toTitle(m.name)"
                       :seed="m.name"
                       shape="square"
@@ -193,6 +199,7 @@ import { onMounted, onBeforeUnmount, ref, computed } from 'vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
+import Icon from '@/components/atoms/Icon.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import { useResourceService } from '@/composables/useResourceService'
 import { useUiConfig, type AdminResourceInfo } from '@/composables/useUiConfig'
@@ -271,7 +278,7 @@ const loadCounts = async () => {
     const loadingSeed: Record<string, boolean> = {}
     mods.forEach((m) => (loadingSeed[m] = true))
     countsLoading.value = loadingSeed
-    // Limit concurrency to avoid overwhelming API if many modules
+    // Limit concurrency to avoid overwhelming API if many resources
     const queue = mods.slice()
     const workers = Array.from({ length: 4 }).map(async () => {
       while (queue.length) {
