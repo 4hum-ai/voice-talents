@@ -45,11 +45,21 @@
           "width": "12%"
         },
         {
-          "key": "genre",
-          "label": "Genres",
-          "type": "array",
+          "key": "organizationId",
+          "label": "Organization",
+          "type": "ref",
+          "refTo": "organizations",
+          "sortable": true,
           "filterable": true,
-          "width": "12%",
+          "width": "12%"
+        },
+        {
+          "key": "genre",
+          "label": "Genre",
+          "type": "array",
+          "sortable": false,
+          "filterable": true,
+          "width": "15%",
           "formatter": "badge"
         },
         {
@@ -57,28 +67,9 @@
           "label": "Rating",
           "type": "number",
           "sortable": true,
-          "filterable": true,
           "width": "8%",
           "align": "center",
           "formatter": "rating"
-        },
-        {
-          "key": "totalViews",
-          "label": "Views",
-          "type": "number",
-          "sortable": true,
-          "width": "8%",
-          "align": "center",
-          "formatter": "number"
-        },
-        {
-          "key": "revenue",
-          "label": "Revenue",
-          "type": "number",
-          "sortable": true,
-          "width": "10%",
-          "align": "right",
-          "formatter": "currency"
         },
         {
           "key": "status",
@@ -86,7 +77,7 @@
           "type": "text",
           "sortable": true,
           "filterable": true,
-          "width": "8%",
+          "width": "10%",
           "align": "center",
           "formatter": "status"
         },
@@ -110,22 +101,10 @@
           "type": "select",
           "label": "Type",
           "options": [
-            {
-              "value": "movie",
-              "label": "Movie"
-            },
-            {
-              "value": "series",
-              "label": "Series"
-            },
-            {
-              "value": "episode",
-              "label": "Episode"
-            },
-            {
-              "value": "documentary",
-              "label": "Documentary"
-            }
+            { "value": "movie", "label": "Movie" },
+            { "value": "series", "label": "Series" },
+            { "value": "episode", "label": "Episode" },
+            { "value": "documentary", "label": "Documentary" }
           ]
         },
         {
@@ -133,65 +112,14 @@
           "type": "select",
           "label": "Status",
           "options": [
-            {
-              "value": "draft",
-              "label": "Draft"
-            },
-            {
-              "value": "processing",
-              "label": "Processing"
-            },
-            {
-              "value": "published",
-              "label": "Published"
-            },
-            {
-              "value": "archived",
-              "label": "Archived"
-            }
-          ]
-        },
-        {
-          "field": "language",
-          "type": "select",
-          "label": "Language",
-          "options": [
-            {
-              "value": "en",
-              "label": "English"
-            },
-            {
-              "value": "es",
-              "label": "Spanish"
-            },
-            {
-              "value": "fr",
-              "label": "French"
-            },
-            {
-              "value": "de",
-              "label": "German"
-            },
-            {
-              "value": "ja",
-              "label": "Japanese"
-            },
-            {
-              "value": "ko",
-              "label": "Korean"
-            },
-            {
-              "value": "zh",
-              "label": "Chinese"
-            },
-            {
-              "value": "hi",
-              "label": "Hindi"
-            }
+            { "value": "draft", "label": "Draft" },
+            { "value": "processing", "label": "Processing" },
+            { "value": "published", "label": "Published" },
+            { "value": "archived", "label": "Archived" }
           ]
         }
       ],
-      "searchableFields": ["name", "description", "director", "genre"],
+      "searchableFields": ["name", "director", "description"],
       "pageSize": 20,
       "actions": [
         {
@@ -228,35 +156,13 @@
         }
       ]
     },
-    "calendar": {
-      "dateField": "createdAt",
-      "titleField": "name",
-      "colorField": "status",
-      "descriptionField": "description"
-    },
     "kanban": {
       "groupByField": "status",
       "columns": [
-        {
-          "value": "draft",
-          "label": "Draft",
-          "color": "#fbbf24"
-        },
-        {
-          "value": "processing",
-          "label": "Processing",
-          "color": "#3b82f6"
-        },
-        {
-          "value": "published",
-          "label": "Published",
-          "color": "#22c55e"
-        },
-        {
-          "value": "archived",
-          "label": "Archived",
-          "color": "#64748b"
-        }
+        { "value": "draft", "label": "Draft", "color": "#64748b" },
+        { "value": "processing", "label": "Processing", "color": "#fbbf24" },
+        { "value": "published", "label": "Published", "color": "#22c55e" },
+        { "value": "archived", "label": "Archived", "color": "#ef4444" }
       ],
       "cardTitleField": "name",
       "cardDescriptionField": "director"
@@ -265,6 +171,12 @@
       "titleField": "name",
       "descriptionField": "director",
       "imageField": "poster"
+    },
+    "calendar": {
+      "dateField": "createdAt",
+      "titleField": "name",
+      "colorField": "type",
+      "descriptionField": "director"
     }
   },
   "detailView": {
@@ -272,124 +184,39 @@
       {
         "title": "Basic Information",
         "fields": [
-          {
-            "key": "name",
-            "label": "Title",
-            "type": "text"
-          },
+          { "key": "name", "label": "Title", "type": "text" },
           {
             "key": "type",
             "label": "Type",
             "type": "text",
             "formatter": "badge"
           },
+          { "key": "year", "label": "Year", "type": "number" },
+          { "key": "director", "label": "Director", "type": "text" },
           {
-            "key": "description",
-            "label": "Description",
-            "type": "text"
-          },
-          {
-            "key": "year",
-            "label": "Year",
-            "type": "number"
-          },
-          {
-            "key": "director",
-            "label": "Director",
-            "type": "text"
-          },
-          {
-            "key": "duration",
-            "label": "Duration (seconds)",
-            "type": "number"
+            "key": "genre",
+            "label": "Genre",
+            "type": "array",
+            "formatter": "badge"
           }
         ]
       },
       {
-        "title": "Classification",
+        "title": "Details",
         "fields": [
-          {
-            "key": "genre",
-            "label": "Genres",
-            "type": "array",
-            "formatter": "badge"
-          },
-          {
-            "key": "language",
-            "label": "Language",
-            "type": "text"
-          },
           {
             "key": "rating",
             "label": "Rating",
             "type": "number",
             "formatter": "rating"
           },
+          { "key": "duration", "label": "Duration", "type": "number" },
+          { "key": "language", "label": "Language", "type": "text" },
           {
             "key": "status",
             "label": "Status",
             "type": "text",
             "formatter": "status"
-          },
-          {
-            "key": "tags",
-            "label": "Tags",
-            "type": "array",
-            "formatter": "badge"
-          }
-        ]
-      },
-      {
-        "title": "Financial",
-        "fields": [
-          {
-            "key": "revenue",
-            "label": "Revenue",
-            "type": "number",
-            "formatter": "currency"
-          },
-          {
-            "key": "totalViews",
-            "label": "Total Views",
-            "type": "number",
-            "formatter": "number"
-          },
-          {
-            "key": "averageWatchTime",
-            "label": "Avg Watch Time",
-            "type": "number"
-          },
-          {
-            "key": "completionRate",
-            "label": "Completion Rate",
-            "type": "number"
-          },
-          {
-            "key": "budget",
-            "label": "Budget",
-            "type": "number",
-            "formatter": "currency"
-          },
-          {
-            "key": "boxOffice",
-            "label": "Box Office",
-            "type": "number",
-            "formatter": "currency"
-          }
-        ]
-      },
-      {
-        "title": "Media",
-        "fields": [
-          {
-            "key": "poster",
-            "label": "Poster",
-            "type": "image"
-          },
-          {
-            "key": "thumbnail",
-            "label": "Thumbnail",
-            "type": "image"
           }
         ]
       },
@@ -397,31 +224,35 @@
         "title": "Relationships",
         "fields": [
           {
-            "key": "organizationName",
+            "key": "organizationId",
             "label": "Organization",
-            "type": "text"
+            "type": "ref",
+            "refTo": "organizations"
           },
           {
             "key": "parentTitleId",
-            "label": "Parent Title ID",
-            "type": "text"
+            "label": "Parent Title",
+            "type": "ref",
+            "refTo": "titles"
           }
         ]
       },
       {
-        "title": "Metadata",
+        "title": "Media",
         "fields": [
+          { "key": "poster", "label": "Poster", "type": "image" },
+          { "key": "thumbnail", "label": "Thumbnail", "type": "image" }
+        ]
+      },
+      {
+        "title": "Description",
+        "fields": [
+          { "key": "description", "label": "Description", "type": "text" },
           {
-            "key": "createdAt",
-            "label": "Created At",
-            "type": "date",
-            "formatter": "date"
-          },
-          {
-            "key": "updatedAt",
-            "label": "Updated At",
-            "type": "date",
-            "formatter": "date"
+            "key": "tags",
+            "label": "Tags",
+            "type": "array",
+            "formatter": "badge"
           }
         ]
       }
@@ -434,7 +265,7 @@
         "label": "Title",
         "type": "text",
         "required": true,
-        "placeholder": "Enter title"
+        "placeholder": "Enter title name"
       },
       {
         "key": "type",
@@ -442,52 +273,11 @@
         "type": "select",
         "required": true,
         "options": [
-          {
-            "value": "movie",
-            "label": "Movie"
-          },
-          {
-            "value": "series",
-            "label": "Series"
-          },
-          {
-            "value": "episode",
-            "label": "Episode"
-          },
-          {
-            "value": "documentary",
-            "label": "Documentary"
-          }
+          { "value": "movie", "label": "Movie" },
+          { "value": "series", "label": "Series" },
+          { "value": "episode", "label": "Episode" },
+          { "value": "documentary", "label": "Documentary" }
         ]
-      },
-      {
-        "key": "status",
-        "label": "Status",
-        "type": "select",
-        "options": [
-          {
-            "value": "draft",
-            "label": "Draft"
-          },
-          {
-            "value": "processing",
-            "label": "Processing"
-          },
-          {
-            "value": "published",
-            "label": "Published"
-          },
-          {
-            "value": "archived",
-            "label": "Archived"
-          }
-        ]
-      },
-      {
-        "key": "description",
-        "label": "Description",
-        "type": "textarea",
-        "placeholder": "Enter description"
       },
       {
         "key": "year",
@@ -502,109 +292,90 @@
         "placeholder": "Enter director name"
       },
       {
-        "key": "duration",
-        "label": "Duration (seconds)",
-        "type": "number",
-        "placeholder": "Enter duration in seconds"
-      },
-      {
         "key": "genre",
-        "label": "Genres",
+        "label": "Genre",
         "type": "multiselect",
-        "placeholder": "Select genres"
-      },
-      {
-        "key": "language",
-        "label": "Language",
-        "type": "select",
         "options": [
-          {
-            "value": "en",
-            "label": "English"
-          },
-          {
-            "value": "es",
-            "label": "Spanish"
-          },
-          {
-            "value": "fr",
-            "label": "French"
-          },
-          {
-            "value": "de",
-            "label": "German"
-          },
-          {
-            "value": "ja",
-            "label": "Japanese"
-          },
-          {
-            "value": "ko",
-            "label": "Korean"
-          },
-          {
-            "value": "zh",
-            "label": "Chinese"
-          },
-          {
-            "value": "hi",
-            "label": "Hindi"
-          }
+          { "value": "action", "label": "Action" },
+          { "value": "comedy", "label": "Comedy" },
+          { "value": "drama", "label": "Drama" },
+          { "value": "horror", "label": "Horror" },
+          { "value": "romance", "label": "Romance" },
+          { "value": "sci-fi", "label": "Sci-Fi" },
+          { "value": "thriller", "label": "Thriller" }
         ]
       },
       {
         "key": "rating",
         "label": "Rating",
         "type": "number",
-        "validation": {
-          "min": 0,
-          "max": 10
-        },
-        "placeholder": "Enter rating (0-10)"
+        "placeholder": "Enter rating (1-10)"
+      },
+      {
+        "key": "duration",
+        "label": "Duration (minutes)",
+        "type": "number",
+        "placeholder": "Enter duration"
+      },
+      {
+        "key": "language",
+        "label": "Language",
+        "type": "select",
+        "options": [
+          { "value": "en", "label": "English" },
+          { "value": "es", "label": "Spanish" },
+          { "value": "fr", "label": "French" },
+          { "value": "de", "label": "German" },
+          { "value": "ja", "label": "Japanese" },
+          { "value": "ko", "label": "Korean" },
+          { "value": "zh", "label": "Chinese" },
+          { "value": "hi", "label": "Hindi" }
+        ]
+      },
+      {
+        "key": "status",
+        "label": "Status",
+        "type": "select",
+        "options": [
+          { "value": "draft", "label": "Draft" },
+          { "value": "processing", "label": "Processing" },
+          { "value": "published", "label": "Published" },
+          { "value": "archived", "label": "Archived" }
+        ]
+      },
+      {
+        "key": "organizationId",
+        "label": "Organization",
+        "type": "resource",
+        "resourceType": "organizations",
+        "displayField": "name",
+        "valueField": "id",
+        "subtitleField": "type",
+        "searchable": true,
+        "searchPlaceholder": "Search organizations..."
+      },
+      {
+        "key": "parentTitleId",
+        "label": "Parent Title",
+        "type": "resource",
+        "resourceType": "titles",
+        "displayField": "name",
+        "valueField": "id",
+        "subtitleField": "type",
+        "searchable": true,
+        "searchPlaceholder": "Search titles..."
+      },
+      {
+        "key": "description",
+        "label": "Description",
+        "type": "textarea",
+        "placeholder": "Enter description"
       },
       {
         "key": "tags",
         "label": "Tags",
         "type": "multiselect",
-        "placeholder": "Select tags"
-      },
-      {
-        "key": "organizationId",
-        "label": "Organization",
-        "type": "select",
-        "options": [],
-        "placeholder": "Select organization"
-      },
-      {
-        "key": "parentTitleId",
-        "label": "Parent Title",
-        "type": "select",
-        "options": [],
-        "placeholder": "Select parent title (for episodes)"
-      },
-      {
-        "key": "budget",
-        "label": "Budget",
-        "type": "number",
-        "placeholder": "Enter budget amount"
-      },
-      {
-        "key": "boxOffice",
-        "label": "Box Office",
-        "type": "number",
-        "placeholder": "Enter box office revenue"
-      },
-      {
-        "key": "poster",
-        "label": "Poster",
-        "type": "file",
-        "helpText": "Upload poster image"
-      },
-      {
-        "key": "thumbnail",
-        "label": "Thumbnail",
-        "type": "file",
-        "helpText": "Upload thumbnail image"
+        "options": []
       }
     ]
   }

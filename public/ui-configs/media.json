@@ -1,13 +1,13 @@
 {
   "displayName": "Media",
-  "description": "Manage media files, videos, audio, and subtitles",
-  "icon": "video",
+  "description": "Manage media files including videos, audio, subtitles and images",
+  "icon": "video-camera",
   "views": {
     "list": {
       "columns": [
         {
           "key": "fileName",
-          "label": "File Name",
+          "label": "File",
           "type": "text",
           "sortable": true,
           "filterable": true,
@@ -33,7 +33,8 @@
           "sortable": true,
           "filterable": true,
           "width": "8%",
-          "align": "center"
+          "align": "center",
+          "formatter": "badge"
         },
         {
           "key": "language",
@@ -59,7 +60,8 @@
           "type": "number",
           "sortable": true,
           "width": "10%",
-          "align": "center"
+          "align": "right",
+          "formatter": "number"
         },
         {
           "key": "status",
@@ -95,7 +97,14 @@
             { "value": "trailer", "label": "Trailer" },
             { "value": "voice_over", "label": "Voice Over" },
             { "value": "subtitle", "label": "Subtitle" },
-            { "value": "original", "label": "Original" }
+            { "value": "original", "label": "Original" },
+            { "value": "behind_scenes", "label": "Behind Scenes" },
+            { "value": "interview", "label": "Interview" },
+            { "value": "promo", "label": "Promo" },
+            { "value": "recording", "label": "Recording" },
+            { "value": "mixing", "label": "Mixing" },
+            { "value": "master", "label": "Master" },
+            { "value": "poster", "label": "Poster" }
           ]
         },
         {
@@ -110,14 +119,14 @@
           ]
         }
       ],
-      "searchableFields": ["fileName", "description"],
+      "searchableFields": ["fileName", "description", "tags"],
       "pageSize": 20,
       "actions": [
         {
           "name": "create",
-          "label": "Add Media",
+          "label": "Upload Media",
           "type": "button",
-          "icon": "plus",
+          "icon": "upload",
           "variant": "primary",
           "permission": "media:create"
         },
@@ -150,8 +159,8 @@
     "kanban": {
       "groupByField": "status",
       "columns": [
-        { "value": "pending", "label": "Pending", "color": "#fbbf24" },
-        { "value": "processing", "label": "Processing", "color": "#3b82f6" },
+        { "value": "pending", "label": "Pending", "color": "#64748b" },
+        { "value": "processing", "label": "Processing", "color": "#fbbf24" },
         { "value": "completed", "label": "Completed", "color": "#22c55e" },
         { "value": "failed", "label": "Failed", "color": "#ef4444" }
       ],
@@ -182,35 +191,50 @@
             "type": "text",
             "formatter": "badge"
           },
-          { "key": "format", "label": "Format", "type": "text" },
           {
-            "key": "fileSize",
-            "label": "File Size",
-            "type": "number",
-            "formatter": "number"
-          }
+            "key": "format",
+            "label": "Format",
+            "type": "text",
+            "formatter": "badge"
+          },
+          { "key": "contentType", "label": "Content Type", "type": "text" }
         ]
       },
       {
         "title": "Media Details",
         "fields": [
           { "key": "language", "label": "Language", "type": "text" },
-          { "key": "duration", "label": "Duration", "type": "number" },
-          { "key": "contentType", "label": "Content Type", "type": "text" },
           {
-            "key": "status",
-            "label": "Status",
-            "type": "text",
-            "formatter": "status"
+            "key": "duration",
+            "label": "Duration (seconds)",
+            "type": "number"
+          },
+          {
+            "key": "fileSize",
+            "label": "File Size (bytes)",
+            "type": "number",
+            "formatter": "number"
           }
         ]
       },
       {
-        "title": "URLs",
+        "title": "Storage & URLs",
         "fields": [
           { "key": "fileUrl", "label": "File URL", "type": "url" },
           { "key": "thumbnailUrl", "label": "Thumbnail URL", "type": "url" },
-          { "key": "previewUrl", "label": "Preview URL", "type": "url" }
+          { "key": "previewUrl", "label": "Preview URL", "type": "url" },
+          { "key": "bucket", "label": "Storage Bucket", "type": "text" },
+          { "key": "path", "label": "Storage Path", "type": "text" }
+        ]
+      },
+      {
+        "title": "Relationships",
+        "fields": [
+          {
+            "key": "relationships",
+            "label": "Related Entities",
+            "type": "array"
+          }
         ]
       },
       {
@@ -222,8 +246,37 @@
             "label": "Tags",
             "type": "array",
             "formatter": "badge"
+          }
+        ]
+      },
+      {
+        "title": "Status & Processing",
+        "fields": [
+          {
+            "key": "status",
+            "label": "Status",
+            "type": "text",
+            "formatter": "status"
           },
-          { "key": "relationships", "label": "Relationships", "type": "array" }
+          { "key": "uploadUrl", "label": "Upload URL", "type": "url" },
+          {
+            "key": "uploadExpiresAt",
+            "label": "Upload Expires",
+            "type": "date",
+            "formatter": "date"
+          },
+          {
+            "key": "createdAt",
+            "label": "Created",
+            "type": "date",
+            "formatter": "date"
+          },
+          {
+            "key": "updatedAt",
+            "label": "Updated",
+            "type": "date",
+            "formatter": "date"
+          }
         ]
       }
     ]
@@ -232,15 +285,8 @@
     "mode": "upload",
     "fields": [
       {
-        "key": "fileName",
-        "label": "File Name",
-        "type": "text",
-        "required": true,
-        "placeholder": "Enter file name"
-      },
-      {
         "key": "type",
-        "label": "Type",
+        "label": "Media Type",
         "type": "select",
         "required": true,
         "options": [
@@ -259,29 +305,6 @@
         ]
       },
       {
-        "key": "format",
-        "label": "Format",
-        "type": "select",
-        "options": [
-          { "value": "mp4", "label": "MP4" },
-          { "value": "avi", "label": "AVI" },
-          { "value": "mov", "label": "MOV" },
-          { "value": "mkv", "label": "MKV" },
-          { "value": "mp3", "label": "MP3" },
-          { "value": "wav", "label": "WAV" },
-          { "value": "aac", "label": "AAC" },
-          { "value": "flac", "label": "FLAC" },
-          { "value": "srt", "label": "SRT" },
-          { "value": "vtt", "label": "VTT" },
-          { "value": "ass", "label": "ASS" },
-          { "value": "ssa", "label": "SSA" },
-          { "value": "jpg", "label": "JPG" },
-          { "value": "png", "label": "PNG" },
-          { "value": "webp", "label": "WebP" },
-          { "value": "m3u8", "label": "M3U8" }
-        ]
-      },
-      {
         "key": "language",
         "label": "Language",
         "type": "select",
@@ -297,16 +320,16 @@
         ]
       },
       {
-        "key": "fileSize",
-        "label": "File Size (bytes)",
-        "type": "number",
-        "placeholder": "Enter file size"
+        "key": "description",
+        "label": "Description",
+        "type": "textarea",
+        "placeholder": "Enter media description"
       },
       {
-        "key": "duration",
-        "label": "Duration (seconds)",
-        "type": "number",
-        "placeholder": "Enter duration"
+        "key": "tags",
+        "label": "Tags",
+        "type": "multiselect",
+        "options": []
       },
       {
         "key": "status",
@@ -318,18 +341,6 @@
           { "value": "completed", "label": "Completed" },
           { "value": "failed", "label": "Failed" }
         ]
-      },
-      {
-        "key": "description",
-        "label": "Description",
-        "type": "textarea",
-        "placeholder": "Enter description"
-      },
-      {
-        "key": "tags",
-        "label": "Tags",
-        "type": "multiselect",
-        "options": []
       }
     ]
   }

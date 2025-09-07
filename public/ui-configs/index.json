@@ -1,88 +1,132 @@
 {
-  "modules": [
+  "models": [
     {
-      "name": "titles",
-      "displayName": "Titles",
-      "description": "Manage movies, series, episodes and documentaries",
-      "icon": "film",
-      "path": "/api/titles"
+      "name": "contacts",
+      "displayName": "Contacts",
+      "description": "Manage individual contacts and their information",
+      "icon": "user",
+      "path": "/api/contacts",
+      "configUrl": "/static/ui-configs/contacts.json"
+    },
+    {
+      "name": "members",
+      "displayName": "Members",
+      "description": "Manage subscription members and their billing information",
+      "icon": "users",
+      "path": "/api/members",
+      "configUrl": "/static/ui-configs/members.json"
+    },
+    {
+      "name": "organization-contacts",
+      "displayName": "Organization Contacts",
+      "description": "Manage contacts associated with organizations",
+      "icon": "address-book",
+      "path": "/api/organization-contacts",
+      "configUrl": "/static/ui-configs/organization-contacts.json"
     },
     {
       "name": "organizations",
       "displayName": "Organizations",
       "description": "Manage publishers, partners, vendors and other organizations",
       "icon": "building",
-      "path": "/api/organizations"
-    },
-    {
-      "name": "users",
-      "displayName": "Users",
-      "description": "Manage system users and permissions",
-      "icon": "users",
-      "path": "/api/users"
-    },
-    {
-      "name": "contacts",
-      "displayName": "Contacts",
-      "description": "Manage contact information",
-      "icon": "address-book",
-      "path": "/api/contacts"
-    },
-    {
-      "name": "organization-contacts",
-      "displayName": "Organization Contacts",
-      "description": "Manage relationships between organizations and contacts",
-      "icon": "users",
-      "path": "/api/organization-contacts"
-    },
-    {
-      "name": "revenues",
-      "displayName": "Revenues",
-      "description": "Track and manage all revenue streams",
-      "icon": "dollar-sign",
-      "path": "/api/revenues"
-    },
-    {
-      "name": "revenue-distributions",
-      "displayName": "Revenue Distributions",
-      "description": "Track daily revenue distributions to publishers",
-      "icon": "share-2",
-      "path": "/api/revenue-distributions"
+      "path": "/api/organizations",
+      "configUrl": "/static/ui-configs/organizations.json"
     },
     {
       "name": "payouts",
       "displayName": "Payouts",
-      "description": "Manage monthly publisher payouts",
-      "icon": "credit-card",
-      "path": "/api/payouts"
+      "description": "Manage publisher payouts and payment processing",
+      "icon": "currency-dollar",
+      "path": "/api/payouts",
+      "configUrl": "/static/ui-configs/payouts.json"
     },
     {
-      "name": "members",
-      "displayName": "Members",
-      "description": "Manage member subscriptions and engagement",
+      "name": "profile-title-lists",
+      "displayName": "profile-title-lists",
+      "description": "",
+      "icon": "database",
+      "path": "/api/profile-title-lists",
+      "configUrl": "/static/ui-configs/profile-title-lists.json"
+    },
+    {
+      "name": "profiles",
+      "displayName": "Profiles",
+      "description": "User profiles for personalized viewing experience",
+      "icon": "user-circle",
+      "path": "/api/profiles",
+      "configUrl": "/static/ui-configs/profiles.json"
+    },
+    {
+      "name": "ratings",
+      "displayName": "Ratings",
+      "description": "User ratings and reviews for titles",
+      "icon": "star",
+      "path": "/api/ratings",
+      "configUrl": "/static/ui-configs/ratings.json"
+    },
+    {
+      "name": "revenue-distributions",
+      "displayName": "Revenue Distributions",
+      "description": "Manage revenue distribution to publishers and content creators",
+      "icon": "share",
+      "path": "/api/revenue-distributions",
+      "configUrl": "/static/ui-configs/revenue-distributions.json"
+    },
+    {
+      "name": "revenues",
+      "displayName": "Revenues",
+      "description": "Track revenue streams from content monetization",
+      "icon": "chart-bar",
+      "path": "/api/revenues",
+      "configUrl": "/static/ui-configs/revenues.json"
+    },
+    {
+      "name": "titles",
+      "displayName": "Titles",
+      "description": "Manage movies, series, episodes and documentaries",
+      "icon": "film",
+      "path": "/api/titles",
+      "configUrl": "/static/ui-configs/titles.json"
+    },
+    {
+      "name": "users",
+      "displayName": "Users",
+      "description": "Manage system users and their permissions",
       "icon": "users",
-      "path": "/api/members"
+      "path": "/api/users",
+      "configUrl": "/static/ui-configs/users.json"
+    },
+    {
+      "name": "viewing-progress",
+      "displayName": "Viewing Progress",
+      "description": "Track viewing progress for titles per profile",
+      "icon": "play-circle",
+      "path": "/api/viewing-progress",
+      "configUrl": "/static/ui-configs/viewing-progress.json"
     },
     {
       "name": "voice-library",
       "displayName": "Voice Library",
-      "description": "Manage AI voice actors and their settings",
-      "icon": "mic",
-      "path": "/api/voice-library"
+      "description": "Manage voice actors and AI voice models for dubbing",
+      "icon": "microphone",
+      "path": "/api/voice-library",
+      "configUrl": "/static/ui-configs/voice-library.json"
     },
     {
       "name": "media",
       "displayName": "Media",
-      "description": "Manage media files and assets",
-      "icon": "image",
-      "path": "/api/media"
+      "description": "Manage media files including videos, audio, subtitles and images",
+      "icon": "video-camera",
+      "path": "/api/media",
+      "configUrl": "/static/ui-configs/media.json"
     },
     {
       "name": "media-relationships",
       "displayName": "Media Relationships",
       "description": "Manage relationships between media files and other entities",
       "icon": "link",
-      "path": "/api/media-relationships"
+      "path": "/api/media-relationships",
+      "configUrl": "/static/ui-configs/media-relationships.json"
     }
   ]
 }

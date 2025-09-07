@@ -1,0 +1,370 @@
+{
+  "displayName": "Voice Library",
+  "description": "Manage voice actors and AI voice models for dubbing",
+  "icon": "microphone",
+  "views": {
+    "list": {
+      "columns": [
+        {
+          "key": "name",
+          "label": "Voice",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "searchable": true,
+          "width": "20%",
+          "titleField": "name",
+          "subtitleField": "provider"
+        },
+        {
+          "key": "language",
+          "label": "Language",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "10%",
+          "align": "center"
+        },
+        {
+          "key": "gender",
+          "label": "Gender",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "10%",
+          "align": "center",
+          "formatter": "badge"
+        },
+        {
+          "key": "voiceType",
+          "label": "Type",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "12%",
+          "align": "center",
+          "formatter": "badge"
+        },
+        {
+          "key": "provider",
+          "label": "Provider",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "12%",
+          "align": "center",
+          "formatter": "badge"
+        },
+        {
+          "key": "accent",
+          "label": "Accent",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "width": "10%"
+        },
+        {
+          "key": "mediaId",
+          "label": "Sample",
+          "type": "ref",
+          "refTo": "media",
+          "sortable": true,
+          "filterable": true,
+          "width": "12%"
+        },
+        {
+          "key": "createdAt",
+          "label": "Created",
+          "type": "date",
+          "sortable": true,
+          "width": "14%",
+          "align": "center",
+          "formatter": "date"
+        }
+      ],
+      "defaultSort": {
+        "field": "createdAt",
+        "direction": "desc"
+      },
+      "defaultFilters": [
+        {
+          "field": "language",
+          "type": "select",
+          "label": "Language",
+          "options": [
+            { "value": "en", "label": "English" },
+            { "value": "es", "label": "Spanish" },
+            { "value": "fr", "label": "French" },
+            { "value": "de", "label": "German" },
+            { "value": "ja", "label": "Japanese" },
+            { "value": "ko", "label": "Korean" },
+            { "value": "zh", "label": "Chinese" },
+            { "value": "hi", "label": "Hindi" }
+          ]
+        },
+        {
+          "field": "gender",
+          "type": "select",
+          "label": "Gender",
+          "options": [
+            { "value": "male", "label": "Male" },
+            { "value": "female", "label": "Female" },
+            { "value": "non-binary", "label": "Non-binary" }
+          ]
+        },
+        {
+          "field": "provider",
+          "type": "select",
+          "label": "Provider",
+          "options": [
+            { "value": "elevenlabs", "label": "ElevenLabs" },
+            { "value": "speechify", "label": "Speechify" },
+            { "value": "azure", "label": "Azure" },
+            { "value": "aws", "label": "AWS" },
+            { "value": "google", "label": "Google" },
+            { "value": "custom", "label": "Custom" }
+          ]
+        }
+      ],
+      "searchableFields": ["name", "accent", "voiceId"],
+      "pageSize": 20,
+      "actions": [
+        {
+          "name": "create",
+          "label": "Add Voice",
+          "type": "button",
+          "icon": "plus",
+          "variant": "primary",
+          "permission": "voice-library:create"
+        },
+        {
+          "name": "view",
+          "label": "View",
+          "type": "button",
+          "icon": "eye",
+          "variant": "secondary",
+          "permission": "voice-library:read"
+        },
+        {
+          "name": "edit",
+          "label": "Edit",
+          "type": "button",
+          "icon": "edit",
+          "variant": "secondary",
+          "permission": "voice-library:update"
+        },
+        {
+          "name": "delete",
+          "label": "Delete",
+          "type": "button",
+          "icon": "trash",
+          "variant": "danger",
+          "permission": "voice-library:delete"
+        }
+      ]
+    },
+    "kanban": {
+      "groupByField": "language",
+      "columns": [
+        { "value": "en", "label": "English", "color": "#3b82f6" },
+        { "value": "es", "label": "Spanish", "color": "#10b981" },
+        { "value": "fr", "label": "French", "color": "#f59e0b" },
+        { "value": "de", "label": "German", "color": "#ef4444" },
+        { "value": "ja", "label": "Japanese", "color": "#8b5cf6" },
+        { "value": "ko", "label": "Korean", "color": "#06b6d4" },
+        { "value": "zh", "label": "Chinese", "color": "#84cc16" },
+        { "value": "hi", "label": "Hindi", "color": "#f97316" }
+      ],
+      "cardTitleField": "name",
+      "cardDescriptionField": "provider"
+    },
+    "gallery": {
+      "titleField": "name",
+      "descriptionField": "provider",
+      "imageField": "sampleAudioUrl"
+    },
+    "calendar": {
+      "dateField": "createdAt",
+      "titleField": "name",
+      "colorField": "language",
+      "descriptionField": "provider"
+    }
+  },
+  "detailView": {
+    "sections": [
+      {
+        "title": "Basic Information",
+        "fields": [
+          { "key": "name", "label": "Voice Name", "type": "text" },
+          { "key": "language", "label": "Language", "type": "text" },
+          {
+            "key": "gender",
+            "label": "Gender",
+            "type": "text",
+            "formatter": "badge"
+          },
+          { "key": "accent", "label": "Accent", "type": "text" }
+        ]
+      },
+      {
+        "title": "Voice Details",
+        "fields": [
+          {
+            "key": "voiceType",
+            "label": "Voice Type",
+            "type": "text",
+            "formatter": "badge"
+          },
+          {
+            "key": "provider",
+            "label": "Provider",
+            "type": "text",
+            "formatter": "badge"
+          },
+          { "key": "voiceId", "label": "Voice ID", "type": "text" }
+        ]
+      },
+      {
+        "title": "Audio Sample",
+        "fields": [
+          {
+            "key": "mediaId",
+            "label": "Sample Audio",
+            "type": "ref",
+            "refTo": "media"
+          },
+          { "key": "sampleAudioUrl", "label": "Sample URL", "type": "url" }
+        ]
+      },
+      {
+        "title": "Voice Characteristics",
+        "fields": [
+          {
+            "key": "characteristics",
+            "label": "Voice Settings",
+            "type": "object"
+          }
+        ]
+      },
+      {
+        "title": "Metadata",
+        "fields": [
+          {
+            "key": "metadata",
+            "label": "Additional Data",
+            "type": "object"
+          }
+        ]
+      },
+      {
+        "title": "Timestamps",
+        "fields": [
+          {
+            "key": "createdAt",
+            "label": "Created",
+            "type": "date",
+            "formatter": "date"
+          },
+          {
+            "key": "updatedAt",
+            "label": "Updated",
+            "type": "date",
+            "formatter": "date"
+          }
+        ]
+      }
+    ]
+  },
+  "formView": {
+    "fields": [
+      {
+        "key": "name",
+        "label": "Voice Name",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter voice name"
+      },
+      {
+        "key": "language",
+        "label": "Language",
+        "type": "select",
+        "required": true,
+        "options": [
+          { "value": "en", "label": "English" },
+          { "value": "es", "label": "Spanish" },
+          { "value": "fr", "label": "French" },
+          { "value": "de", "label": "German" },
+          { "value": "ja", "label": "Japanese" },
+          { "value": "ko", "label": "Korean" },
+          { "value": "zh", "label": "Chinese" },
+          { "value": "hi", "label": "Hindi" }
+        ]
+      },
+      {
+        "key": "gender",
+        "label": "Gender",
+        "type": "select",
+        "required": true,
+        "options": [
+          { "value": "male", "label": "Male" },
+          { "value": "female", "label": "Female" },
+          { "value": "non-binary", "label": "Non-binary" }
+        ]
+      },
+      {
+        "key": "accent",
+        "label": "Accent",
+        "type": "text",
+        "placeholder": "Enter accent (e.g., American, British, Australian)"
+      },
+      {
+        "key": "voiceType",
+        "label": "Voice Type",
+        "type": "select",
+        "options": [
+          { "value": "narrator", "label": "Narrator" },
+          { "value": "character", "label": "Character" },
+          { "value": "announcer", "label": "Announcer" }
+        ]
+      },
+      {
+        "key": "provider",
+        "label": "Provider",
+        "type": "select",
+        "required": true,
+        "options": [
+          { "value": "elevenlabs", "label": "ElevenLabs" },
+          { "value": "speechify", "label": "Speechify" },
+          { "value": "azure", "label": "Azure" },
+          { "value": "aws", "label": "AWS" },
+          { "value": "google", "label": "Google" },
+          { "value": "custom", "label": "Custom" }
+        ]
+      },
+      {
+        "key": "voiceId",
+        "label": "Voice ID",
+        "type": "text",
+        "required": true,
+        "placeholder": "Enter provider voice ID"
+      },
+      {
+        "key": "mediaId",
+        "label": "Sample Audio",
+        "type": "resource",
+        "resourceType": "media",
+        "displayField": "fileName",
+        "valueField": "id",
+        "subtitleField": "type",
+        "searchable": true,
+        "searchPlaceholder": "Search audio files..."
+      },
+      {
+        "key": "sampleAudioUrl",
+        "label": "Sample Audio URL",
+        "type": "url",
+        "placeholder": "Enter sample audio URL"
+      }
+    ]
+  }
+}

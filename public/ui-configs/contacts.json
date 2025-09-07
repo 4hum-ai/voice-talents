@@ -1,20 +1,20 @@
 {
   "displayName": "Contacts",
-  "description": "Manage contact information",
-  "icon": "address-book",
+  "description": "Manage individual contacts and their information",
+  "icon": "user",
   "views": {
     "list": {
       "columns": [
         {
           "key": "name",
-          "label": "Name",
+          "label": "Contact",
           "type": "text",
           "sortable": true,
           "filterable": true,
           "searchable": true,
           "width": "20%",
           "titleField": "name",
-          "subtitleField": "role"
+          "subtitleField": "email"
         },
         {
           "key": "email",
@@ -23,7 +23,7 @@
           "sortable": true,
           "filterable": true,
           "searchable": true,
-          "width": "25%"
+          "width": "20%"
         },
         {
           "key": "role",
@@ -31,8 +31,7 @@
           "type": "text",
           "sortable": true,
           "filterable": true,
-          "width": "12%",
-          "formatter": "badge"
+          "width": "15%"
         },
         {
           "key": "department",
@@ -40,15 +39,7 @@
           "type": "text",
           "sortable": true,
           "filterable": true,
-          "width": "12%",
-          "formatter": "badge"
-        },
-        {
-          "key": "phone",
-          "label": "Phone",
-          "type": "text",
-          "sortable": true,
-          "width": "12%"
+          "width": "15%"
         },
         {
           "key": "country",
@@ -65,14 +56,23 @@
           "type": "text",
           "sortable": true,
           "filterable": true,
-          "width": "9%",
+          "width": "10%",
           "align": "center",
           "formatter": "status"
+        },
+        {
+          "key": "createdAt",
+          "label": "Created",
+          "type": "date",
+          "sortable": true,
+          "width": "10%",
+          "align": "center",
+          "formatter": "date"
         }
       ],
       "defaultSort": {
-        "field": "name",
-        "direction": "asc"
+        "field": "createdAt",
+        "direction": "desc"
       },
       "defaultFilters": [
         {
@@ -80,38 +80,16 @@
           "type": "select",
           "label": "Status",
           "options": [
-            {
-              "value": "active",
-              "label": "Active"
-            },
-            {
-              "value": "inactive",
-              "label": "Inactive"
-            },
-            {
-              "value": "archived",
-              "label": "Archived"
-            }
+            { "value": "active", "label": "Active" },
+            { "value": "inactive", "label": "Inactive" },
+            { "value": "archived", "label": "Archived" }
           ]
         },
         {
-          "field": "preferredContactMethod",
+          "field": "country",
           "type": "select",
-          "label": "Contact Method",
-          "options": [
-            {
-              "value": "email",
-              "label": "Email"
-            },
-            {
-              "value": "phone",
-              "label": "Phone"
-            },
-            {
-              "value": "sms",
-              "label": "SMS"
-            }
-          ]
+          "label": "Country",
+          "options": []
         }
       ],
       "searchableFields": ["name", "email", "role", "department"],
@@ -154,28 +132,16 @@
     "kanban": {
       "groupByField": "status",
       "columns": [
-        {
-          "value": "active",
-          "label": "Active",
-          "color": "#22c55e"
-        },
-        {
-          "value": "inactive",
-          "label": "Inactive",
-          "color": "#64748b"
-        },
-        {
-          "value": "archived",
-          "label": "Archived",
-          "color": "#fbbf24"
-        }
+        { "value": "active", "label": "Active", "color": "#22c55e" },
+        { "value": "inactive", "label": "Inactive", "color": "#64748b" },
+        { "value": "archived", "label": "Archived", "color": "#ef4444" }
       ],
       "cardTitleField": "name",
       "cardDescriptionField": "email"
     },
     "gallery": {
       "titleField": "name",
-      "descriptionField": "role",
+      "descriptionField": "email",
       "imageField": "avatar"
     },
     "calendar": {
@@ -190,64 +156,26 @@
       {
         "title": "Basic Information",
         "fields": [
-          {
-            "key": "name",
-            "label": "Name",
-            "type": "text"
-          },
-          {
-            "key": "email",
-            "label": "Email",
-            "type": "text"
-          },
-          {
-            "key": "phone",
-            "label": "Phone",
-            "type": "text"
-          },
-          {
-            "key": "role",
-            "label": "Role",
-            "type": "text",
-            "formatter": "badge"
-          },
-          {
-            "key": "department",
-            "label": "Department",
-            "type": "text",
-            "formatter": "badge"
-          }
+          { "key": "name", "label": "Name", "type": "text" },
+          { "key": "email", "label": "Email", "type": "text" },
+          { "key": "phone", "label": "Phone", "type": "text" },
+          { "key": "role", "label": "Role", "type": "text" },
+          { "key": "department", "label": "Department", "type": "text" }
         ]
       },
       {
-        "title": "Address",
+        "title": "Location",
         "fields": [
-          {
-            "key": "address",
-            "label": "Address",
-            "type": "text"
-          },
-          {
-            "key": "city",
-            "label": "City",
-            "type": "text"
-          },
-          {
-            "key": "state",
-            "label": "State",
-            "type": "text"
-          },
           {
             "key": "country",
             "label": "Country",
             "type": "text",
             "formatter": "country"
           },
-          {
-            "key": "postalCode",
-            "label": "Postal Code",
-            "type": "text"
-          }
+          { "key": "state", "label": "State", "type": "text" },
+          { "key": "city", "label": "City", "type": "text" },
+          { "key": "address", "label": "Address", "type": "text" },
+          { "key": "postalCode", "label": "Postal Code", "type": "text" }
         ]
       },
       {
@@ -259,20 +187,12 @@
             "type": "text",
             "formatter": "badge"
           },
-          {
-            "key": "timezone",
-            "label": "Timezone",
-            "type": "text"
-          },
-          {
-            "key": "language",
-            "label": "Language",
-            "type": "text"
-          }
+          { "key": "timezone", "label": "Timezone", "type": "text" },
+          { "key": "language", "label": "Language", "type": "text" }
         ]
       },
       {
-        "title": "Status",
+        "title": "Status & Notes",
         "fields": [
           {
             "key": "status",
@@ -280,25 +200,16 @@
             "type": "text",
             "formatter": "status"
           },
-          {
-            "key": "notes",
-            "label": "Notes",
-            "type": "text"
-          }
-        ]
-      },
-      {
-        "title": "Timeline",
-        "fields": [
+          { "key": "notes", "label": "Notes", "type": "text" },
           {
             "key": "createdAt",
-            "label": "Created At",
+            "label": "Created",
             "type": "date",
             "formatter": "date"
           },
           {
             "key": "updatedAt",
-            "label": "Updated At",
+            "label": "Updated",
             "type": "date",
             "formatter": "date"
           }
@@ -318,7 +229,7 @@
       {
         "key": "email",
         "label": "Email",
-        "type": "text",
+        "type": "email",
         "required": true,
         "placeholder": "Enter email address"
       },
@@ -332,7 +243,7 @@
         "key": "role",
         "label": "Role",
         "type": "text",
-        "placeholder": "Enter role or title"
+        "placeholder": "Enter role or position"
       },
       {
         "key": "department",
@@ -344,7 +255,7 @@
         "key": "address",
         "label": "Address",
         "type": "textarea",
-        "placeholder": "Enter street address"
+        "placeholder": "Enter address"
       },
       {
         "key": "city",
@@ -354,9 +265,9 @@
       },
       {
         "key": "state",
-        "label": "State/Province",
+        "label": "State",
         "type": "text",
-        "placeholder": "Enter state or province"
+        "placeholder": "Enter state"
       },
       {
         "key": "country",
@@ -376,18 +287,9 @@
         "label": "Preferred Contact Method",
         "type": "select",
         "options": [
-          {
-            "value": "email",
-            "label": "Email"
-          },
-          {
-            "value": "phone",
-            "label": "Phone"
-          },
-          {
-            "value": "sms",
-            "label": "SMS"
-          }
+          { "value": "email", "label": "Email" },
+          { "value": "phone", "label": "Phone" },
+          { "value": "sms", "label": "SMS" }
         ]
       },
       {
@@ -401,38 +303,14 @@
         "label": "Language",
         "type": "select",
         "options": [
-          {
-            "value": "en",
-            "label": "English"
-          },
-          {
-            "value": "es",
-            "label": "Spanish"
-          },
-          {
-            "value": "fr",
-            "label": "French"
-          },
-          {
-            "value": "de",
-            "label": "German"
-          },
-          {
-            "value": "ja",
-            "label": "Japanese"
-          },
-          {
-            "value": "ko",
-            "label": "Korean"
-          },
-          {
-            "value": "zh",
-            "label": "Chinese"
-          },
-          {
-            "value": "hi",
-            "label": "Hindi"
-          }
+          { "value": "en", "label": "English" },
+          { "value": "es", "label": "Spanish" },
+          { "value": "fr", "label": "French" },
+          { "value": "de", "label": "German" },
+          { "value": "ja", "label": "Japanese" },
+          { "value": "ko", "label": "Korean" },
+          { "value": "zh", "label": "Chinese" },
+          { "value": "hi", "label": "Hindi" }
         ]
       },
       {
@@ -440,25 +318,16 @@
         "label": "Status",
         "type": "select",
         "options": [
-          {
-            "value": "active",
-            "label": "Active"
-          },
-          {
-            "value": "inactive",
-            "label": "Inactive"
-          },
-          {
-            "value": "archived",
-            "label": "Archived"
-          }
+          { "value": "active", "label": "Active" },
+          { "value": "inactive", "label": "Inactive" },
+          { "value": "archived", "label": "Archived" }
         ]
       },
       {
         "key": "notes",
         "label": "Notes",
         "type": "textarea",
-        "placeholder": "Enter additional notes"
+        "placeholder": "Enter any additional notes"
       }
     ]
   }
