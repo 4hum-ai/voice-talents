@@ -729,6 +729,39 @@ const componentDefinitions: ComponentDefinition[] = [
       showDot: false,
     },
   },
+  {
+    id: 'dynamic-form-sidebar',
+    title: 'DynamicFormSidebar (Enhanced)',
+    description: 'Enhanced form sidebar with advanced slot support for custom layouts and actions',
+    componentName: 'DynamicFormSidebar',
+    component: DynamicFormSidebar,
+    section: 'molecules',
+    defaultProps: {
+      title: 'Create New Item',
+      formConfig: {
+        fields: [
+          {
+            key: 'name',
+            type: 'text',
+            label: 'Name',
+            placeholder: 'Enter name',
+            required: true,
+          },
+          {
+            key: 'email',
+            type: 'email',
+            label: 'Email',
+            placeholder: 'Enter email',
+            required: true,
+          },
+        ],
+      },
+      initialData: {},
+      loading: false,
+      submitText: 'Submit',
+      loadingText: 'Submitting...',
+    },
+  },
 ]
 
 // Extended component config interface
