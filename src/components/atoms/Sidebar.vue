@@ -34,6 +34,11 @@
       </button>
     </div>
 
+    <!-- Custom Header Slot -->
+    <div v-if="!collapsed && $slots.header" class="border-border flex-shrink-0 border-b">
+      <slot name="header" />
+    </div>
+
     <!-- Navigation -->
     <nav class="flex-1 overflow-x-hidden overflow-y-auto py-4">
       <div class="space-y-6 px-3">
