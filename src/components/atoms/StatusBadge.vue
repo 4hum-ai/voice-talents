@@ -9,10 +9,24 @@
       variant === 'outline' && 'border',
       variant === 'solid' && 'text-white',
       variant === 'soft' && 'bg-opacity-10',
+      customClass,
     ]"
   >
-    <StatusDot v-if="showDot" :status="status" :size="dotSize" class="mr-1.5" />
-    <slot>{{ label || status }}</slot>
+    <!-- Status dot slot -->
+    <slot name="dot" :status="status" :size="dotSize" :show-dot="showDot">
+      <StatusDot v-if="showDot" :status="status" :size="dotSize" class="mr-1.5" />
+    </slot>
+
+    <!-- Main content slot -->
+    <slot name="content" :status="status" :label="label">
+      <slot>{{ label || status }}</slot>
+    </slot>
+
+    <!-- Icon slot -->
+    <slot name="icon" :status="status" :size="size" :status-classes="statusClasses" />
+
+    <!-- Action slot -->
+    <slot name="action" :status="status" :label="label" />
   </span>
 </template>
 
@@ -52,6 +66,8 @@ interface Props {
   variant?: 'solid' | 'outline' | 'soft'
   /** Whether to show status dot */
   showDot?: boolean
+  /** Custom CSS classes */
+  customClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {

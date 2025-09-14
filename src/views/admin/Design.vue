@@ -207,6 +207,59 @@
                               <option value="2.5rem">2XL (40px)</option>
                               <option value="3rem">3XL (48px)</option>
                               <option value="4rem">4XL (64px)</option>
+                              <!-- MetricCard and StatusBadge sizes -->
+                              <option value="sm">Small</option>
+                              <option value="md">Medium</option>
+                              <option value="lg">Large</option>
+                            </select>
+
+                            <!-- Select for icon variants -->
+                            <select
+                              v-else-if="key === 'iconVariant'"
+                              v-model="componentConfig.props[key]"
+                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                              @change="updateJsonFromProps(componentConfig)"
+                            >
+                              <option value="primary">Primary</option>
+                              <option value="success">Success</option>
+                              <option value="warning">Warning</option>
+                              <option value="error">Error</option>
+                              <option value="info">Info</option>
+                            </select>
+
+                            <!-- Select for status badge variants -->
+                            <select
+                              v-else-if="key === 'variant'"
+                              v-model="componentConfig.props[key]"
+                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                              @change="updateJsonFromProps(componentConfig)"
+                            >
+                              <option value="solid">Solid</option>
+                              <option value="outline">Outline</option>
+                              <option value="soft">Soft</option>
+                            </select>
+
+                            <!-- Select for status types -->
+                            <select
+                              v-else-if="key === 'status'"
+                              v-model="componentConfig.props[key]"
+                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                              @change="updateJsonFromProps(componentConfig)"
+                            >
+                              <option value="active">Active</option>
+                              <option value="success">Success</option>
+                              <option value="pending">Pending</option>
+                              <option value="warning">Warning</option>
+                              <option value="error">Error</option>
+                              <option value="draft">Draft</option>
+                              <option value="published">Published</option>
+                              <option value="archived">Archived</option>
+                              <option value="processing">Processing</option>
+                              <option value="completed">Completed</option>
+                              <option value="cancelled">Cancelled</option>
+                              <option value="needs_review">Needs Review</option>
+                              <option value="approved">Approved</option>
+                              <option value="rejected">Rejected</option>
                             </select>
 
                             <!-- Range for quality -->
@@ -280,11 +333,18 @@
                         <component
                           :is="componentConfig.component"
                           v-bind="componentConfig.props"
+                          :open="
+                            componentConfig.id === 'dynamic-form-sidebar'
+                              ? showFormSidebar
+                              : undefined
+                          "
                           class="rounded-lg"
                           @page-change="handlePageChange"
                           @per-page-change="handlePerPageChange"
                           @confirm="handleConfirm"
                           @cancel="handleCancel"
+                          @submit="handleFormSubmit"
+                          @close="handleFormClose"
                         />
                       </div>
 
@@ -310,6 +370,19 @@
                           Show Video Player
                         </button>
                       </div>
+
+                      <!-- Show DynamicFormSidebar Button -->
+                      <div
+                        v-if="componentConfig.id === 'dynamic-form-sidebar'"
+                        class="space-y-2 text-center"
+                      >
+                        <button
+                          @click="showDynamicFormSidebar()"
+                          class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 shadow-sm transition-colors"
+                        >
+                          Show Form Sidebar
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -319,6 +392,35 @@
         </div>
       </main>
     </div>
+
+    <!-- DynamicFormSidebar for testing -->
+    <DynamicFormSidebar
+      v-if="showFormSidebar"
+      title="Test Form"
+      :form-config="{
+        fields: [
+          {
+            key: 'name',
+            type: 'text',
+            label: 'Name',
+            placeholder: 'Enter name',
+            required: true,
+          },
+          {
+            key: 'email',
+            type: 'email',
+            label: 'Email',
+            placeholder: 'Enter email',
+            required: true,
+          },
+        ],
+      }"
+      :initial-data="{}"
+      submit-text="Submit"
+      loading-text="Submitting..."
+      @close="handleFormClose"
+      @submit="handleFormSubmit"
+    />
   </div>
 </template>
 
@@ -338,6 +440,9 @@ import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
 import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import MetricCard from '@/components/molecules/MetricCard.vue'
+import StatusBadge from '@/components/atoms/StatusBadge.vue'
+import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 
 // Single source of truth for component definitions
 interface ComponentDefinition {
@@ -498,6 +603,75 @@ const componentDefinitions: ComponentDefinition[] = [
       size: '2rem',
     },
   },
+  {
+    id: 'metric-card',
+    title: 'MetricCard (Enhanced)',
+    description: 'Enhanced metric card component with comprehensive slot system for custom layouts',
+    componentName: 'MetricCard',
+    component: MetricCard,
+    section: 'molecules',
+    defaultProps: {
+      title: 'Total Revenue',
+      value: 125000,
+      subtitle: 'Last 30 days',
+      icon: 'mdi:currency-usd',
+      iconVariant: 'primary',
+      size: 'md',
+      trend: {
+        value: 12.5,
+        direction: 'up',
+        period: 'vs last month',
+      },
+    },
+  },
+  {
+    id: 'status-badge',
+    title: 'StatusBadge (Enhanced)',
+    description: 'Enhanced status badge component with custom display slots and actions',
+    componentName: 'StatusBadge',
+    component: StatusBadge,
+    section: 'atoms',
+    defaultProps: {
+      status: 'active',
+      label: 'Active',
+      size: 'md',
+      variant: 'soft',
+      showDot: false,
+    },
+  },
+  {
+    id: 'dynamic-form-sidebar',
+    title: 'DynamicFormSidebar (Enhanced)',
+    description: 'Enhanced form sidebar with advanced slot support for custom layouts and actions',
+    componentName: 'DynamicFormSidebar',
+    component: DynamicFormSidebar,
+    section: 'molecules',
+    defaultProps: {
+      title: 'Create New Item',
+      formConfig: {
+        fields: [
+          {
+            key: 'name',
+            type: 'text',
+            label: 'Name',
+            placeholder: 'Enter name',
+            required: true,
+          },
+          {
+            key: 'email',
+            type: 'email',
+            label: 'Email',
+            placeholder: 'Enter email',
+            required: true,
+          },
+        ],
+      },
+      initialData: {},
+      loading: false,
+      submitText: 'Submit',
+      loadingText: 'Submitting...',
+    },
+  },
 ]
 
 // Extended component config interface
@@ -524,6 +698,9 @@ const componentConfigs = reactive<ComponentConfig[]>(
 
 // Navigation functionality
 const activeComponentId = ref('image')
+
+// DynamicFormSidebar state
+const showFormSidebar = ref(false)
 
 // Generate sidebar sections from component definitions
 const sidebarSections = computed(() => {
@@ -679,5 +856,20 @@ const showVideoPlayer = () => {
     // VideoPlayer is always visible when rendered, no need to toggle
     console.log('Video player is now visible')
   }
+}
+
+// Show DynamicFormSidebar for testing
+const showDynamicFormSidebar = () => {
+  showFormSidebar.value = true
+}
+
+// Handle form sidebar events
+const handleFormSubmit = (data: Record<string, unknown>) => {
+  console.log('Form submitted:', data)
+  showFormSidebar.value = false
+}
+
+const handleFormClose = () => {
+  showFormSidebar.value = false
 }
 </script>

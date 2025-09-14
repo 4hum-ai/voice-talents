@@ -1,59 +1,107 @@
 <template>
   <div
     :class="[
-      'rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800',
+      'rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
       sizeClasses.padding,
+      customClass,
     ]"
   >
-    <!-- Header -->
-    <div class="mb-3 flex items-start justify-between">
-      <div class="flex items-center gap-2">
-        <!-- Icon -->
-        <div v-if="icon" :class="['flex-shrink-0 rounded-lg p-2', iconClasses]">
-          <Icon
-            v-if="typeof icon === 'string'"
-            :name="icon"
-            :class="['text-white', sizeClasses.icon]"
-            aria-hidden="true"
-          />
-          <component
-            v-else
-            :is="icon"
-            :class="['text-white', sizeClasses.icon]"
-            aria-hidden="true"
-          />
+    <!-- Header slot -->
+    <slot
+      name="header"
+      :title="title"
+      :icon="icon"
+      :icon-classes="iconClasses"
+      :size-classes="sizeClasses"
+      :trend="trend"
+      :trend-icon="trendIcon"
+      :trend-icon-classes="trendIconClasses"
+      :trend-text="trendText"
+      :trend-text-classes="trendTextClasses"
+    >
+      <div class="mb-3 flex items-start justify-between">
+        <div class="flex items-center gap-2">
+          <!-- Icon slot -->
+          <slot name="icon" :icon="icon" :icon-classes="iconClasses" :size-classes="sizeClasses">
+            <div v-if="icon" :class="['flex-shrink-0 rounded-lg p-2', iconClasses]">
+              <Icon
+                v-if="typeof icon === 'string'"
+                :name="icon"
+                :class="['text-white', sizeClasses.icon]"
+                aria-hidden="true"
+              />
+              <component
+                v-else
+                :is="icon"
+                :class="['text-white', sizeClasses.icon]"
+                aria-hidden="true"
+              />
+            </div>
+          </slot>
+
+          <!-- Title slot -->
+          <slot name="title" :title="title" :size-classes="sizeClasses">
+            <h3 :class="['font-medium text-gray-900 dark:text-gray-100', sizeClasses.title]">
+              {{ title }}
+            </h3>
+          </slot>
         </div>
 
-        <!-- Title -->
-        <h3 :class="['font-medium text-gray-900 dark:text-gray-100', sizeClasses.title]">
-          {{ title }}
-        </h3>
+        <!-- Trend slot -->
+        <slot
+          name="trend"
+          :trend="trend"
+          :trend-icon="trendIcon"
+          :trend-icon-classes="trendIconClasses"
+          :trend-text="trendText"
+          :trend-text-classes="trendTextClasses"
+        >
+          <div v-if="trend" class="flex items-center gap-1">
+            <component
+              :is="trendIcon"
+              :class="['flex-shrink-0', trendIconClasses]"
+              aria-hidden="true"
+            />
+            <span :class="['font-medium', trendTextClasses]">
+              {{ trendText }}
+            </span>
+          </div>
+        </slot>
       </div>
+    </slot>
 
-      <!-- Trend Indicator -->
-      <div v-if="trend" class="flex items-center gap-1">
-        <component
-          :is="trendIcon"
-          :class="['flex-shrink-0', trendIconClasses]"
-          aria-hidden="true"
-        />
-        <span :class="['font-medium', trendTextClasses]">
-          {{ trendText }}
-        </span>
-      </div>
-    </div>
+    <!-- Main content slot -->
+    <slot
+      name="content"
+      :value="value"
+      :formatted-value="formattedValue"
+      :subtitle="subtitle"
+      :size-classes="sizeClasses"
+    >
+      <!-- Value slot -->
+      <slot
+        name="value"
+        :value="value"
+        :formatted-value="formattedValue"
+        :size-classes="sizeClasses"
+      >
+        <div class="mb-1">
+          <span :class="['font-bold text-gray-900 dark:text-gray-100', sizeClasses.value]">
+            {{ formattedValue }}
+          </span>
+        </div>
+      </slot>
 
-    <!-- Value -->
-    <div class="mb-1">
-      <span :class="['font-bold text-gray-900 dark:text-gray-100', sizeClasses.value]">
-        {{ formattedValue }}
-      </span>
-    </div>
+      <!-- Subtitle slot -->
+      <slot name="subtitle" :subtitle="subtitle" :size-classes="sizeClasses">
+        <p v-if="subtitle" :class="['text-gray-500 dark:text-gray-400', sizeClasses.subtitle]">
+          {{ subtitle }}
+        </p>
+      </slot>
+    </slot>
 
-    <!-- Subtitle -->
-    <p v-if="subtitle" :class="['text-gray-500 dark:text-gray-400', sizeClasses.subtitle]">
-      {{ subtitle }}
-    </p>
+    <!-- Footer slot -->
+    <slot name="footer" :value="value" :trend="trend" :title="title" />
   </div>
 </template>
 
@@ -83,6 +131,8 @@ interface Props {
   }
   /** Size variant */
   size?: 'sm' | 'md' | 'lg'
+  /** Custom CSS classes */
+  customClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {

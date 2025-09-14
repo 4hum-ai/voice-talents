@@ -12,140 +12,201 @@
         <div
           class="flex h-full flex-col border-l border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900"
         >
-          <div
-            class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
+          <!-- Header slot -->
+          <slot
+            name="header"
+            :title="title"
+            :loading="loading"
+            :handlers="{ close: () => $emit('close') }"
           >
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-              {{ title }}
-            </h3>
-            <button
-              class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-              @click="$emit('close')"
+            <div
+              class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
             >
-              ✕
-            </button>
-          </div>
-          <div class="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
-            <form class="space-y-6 px-6 py-6" @submit.prevent="handleSubmit">
-              <div class="space-y-4">
-                <div v-for="field in resolvedForm.fields" :key="field.key">
-                  <!-- Text, Email, URL, Number, Date inputs -->
-                  <FormInput
-                    v-if="['text', 'email', 'url', 'number', 'date'].includes(field.type)"
-                    v-model="formData[field.key] as string"
-                    :type="getFormInputType(field)"
-                    :label="field.label"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    :help-text="field.helpText"
-                    :error="shouldShowError(field) ? errors[field.key] : undefined"
-                    :validation-state="getValidationState(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-
-                  <!-- Select input -->
-                  <SelectInput
-                    v-else-if="field.type === 'select'"
-                    v-model="formData[field.key] as string | number | boolean | undefined"
-                    :options="field.options || []"
-                    :label="field.label"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    :help-text="field.helpText"
-                    :error="shouldShowError(field) ? errors[field.key] : undefined"
-                    :validation-state="getValidationState(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-
-                  <!-- Textarea input -->
-                  <Textarea
-                    v-else-if="field.type === 'textarea'"
-                    v-model="formData[field.key] as string"
-                    :label="field.label"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    :help-text="field.helpText"
-                    :error="shouldShowError(field) ? errors[field.key] : undefined"
-                    :validation-state="getValidationState(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-
-                  <!-- File input -->
-                  <FileInput
-                    v-else-if="field.type === 'file'"
-                    v-model="formData[field.key] as string"
-                    :label="field.label"
-                    :required="field.required"
-                    :help-text="field.helpText"
-                    :error="shouldShowError(field) ? errors[field.key] : undefined"
-                    :validation-state="getValidationState(field)"
-                    :button-text="field.placeholder || 'Choose File'"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-
-                  <!-- Checkbox input -->
-                  <Checkbox
-                    v-else-if="field.type === 'boolean'"
-                    v-model="formData[field.key] as boolean"
-                    :label="field.label"
-                    :required="field.required"
-                    :help-text="field.helpText"
-                    :error="shouldShowError(field) ? errors[field.key] : undefined"
-                    :validation-state="getValidationState(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-
-                  <!-- Resource selector input -->
-                  <ResourceSelector
-                    v-else-if="field.type === 'resource'"
-                    v-model="formData[field.key] as string | number | undefined"
-                    :resource-type="field.resourceType || 'media'"
-                    :display-field="field.displayField || 'name'"
-                    :value-field="field.valueField || 'id'"
-                    :subtitle-field="field.subtitleField"
-                    :label="field.label"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    :searchable="field.searchable !== false"
-                    :search-placeholder="field.searchPlaceholder"
-                    :query="field.query"
-                    :help-text="field.helpText"
-                    :error="shouldShowError(field) ? errors[field.key] : undefined"
-                    :validation-state="getValidationState(field)"
-                    @blur="onBlur(field)"
-                    @input="onInput(field)"
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-          <div
-            class="flex-shrink-0 border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-800"
-          >
-            <div class="flex justify-end space-x-3">
-              <button
-                type="button"
-                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-                @click="$emit('close')"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                :disabled="loading || !isFormValid"
-                class="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
-                @click="handleSubmit"
-              >
-                <span v-if="loading">{{ loadingText }}</span>
-                <span v-else>{{ submitText }}</span>
-              </button>
+              <slot name="title" :title="title">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                  {{ title }}
+                </h3>
+              </slot>
+              <slot name="close-button" :handlers="{ close: () => $emit('close') }">
+                <button
+                  class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  @click="$emit('close')"
+                >
+                  ✕
+                </button>
+              </slot>
             </div>
-          </div>
+          </slot>
+          <!-- Content slot -->
+          <slot
+            name="content"
+            :form-data="formData"
+            :errors="errors"
+            :resolved-form="resolvedForm"
+            :loading="loading"
+            :handlers="{ submit: handleSubmit, blur: onBlur, input: onInput }"
+          >
+            <div class="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
+              <form class="space-y-6 px-6 py-6" @submit.prevent="handleSubmit">
+                <slot
+                  name="form-fields"
+                  :form-data="formData"
+                  :errors="errors"
+                  :resolved-form="resolvedForm"
+                  :handlers="{ blur: onBlur, input: onInput }"
+                >
+                  <div class="space-y-4">
+                    <div v-for="field in resolvedForm.fields" :key="field.key">
+                      <!-- Text, Email, URL, Number, Date inputs -->
+                      <FormInput
+                        v-if="['text', 'email', 'url', 'number', 'date'].includes(field.type)"
+                        v-model="formData[field.key] as string"
+                        :type="getFormInputType(field)"
+                        :label="field.label"
+                        :placeholder="field.placeholder"
+                        :required="field.required"
+                        :help-text="field.helpText"
+                        :error="shouldShowError(field) ? errors[field.key] : undefined"
+                        :validation-state="getValidationState(field)"
+                        @blur="onBlur(field)"
+                        @input="onInput(field)"
+                      />
+
+                      <!-- Select input -->
+                      <SelectInput
+                        v-else-if="field.type === 'select'"
+                        v-model="formData[field.key] as string | number | boolean | undefined"
+                        :options="field.options || []"
+                        :label="field.label"
+                        :placeholder="field.placeholder"
+                        :required="field.required"
+                        :help-text="field.helpText"
+                        :error="shouldShowError(field) ? errors[field.key] : undefined"
+                        :validation-state="getValidationState(field)"
+                        @blur="onBlur(field)"
+                        @input="onInput(field)"
+                      />
+
+                      <!-- Textarea input -->
+                      <Textarea
+                        v-else-if="field.type === 'textarea'"
+                        v-model="formData[field.key] as string"
+                        :label="field.label"
+                        :placeholder="field.placeholder"
+                        :required="field.required"
+                        :help-text="field.helpText"
+                        :error="shouldShowError(field) ? errors[field.key] : undefined"
+                        :validation-state="getValidationState(field)"
+                        @blur="onBlur(field)"
+                        @input="onInput(field)"
+                      />
+
+                      <!-- File input -->
+                      <FileInput
+                        v-else-if="field.type === 'file'"
+                        v-model="formData[field.key] as string"
+                        :label="field.label"
+                        :required="field.required"
+                        :help-text="field.helpText"
+                        :error="shouldShowError(field) ? errors[field.key] : undefined"
+                        :validation-state="getValidationState(field)"
+                        :button-text="field.placeholder || 'Choose File'"
+                        @blur="onBlur(field)"
+                        @input="onInput(field)"
+                      />
+
+                      <!-- Checkbox input -->
+                      <Checkbox
+                        v-else-if="field.type === 'boolean'"
+                        v-model="formData[field.key] as boolean"
+                        :label="field.label"
+                        :required="field.required"
+                        :help-text="field.helpText"
+                        :error="shouldShowError(field) ? errors[field.key] : undefined"
+                        :validation-state="getValidationState(field)"
+                        @blur="onBlur(field)"
+                        @input="onInput(field)"
+                      />
+
+                      <!-- Resource selector input -->
+                      <ResourceSelector
+                        v-else-if="field.type === 'resource'"
+                        v-model="formData[field.key] as string | number | undefined"
+                        :resource-type="field.resourceType || 'media'"
+                        :display-field="field.displayField || 'name'"
+                        :value-field="field.valueField || 'id'"
+                        :subtitle-field="field.subtitleField"
+                        :label="field.label"
+                        :placeholder="field.placeholder"
+                        :required="field.required"
+                        :searchable="field.searchable !== false"
+                        :search-placeholder="field.searchPlaceholder"
+                        :query="field.query"
+                        :help-text="field.helpText"
+                        :error="shouldShowError(field) ? errors[field.key] : undefined"
+                        :validation-state="getValidationState(field)"
+                        @blur="onBlur(field)"
+                        @input="onInput(field)"
+                      />
+                    </div>
+                  </div>
+                </slot>
+              </form>
+            </div>
+          </slot>
+
+          <!-- Footer slot -->
+          <slot
+            name="footer"
+            :loading="loading"
+            :is-form-valid="isFormValid"
+            :submit-text="submitText"
+            :loading-text="loadingText"
+            :handlers="{ submit: handleSubmit, close: () => $emit('close') }"
+          >
+            <div
+              class="flex-shrink-0 border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-800"
+            >
+              <slot
+                name="actions"
+                :loading="loading"
+                :is-form-valid="isFormValid"
+                :submit-text="submitText"
+                :loading-text="loadingText"
+                :handlers="{ submit: handleSubmit, close: () => $emit('close') }"
+              >
+                <div class="flex justify-end space-x-3">
+                  <slot name="cancel-button" :handlers="{ close: () => $emit('close') }">
+                    <button
+                      type="button"
+                      class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                      @click="$emit('close')"
+                    >
+                      Cancel
+                    </button>
+                  </slot>
+                  <slot
+                    name="submit-button"
+                    :loading="loading"
+                    :is-form-valid="isFormValid"
+                    :submit-text="submitText"
+                    :loading-text="loadingText"
+                    :handlers="{ submit: handleSubmit }"
+                  >
+                    <button
+                      type="submit"
+                      :disabled="loading || !isFormValid"
+                      class="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
+                      @click="handleSubmit"
+                    >
+                      <span v-if="loading">{{ loadingText }}</span>
+                      <span v-else>{{ submitText }}</span>
+                    </button>
+                  </slot>
+                </div>
+              </slot>
+            </div>
+          </slot>
         </div>
       </div>
     </div>
