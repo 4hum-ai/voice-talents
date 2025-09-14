@@ -275,9 +275,7 @@
                             componentConfig.id !== 'confirm-modal' &&
                             componentConfig.id !== 'dynamic-form-sidebar' &&
                             componentConfig.id !== 'file-upload-modal' &&
-                            componentConfig.id !== 'filter-sidebar' &&
-                            componentConfig.id !== 'video-player' &&
-                            componentConfig.id !== 'audio-player'
+                            componentConfig.id !== 'filter-sidebar'
                           "
                           :is="componentConfig.component"
                           v-bind="componentConfig.props"
@@ -337,22 +335,6 @@
                           <p class="text-sm">
                             Click "Show Filter Sidebar" to test the FilterSidebar
                           </p>
-                        </div>
-
-                        <!-- For VideoPlayer, show a placeholder -->
-                        <div
-                          v-else-if="componentConfig.id === 'video-player'"
-                          class="text-muted-foreground text-center"
-                        >
-                          <p class="text-sm">Video player is rendered below the preview area</p>
-                        </div>
-
-                        <!-- For AudioPlayer, show a placeholder -->
-                        <div
-                          v-else-if="componentConfig.id === 'audio-player'"
-                          class="text-muted-foreground text-center"
-                        >
-                          <p class="text-sm">Audio player is rendered below the preview area</p>
                         </div>
                       </div>
 
@@ -542,28 +524,6 @@
         </div>
       </div>
     </FilterSidebar>
-
-    <!-- VideoPlayer for testing -->
-    <VideoPlayer
-      v-if="videoPlayerConfig"
-      :url="String(videoPlayerConfig.props.url)"
-      :title="String(videoPlayerConfig.props.title)"
-      :subtitle-url="String(videoPlayerConfig.props.subtitleUrl)"
-      mode="inline"
-      class="mt-4"
-    />
-
-    <!-- AudioPlayer for testing -->
-    <AudioPlayer
-      v-if="audioPlayerConfig"
-      :url="String(audioPlayerConfig.props.url)"
-      :title="String(audioPlayerConfig.props.title)"
-      :mode="(audioPlayerConfig.props.mode as 'inline' | 'minimal') || 'inline'"
-      :autoplay="Boolean(audioPlayerConfig.props.autoplay)"
-      :loop="Boolean(audioPlayerConfig.props.loop)"
-      :preload="(audioPlayerConfig.props.preload as 'auto' | 'none' | 'metadata') || 'metadata'"
-      class="mt-4"
-    />
   </div>
 </template>
 
@@ -1607,16 +1567,6 @@ const fileUploadModalConfig = computed(() => {
 // FilterSidebar config for testing
 const filterSidebarConfig = computed(() => {
   return componentConfigs.find((c) => c.id === 'filter-sidebar')
-})
-
-// VideoPlayer config for testing
-const videoPlayerConfig = computed(() => {
-  return componentConfigs.find((c) => c.id === 'video-player')
-})
-
-// AudioPlayer config for testing
-const audioPlayerConfig = computed(() => {
-  return componentConfigs.find((c) => c.id === 'audio-player')
 })
 
 // Filter components based on search query
