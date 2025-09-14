@@ -2,78 +2,131 @@
   <div class="min-h-screen">
     <AppBar :loading="loading" :show-back="Boolean(onBack)" @back="onBack && onBack()">
       <template #title>
-        <slot name="title">
-          {{ title }}
+        <slot name="app-bar-title" :item="item" :title="title">
+          <slot name="title">
+            {{ title }}
+          </slot>
         </slot>
       </template>
       <template #subtitle>
-        <slot name="subtitle">
-          {{ subtitle }}
+        <slot name="app-bar-subtitle" :item="item" :subtitle="subtitle">
+          <slot name="subtitle">
+            {{ subtitle }}
+          </slot>
         </slot>
       </template>
       <template #actions>
-        <button
-          v-if="enableEdit"
-          class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
-          @click="handleEdit"
+        <slot
+          name="app-bar-actions"
+          :item="item"
+          :enable-edit="enableEdit"
+          :action-menu-items="actionMenuItems"
+          :handlers="{ edit: handleEdit, actionMenuSelect: handleActionMenuSelect }"
         >
-          Edit
-        </button>
-        <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
+          <button
+            v-if="enableEdit"
+            class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            @click="handleEdit"
+          >
+            Edit
+          </button>
+          <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
+        </slot>
       </template>
     </AppBar>
 
     <!-- Spacer to offset the fixed app bar height -->
     <div class="h-16" />
 
-    <!-- Breadcrumbs under the app bar -->
-    <div class="px-4 py-2">
-      <Breadcrumbs :items="breadcrumbs" />
+    <!-- Navigation section -->
+    <div v-if="!hideDefaultSections.includes('navigation')" class="px-4 py-2">
+      <slot
+        name="navigation"
+        :item="item"
+        :breadcrumbs="breadcrumbs"
+        :handlers="{ goBack: onBack }"
+      >
+        <slot name="breadcrumbs" :items="breadcrumbs">
+          <Breadcrumbs :items="breadcrumbs" />
+        </slot>
+      </slot>
     </div>
 
     <main class="p-4">
-      <div v-if="loading" class="space-y-6">
-        <div v-if="detailSections && detailSections.length" class="space-y-6">
-          <section
-            v-for="(section, sIdx) in detailSections"
-            :key="`skeleton-sec-${sIdx}`"
-            class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
-          >
-            <div
-              v-if="section.title"
-              class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+      <!-- Loading state -->
+      <slot name="loading" :loading="loading" :detail-sections="detailSections" :item="item">
+        <div v-if="loading" class="space-y-6">
+          <div v-if="detailSections && detailSections.length" class="space-y-6">
+            <section
+              v-for="(section, sIdx) in detailSections"
+              :key="`skeleton-sec-${sIdx}`"
+              class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900"
             >
-              <div class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-            </div>
-            <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
               <div
-                v-for="i in section.fields?.length || 4"
-                :key="`skeleton-field-${sIdx}-${i}`"
-                class="flex flex-col gap-2"
+                v-if="section.title"
+                class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
               >
+                <div class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              </div>
+              <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
+                <div
+                  v-for="i in section.fields?.length || 4"
+                  :key="`skeleton-field-${sIdx}-${i}`"
+                  class="flex flex-col gap-2"
+                >
+                  <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                  <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </div>
+            </section>
+          </div>
+          <div
+            v-else
+            class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
+          >
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
                 <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
                 <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
-          </section>
-        </div>
-        <div
-          v-else
-          class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
-        >
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div v-for="i in 8" :key="`skeleton-kv-${i}`" class="flex flex-col gap-2">
-              <div class="h-3 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-              <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-            </div>
           </div>
         </div>
-      </div>
-      <div v-else-if="error" class="text-error-600 dark:text-error-400 text-sm">
-        {{ error }}
-      </div>
-      <div v-else>
-        <slot name="details" :item="item">
+      </slot>
+
+      <!-- Error state -->
+      <slot name="error" :error="error" :item="item" :handlers="{ retry: () => $emit('retry') }">
+        <div v-if="error" class="text-error-600 dark:text-error-400 text-sm">
+          {{ error }}
+        </div>
+      </slot>
+
+      <!-- Empty state -->
+      <slot name="empty-state" :item="item" :resource-name="resourceName" :ui-config="uiConfig">
+        <div v-if="!item" class="py-12 text-center">
+          <p class="text-gray-500 dark:text-gray-400">No data available</p>
+        </div>
+      </slot>
+
+      <!-- Main content -->
+      <div v-if="!loading && !error && item">
+        <!-- Details header -->
+        <slot
+          name="details-header"
+          :item="item"
+          :resource-name="resourceName"
+          :ui-config="uiConfig"
+          :handlers="{ edit: handleEdit, delete: () => emit('delete') }"
+        />
+
+        <!-- Main details content -->
+        <slot
+          name="details"
+          :item="item"
+          :detail-sections="detailSections"
+          :display-pairs="displayPairs"
+          :handlers="{ referenceClick: handleReferenceClick }"
+        >
           <!-- Use configured detailView when available -->
           <div v-if="detailSections && detailSections.length" class="space-y-6">
             <Card v-for="(section, sIdx) in detailSections" :key="`sec-${sIdx}`" variant="elevated">
@@ -121,68 +174,154 @@
           </div>
         </slot>
 
+        <!-- Details footer -->
+        <slot
+          name="details-footer"
+          :item="item"
+          :resource-name="resourceName"
+          :ui-config="uiConfig"
+          :handlers="{ edit: handleEdit, delete: () => emit('delete') }"
+        />
+
         <!-- Related Items Section -->
         <div
           v-if="
+            !hideDefaultSections.includes('related-items') &&
             autoRelatedItemsConfig &&
             item?.id &&
             (hasRelatedItems || relatedItemsLoading || relatedItemsError)
           "
           class="mt-8"
         >
-          <Card variant="elevated">
-            <div
-              class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
-            >
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Related Items</h3>
-            </div>
-
-            <div class="p-4">
-              <!-- Loading state -->
-              <div v-if="relatedItemsLoading" class="space-y-3">
-                <div v-for="i in 3" :key="`skeleton-${i}`" class="flex items-center space-x-3">
-                  <div class="h-8 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-                  <div class="flex-1 space-y-1">
-                    <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-                    <div class="h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-                  </div>
+          <slot
+            name="related-items"
+            :item="item"
+            :related-items="relatedItems"
+            :related-items-loading="relatedItemsLoading"
+            :related-items-error="relatedItemsError"
+            :related-items-empty="relatedItemsEmpty"
+            :grouped-by-resource-type="groupedByResourceType"
+            :handlers="{ relatedItemClick: handleRelatedItemClick }"
+          >
+            <Card variant="elevated">
+              <slot
+                name="related-items-header"
+                :item="item"
+                :related-items-count="relatedItems.length"
+              >
+                <div
+                  class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    Related Items
+                  </h3>
                 </div>
-              </div>
+              </slot>
 
-              <!-- Error state -->
-              <div v-else-if="relatedItemsError" class="text-sm text-red-600 dark:text-red-400">
-                {{ relatedItemsError }}
-              </div>
+              <slot
+                name="related-items-content"
+                :item="item"
+                :related-items="relatedItems"
+                :related-items-loading="relatedItemsLoading"
+                :related-items-error="relatedItemsError"
+                :related-items-empty="relatedItemsEmpty"
+                :grouped-by-resource-type="groupedByResourceType"
+                :handlers="{ relatedItemClick: handleRelatedItemClick }"
+              >
+                <div class="p-4">
+                  <!-- Loading state -->
+                  <div v-if="relatedItemsLoading" class="space-y-3">
+                    <div v-for="i in 3" :key="`skeleton-${i}`" class="flex items-center space-x-3">
+                      <div class="h-8 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                      <div class="flex-1 space-y-1">
+                        <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                        <div class="h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                      </div>
+                    </div>
+                  </div>
 
-              <!-- Empty state -->
-              <div v-else-if="relatedItemsEmpty" class="text-sm text-gray-500 dark:text-gray-400">
-                No related items found
-              </div>
+                  <!-- Error state -->
+                  <div v-else-if="relatedItemsError" class="text-sm text-red-600 dark:text-red-400">
+                    {{ relatedItemsError }}
+                  </div>
 
-              <!-- Related items list -->
-              <div v-else class="space-y-4">
-                <!-- Group by resource type -->
-                <div v-if="Object.keys(groupedByResourceType).length > 1" class="space-y-6">
+                  <!-- Empty state -->
                   <div
-                    v-for="(items, resourceType) in groupedByResourceType"
-                    :key="resourceType"
-                    class="space-y-3"
+                    v-else-if="relatedItemsEmpty"
+                    class="text-sm text-gray-500 dark:text-gray-400"
                   >
-                    <!-- Resource type header -->
-                    <div class="flex items-center space-x-2">
-                      <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
-                      <h4
-                        class="px-2 text-xs font-semibold tracking-wider text-gray-600 uppercase dark:text-gray-300"
+                    No related items found
+                  </div>
+
+                  <!-- Related items list -->
+                  <div v-else class="space-y-4">
+                    <!-- Group by resource type -->
+                    <div v-if="Object.keys(groupedByResourceType).length > 1" class="space-y-6">
+                      <div
+                        v-for="(items, resourceType) in groupedByResourceType"
+                        :key="resourceType"
+                        class="space-y-3"
                       >
-                        {{ formatResourceType(resourceType) }}
-                      </h4>
-                      <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                        <!-- Resource type header -->
+                        <div class="flex items-center space-x-2">
+                          <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                          <h4
+                            class="px-2 text-xs font-semibold tracking-wider text-gray-600 uppercase dark:text-gray-300"
+                          >
+                            {{ formatResourceType(resourceType) }}
+                          </h4>
+                          <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                        </div>
+
+                        <!-- Items for this resource type -->
+                        <div class="space-y-2">
+                          <div
+                            v-for="item in items"
+                            :key="`${item.resourceType}-${item.id}`"
+                            class="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                            @click="handleRelatedItemClick(item.resourceType, item.id)"
+                          >
+                            <!-- Resource type indicator badge -->
+                            <div class="flex-shrink-0">
+                              <span
+                                class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                              >
+                                {{ formatResourceType(item.resourceType).split(' ')[0] }}
+                              </span>
+                            </div>
+
+                            <!-- Item avatar -->
+                            <div
+                              class="bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-400 flex h-8 w-8 items-center justify-center rounded-full"
+                            >
+                              <span class="text-xs font-medium">{{
+                                item.title.charAt(0).toUpperCase()
+                              }}</span>
+                            </div>
+
+                            <!-- Item content -->
+                            <div class="min-w-0 flex-1">
+                              <p
+                                class="truncate text-sm font-medium text-gray-900 dark:text-gray-100"
+                              >
+                                {{ item.title }}
+                              </p>
+                              <p
+                                v-if="item.subtitle"
+                                class="truncate text-xs text-gray-500 dark:text-gray-400"
+                              >
+                                {{ item.subtitle }}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <!-- Items for this resource type -->
-                    <div class="space-y-2">
+                    <!-- Simple list if only one resource type -->
+                    <div v-else class="space-y-2">
                       <div
-                        v-for="item in items"
+                        v-for="item in relatedItems"
                         :key="`${item.resourceType}-${item.id}`"
                         class="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
                         @click="handleRelatedItemClick(item.resourceType, item.id)"
@@ -221,53 +360,52 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- Simple list if only one resource type -->
-                <div v-else class="space-y-2">
-                  <div
-                    v-for="item in relatedItems"
-                    :key="`${item.resourceType}-${item.id}`"
-                    class="flex cursor-pointer items-center space-x-3 rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-                    @click="handleRelatedItemClick(item.resourceType, item.id)"
-                  >
-                    <!-- Resource type indicator badge -->
-                    <div class="flex-shrink-0">
-                      <span
-                        class="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                      >
-                        {{ formatResourceType(item.resourceType).split(' ')[0] }}
-                      </span>
-                    </div>
-
-                    <!-- Item avatar -->
-                    <div
-                      class="bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-400 flex h-8 w-8 items-center justify-center rounded-full"
-                    >
-                      <span class="text-xs font-medium">{{
-                        item.title.charAt(0).toUpperCase()
-                      }}</span>
-                    </div>
-
-                    <!-- Item content -->
-                    <div class="min-w-0 flex-1">
-                      <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {{ item.title }}
-                      </p>
-                      <p
-                        v-if="item.subtitle"
-                        class="truncate text-xs text-gray-500 dark:text-gray-400"
-                      >
-                        {{ item.subtitle }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
+              </slot>
+            </Card>
+          </slot>
         </div>
+
+        <!-- Additional metadata section -->
+        <slot name="metadata" :item="item" :resource-name="resourceName" :ui-config="uiConfig" />
+
+        <!-- Custom actions section -->
+        <slot
+          name="actions"
+          :item="item"
+          :resource-name="resourceName"
+          :ui-config="uiConfig"
+          :handlers="{ edit: handleEdit, delete: () => emit('delete') }"
+        />
       </div>
     </main>
+
+    <!-- Custom sidebar -->
+    <slot
+      name="sidebar"
+      :item="item"
+      :resource-name="resourceName"
+      :ui-config="uiConfig"
+      :handlers="{ edit: handleEdit, delete: () => emit('delete') }"
+    >
+      <slot
+        name="sidebar-header"
+        :item="item"
+        :resource-name="resourceName"
+        :ui-config="uiConfig"
+      />
+      <slot
+        name="sidebar-content"
+        :item="item"
+        :resource-name="resourceName"
+        :ui-config="uiConfig"
+      />
+      <slot
+        name="sidebar-footer"
+        :item="item"
+        :resource-name="resourceName"
+        :ui-config="uiConfig"
+      />
+    </slot>
     <DynamicFormSidebar
       v-if="showFormSidebar"
       :title="formSidebarTitle"
@@ -319,6 +457,9 @@ interface Props {
   onBack?: () => void
   uiConfig: UiConfig | null
   customEditHandler?: boolean
+  hideDefaultSections?: string[]
+  customLayout?: boolean
+  sectionOrder?: string[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -327,9 +468,19 @@ const props = withDefaults(defineProps<Props>(), {
   error: null,
   enableEdit: true,
   enableDelete: true,
+  hideDefaultSections: () => [],
+  customLayout: false,
+  sectionOrder: () => [],
 })
 
-const emit = defineEmits(['edit', 'delete', 'update', 'reference-click', 'related-item-click'])
+const emit = defineEmits([
+  'edit',
+  'delete',
+  'update',
+  'reference-click',
+  'related-item-click',
+  'retry',
+])
 
 const title = computed(() => props.item?.name || props.item?.title || 'Details')
 const subtitle = computed(() => props.item?.id)
