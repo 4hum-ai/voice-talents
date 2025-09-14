@@ -100,7 +100,7 @@
 
                             <!-- String input -->
                             <input
-                              v-if="typeof prop === 'string'"
+                              v-if="getPropInputType(key, prop) === 'string'"
                               v-model="componentConfig.props[key]"
                               type="text"
                               class="bg-background w-full rounded-md border px-3 py-2 text-sm"
@@ -109,7 +109,7 @@
 
                             <!-- Number input -->
                             <input
-                              v-else-if="typeof prop === 'number'"
+                              v-else-if="getPropInputType(key, prop) === 'number'"
                               v-model.number="componentConfig.props[key]"
                               type="number"
                               class="bg-background w-full rounded-md border px-3 py-2 text-sm"
@@ -118,7 +118,7 @@
 
                             <!-- Boolean input -->
                             <select
-                              v-else-if="typeof prop === 'boolean'"
+                              v-else-if="getPropInputType(key, prop) === 'boolean'"
                               v-model="componentConfig.props[key]"
                               class="bg-background w-full rounded-md border px-3 py-2 text-sm"
                               @change="updateJsonFromProps(componentConfig)"
@@ -127,143 +127,27 @@
                               <option :value="false">false</option>
                             </select>
 
-                            <!-- Select for preset values -->
+                            <!-- Select inputs for configured options -->
                             <select
-                              v-else-if="key === 'preset'"
+                              v-else-if="getPropInputType(key, prop) === 'select'"
                               v-model="componentConfig.props[key]"
                               class="bg-background w-full rounded-md border px-3 py-2 text-sm"
                               @change="updateJsonFromProps(componentConfig)"
                             >
-                              <option value="custom">Custom</option>
-                              <option value="thumbnail">Thumbnail</option>
-                              <option value="card">Card</option>
-                              <option value="hero">Hero</option>
-                            </select>
-
-                            <!-- Select for format values -->
-                            <select
-                              v-else-if="key === 'format'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateJsonFromProps(componentConfig)"
-                            >
-                              <option value="auto">Auto</option>
-                              <option value="webp">WebP</option>
-                              <option value="avif">AVIF</option>
-                              <option value="jpeg">JPEG</option>
-                              <option value="png">PNG</option>
-                            </select>
-
-                            <!-- Select for icon names -->
-                            <select
-                              v-else-if="key === 'name'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateJsonFromProps(componentConfig)"
-                            >
-                              <option value="mdi:heart">Heart</option>
-                              <option value="mdi:star">Star</option>
-                              <option value="mdi:home">Home</option>
-                              <option value="mdi:magnify">Search</option>
-                              <option value="mdi:plus">Plus</option>
-                              <option value="mdi:close">Close</option>
-                              <option value="mdi:play">Play</option>
-                              <option value="mdi:pause">Pause</option>
-                              <option value="mdi:cog">Settings</option>
-                              <option value="mdi:account">User</option>
-                              <option value="mdi:email">Email</option>
-                              <option value="mdi:phone">Phone</option>
-                              <option value="mdi:calendar">Calendar</option>
-                              <option value="mdi:clock">Clock</option>
-                              <option value="mdi:check">Check</option>
-                              <option value="mdi:alert">Alert</option>
-                              <option value="mdi:information">Information</option>
-                              <option value="mdi:warning">Warning</option>
-                              <option value="mdi:error">Error</option>
-                              <option value="mdi:check-circle">Success</option>
-                              <option value="mdi:download">Download</option>
-                              <option value="mdi:upload">Upload</option>
-                              <option value="mdi:edit">Edit</option>
-                              <option value="mdi:delete">Delete</option>
-                              <option value="mdi:save">Save</option>
-                              <option value="mdi:refresh">Refresh</option>
-                              <option value="mdi:menu">Menu</option>
-                              <option value="mdi:dots-vertical">More</option>
-                              <option value="mdi:share">Share</option>
-                              <option value="mdi:bookmark">Bookmark</option>
-                            </select>
-
-                            <!-- Select for icon sizes -->
-                            <select
-                              v-else-if="key === 'size'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateJsonFromProps(componentConfig)"
-                            >
-                              <option value="1rem">Small (16px)</option>
-                              <option value="1.25rem">Medium (20px)</option>
-                              <option value="1.5rem">Large (24px)</option>
-                              <option value="2rem">Extra Large (32px)</option>
-                              <option value="2.5rem">2XL (40px)</option>
-                              <option value="3rem">3XL (48px)</option>
-                              <option value="4rem">4XL (64px)</option>
-                              <!-- MetricCard and StatusBadge sizes -->
-                              <option value="sm">Small</option>
-                              <option value="md">Medium</option>
-                              <option value="lg">Large</option>
-                            </select>
-
-                            <!-- Select for icon variants -->
-                            <select
-                              v-else-if="key === 'iconVariant'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateJsonFromProps(componentConfig)"
-                            >
-                              <option value="primary">Primary</option>
-                              <option value="success">Success</option>
-                              <option value="warning">Warning</option>
-                              <option value="error">Error</option>
-                              <option value="info">Info</option>
-                            </select>
-
-                            <!-- Select for status badge variants -->
-                            <select
-                              v-else-if="key === 'variant'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateJsonFromProps(componentConfig)"
-                            >
-                              <option value="solid">Solid</option>
-                              <option value="outline">Outline</option>
-                              <option value="soft">Soft</option>
-                            </select>
-
-                            <!-- Select for status types -->
-                            <select
-                              v-else-if="key === 'status'"
-                              v-model="componentConfig.props[key]"
-                              class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                              @change="updateJsonFromProps(componentConfig)"
-                            >
-                              <option value="active">Active</option>
-                              <option value="success">Success</option>
-                              <option value="pending">Pending</option>
-                              <option value="warning">Warning</option>
-                              <option value="error">Error</option>
-                              <option value="draft">Draft</option>
-                              <option value="published">Published</option>
-                              <option value="archived">Archived</option>
-                              <option value="processing">Processing</option>
-                              <option value="completed">Completed</option>
-                              <option value="cancelled">Cancelled</option>
-                              <option value="needs_review">Needs Review</option>
-                              <option value="approved">Approved</option>
-                              <option value="rejected">Rejected</option>
+                              <option
+                                v-for="option in getSelectOptions(key)"
+                                :key="option.value"
+                                :value="option.value"
+                              >
+                                {{ option.label }}
+                              </option>
                             </select>
 
                             <!-- Special input for confirmationText with preset options -->
-                            <div v-else-if="key === 'confirmationText'" class="space-y-2">
+                            <div
+                              v-else-if="getPropInputType(key, prop) === 'special'"
+                              class="space-y-2"
+                            >
                               <input
                                 v-model="componentConfig.props[key]"
                                 type="text"
@@ -273,37 +157,18 @@
                               />
                               <div class="flex flex-wrap gap-1">
                                 <button
-                                  @click="
-                                    componentConfig.props[key] = 'DELETE'
-                                    updateJsonFromProps(componentConfig)
-                                  "
-                                  class="rounded bg-red-100 px-2 py-1 text-xs text-red-700 transition-colors hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                                  v-for="preset in CONFIRMATION_TEXT_PRESETS"
+                                  :key="preset.value"
+                                  @click="updateProp(componentConfig, key, preset.value)"
+                                  :class="[
+                                    'rounded px-2 py-1 text-xs transition-colors',
+                                    preset.class,
+                                  ]"
                                 >
-                                  DELETE
+                                  {{ preset.label }}
                                 </button>
                                 <button
-                                  @click="
-                                    componentConfig.props[key] = 'CONFIRM'
-                                    updateJsonFromProps(componentConfig)
-                                  "
-                                  class="rounded bg-orange-100 px-2 py-1 text-xs text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30"
-                                >
-                                  CONFIRM
-                                </button>
-                                <button
-                                  @click="
-                                    componentConfig.props[key] = 'REMOVE'
-                                    updateJsonFromProps(componentConfig)
-                                  "
-                                  class="rounded bg-purple-100 px-2 py-1 text-xs text-purple-700 transition-colors hover:bg-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
-                                >
-                                  REMOVE
-                                </button>
-                                <button
-                                  @click="
-                                    componentConfig.props[key] = ''
-                                    updateJsonFromProps(componentConfig)
-                                  "
+                                  @click="updateProp(componentConfig, key, '')"
                                   class="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                                 >
                                   Clear
@@ -316,7 +181,10 @@
                             </div>
 
                             <!-- Range for quality -->
-                            <div v-else-if="key === 'quality'" class="space-y-2">
+                            <div
+                              v-else-if="getPropInputType(key, prop) === 'range'"
+                              class="space-y-2"
+                            >
                               <input
                                 v-model.number="componentConfig.props[key]"
                                 type="range"
@@ -331,12 +199,15 @@
                             </div>
 
                             <!-- Array input for pageSizeOptions -->
-                            <div v-else-if="Array.isArray(prop)" class="space-y-2">
+                            <div
+                              v-else-if="getPropInputType(key, prop) === 'array'"
+                              class="space-y-2"
+                            >
                               <input
-                                :value="prop.join(', ')"
+                                :value="(prop as any[]).join(', ')"
                                 type="text"
                                 class="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                                :placeholder="'[' + prop.join(', ') + ']'"
+                                :placeholder="'[' + (prop as any[]).join(', ') + ']'"
                                 @input="
                                   (e) =>
                                     updateArrayProp(
@@ -353,7 +224,7 @@
 
                             <!-- Object input for complex props -->
                             <div
-                              v-else-if="typeof prop === 'object' && prop !== null"
+                              v-else-if="getPropInputType(key, prop) === 'object'"
                               class="space-y-2"
                             >
                               <JsonInput
@@ -551,6 +422,135 @@ interface ComponentDefinition {
   component: Component
   section: 'atoms' | 'molecules' | 'organisms' | 'templates'
   defaultProps: Record<string, unknown>
+}
+
+// Configuration objects for prop inputs
+const PROP_OPTIONS = {
+  preset: [
+    { value: 'custom', label: 'Custom' },
+    { value: 'thumbnail', label: 'Thumbnail' },
+    { value: 'card', label: 'Card' },
+    { value: 'hero', label: 'Hero' },
+  ],
+  format: [
+    { value: 'auto', label: 'Auto' },
+    { value: 'webp', label: 'WebP' },
+    { value: 'avif', label: 'AVIF' },
+    { value: 'jpeg', label: 'JPEG' },
+    { value: 'png', label: 'PNG' },
+  ],
+  name: [
+    { value: 'mdi:heart', label: 'Heart' },
+    { value: 'mdi:star', label: 'Star' },
+    { value: 'mdi:home', label: 'Home' },
+    { value: 'mdi:magnify', label: 'Search' },
+    { value: 'mdi:plus', label: 'Plus' },
+    { value: 'mdi:close', label: 'Close' },
+    { value: 'mdi:play', label: 'Play' },
+    { value: 'mdi:pause', label: 'Pause' },
+    { value: 'mdi:cog', label: 'Settings' },
+    { value: 'mdi:account', label: 'User' },
+    { value: 'mdi:email', label: 'Email' },
+    { value: 'mdi:phone', label: 'Phone' },
+    { value: 'mdi:calendar', label: 'Calendar' },
+    { value: 'mdi:clock', label: 'Clock' },
+    { value: 'mdi:check', label: 'Check' },
+    { value: 'mdi:alert', label: 'Alert' },
+    { value: 'mdi:information', label: 'Information' },
+    { value: 'mdi:warning', label: 'Warning' },
+    { value: 'mdi:error', label: 'Error' },
+    { value: 'mdi:check-circle', label: 'Success' },
+    { value: 'mdi:download', label: 'Download' },
+    { value: 'mdi:upload', label: 'Upload' },
+    { value: 'mdi:edit', label: 'Edit' },
+    { value: 'mdi:delete', label: 'Delete' },
+    { value: 'mdi:save', label: 'Save' },
+    { value: 'mdi:refresh', label: 'Refresh' },
+    { value: 'mdi:menu', label: 'Menu' },
+    { value: 'mdi:dots-vertical', label: 'More' },
+    { value: 'mdi:share', label: 'Share' },
+    { value: 'mdi:bookmark', label: 'Bookmark' },
+  ],
+  size: [
+    { value: '1rem', label: 'Small (16px)' },
+    { value: '1.25rem', label: 'Medium (20px)' },
+    { value: '1.5rem', label: 'Large (24px)' },
+    { value: '2rem', label: 'Extra Large (32px)' },
+    { value: '2.5rem', label: '2XL (40px)' },
+    { value: '3rem', label: '3XL (48px)' },
+    { value: '4rem', label: '4XL (64px)' },
+    { value: 'sm', label: 'Small' },
+    { value: 'md', label: 'Medium' },
+    { value: 'lg', label: 'Large' },
+  ],
+  iconVariant: [
+    { value: 'primary', label: 'Primary' },
+    { value: 'success', label: 'Success' },
+    { value: 'warning', label: 'Warning' },
+    { value: 'error', label: 'Error' },
+    { value: 'info', label: 'Info' },
+  ],
+  variant: [
+    { value: 'solid', label: 'Solid' },
+    { value: 'outline', label: 'Outline' },
+    { value: 'soft', label: 'Soft' },
+  ],
+  status: [
+    { value: 'active', label: 'Active' },
+    { value: 'success', label: 'Success' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'warning', label: 'Warning' },
+    { value: 'error', label: 'Error' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'published', label: 'Published' },
+    { value: 'archived', label: 'Archived' },
+    { value: 'processing', label: 'Processing' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'cancelled', label: 'Cancelled' },
+    { value: 'needs_review', label: 'Needs Review' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'rejected', label: 'Rejected' },
+  ],
+}
+
+const CONFIRMATION_TEXT_PRESETS = [
+  {
+    value: 'DELETE',
+    label: 'DELETE',
+    class:
+      'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30',
+  },
+  {
+    value: 'CONFIRM',
+    label: 'CONFIRM',
+    class:
+      'bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30',
+  },
+  {
+    value: 'REMOVE',
+    label: 'REMOVE',
+    class:
+      'bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30',
+  },
+]
+
+// Helper methods for prop rendering
+const getPropInputType = (key: string, value: unknown) => {
+  if (key in PROP_OPTIONS) return 'select'
+  if (key === 'confirmationText') return 'special'
+  if (key === 'quality') return 'range'
+  if (Array.isArray(value)) return 'array'
+  if (typeof value === 'object' && value !== null) return 'object'
+  return typeof value
+}
+
+const getSelectOptions = (key: string) => {
+  return (PROP_OPTIONS as Record<string, Array<{ value: string; label: string }>>)[key] || []
+}
+
+const updateProp = (config: ComponentConfig, key: string, value: unknown) => {
+  config.props[key] = value
+  updateJsonFromProps(config)
 }
 
 // Component definitions organized by atomic design sections
