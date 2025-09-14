@@ -385,14 +385,12 @@
                       >
                         <!-- Render all components except ConfirmModal in the preview area -->
                         <component
-                          v-if="componentConfig.id !== 'confirm-modal'"
+                          v-if="
+                            componentConfig.id !== 'confirm-modal' &&
+                            componentConfig.id !== 'dynamic-form-sidebar'
+                          "
                           :is="componentConfig.component"
                           v-bind="componentConfig.props"
-                          :open="
-                            componentConfig.id === 'dynamic-form-sidebar'
-                              ? showFormSidebar
-                              : undefined
-                          "
                           class="rounded-lg"
                           @page-change="handlePageChange"
                           @per-page-change="handlePerPageChange"
@@ -401,6 +399,18 @@
                           @submit="handleFormSubmit"
                           @close="handleFormClose"
                         />
+
+                        <!-- Special handling for DynamicFormSidebar - show placeholder when not open -->
+                        <div
+                          v-else-if="
+                            componentConfig.id === 'dynamic-form-sidebar' && !showFormSidebar
+                          "
+                          class="text-muted-foreground text-center"
+                        >
+                          <p class="text-sm">
+                            Click "Show Form Sidebar" to test the DynamicFormSidebar
+                          </p>
+                        </div>
 
                         <!-- For ConfirmModal, show a placeholder when closed -->
                         <div
