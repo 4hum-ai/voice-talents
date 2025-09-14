@@ -262,6 +262,59 @@
                               <option value="rejected">Rejected</option>
                             </select>
 
+                            <!-- Special input for confirmationText with preset options -->
+                            <div v-else-if="key === 'confirmationText'" class="space-y-2">
+                              <input
+                                v-model="componentConfig.props[key]"
+                                type="text"
+                                class="bg-background w-full rounded-md border px-3 py-2 text-sm"
+                                placeholder="Enter text to require for confirmation (leave empty for no text matching)"
+                                @input="updateJsonFromProps(componentConfig)"
+                              />
+                              <div class="flex flex-wrap gap-1">
+                                <button
+                                  @click="
+                                    componentConfig.props[key] = 'DELETE'
+                                    updateJsonFromProps(componentConfig)
+                                  "
+                                  class="rounded bg-red-100 px-2 py-1 text-xs text-red-700 transition-colors hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                                >
+                                  DELETE
+                                </button>
+                                <button
+                                  @click="
+                                    componentConfig.props[key] = 'CONFIRM'
+                                    updateJsonFromProps(componentConfig)
+                                  "
+                                  class="rounded bg-orange-100 px-2 py-1 text-xs text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30"
+                                >
+                                  CONFIRM
+                                </button>
+                                <button
+                                  @click="
+                                    componentConfig.props[key] = 'REMOVE'
+                                    updateJsonFromProps(componentConfig)
+                                  "
+                                  class="rounded bg-purple-100 px-2 py-1 text-xs text-purple-700 transition-colors hover:bg-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
+                                >
+                                  REMOVE
+                                </button>
+                                <button
+                                  @click="
+                                    componentConfig.props[key] = ''
+                                    updateJsonFromProps(componentConfig)
+                                  "
+                                  class="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                                >
+                                  Clear
+                                </button>
+                              </div>
+                              <p class="text-muted-foreground text-xs">
+                                When set, user must type this exact text to enable the confirm
+                                button
+                              </p>
+                            </div>
+
                             <!-- Range for quality -->
                             <div v-else-if="key === 'quality'" class="space-y-2">
                               <input
@@ -330,7 +383,9 @@
                       <div
                         class="bg-muted/20 flex min-h-[300px] items-center justify-center rounded-lg border p-6"
                       >
+                        <!-- Render all components except ConfirmModal in the preview area -->
                         <component
+                          v-if="componentConfig.id !== 'confirm-modal'"
                           :is="componentConfig.component"
                           v-bind="componentConfig.props"
                           :open="
@@ -346,6 +401,14 @@
                           @submit="handleFormSubmit"
                           @close="handleFormClose"
                         />
+
+                        <!-- For ConfirmModal, show a placeholder when closed -->
+                        <div
+                          v-else-if="!componentConfig.props.open"
+                          class="text-muted-foreground text-center"
+                        >
+                          <p class="text-sm">Click "Show Modal" to test the ConfirmModal</p>
+                        </div>
                       </div>
 
                       <!-- Show Modal Button for ConfirmModal -->
@@ -420,6 +483,31 @@
       loading-text="Submitting..."
       @close="handleFormClose"
       @submit="handleFormSubmit"
+    />
+
+    <!-- ConfirmModal for testing -->
+    <ConfirmModal
+      v-if="confirmModalConfig"
+      :open="Boolean(confirmModalConfig.props.open)"
+      :title="String(confirmModalConfig.props.title)"
+      :message="String(confirmModalConfig.props.message)"
+      :confirm-label="
+        confirmModalConfig.props.confirmLabel
+          ? String(confirmModalConfig.props.confirmLabel)
+          : undefined
+      "
+      :cancel-label="
+        confirmModalConfig.props.cancelLabel
+          ? String(confirmModalConfig.props.cancelLabel)
+          : undefined
+      "
+      :confirmation-text="
+        confirmModalConfig.props.confirmationText
+          ? String(confirmModalConfig.props.confirmationText)
+          : undefined
+      "
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
     />
   </div>
 </template>
@@ -522,7 +610,8 @@ const componentDefinitions: ComponentDefinition[] = [
   {
     id: 'confirm-modal',
     title: 'Confirm Modal',
-    description: 'Modal dialog for confirming destructive actions',
+    description:
+      'Modal dialog for confirming destructive actions with optional text matching requirement',
     componentName: 'ConfirmModal',
     component: ConfirmModal,
     section: 'molecules',
@@ -532,6 +621,7 @@ const componentDefinitions: ComponentDefinition[] = [
       message: 'Are you sure you want to delete this item? This action cannot be undone.',
       confirmLabel: 'Delete',
       cancelLabel: 'Cancel',
+      confirmationText: '',
     },
   },
   {
@@ -639,39 +729,6 @@ const componentDefinitions: ComponentDefinition[] = [
       showDot: false,
     },
   },
-  {
-    id: 'dynamic-form-sidebar',
-    title: 'DynamicFormSidebar (Enhanced)',
-    description: 'Enhanced form sidebar with advanced slot support for custom layouts and actions',
-    componentName: 'DynamicFormSidebar',
-    component: DynamicFormSidebar,
-    section: 'molecules',
-    defaultProps: {
-      title: 'Create New Item',
-      formConfig: {
-        fields: [
-          {
-            key: 'name',
-            type: 'text',
-            label: 'Name',
-            placeholder: 'Enter name',
-            required: true,
-          },
-          {
-            key: 'email',
-            type: 'email',
-            label: 'Email',
-            placeholder: 'Enter email',
-            required: true,
-          },
-        ],
-      },
-      initialData: {},
-      loading: false,
-      submitText: 'Submit',
-      loadingText: 'Submitting...',
-    },
-  },
 ]
 
 // Extended component config interface
@@ -701,6 +758,11 @@ const activeComponentId = ref('image')
 
 // DynamicFormSidebar state
 const showFormSidebar = ref(false)
+
+// ConfirmModal config for testing
+const confirmModalConfig = computed(() => {
+  return componentConfigs.find((c) => c.id === 'confirm-modal')
+})
 
 // Generate sidebar sections from component definitions
 const sidebarSections = computed(() => {
@@ -844,8 +906,12 @@ const handleCancel = () => {
 const showConfirmModal = () => {
   const confirmModalConfig = componentConfigs.find((c) => c.id === 'confirm-modal')
   if (confirmModalConfig) {
+    console.log('Opening confirm modal, current open state:', confirmModalConfig.props.open)
     confirmModalConfig.props.open = true
     updateJsonFromProps(confirmModalConfig)
+    console.log('Modal should now be open:', confirmModalConfig.props.open)
+  } else {
+    console.error('ConfirmModal config not found')
   }
 }
 
