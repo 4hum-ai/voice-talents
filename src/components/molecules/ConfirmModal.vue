@@ -29,24 +29,17 @@
       </div>
 
       <div class="mt-4 flex justify-end gap-2">
-        <button
-          class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-          @click="$emit('cancel')"
-        >
+        <Button variant="outline" size="sm" @click="$emit('cancel')">
           {{ cancelLabel || 'Cancel' }}
-        </button>
-        <button
+        </Button>
+        <Button
           :disabled="!isConfirmEnabled"
-          class="rounded-md px-3 py-2 text-sm text-white transition-colors"
-          :class="
-            isConfirmEnabled
-              ? 'bg-red-600 hover:bg-red-700'
-              : 'cursor-not-allowed bg-gray-400 dark:bg-gray-600'
-          "
+          :variant="isConfirmEnabled ? 'danger' : 'default'"
+          size="sm"
           @click="handleConfirm"
         >
           {{ confirmLabel || 'Confirm' }}
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -54,6 +47,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import Button from '@/components/atoms/Button.vue'
 
 interface Props {
   open: boolean

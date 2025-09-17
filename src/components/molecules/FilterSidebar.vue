@@ -20,24 +20,16 @@
         <slot />
       </div>
       <div class="flex gap-2 border-t border-gray-200 p-4 dark:border-gray-700">
-        <button
-          class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-          @click="$emit('clear')"
-        >
-          Clear All
-        </button>
-        <button
-          class="rounded-md bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-700"
-          @click="$emit('apply')"
-        >
-          Apply Filters
-        </button>
+        <Button variant="outline" size="sm" @click="$emit('clear')"> Clear All </Button>
+        <Button variant="danger" size="sm" @click="$emit('apply')"> Apply Filters </Button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import Button from '@/components/atoms/Button.vue'
+
 defineProps<{ title: string; show: boolean }>()
 defineEmits(['close', 'clear', 'apply'])
 </script>

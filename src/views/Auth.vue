@@ -80,18 +80,9 @@
           >
         </div>
 
-        <button
-          :disabled="isLoading"
-          class="btn-primary h-11 w-full disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <span v-if="!isLoading">Sign In</span>
-          <span v-else class="inline-flex items-center justify-center gap-2">
-            <span
-              class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-transparent dark:border-gray-500"
-            />
-            Signing in...
-          </span>
-        </button>
+        <Button type="submit" variant="primary" size="lg" :loading="isLoading" full-width>
+          Sign In
+        </Button>
       </form>
 
       <div class="relative my-6">
@@ -102,16 +93,16 @@
         >
       </div>
 
-      <button
-        class="btn-secondary flex h-11 w-full items-center justify-center gap-2"
+      <Button
+        variant="secondary"
+        size="lg"
+        icon="mdi:google"
         :disabled="isLoading"
+        full-width
         @click="handleProvider('google')"
       >
-        <span aria-hidden="true" class="inline-flex h-5 w-5 items-center justify-center">
-          <IconGoogle class="h-5 w-5" />
-        </span>
-        <span class="font-medium">Continue with Google</span>
-      </button>
+        Continue with Google
+      </Button>
 
       <p v-if="error" class="text-error-600 dark:text-error-300 mt-4 text-sm">
         {{ error }}
@@ -126,11 +117,11 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import Button from '@/components/atoms/Button.vue'
 import IconEmail from '~icons/mdi/email'
 import IconLock from '~icons/mdi/lock'
 import IconEye from '~icons/mdi/eye'
 import IconEyeOff from '~icons/mdi/eye-off'
-import IconGoogle from '~icons/mdi/google'
 
 const router = useRouter()
 const route = useRoute()

@@ -171,14 +171,6 @@
 
 /* Component styles */
 @layer components {
-  .btn-primary {
-    @apply rounded bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-700;
-  }
-
-  .btn-secondary {
-    @apply rounded bg-gray-800 px-4 py-2 font-medium text-white transition-colors hover:bg-gray-700;
-  }
-
   /* Sort indicators */
   .sort-indicator {
     @apply transition-colors duration-200;
@@ -472,14 +464,5 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-
-  /* Button styles */
-  .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none;
-  }
-
-  .btn-secondary {
-    @apply focus:ring-primary-500 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none;
   }
 }

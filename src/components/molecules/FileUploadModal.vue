@@ -125,12 +125,9 @@
                       >
                     </div>
                   </div>
-                  <button
-                    class="ml-3 rounded-md border px-2 py-1 text-xs dark:border-gray-700"
-                    @click="removeAt(idx)"
-                  >
+                  <Button variant="outline" size="xs" custom-class="ml-3" @click="removeAt(idx)">
                     Remove
-                  </button>
+                  </Button>
                 </li>
               </ul>
               <div class="text-xs text-gray-500 dark:text-gray-400">
@@ -202,20 +199,17 @@
           <div
             class="sticky bottom-0 mt-4 flex justify-end gap-2 border-t bg-white/80 px-4 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80"
           >
-            <button
-              class="rounded-md border px-3 py-1.5 text-sm dark:border-gray-700"
-              :disabled="uploading"
-              @click="$emit('close')"
-            >
+            <Button variant="outline" size="sm" :disabled="uploading" @click="$emit('close')">
               Cancel
-            </button>
-            <button
-              class="bg-primary-600 rounded-md px-3 py-1.5 text-sm text-white disabled:opacity-50"
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               :disabled="!files.length || uploading"
               @click="upload"
             >
               Upload
-            </button>
+            </Button>
           </div>
           <div v-if="uploading" class="sticky right-0 bottom-0 left-0 h-1 bg-gray-200">
             <div class="bg-primary-600 h-1 transition-all" :style="{ width: `${progress}%` }" />

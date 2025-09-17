@@ -17,13 +17,15 @@
       </template>
       <template #actions>
         <template v-if="!isSearchOpen">
-          <button
+          <Button
             v-if="hasCreateAction"
-            class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 hidden items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none sm:inline-flex"
+            variant="primary"
+            size="sm"
+            custom-class="hidden sm:inline-flex"
             @click="openCreate"
           >
             + Add
-          </button>
+          </Button>
           <IconButton v-if="hasCreateAction" aria-label="Add" @click="openCreate">
             <IconPlus class="h-5 w-5" aria-hidden="true" />
           </IconButton>
@@ -261,6 +263,7 @@ import AppBar from '@/components/molecules/AppBar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import IconButton from '@/components/atoms/IconButton.vue'
+import Button from '@/components/atoms/Button.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 import FilterSidebar from '@/components/molecules/FilterSidebar.vue'

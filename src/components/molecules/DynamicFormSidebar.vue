@@ -193,15 +193,16 @@
                     :loading-text="loadingText"
                     :handlers="{ submit: handleSubmit }"
                   >
-                    <button
+                    <Button
                       type="submit"
                       :disabled="loading || !isFormValid"
-                      class="rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
+                      :loading="loading"
+                      variant="danger"
+                      size="sm"
                       @click="handleSubmit"
                     >
-                      <span v-if="loading">{{ loadingText }}</span>
-                      <span v-else>{{ submitText }}</span>
-                    </button>
+                      {{ submitText }}
+                    </Button>
                   </slot>
                 </div>
               </slot>
@@ -223,6 +224,7 @@ import Textarea from '@/components/atoms/Textarea.vue'
 import FileInput from '@/components/atoms/FileInput.vue'
 import Checkbox from '@/components/atoms/Checkbox.vue'
 import ResourceSelector from '@/components/atoms/ResourceSelector.vue'
+import Button from '@/components/atoms/Button.vue'
 
 const props = withDefaults(
   defineProps<{

@@ -23,13 +23,7 @@
           :action-menu-items="actionMenuItems"
           :handlers="{ edit: handleEdit, actionMenuSelect: handleActionMenuSelect }"
         >
-          <button
-            v-if="enableEdit"
-            class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
-            @click="handleEdit"
-          >
-            Edit
-          </button>
+          <Button v-if="enableEdit" variant="primary" size="sm" @click="handleEdit"> Edit </Button>
           <ActionsMenu :items="actionMenuItems" size="md" @select="handleActionMenuSelect" />
         </slot>
       </template>
@@ -172,7 +166,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Related Media Section (fallback) -->
           <RelatedMediaSection
             v-if="item?.id"
@@ -437,6 +431,7 @@ import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
 import RelatedMediaSection from '@/components/organisms/RelatedMediaSection.vue'
+import Button from '@/components/atoms/Button.vue'
 import { UiConfig } from '@/types/ui-config'
 import { useRelatedItems, type RelatedItemsConfig } from '@/composables/useRelatedItems'
 import { useResourceService } from '@/composables/useResourceService'

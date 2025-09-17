@@ -8,14 +8,16 @@
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
         The page you are looking for does not exist.
       </p>
-      <router-link
-        to="/"
-        class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 mt-4 inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
-      >
+      <Button variant="primary" size="sm" custom-class="mt-4" @click="router.push('/')">
         Go home
-      </router-link>
+      </Button>
     </div>
   </main>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+import Button from '@/components/atoms/Button.vue'
+
+const router = useRouter()
+</script>
