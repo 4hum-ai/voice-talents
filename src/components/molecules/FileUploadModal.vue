@@ -195,6 +195,7 @@
                 v-model="formData[field.key] as string[]"
                 :placeholder="field.placeholder || 'Add tag and press Enter'"
               />
+
             </div>
 
             <!-- Duration display (if available) -->
@@ -262,7 +263,7 @@ interface Props {
   /** Custom validation rules */
   customValidation?: ValidationRule[]
   /** Custom upload handler */
-  uploadHandler?: (files: File[]) => Promise<void>
+  uploadHandler?: (files: File[], formData: Record<string, string | string[]>) => Promise<void>
   /** Dynamic form fields */
   formFields?: (() => FormField[]) | FormField[]
   /** Show file preview */
@@ -522,7 +523,7 @@ async function upload() {
   if (props.uploadHandler) {
     try {
       uploading.value = true
-      await props.uploadHandler(files.value)
+      await props.uploadHandler(files.value, formData.value)
       emit('uploaded', { count: files.value.length })
       emit('close')
     } catch (error) {

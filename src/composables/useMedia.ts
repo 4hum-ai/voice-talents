@@ -71,7 +71,7 @@ function transformPaginatedResponse<T>(response: unknown): PaginatedResponse<T> 
 }
 
 export function useMedia() {
-  const { list, create, update } = useResourceService()
+  const { list, create, update, getById } = useResourceService()
   const { push } = useToast()
 
   const media = ref<MediaItem[]>([])
@@ -259,6 +259,82 @@ export function useMedia() {
     return { media: mediaRecord, fileUrl: mediaRecord.fileUrl }
   }
 
+  /**
+   * Fetch media related to a specific entity via media-relationships
+   * @param entityType - The type of entity (e.g., 'titles', 'organizations')
+   * @param entityId - The ID of the entity
+   * @param relationshipType - Optional relationship type filter
+   * @returns Array of related media items
+   */
+  async function fetchRelatedMedia(
+    entityType: string,
+    entityId: string,
+    relationshipType?: string
+  ): Promise<MediaItem[]> {
+    try {
+      loading.value = true
+      error.value = null
+      
+      // Use proper filter structure following useQueryBuilder pattern
+      const filters: Record<string, unknown> = {
+        entityType,
+        entityId,
+      }
+      
+      if (relationshipType) {
+        filters.relationshipType = relationshipType
+      }
+
+      const relationships = await list('media-relationships', { filters })
+      // Extract data from paginated response structure
+      const relationshipData = Array.isArray(relationships) 
+        ? relationships 
+        : (relationships as any)?.data || []
+      
+      if (relationshipData.length === 0) {
+        return []
+      }
+
+      // Extract media IDs from relationships
+      const mediaIds = relationshipData
+        .map((rel: any) => rel.mediaId)
+        .filter((id: string) => id)
+
+      if (mediaIds.length === 0) {
+        return []
+      }
+
+      // Fetch media items by IDs using getById
+      const mediaPromises = mediaIds.map(async (mediaId: string) => {
+        try {
+          const result = await getById('media', mediaId)
+          return result ? [result] : []
+        } catch (error) {
+          console.error('Error fetching media for', mediaId, ':', error)
+          return []
+        }
+      })
+      
+      const mediaResults = await Promise.all(mediaPromises)
+      const relatedMedia = mediaResults.flat() as MediaItem[]
+      return relatedMedia
+    } catch (err: unknown) {
+      const message = (err as Error)?.message || 'Failed to fetch related media'
+      error.value = message
+      push({
+        id: `${Date.now()}-related-media-fetch` as string,
+        type: 'error',
+        title: 'Failed to load related media',
+        body: message,
+        position: 'tr',
+        timeout: 6000,
+      })
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     media: readonly(media),
     loading: readonly(loading),
@@ -272,5 +348,6 @@ export function useMedia() {
     nextPage,
     previousPage,
     uploadViaMediaResource,
+    fetchRelatedMedia,
   }
 }

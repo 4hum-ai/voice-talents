@@ -260,5 +260,13 @@ export function useUiConfig() {
     }
   }
 
-  return { get, models, init, listResources, clearCache, state: readonly(state) }
+  // Get list of available resource types (entityTypes) for relationships
+  const resourceTypes = computed(() => {
+    return Object.keys(state.configs).map(name => ({
+      value: name,
+      label: state.configs[name]?.displayName || name
+    }))
+  })
+
+  return { get, models, init, listResources, clearCache, resourceTypes, state: readonly(state) }
 }

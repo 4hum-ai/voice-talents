@@ -172,6 +172,14 @@
               </div>
             </div>
           </div>
+          
+          <!-- Related Media Section (fallback) -->
+          <RelatedMediaSection
+            v-if="item?.id"
+            :entity-type="resourceName"
+            :entity-id="String(item.id)"
+            :show-upload-button="true"
+          />
         </slot>
 
         <!-- Details footer -->
@@ -428,6 +436,7 @@ import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
+import RelatedMediaSection from '@/components/organisms/RelatedMediaSection.vue'
 import { UiConfig } from '@/types/ui-config'
 import { useRelatedItems, type RelatedItemsConfig } from '@/composables/useRelatedItems'
 import { useResourceService } from '@/composables/useResourceService'
