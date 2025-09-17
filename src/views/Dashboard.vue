@@ -40,19 +40,7 @@
           <div
             class="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
           >
-            <svg
-              class="h-5 w-5 text-gray-400 dark:text-gray-300"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m21 21-4.35-4.35m0-6.4a6.4 6.4 0 1 1-12.8 0 6.4 6.4 0 0 1 12.8 0Z"
-              />
-            </svg>
+            <IconMagnify class="h-5 w-5 text-gray-400 dark:text-gray-300" />
           </div>
           <div v-if="filter">No resources match “{{ filter }}”.</div>
           <div v-else>No resources available.</div>
@@ -207,6 +195,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import LoadingIcon from '~icons/mdi/loading'
+import IconMagnify from '~icons/mdi/magnify'
 import { ActivityEntry, useActivity, VisitEntry } from '@/composables/useActivity'
 import { useEventBus } from '@vueuse/core'
 import { EVENT_ACTIVITIES_UPDATED, EVENT_VISITS_UPDATED } from '@/types/events'

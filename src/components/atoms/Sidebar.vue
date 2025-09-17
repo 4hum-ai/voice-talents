@@ -17,20 +17,10 @@
         class="text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0 rounded-md p-2 transition-colors"
         :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
       >
-        <svg
+        <IconChevronLeft
           class="h-4 w-4 transition-transform"
           :class="{ 'rotate-180': collapsed }"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
+        />
       </button>
     </div>
 
@@ -106,6 +96,7 @@
 
 <script setup lang="ts">
 import { ref, type Component } from 'vue'
+import IconChevronLeft from '~icons/mdi/chevron-left'
 
 interface SidebarItem {
   id: string

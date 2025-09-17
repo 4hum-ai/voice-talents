@@ -27,24 +27,17 @@
           {{ opt.key === modelValue ? '✓ ' + opt.label : opt.label }}
         </option>
       </select>
-      <svg
+      <IconChevronDown
         class="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-400"
-        viewBox="0 0 20 20"
-        fill="currentColor"
         aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-          clip-rule="evenodd"
-        />
-      </svg>
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import IconChevronDown from '~icons/mdi/chevron-down'
 
 type Option = { key: string; label: string }
 

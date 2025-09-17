@@ -29,97 +29,7 @@
     >
       <slot name="icon">
         <!-- Default icon based on preset -->
-        <svg
-          v-if="preset === 'search'"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="mx-auto h-full w-full"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="m21 21-4.35-4.35m0-6.4a6.4 6.4 0 1 1-12.8 0 6.4 6.4 0 0 1 12.8 0Z"
-          />
-        </svg>
-        <svg
-          v-else-if="preset === 'error'"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="mx-auto h-full w-full"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-          />
-        </svg>
-        <svg
-          v-else-if="preset === 'success'"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="mx-auto h-full w-full"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-        <svg
-          v-else-if="preset === 'warning'"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="mx-auto h-full w-full"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-          />
-        </svg>
-        <svg
-          v-else-if="preset === 'info'"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="mx-auto h-full w-full"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-          />
-        </svg>
-        <!-- Default plus icon -->
-        <svg
-          v-else
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="mx-auto h-full w-full"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
+        <Icon :name="`mdi:${getPresetIcon(preset)}`" class="mx-auto h-full w-full" />
       </slot>
     </div>
 
@@ -164,6 +74,8 @@
 </template>
 
 <script setup lang="ts">
+import Icon from '@/components/atoms/Icon.vue'
+
 interface Props {
   /** Title text */
   title: string
@@ -184,4 +96,16 @@ withDefaults(defineProps<Props>(), {
   size: 'lg',
   preset: 'default',
 })
+
+const getPresetIcon = (preset: string) => {
+  const iconMap: Record<string, string> = {
+    search: 'magnify',
+    error: 'alert-circle',
+    success: 'check-circle',
+    warning: 'alert',
+    info: 'information',
+    default: 'plus-circle',
+  }
+  return iconMap[preset] || 'plus-circle'
+}
 </script>

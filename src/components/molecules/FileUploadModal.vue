@@ -95,12 +95,7 @@
                       >
                     </div>
                   </div>
-                  <button
-                    class="rounded-md border px-2 py-1 text-xs dark:border-gray-700"
-                    @click="removeAt(0)"
-                  >
-                    Remove
-                  </button>
+                  <Button variant="outline" size="xs" @click="removeAt(0)"> Remove </Button>
                 </div>
               </div>
             </div>
@@ -111,12 +106,7 @@
                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Selected files ({{ files.length }})
                 </div>
-                <button
-                  class="rounded-md border px-2 py-1 text-xs dark:border-gray-700"
-                  @click="clearAll"
-                >
-                  Remove all
-                </button>
+                <Button variant="outline" size="xs" @click="clearAll"> Remove all </Button>
               </div>
               <ul class="divide-y dark:divide-gray-800">
                 <li
@@ -195,7 +185,6 @@
                 v-model="formData[field.key] as string[]"
                 :placeholder="field.placeholder || 'Add tag and press Enter'"
               />
-
             </div>
 
             <!-- Duration display (if available) -->

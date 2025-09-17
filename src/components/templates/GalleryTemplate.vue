@@ -139,13 +139,7 @@
       <span
         class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/60 px-3 py-1 text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-400"
       >
-        <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM7.28 9.22a.75.75 0 011.06 0L10 10.94l1.66-1.72a.75.75 0 111.08 1.04l-2.2 2.28a.75.75 0 01-1.08 0L7.28 10.26a.75.75 0 010-1.04z"
-            clip-rule="evenodd"
-          />
-        </svg>
+        <IconCloseCircle class="h-3.5 w-3.5" aria-hidden="true" />
         End of results
       </span>
     </div>
@@ -158,6 +152,7 @@ import { useRoute } from 'vue-router'
 import SortDropdown from '@/components/molecules/SortDropdown.vue'
 import PlayIcon from '~icons/mdi/play-circle-outline'
 import MusicIcon from '~icons/mdi/music-note-outline'
+import IconCloseCircle from '~icons/mdi/close-circle'
 import type { DataArray, DataItem } from '@/types/common'
 import Image from '@/components/molecules/Image.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'

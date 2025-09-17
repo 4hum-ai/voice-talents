@@ -29,19 +29,7 @@
           <span
             class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-gray-500"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="h-5 w-5"
-            >
-              <path
-                d="M1.5 8.67v6.66A3.17 3.17 0 0 0 4.67 18.5h14.66a3.17 3.17 0 0 0 3.17-3.17V8.67a3.16 3.16 0 0 0-.53-1.75l-8.32 5.2a2.25 2.25 0 0 1-2.39 0L2.03 6.92a3.16 3.16 0 0 0-.53 1.75Z"
-              />
-              <path
-                d="M22.5 6.75a3.17 3.17 0 0 0-3.17-3.17H4.67A3.17 3.17 0 0 0 1.5 6.75l9.01 5.63a.75.75 0 0 0 .78 0l9.21-5.63Z"
-              />
-            </svg>
+            <IconEmail class="h-5 w-5" />
           </span>
           <input
             v-model="email"
@@ -56,16 +44,7 @@
           <span
             class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-gray-500"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="h-5 w-5"
-            >
-              <path
-                d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3h-.75A2.25 2.25 0 0 0 3.75 12v7.5A2.25 2.25 0 0 0 6 21.75h12A2.25 2.25 0 0 0 20.25 19.5V12A2.25 2.25 0 0 0 18 9.75h-.75v-3A5.25 5.25 0 0 0 12 1.5Zm-3.75 8.25v-3a3.75 3.75 0 1 1 7.5 0v3h-7.5Z"
-              />
-            </svg>
+            <IconLock class="h-5 w-5" />
           </span>
           <input
             v-model="password"
@@ -80,32 +59,8 @@
             :aria-label="showPassword ? 'Hide password' : 'Show password'"
             @click="showPassword = !showPassword"
           >
-            <svg
-              v-if="!showPassword"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="h-5 w-5"
-            >
-              <path
-                d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Z"
-              />
-              <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
-            </svg>
-            <svg
-              v-else
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="h-5 w-5"
-            >
-              <path
-                d="M3.28 2.22a.75.75 0 0 0-1.06 1.06L4.6 5.66C3.01 6.64 1.67 8.08 1 9.99 2.73 13.88 7 17 12 17c1.46 0 2.86-.25 4.15-.71l2.57 2.57a.75.75 0 1 0 1.06-1.06L3.28 2.22Z"
-              />
-              <path
-                d="M8.53 7.95 10 9.41a3 3 0 0 0 4.17 4.17l1.46 1.46A6.98 6.98 0 0 1 12 15c-3.97 0-7.42-2.4-9-6 1-2.25 2.8-3.93 4.88-5.02l.65.97ZM12 7.5c.55 0 1.06.12 1.52.33l-1.69-1.69c.06 0 .11-.01.17-.01Z"
-              />
-            </svg>
+            <IconEye v-if="!showPassword" class="h-5 w-5" />
+            <IconEyeOff v-else class="h-5 w-5" />
           </button>
         </div>
 
@@ -153,24 +108,7 @@
         @click="handleProvider('google')"
       >
         <span aria-hidden="true" class="inline-flex h-5 w-5 items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5">
-            <path
-              fill="#FFC107"
-              d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C33.643,6.053,29.083,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-            />
-            <path
-              fill="#FF3D00"
-              d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C33.643,6.053,29.083,4,24,4C16.318,4,9.656,8.256,6.306,14.691z"
-            />
-            <path
-              fill="#4CAF50"
-              d="M24,44c5.162,0,9.755-1.977,13.261-5.189l-6.104-5.148C29.989,35.091,27.138,36,24,36c-5.202,0-9.619-3.319-11.275-7.952l-6.5,5.01C9.618,39.556,16.279,44,24,44z"
-            />
-            <path
-              fill="#1976D2"
-              d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-3.997,5.614c0.001-0.001,0.002-0.001,0.003-0.002l6.104,5.148C36.871,39.523,44,35,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-            />
-          </svg>
+          <IconGoogle class="h-5 w-5" />
         </span>
         <span class="font-medium">Continue with Google</span>
       </button>
@@ -188,6 +126,11 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import IconEmail from '~icons/mdi/email'
+import IconLock from '~icons/mdi/lock'
+import IconEye from '~icons/mdi/eye'
+import IconEyeOff from '~icons/mdi/eye-off'
+import IconGoogle from '~icons/mdi/google'
 
 const router = useRouter()
 const route = useRoute()

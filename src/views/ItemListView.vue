@@ -25,28 +25,14 @@
             + Add
           </button>
           <IconButton v-if="hasCreateAction" aria-label="Add" @click="openCreate">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path
-                d="M12 6.75a.75.75 0 01.75.75v3.75H16.5a.75.75 0 010 1.5h-3.75V16.5a.75.75 0 01-1.5 0v-3.75H7.5a.75.75 0 010-1.5h3.75V7.5A.75.75 0 0112 6.75z"
-              />
-            </svg>
+            <IconPlus class="h-5 w-5" aria-hidden="true" />
           </IconButton>
           <IconButton aria-label="Search" @click="openSearch">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M10.5 3.75a6.75 6.75 0 104.243 11.93l3.788 3.789a.75.75 0 101.06-1.06l-3.788-3.79A6.75 6.75 0 0010.5 3.75zm-5.25 6.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            <IconMagnify class="h-5 w-5" aria-hidden="true" />
           </IconButton>
           <ActionsMenu :items="layoutMenuItems" size="md" @select="handleLayoutSelect">
             <template #label>
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M3 5.25A2.25 2.25 0 015.25 3h4.5A2.25 2.25 0 0112 5.25v4.5A2.25 2.25 0 019.75 12h-4.5A2.25 2.25 0 013 9.75v-4.5zM12 14.25A2.25 2.25 0 0114.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 0118.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM3 14.25A2.25 2.25 0 015.25 12h4.5A2.25 2.25 0 0121 14.25v4.5A2.25 2.25 0 019.75 21h-4.5A2.25 2.25 0 013 18.75v-4.5zM14.25 3A2.25 2.25 0 0012 5.25v4.5A2.25 2.25 0 0014.25 12h4.5A2.25 2.25 0 0121 9.75v-4.5A2.25 2.25 0 0018.75 3h-4.5z"
-                />
-              </svg>
+              <IconViewGrid class="h-5 w-5" aria-hidden="true" />
             </template>
           </ActionsMenu>
         </template>
@@ -82,13 +68,7 @@
             </div>
           </div>
           <IconButton aria-label="Close search" @click="closeSearch">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path
-                fill-rule="evenodd"
-                d="M6.225 4.811a.75.75 0 011.06 0L12 9.525l4.715-4.714a.75.75 0 111.06 1.06L13.06 10.586l4.715 4.714a.75.75 0 11-1.06 1.06L12 11.646l-4.715 4.714a.75.75 0 11-1.06-1.06l4.714-4.714-4.714-4.715a.75.75 0 010-1.06z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            <IconClose class="h-5 w-5" aria-hidden="true" />
           </IconButton>
         </template>
       </template>
@@ -293,6 +273,10 @@ import type { FilterConfig, UiConfig, ColumnConfig } from '@/types/ui-config'
 import { usePreference } from '@/composables/usePreference'
 import { useStaleStore } from '@/stores/stale'
 import { DataItem, ActionArray, FilterPreset } from '@/types/common'
+import IconPlus from '~icons/mdi/plus'
+import IconMagnify from '~icons/mdi/magnify'
+import IconViewGrid from '~icons/mdi/view-grid'
+import IconClose from '~icons/mdi/close'
 
 type ViewType = 'list' | 'gallery' | 'kanban' | 'calendar'
 

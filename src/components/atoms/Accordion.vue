@@ -13,20 +13,10 @@
         >
           {{ count }}
         </span>
-        <svg
+        <IconChevronDown
           class="text-muted-foreground h-4 w-4 transition-transform"
           :class="{ 'rotate-180': isOpen }"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        />
       </div>
     </button>
 
@@ -38,6 +28,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import IconChevronDown from '~icons/mdi/chevron-down'
 
 interface Props {
   /** Title of the accordion section */

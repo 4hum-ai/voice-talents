@@ -19,14 +19,7 @@
           @blur="onSearchBlur"
         />
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+          <IconMagnify class="h-4 w-4 text-gray-400" />
         </div>
       </div>
 
@@ -44,20 +37,10 @@
         <span v-else class="text-gray-500">
           {{ placeholder || `Select ${label?.toLowerCase() || 'resource'}` }}
         </span>
-        <svg
+        <IconChevronDown
           class="ml-2 h-4 w-4 text-gray-400"
           :class="{ 'rotate-180': isDropdownOpen }"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        />
       </button>
 
       <!-- Dropdown menu -->
@@ -154,6 +137,8 @@
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { useResourceService } from '@/composables/useResourceService'
 import { useDebounceFn } from '@vueuse/core'
+import IconMagnify from '~icons/mdi/magnify'
+import IconChevronDown from '~icons/mdi/chevron-down'
 
 interface Props {
   modelValue: string | number | undefined

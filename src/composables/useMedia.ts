@@ -269,35 +269,35 @@ export function useMedia() {
   async function fetchRelatedMedia(
     entityType: string,
     entityId: string,
-    relationshipType?: string
+    relationshipType?: string,
   ): Promise<MediaItem[]> {
     try {
       loading.value = true
       error.value = null
-      
+
       // Use proper filter structure following useQueryBuilder pattern
       const filters: Record<string, unknown> = {
         entityType,
         entityId,
       }
-      
+
       if (relationshipType) {
         filters.relationshipType = relationshipType
       }
 
       const relationships = await list('media-relationships', { filters })
       // Extract data from paginated response structure
-      const relationshipData = Array.isArray(relationships) 
-        ? relationships 
-        : (relationships as any)?.data || []
-      
+      const relationshipData = Array.isArray(relationships)
+        ? relationships
+        : ((relationships as unknown as Record<string, unknown>)?.data as unknown[]) || []
+
       if (relationshipData.length === 0) {
         return []
       }
 
       // Extract media IDs from relationships
       const mediaIds = relationshipData
-        .map((rel: any) => rel.mediaId)
+        .map((rel: unknown) => (rel as Record<string, unknown>).mediaId as string)
         .filter((id: string) => id)
 
       if (mediaIds.length === 0) {
@@ -314,7 +314,7 @@ export function useMedia() {
           return []
         }
       })
-      
+
       const mediaResults = await Promise.all(mediaPromises)
       const relatedMedia = mediaResults.flat() as MediaItem[]
       return relatedMedia
