@@ -138,15 +138,14 @@
                 Duration: {{ formatDuration(media.duration) }}
               </p>
             </div>
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="xs"
-              icon="mdi:trash-can-outline"
+              class="ml-2 inline-flex h-8 w-8 items-center justify-center rounded-md bg-transparent text-gray-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:focus:ring-gray-500"
               aria-label="Delete media"
-              custom-class="ml-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               @click="handleDeleteClick(media, $event)"
-            />
+            >
+              <TrashCanOutlineIcon class="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
@@ -197,7 +196,7 @@ import Image from '@/components/molecules/Image.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
 import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
-import Icon from '@/components/atoms/Icon.vue'
+import TrashCanOutlineIcon from '~icons/mdi/trash-can-outline'
 import Button from '@/components/atoms/Button.vue'
 
 interface Props {
