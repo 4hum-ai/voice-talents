@@ -262,9 +262,9 @@ export function useUiConfig() {
 
   // Get list of available resource types (entityTypes) for relationships
   const resourceTypes = computed(() => {
-    return Object.keys(state.configs).map(name => ({
+    return Object.keys(state.configs).map((name) => ({
       value: name,
-      label: state.configs[name]?.displayName || name
+      label: state.configs[name]?.displayName || name,
     }))
   })
 
