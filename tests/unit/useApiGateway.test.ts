@@ -58,11 +58,14 @@ describe('useApiGateway / createApiClient', () => {
 
   it('joins URLs correctly and includes headers with token when available', async () => {
     const { createDefaultAuthProvider } = await import('@/providers/authProviderFactory')
-    const mockCreateDefaultAuthProvider = createDefaultAuthProvider as MockedFunction<typeof createDefaultAuthProvider>
-    
+    const mockCreateDefaultAuthProvider = createDefaultAuthProvider as MockedFunction<
+      typeof createDefaultAuthProvider
+    >
+
     const mockProvider = {
       getIdToken: vi.fn(async () => 'test-token'),
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockCreateDefaultAuthProvider.mockResolvedValue(mockProvider as any)
 
     const fetchSpy = vi.fn().mockResolvedValue(new Response(null, { status: 200 }))
@@ -89,13 +92,17 @@ describe('useApiGateway / createApiClient', () => {
 
   it('retries once on 401 with refreshed token', async () => {
     const { createDefaultAuthProvider } = await import('@/providers/authProviderFactory')
-    const mockCreateDefaultAuthProvider = createDefaultAuthProvider as MockedFunction<typeof createDefaultAuthProvider>
-    
+    const mockCreateDefaultAuthProvider = createDefaultAuthProvider as MockedFunction<
+      typeof createDefaultAuthProvider
+    >
+
     const mockProvider = {
-      getIdToken: vi.fn()
-        .mockResolvedValueOnce('old-token')  // First call (buildAuthHeader)
+      getIdToken: vi
+        .fn()
+        .mockResolvedValueOnce('old-token') // First call (buildAuthHeader)
         .mockResolvedValueOnce('new-token'), // Second call (retry with force refresh)
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockCreateDefaultAuthProvider.mockResolvedValue(mockProvider as any)
 
     const fetchSpy = vi
