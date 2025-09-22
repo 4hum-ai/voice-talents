@@ -36,12 +36,15 @@ pnpm preview
 Defined in `.env` (see `env.example` for all keys):
 
 #### API Configuration
+
 - VITE_PUBLIC_API_URL: Base URL for the API gateway.
 
 #### Authentication Provider
+
 - VITE_AUTH_PROVIDER: Choose authentication provider (`firebase` or `gis`)
 
 #### Firebase Authentication (when VITE_AUTH_PROVIDER=firebase)
+
 - VITE_FIREBASE_API_KEY
 - VITE_FIREBASE_AUTH_DOMAIN
 - VITE_FIREBASE_PROJECT_ID
@@ -50,4 +53,5 @@ Defined in `.env` (see `env.example` for all keys):
 - VITE_FIREBASE_APP_ID
 
 #### Google Identity Services (when VITE_AUTH_PROVIDER=gis)
+
 - VITE_GOOGLE_CLIENT_ID: Google OAuth 2.0 Client ID from Google Cloud Console

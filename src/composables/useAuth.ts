@@ -35,18 +35,20 @@ export function useAuth() {
 
   const subscribe = (cb: (u: AuthUser | null) => void): (() => void) => {
     let unsubscribe: (() => void) | null = null
-    
-    getAuthProvider().then(provider => {
-      unsubscribe = provider.subscribe((authUser) => {
-        user.value = authUser
-        cb(authUser)
+
+    getAuthProvider()
+      .then((provider) => {
+        unsubscribe = provider.subscribe((authUser) => {
+          user.value = authUser
+          cb(authUser)
+          isLoading.value = false
+        })
+      })
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : 'Failed to subscribe to auth state'
+        error.value = message
         isLoading.value = false
       })
-    }).catch(err => {
-      const message = err instanceof Error ? err.message : 'Failed to subscribe to auth state'
-      error.value = message
-      isLoading.value = false
-    })
 
     return () => {
       if (unsubscribe) {

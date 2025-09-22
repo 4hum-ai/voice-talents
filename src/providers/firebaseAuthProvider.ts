@@ -107,10 +107,12 @@ export class FirebaseAuthProvider implements AuthProvider {
     return { user: converted, newUser: info?.isNewUser }
   }
 
-  async loginWithOAuth(providerName: 'google' | 'github' | 'microsoft' | 'apple'): Promise<{ user: AuthUser; newUser?: boolean }> {
+  async loginWithOAuth(
+    providerName: 'google' | 'github' | 'microsoft' | 'apple',
+  ): Promise<{ user: AuthUser; newUser?: boolean }> {
     const auth = this.ensureAuthInitialized()
     let providerInstance: GoogleAuthProvider | GithubAuthProvider | OAuthProvider
-    
+
     switch (providerName) {
       case 'google':
         providerInstance = new GoogleAuthProvider()
@@ -125,7 +127,7 @@ export class FirebaseAuthProvider implements AuthProvider {
         providerInstance = new OAuthProvider('apple.com')
         break
     }
-    
+
     const result = await signInWithPopup(auth, providerInstance)
     const converted = this.convertFirebaseUser(result.user)
     const info = getAdditionalUserInfo(result)
@@ -147,7 +149,7 @@ export class FirebaseAuthProvider implements AuthProvider {
     const auth = this.ensureAuthInitialized()
     const user = auth.currentUser
     if (!user) return null
-    
+
     try {
       return await user.getIdToken(forceRefresh)
     } catch (error) {

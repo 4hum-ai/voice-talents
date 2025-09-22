@@ -12,13 +12,15 @@ export function createAuthProvider(config: AuthConfig): AuthProvider {
         throw new Error('Firebase configuration is required when using Firebase provider')
       }
       return new FirebaseAuthProvider(config.firebase)
-    
+
     case 'gis':
       if (!config.gis) {
-        throw new Error('Google Identity Services configuration is required when using GIS provider')
+        throw new Error(
+          'Google Identity Services configuration is required when using GIS provider',
+        )
       }
       return new GisAuthProvider(config.gis)
-    
+
     default:
       throw new Error(`Unsupported authentication provider: ${config.provider}`)
   }
@@ -29,7 +31,7 @@ export function createAuthProvider(config: AuthConfig): AuthProvider {
  */
 export function getAuthConfigFromEnv(): AuthConfig {
   const provider = (import.meta.env.VITE_AUTH_PROVIDER as AuthProviderType) || 'firebase'
-  
+
   const config: AuthConfig = {
     provider,
   }
@@ -45,9 +47,16 @@ export function getAuthConfigFromEnv(): AuthConfig {
     }
 
     // Validate required Firebase config
-    const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'] as const
-    const missingKeys = requiredKeys.filter(key => !firebaseConfig[key])
-    
+    const requiredKeys = [
+      'apiKey',
+      'authDomain',
+      'projectId',
+      'storageBucket',
+      'messagingSenderId',
+      'appId',
+    ] as const
+    const missingKeys = requiredKeys.filter((key) => !firebaseConfig[key])
+
     if (missingKeys.length > 0) {
       throw new Error(`Missing required Firebase configuration: ${missingKeys.join(', ')}`)
     }
@@ -55,9 +64,11 @@ export function getAuthConfigFromEnv(): AuthConfig {
     config.firebase = firebaseConfig
   } else if (provider === 'gis') {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string
-    
+
     if (!clientId) {
-      throw new Error('Missing required Google Identity Services configuration: VITE_GOOGLE_CLIENT_ID')
+      throw new Error(
+        'Missing required Google Identity Services configuration: VITE_GOOGLE_CLIENT_ID',
+      )
     }
 
     config.gis = { clientId }

@@ -5,28 +5,30 @@
 export interface AuthProvider {
   /** Initialize the authentication provider */
   initialize(): Promise<void>
-  
+
   /** Get the current authenticated user */
   getCurrentUser(): Promise<AuthUser | null>
-  
+
   /** Subscribe to authentication state changes */
   subscribe(callback: (user: AuthUser | null) => void): () => void
-  
+
   /** Sign in with email and password */
   login(email: string, password: string): Promise<AuthUser>
-  
+
   /** Sign in with Google OAuth */
   loginWithGoogle(): Promise<{ user: AuthUser; newUser?: boolean }>
-  
+
   /** Sign in with OAuth provider */
-  loginWithOAuth(provider: 'google' | 'github' | 'microsoft' | 'apple'): Promise<{ user: AuthUser; newUser?: boolean }>
-  
+  loginWithOAuth(
+    provider: 'google' | 'github' | 'microsoft' | 'apple',
+  ): Promise<{ user: AuthUser; newUser?: boolean }>
+
   /** Sign out the current user */
   logout(): Promise<void>
-  
+
   /** Set authentication persistence mode */
   setPersistenceMode(mode: 'local' | 'session'): Promise<void>
-  
+
   /** Get ID token for API authentication */
   getIdToken(forceRefresh?: boolean): Promise<string | null>
 }

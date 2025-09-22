@@ -5,12 +5,14 @@ This application supports two authentication providers that can be configured vi
 ## Providers
 
 ### 1. Firebase Authentication (Default)
+
 - **Provider ID**: `firebase`
 - **Features**: Email/password, Google OAuth, GitHub, Microsoft, Apple
 - **Persistence**: Local and session storage support
 - **Token Management**: Automatic refresh
 
 ### 2. Google Identity Services (GIS)
+
 - **Provider ID**: `gis`
 - **Features**: Google OAuth (One Tap and Popup)
 - **Persistence**: Handled by Google
@@ -79,16 +81,16 @@ VITE_GOOGLE_CLIENT_ID=your-client-id.googleusercontent.com
 
 ## Feature Comparison
 
-| Feature | Firebase | GIS |
-|---------|----------|-----|
-| Email/Password | ✅ | ❌ |
-| Google OAuth | ✅ | ✅ |
-| GitHub OAuth | ✅ | ❌ |
-| Microsoft OAuth | ✅ | ❌ |
-| Apple OAuth | ✅ | ❌ |
-| One Tap Sign-in | ❌ | ✅ |
-| Token Refresh | ✅ | Manual |
-| Persistence Control | ✅ | Limited |
+| Feature             | Firebase | GIS     |
+| ------------------- | -------- | ------- |
+| Email/Password      | ✅       | ❌      |
+| Google OAuth        | ✅       | ✅      |
+| GitHub OAuth        | ✅       | ❌      |
+| Microsoft OAuth     | ✅       | ❌      |
+| Apple OAuth         | ✅       | ❌      |
+| One Tap Sign-in     | ❌       | ✅      |
+| Token Refresh       | ✅       | Manual  |
+| Persistence Control | ✅       | Limited |
 
 ## Development Tips
 
@@ -109,6 +111,7 @@ VITE_GOOGLE_CLIENT_ID=your-client-id.googleusercontent.com
 ### Debug Mode
 
 To debug authentication issues, check the browser console for:
+
 - Provider initialization messages
 - Configuration validation errors
 - Authentication flow errors

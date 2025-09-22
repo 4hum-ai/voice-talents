@@ -144,7 +144,7 @@ const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'app
     console.log('✅ Login result:', result)
     console.log('👤 Auth store user:', authStore.user)
     console.log('🔐 Is authenticated:', authStore.isAuthenticated)
-    
+
     const redirectPath = (route.query.redirect as string) || '/'
     console.log('🔄 Redirecting to:', redirectPath)
     router.push(redirectPath)
