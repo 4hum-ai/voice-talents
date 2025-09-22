@@ -6,6 +6,11 @@ import router from './router'
 import '@fontsource-variable/inter'
 import '@/style.css'
 
+// Import debug utilities for development
+import '@/utils/debugOAuth'
+import '@/utils/oauthConsentCheck'
+import '@/utils/oauthClientDebug'
+
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
