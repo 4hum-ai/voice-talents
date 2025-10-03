@@ -251,6 +251,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Image from '@/components/molecules/Image.vue'
 import TagInput from '@/components/atoms/TagInput.vue'
+import Button from '@/components/atoms/Button.vue'
 
 // Icons
 import CloseIcon from '~icons/mdi/close'
