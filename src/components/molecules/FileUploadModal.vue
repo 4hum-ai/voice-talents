@@ -15,7 +15,7 @@
           </p>
         </div>
         <button
-          class="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm dark:border-gray-700"
+          class="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           aria-label="Close"
           @click="$emit('close')"
         >
@@ -41,7 +41,7 @@
               <div class="mt-3 text-sm text-gray-600 dark:text-gray-300">Drag & drop files</div>
               <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">or</div>
               <button
-                class="bg-primary-600 mt-3 flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-white"
+                class="bg-primary-600 hover:bg-primary-700 mt-3 flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-white"
                 @click="pick"
               >
                 <FolderOpenIcon class="h-4 w-4" aria-hidden="true" />
