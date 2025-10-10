@@ -51,32 +51,48 @@
           </p>
         </div>
 
-        <!-- Stats Overview -->
+        <!-- Enhanced Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Active Projects"
-            :value="stats.activeProjects"
-            icon="folder-open"
-            color="blue"
-          />
-          <MetricCard
-            title="Total Earnings"
-            :value="`$${stats.totalEarnings.toLocaleString()}`"
-            icon="currency-usd"
-            color="green"
-          />
-          <MetricCard
-            title="Voice Samples"
-            :value="stats.totalSamples"
-            icon="microphone"
-            color="purple"
-          />
-          <MetricCard
-            title="Rating"
-            :value="stats.averageRating.toFixed(1)"
-            icon="star"
-            color="yellow"
-          />
+          <div class="group">
+            <MetricCard
+              title="Active Projects"
+              :value="stats.activeProjects"
+              icon="mdi:folder-open"
+              icon-variant="primary"
+              :trend="{ value: 12, direction: 'up', period: 'vs last month' }"
+              class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            />
+          </div>
+          <div class="group">
+            <MetricCard
+              title="Total Earnings"
+              :value="`$${stats.totalEarnings.toLocaleString()}`"
+              icon="mdi:currency-usd"
+              icon-variant="success"
+              :trend="{ value: 8, direction: 'up', period: 'vs last month' }"
+              class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            />
+          </div>
+          <div class="group">
+            <MetricCard
+              title="Voice Samples"
+              :value="stats.totalSamples"
+              icon="mdi:microphone"
+              icon-variant="warning"
+              :trend="{ value: 3, direction: 'up', period: 'vs last month' }"
+              class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            />
+          </div>
+          <div class="group">
+            <MetricCard
+              title="Rating"
+              :value="stats.averageRating.toFixed(1)"
+              icon="mdi:star"
+              icon-variant="error"
+              :trend="{ value: 0.2, direction: 'up', period: 'vs last month' }"
+              class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            />
+          </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

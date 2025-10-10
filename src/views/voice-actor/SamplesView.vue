@@ -40,20 +40,25 @@
 
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="max-w-7xl mx-auto">
-        <!-- Filters and Search -->
+        <!-- Enhanced Search and Filters -->
         <div class="mb-8">
-          <div class="flex flex-col sm:flex-row gap-4">
-            <div class="flex-1">
-              <SearchInput v-model="searchQuery" placeholder="Search samples by title, genre, or tags..."
-                @update:model-value="handleSearch" />
-            </div>
-            <div class="flex gap-2">
-              <SelectInput v-model="selectedGenre" :options="genreOptions" placeholder="All Genres" class="w-40" />
-              <SelectInput v-model="selectedTone" :options="toneOptions" placeholder="All Tones" class="w-40" />
-              <SelectInput v-model="selectedLanguage" :options="languageOptions" placeholder="All Languages"
-                class="w-40" />
-            </div>
-          </div>
+          <AdvancedSearch
+            placeholder="Search voice samples by title, genre, or tags..."
+            :filters="{
+              category: true,
+              type: true,
+              status: true,
+              dateRange: true,
+              tags: true
+            }"
+            :category-options="genreOptions"
+            :type-options="toneOptions"
+            :status-options="languageOptions"
+            :available-tags="availableTags"
+            :results-count="filteredSamples.length"
+            @search="handleAdvancedSearch"
+            @filter-change="handleFilterChange"
+          />
         </div>
 
         <!-- Stats Overview -->
@@ -288,8 +293,7 @@ import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
-import SearchInput from '@/components/atoms/SearchInput.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
+import AdvancedSearch from '@/components/molecules/AdvancedSearch.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
@@ -317,6 +321,7 @@ const searchQuery = ref('')
 const selectedGenre = ref('')
 const selectedTone = ref('')
 const selectedLanguage = ref('')
+const availableTags = ref(['English', 'Spanish', 'Commercial', 'Narration', 'Male', 'Female', 'Animation', 'Video Game'])
 
 // Mock data
 const samples = ref<VoiceSample[]>(mockData.voiceSamples)
@@ -391,8 +396,15 @@ const toggleView = () => {
   viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
 }
 
-const handleSearch = () => {
-  // Search is handled by computed property
+const handleAdvancedSearch = (query: string, filters: any) => {
+  searchQuery.value = query
+  // Handle advanced search logic here
+  console.log('Advanced search:', { query, filters })
+}
+
+const handleFilterChange = (filters: any) => {
+  // Handle filter changes
+  console.log('Filter change:', filters)
 }
 
 const formatDuration = (seconds: number) => {

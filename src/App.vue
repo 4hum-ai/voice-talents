@@ -3,6 +3,12 @@
   <GlobalProgressBar />
   <ToastContainer />
   <GlobalUploadBar />
+  <OnboardingFlow
+    :show="showOnboarding"
+    @complete="completeOnboarding"
+    @skip="skipOnboarding"
+    @close="closeOnboarding"
+  />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
       <component :is="Component" :key="route.path" />
@@ -24,12 +30,42 @@ import ToastContainer from '@/components/organisms/ToastContainer.vue'
 import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue'
 import GlobalProgressBar from '@/components/organisms/GlobalProgressBar.vue'
 import GlobalUploadBar from '@/components/organisms/GlobalUploadBar.vue'
+import OnboardingFlow from '@/components/organisms/OnboardingFlow.vue'
 
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useUiConfig } from '@/composables/useUiConfig'
+import { useToast } from '@/composables/useToast'
+
 const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
 
 const { state: uiState } = useUiConfig()
+const { success } = useToast()
+
 const isBootLoading = computed(() => !uiState.initialized || uiState.loading)
+const showOnboarding = ref(false)
+
+const completeOnboarding = () => {
+  showOnboarding.value = false
+  success('Welcome to VoiceAct! Your profile is ready to go.')
+}
+
+const skipOnboarding = () => {
+  showOnboarding.value = false
+}
+
+const closeOnboarding = () => {
+  showOnboarding.value = false
+}
+
+onMounted(() => {
+  // Check if user has completed onboarding
+  const hasCompletedOnboarding = localStorage.getItem('voiceact-onboarding-completed')
+  if (!hasCompletedOnboarding) {
+    // Show onboarding after a short delay
+    setTimeout(() => {
+      showOnboarding.value = true
+    }, 1000)
+  }
+})
 </script>

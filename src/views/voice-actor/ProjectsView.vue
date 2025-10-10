@@ -41,22 +41,25 @@
 
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-7xl mx-auto">
-          <!-- Filters and Search -->
-          <div class="mb-8">
-            <div class="flex flex-col sm:flex-row gap-4">
-              <div class="flex-1">
-                <SearchInput v-model="searchQuery" placeholder="Search projects by title, client, or studio..."
-                  @update:model-value="handleSearch" />
-              </div>
-              <div class="flex gap-2">
-                <SelectInput v-model="selectedStatus" :options="statusOptions" placeholder="All Statuses"
-                  class="w-40" />
-                <SelectInput v-model="selectedType" :options="typeOptions" placeholder="All Types" class="w-40" />
-                <SelectInput v-model="selectedPriority" :options="priorityOptions" placeholder="All Priorities"
-                  class="w-40" />
-              </div>
-            </div>
-          </div>
+        <!-- Enhanced Search and Filters -->
+        <div class="mb-8">
+          <AdvancedSearch
+            placeholder="Search projects by title, client, or studio..."
+            :filters="{
+              category: true,
+              type: true,
+              status: true,
+              dateRange: true,
+              tags: false
+            }"
+            :category-options="statusOptions"
+            :type-options="typeOptions"
+            :status-options="priorityOptions"
+            :results-count="filteredProjects.length"
+            @search="handleAdvancedSearch"
+            @filter-change="handleFilterChange"
+          />
+        </div>
 
           <!-- Stats Overview -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -294,8 +297,7 @@ import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
-import SearchInput from '@/components/atoms/SearchInput.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
+import AdvancedSearch from '@/components/molecules/AdvancedSearch.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
@@ -396,8 +398,15 @@ const toggleView = () => {
   viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
 }
 
-const handleSearch = () => {
-  // Search is handled by computed property
+const handleAdvancedSearch = (query: string, filters: any) => {
+  searchQuery.value = query
+  // Handle advanced search logic here
+  console.log('Advanced search:', { query, filters })
+}
+
+const handleFilterChange = (filters: any) => {
+  // Handle filter changes
+  console.log('Filter change:', filters)
 }
 
 const formatDate = (dateString: string) => {
