@@ -3,7 +3,7 @@
     :class="[
       'bg-card border-border flex flex-col border-r transition-all duration-300 ease-in-out',
       collapsed ? 'w-16' : 'w-72',
-      fixed ? 'fixed top-0 left-0 z-30 h-screen' : 'relative h-full',
+      fixed ? 'fixed top-0 left-0 z-30 h-screen' : 'relative h-screen',
     ]"
   >
     <!-- Header -->

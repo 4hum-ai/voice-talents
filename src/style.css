@@ -171,22 +171,22 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-black dark:text-white;
+    @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
   * {
-    @apply border-gray-800;
+    @apply border-border;
   }
 
   /* Netflix-style focus styles */
   *:focus {
-    @apply ring-2 ring-red-600 ring-offset-2 ring-offset-black outline-none;
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-background outline-none;
   }
 
   /* Custom selection */
   ::selection {
-    @apply bg-red-600 text-white;
+    @apply bg-primary text-primary-foreground;
   }
 }
 
