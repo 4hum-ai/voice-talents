@@ -8,7 +8,7 @@
       <!-- Header -->
       <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center justify-between h-16">
           <div class="flex items-center">
             <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
               <ArrowLeftIcon class="h-4 w-4" />
@@ -33,6 +33,7 @@
               Refresh
             </Button>
           </div>
+        </div>
         </div>
       </div>
       </div>
