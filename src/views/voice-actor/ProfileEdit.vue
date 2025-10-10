@@ -43,45 +43,22 @@
               <h2 class="text-lg font-semibold text-foreground mb-6">
                 Basic Information
               </h2>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormInput
-                  v-model="profile.displayName"
-                  label="Display Name"
-                  placeholder="Enter your display name"
-                  required
-                />
-                
-                <FormInput
-                  v-model="profile.email"
-                  label="Email"
-                  type="email"
-                  placeholder="Enter your email"
-                  required
-                />
-                
+                <FormInput v-model="profile.displayName" label="Display Name" placeholder="Enter your display name"
+                  required />
+
+                <FormInput v-model="profile.email" label="Email" type="email" placeholder="Enter your email" required />
+
                 <div class="md:col-span-2">
-                  <Textarea
-                    v-model="profile.bio"
-                    label="Bio"
-                    placeholder="Tell us about yourself and your voice acting experience"
-                    :rows="4"
-                  />
+                  <Textarea v-model="profile.bio" label="Bio"
+                    placeholder="Tell us about yourself and your voice acting experience" :rows="4" />
                 </div>
-                
-                <FormInput
-                  v-model="profile.hourlyRate"
-                  label="Hourly Rate ($)"
-                  type="number"
-                  placeholder="150"
-                />
-                
-                <FormInput
-                  v-model="profile.minProjectFee"
-                  label="Minimum Project Fee ($)"
-                  type="number"
-                  placeholder="300"
-                />
+
+                <FormInput v-model="profile.hourlyRate" label="Hourly Rate ($)" type="number" placeholder="150" />
+
+                <FormInput v-model="profile.minProjectFee" label="Minimum Project Fee ($)" type="number"
+                  placeholder="300" />
               </div>
             </div>
           </Card>
@@ -92,46 +69,35 @@
               <h2 class="text-lg font-semibold text-foreground mb-6">
                 Voice Characteristics
               </h2>
-              
+
               <div class="space-y-6">
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Voice Characteristics
                   </label>
-                  <TagInput
-                    v-model="profile.voiceCharacteristics"
-                    placeholder="Add voice characteristics (e.g., warm, energetic, authoritative)"
-                  />
+                  <TagInput v-model="profile.voiceCharacteristics"
+                    placeholder="Add voice characteristics (e.g., warm, energetic, authoritative)" />
                 </div>
-                
+
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Languages
                   </label>
-                  <TagInput
-                    v-model="profile.languages"
-                    placeholder="Add languages you speak"
-                  />
+                  <TagInput v-model="profile.languages" placeholder="Add languages you speak" />
                 </div>
-                
+
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Accents
                   </label>
-                  <TagInput
-                    v-model="profile.accents"
-                    placeholder="Add accents you can perform"
-                  />
+                  <TagInput v-model="profile.accents" placeholder="Add accents you can perform" />
                 </div>
-                
+
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Genres
                   </label>
-                  <TagInput
-                    v-model="profile.genres"
-                    placeholder="Add genres you specialize in"
-                  />
+                  <TagInput v-model="profile.genres" placeholder="Add genres you specialize in" />
                 </div>
               </div>
             </div>
@@ -143,37 +109,22 @@
               <h2 class="text-lg font-semibold text-foreground mb-6">
                 Social Links & Website
               </h2>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormInput
-                  v-model="profile.socialLinks.website"
-                  label="Website"
-                  placeholder="https://yourwebsite.com"
-                />
-                
-                <FormInput
-                  v-model="profile.socialLinks.linkedin"
-                  label="LinkedIn"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                />
-                
-                <FormInput
-                  v-model="profile.socialLinks.twitter"
-                  label="Twitter"
-                  placeholder="https://twitter.com/yourhandle"
-                />
-                
-                <FormInput
-                  v-model="profile.socialLinks.instagram"
-                  label="Instagram"
-                  placeholder="https://instagram.com/yourhandle"
-                />
-                
-                <FormInput
-                  v-model="profile.socialLinks.youtube"
-                  label="YouTube"
-                  placeholder="https://youtube.com/yourchannel"
-                />
+                <FormInput v-model="profile.socialLinks.website" label="Website"
+                  placeholder="https://yourwebsite.com" />
+
+                <FormInput v-model="profile.socialLinks.linkedin" label="LinkedIn"
+                  placeholder="https://linkedin.com/in/yourprofile" />
+
+                <FormInput v-model="profile.socialLinks.twitter" label="Twitter"
+                  placeholder="https://twitter.com/yourhandle" />
+
+                <FormInput v-model="profile.socialLinks.instagram" label="Instagram"
+                  placeholder="https://instagram.com/yourhandle" />
+
+                <FormInput v-model="profile.socialLinks.youtube" label="YouTube"
+                  placeholder="https://youtube.com/yourchannel" />
               </div>
             </div>
           </Card>
@@ -184,7 +135,7 @@
               <h2 class="text-lg font-semibold text-foreground mb-6">
                 Profile Settings
               </h2>
-              
+
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div>
@@ -197,7 +148,7 @@
                   </div>
                   <Checkbox v-model="profile.isPublic" />
                 </div>
-                
+
                 <div class="flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-medium text-foreground">
@@ -209,16 +160,13 @@
                   </div>
                   <Checkbox v-model="profile.isVerified" />
                 </div>
-                
+
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Availability Status
                   </label>
-                  <SelectInput
-                    v-model="profile.availabilityStatus"
-                    :options="availabilityOptions"
-                    placeholder="Select availability"
-                  />
+                  <SelectInput v-model="profile.availabilityStatus" :options="availabilityOptions"
+                    placeholder="Select availability" />
                 </div>
               </div>
             </div>
@@ -262,4 +210,3 @@ const saveProfile = () => {
   router.push('/profile')
 }
 </script>
-

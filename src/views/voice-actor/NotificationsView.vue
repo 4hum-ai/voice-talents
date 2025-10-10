@@ -9,184 +9,134 @@
       <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
-          <div class="flex items-center">
-            <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-              <ArrowLeftIcon class="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 class="text-2xl font-bold text-foreground">
-                Notifications
-              </h1>
-              <p class="text-sm text-muted-foreground">
-                Stay updated with your voice acting projects and opportunities
-              </p>
+            <div class="flex items-center">
+              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
+                <ArrowLeftIcon class="h-4 w-4" />
+              </Button>
+              <div>
+                <h1 class="text-2xl font-bold text-foreground">
+                  Notifications
+                </h1>
+                <p class="text-sm text-muted-foreground">
+                  Stay updated with your voice acting projects and opportunities
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-4">
+              <ThemeToggle />
+              <Button variant="outline" size="sm" @click="markAllAsRead" :disabled="unreadCount === 0">
+                <CheckIcon class="h-4 w-4 mr-2" />
+                Mark All Read
+              </Button>
+              <Button variant="primary" size="sm" @click="refreshNotifications">
+                <RefreshIcon class="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
             </div>
           </div>
-          <div class="flex items-center space-x-4">
-            <ThemeToggle />
-            <Button
-              variant="outline"
-              size="sm"
-              @click="markAllAsRead"
-              :disabled="unreadCount === 0"
-            >
-              <CheckIcon class="h-4 w-4 mr-2" />
-              Mark All Read
-            </Button>
-            <Button variant="primary" size="sm" @click="refreshNotifications">
-              <RefreshIcon class="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
-        </div>
         </div>
       </div>
-      </div>
+
 
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-4xl mx-auto">
-      <!-- Stats Overview -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <MetricCard
-          title="Unread"
-          :value="unreadCount"
-          icon="mdi:bell"
-          color="red"
-        />
-        <MetricCard
-          title="Today"
-          :value="todayCount"
-          icon="mdi:calendar-today"
-          color="blue"
-        />
-        <MetricCard
-          title="This Week"
-          :value="weekCount"
-          icon="mdi:calendar-week"
-          color="green"
-        />
-      </div>
+          <!-- Stats Overview -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <MetricCard title="Unread" :value="unreadCount" icon="mdi:bell" color="red" />
+            <MetricCard title="Today" :value="todayCount" icon="mdi:calendar-today" color="blue" />
+            <MetricCard title="This Week" :value="weekCount" icon="mdi:calendar-week" color="green" />
+          </div>
 
-      <!-- Filter Tabs -->
-      <div class="mb-6">
-        <TabNavigation
-          :tabs="filterTabs"
-          :active-tab="activeFilter"
-          @tab-change="setActiveFilter"
-        />
-      </div>
+          <!-- Filter Tabs -->
+          <div class="mb-6">
+            <TabNavigation :tabs="filterTabs" :active-tab="activeFilter" @tab-change="setActiveFilter" />
+          </div>
 
-      <!-- Notifications List -->
-      <div v-if="filteredNotifications.length === 0" class="text-center py-12">
-        <BellIcon class="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 class="text-lg font-medium text-foreground mb-2">
-          No notifications found
-        </h3>
-        <p class="text-muted-foreground">
-          {{ getEmptyStateMessage() }}
-        </p>
-      </div>
+          <!-- Notifications List -->
+          <div v-if="filteredNotifications.length === 0" class="text-center py-12">
+            <BellIcon class="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 class="text-lg font-medium text-foreground mb-2">
+              No notifications found
+            </h3>
+            <p class="text-muted-foreground">
+              {{ getEmptyStateMessage() }}
+            </p>
+          </div>
 
-      <div v-else class="space-y-4">
-        <div
-          v-for="notification in filteredNotifications"
-          :key="notification.id"
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
-          :class="{ 'ring-2 ring-blue-500': !notification.isRead }"
-        >
-          <div class="p-6">
-            <div class="flex items-start space-x-4">
-              <!-- Notification Icon -->
-              <div class="flex-shrink-0">
-                <div
-                  class="w-10 h-10 rounded-full flex items-center justify-center"
-                  :class="getNotificationIconClass(notification.type)"
-                >
-                  <Icon
-                    :name="getNotificationIcon(notification.type)"
-                    class="h-5 w-5"
-                    :class="getNotificationIconColor(notification.type)"
-                  />
+          <div v-else class="space-y-4">
+            <div v-for="notification in filteredNotifications" :key="notification.id"
+              class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
+              :class="{ 'ring-2 ring-blue-500': !notification.isRead }">
+              <div class="p-6">
+                <div class="flex items-start space-x-4">
+                  <!-- Notification Icon -->
+                  <div class="flex-shrink-0">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                      :class="getNotificationIconClass(notification.type)">
+                      <Icon :name="getNotificationIcon(notification.type)" class="h-5 w-5"
+                        :class="getNotificationIconColor(notification.type)" />
+                    </div>
+                  </div>
+
+                  <!-- Notification Content -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between">
+                      <div class="flex-1">
+                        <h3 class="text-sm font-medium text-foreground">
+                          {{ notification.title }}
+                        </h3>
+                        <p class="text-sm text-muted-foreground mt-1">
+                          {{ notification.message }}
+                        </p>
+
+                        <!-- Notification Metadata -->
+                        <div class="mt-2 flex items-center space-x-4 text-xs text-muted-foreground">
+                          <span class="flex items-center">
+                            <ClockIcon class="h-3 w-3 mr-1" />
+                            {{ formatTimeAgo(notification.createdAt) }}
+                          </span>
+                          <Chip :variant="getPriorityVariant(notification.priority)" size="sm">
+                            {{ notification.priority }}
+                          </Chip>
+                        </div>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="flex items-center space-x-2 ml-4">
+                        <div v-if="!notification.isRead" class="w-2 h-2 bg-blue-500 rounded-full" />
+                        <ActionsMenu :items="getNotificationActions(notification)" size="sm"
+                          @select="(action) => handleNotificationAction(action, notification)" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Notification Content -->
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between">
-                  <div class="flex-1">
-                    <h3 class="text-sm font-medium text-foreground">
-                      {{ notification.title }}
-                    </h3>
-                    <p class="text-sm text-muted-foreground mt-1">
-                      {{ notification.message }}
-                    </p>
-                    
-                    <!-- Notification Metadata -->
-                    <div class="mt-2 flex items-center space-x-4 text-xs text-muted-foreground">
-                      <span class="flex items-center">
-                        <ClockIcon class="h-3 w-3 mr-1" />
-                        {{ formatTimeAgo(notification.createdAt) }}
-                      </span>
-                      <Chip
-                        :variant="getPriorityVariant(notification.priority)"
-                        size="sm"
-                      >
-                        {{ notification.priority }}
-                      </Chip>
-                    </div>
-                  </div>
-                  
-                  <!-- Actions -->
-                  <div class="flex items-center space-x-2 ml-4">
-                    <div v-if="!notification.isRead" class="w-2 h-2 bg-blue-500 rounded-full" />
-                    <ActionsMenu
-                      :items="getNotificationActions(notification)"
-                      size="sm"
-                      @select="(action) => handleNotificationAction(action, notification)"
-                    />
-                  </div>
+              <!-- Action Buttons -->
+              <div v-if="notification.actionUrl" class="px-6 pb-6">
+                <div class="flex items-center space-x-3">
+                  <Button variant="primary" size="sm" @click="handleNotificationClick(notification)">
+                    <ArrowRightIcon class="h-4 w-4 mr-2" />
+                    View Details
+                  </Button>
+                  <Button variant="outline" size="sm" @click="markAsRead(notification)" v-if="!notification.isRead">
+                    <CheckIcon class="h-4 w-4 mr-2" />
+                    Mark as Read
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div v-if="notification.actionUrl" class="px-6 pb-6">
-            <div class="flex items-center space-x-3">
-              <Button
-                variant="primary"
-                size="sm"
-                @click="handleNotificationClick(notification)"
-              >
-                <ArrowRightIcon class="h-4 w-4 mr-2" />
-                View Details
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                @click="markAsRead(notification)"
-                v-if="!notification.isRead"
-              >
-                <CheckIcon class="h-4 w-4 mr-2" />
-                Mark as Read
-              </Button>
-            </div>
+          <!-- Load More -->
+          <div v-if="hasMoreNotifications" class="mt-8 text-center">
+            <Button variant="outline" @click="loadMoreNotifications" :loading="isLoadingMore">
+              <PlusIcon class="h-4 w-4 mr-2" />
+              Load More
+            </Button>
           </div>
         </div>
       </div>
-
-      <!-- Load More -->
-      <div v-if="hasMoreNotifications" class="mt-8 text-center">
-        <Button
-          variant="outline"
-          @click="loadMoreNotifications"
-          :loading="isLoadingMore"
-        >
-          <PlusIcon class="h-4 w-4 mr-2" />
-          Load More
-        </Button>
-      </div>
-    </div>
     </div>
   </div>
 </template>
@@ -198,7 +148,6 @@ import type { Notification } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
-import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
@@ -209,14 +158,10 @@ import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import CheckIcon from '~icons/mdi/check'
 import RefreshIcon from '~icons/mdi/refresh'
 import BellIcon from '~icons/mdi/bell'
-import CalendarTodayIcon from '~icons/mdi/calendar-today'
-import CalendarWeekIcon from '~icons/mdi/calendar-week'
 import ClockIcon from '~icons/mdi/clock'
 import ArrowRightIcon from '~icons/mdi/arrow-right'
 import PlusIcon from '~icons/mdi/plus'
-import TrashIcon from '~icons/mdi/trash-can'
-import ArchiveIcon from '~icons/mdi/archive'
-import FlagIcon from '~icons/mdi/flag'
+
 
 const router = useRouter()
 
@@ -244,7 +189,7 @@ const filteredNotifications = computed(() => {
       filtered = filtered.filter(n => !n.isRead)
       break
     case 'project':
-      filtered = filtered.filter(n => 
+      filtered = filtered.filter(n =>
         n.type.includes('project') || n.type.includes('assignment') || n.type.includes('recording')
       )
       break
@@ -262,14 +207,14 @@ const filteredNotifications = computed(() => {
   return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 })
 
-const unreadCount = computed(() => 
+const unreadCount = computed(() =>
   notifications.value.filter(n => !n.isRead).length
 )
 
 const todayCount = computed(() => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  return notifications.value.filter(n => 
+  return notifications.value.filter(n =>
     new Date(n.createdAt) >= today
   ).length
 })
@@ -277,7 +222,7 @@ const todayCount = computed(() => {
 const weekCount = computed(() => {
   const weekAgo = new Date()
   weekAgo.setDate(weekAgo.getDate() - 7)
-  return notifications.value.filter(n => 
+  return notifications.value.filter(n =>
     new Date(n.createdAt) >= weekAgo
   ).length
 })
@@ -441,7 +386,7 @@ const formatTimeAgo = (timestamp: string) => {
   const now = new Date()
   const time = new Date(timestamp)
   const diffInMinutes = Math.floor((now.getTime() - time.getTime()) / (1000 * 60))
-  
+
   if (diffInMinutes < 1) return 'Just now'
   if (diffInMinutes < 60) return `${diffInMinutes}m ago`
   const diffInHours = Math.floor(diffInMinutes / 60)
@@ -462,7 +407,7 @@ const updateFilterCounts = () => {
         tab.count = unreadCount.value
         break
       case 'project':
-        tab.count = notifications.value.filter(n => 
+        tab.count = notifications.value.filter(n =>
           n.type.includes('project') || n.type.includes('assignment') || n.type.includes('recording')
         ).length
         break
