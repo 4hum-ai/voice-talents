@@ -48,7 +48,7 @@
 
               <div
                 :class="[
-                  'group flex w-full items-start gap-3 text-left focus:outline-none',
+                  'flex w-full items-start gap-3 text-left focus:outline-none',
                   itemPadding,
                   item.key === activeItemKey ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                   item.disabled ? 'cursor-not-allowed opacity-50' : '',

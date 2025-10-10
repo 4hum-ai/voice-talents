@@ -8,7 +8,6 @@
       size === 'lg' && 'px-3 py-1 text-sm',
       variant === 'outline' && 'border',
       variant === 'solid' && 'text-white',
-      variant === 'soft' && 'bg-opacity-10',
       customClass,
     ]"
   >

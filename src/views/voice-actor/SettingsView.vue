@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-background flex">
     <VoiceActNavigation />
-    <div class="flex-1 ml-72">
+    <div class="flex-1">
       <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">

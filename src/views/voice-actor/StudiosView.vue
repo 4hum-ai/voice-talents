@@ -4,7 +4,7 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1 ml-72">
+    <div class="flex-1">
       <!-- Header -->
       <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">

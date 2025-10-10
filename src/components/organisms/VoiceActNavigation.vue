@@ -4,7 +4,7 @@
     subtitle="Voice Actor Platform"
     :sections="navigationSections"
     :active-item-id="activeItemId"
-    :fixed="true"
+    :fixed="false"
     :default-collapsed="false"
   >
     <template #header>

@@ -1,13 +1,12 @@
-## Movie Dubie Studio
+# 🎙️ VoiceAct.ai Voice Actor Management App
 
-A studio for movies localization using Voice AI technologies.
+VoiceAct is a modern AI native app that empowers voice actors to manage their professional presence, showcase their voice samples, track ongoing jobs, and collaborate with studios on recording sessions and production tasks.
 
 ### Tech stack
 
 - Vue 3, TypeScript, Vite
-- TailwindCSS, Headless UI
+- TailwindCSS
 - Pinia (state), Vue Router
-- Firebase Auth
 
 ### Development Guidelines
 

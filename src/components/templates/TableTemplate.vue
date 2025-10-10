@@ -12,7 +12,7 @@
             <th
               v-for="column in visibleColumns"
               :key="column.key"
-              class="group px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase transition-colors duration-150 dark:text-gray-400"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase transition-colors duration-150 dark:text-gray-400"
               :class="[
                 column.sortable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
                 column.align ? `text-${column.align}` : 'text-left',
@@ -37,7 +37,7 @@
                     column.sortable ? '' : 'hidden',
                     sortField === column.key
                       ? 'text-gray-700 opacity-100 dark:text-gray-200'
-                      : 'text-gray-400 opacity-0 group-hover:opacity-60 dark:text-gray-500',
+                      : 'text-gray-400 opacity-0 hover:opacity-60 dark:text-gray-500',
                   ]"
                   :style="{
                     transform:

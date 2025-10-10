@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-background flex">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
     <!-- Navigation Sidebar -->
     <VoiceActNavigation />
 
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card shadow-sm border-b border-border">
+      <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
@@ -14,11 +14,11 @@
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-foreground">
-                  Upload Voice Sample
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                  Edit Voice Sample
                 </h1>
-                <p class="text-sm text-muted-foreground">
-                  Add a new voice sample to your portfolio
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                  Update your voice sample information
                 </p>
               </div>
             </div>
@@ -26,8 +26,8 @@
               <Button variant="outline" size="sm" @click="$router.back()">
                 Cancel
               </Button>
-              <Button variant="primary" size="sm" @click="uploadSample" :disabled="!isFormValid">
-                Upload Sample
+              <Button variant="primary" size="sm" @click="saveSample">
+                Save Changes
               </Button>
             </div>
           </div>
@@ -36,10 +36,10 @@
 
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-4xl mx-auto">
-          <!-- Upload Form -->
+          <!-- Sample Information -->
           <Card class="mb-8">
             <div class="p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                 Sample Information
               </h2>
               
@@ -107,34 +107,31 @@
             </div>
           </Card>
 
-          <!-- File Upload -->
+          <!-- Current Audio File -->
           <Card class="mb-8">
             <div class="p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">
-                Audio File
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                Current Audio File
               </h2>
               
-              <FileInput
-                v-model="audioFile"
-                accept="audio/*"
-                label="Upload Audio File"
-                description="Supported formats: MP3, WAV, OGG (Max 50MB)"
-                @change="handleFileChange"
-              />
-              
-              <div v-if="audioFile" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="flex items-center space-x-3">
-                  <MicrophoneIcon class="h-8 w-8 text-gray-400" />
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-foreground">
-                      {{ audioFile.name }}
-                    </p>
-                    <p class="text-sm text-muted-foreground">
-                      {{ formatFileSize(audioFile.size) }}
-                    </p>
-                  </div>
-                  <Button variant="ghost" size="sm" @click="removeFile">
-                    <XIcon class="h-4 w-4" />
+              <div class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <MicrophoneIcon class="h-8 w-8 text-gray-400" />
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ sample.title }}.mp3
+                  </p>
+                  <p class="text-sm text-gray-600 dark:text-gray-300">
+                    Duration: {{ formatDuration(sample.duration || 0) }}
+                  </p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" @click="playCurrentAudio">
+                    <PlayIcon class="h-4 w-4 mr-2" />
+                    Play
+                  </Button>
+                  <Button variant="outline" size="sm" @click="replaceAudio">
+                    <UploadIcon class="h-4 w-4 mr-2" />
+                    Replace
                   </Button>
                 </div>
               </div>
@@ -144,17 +141,17 @@
           <!-- Privacy Settings -->
           <Card>
             <div class="p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                 Privacy Settings
               </h2>
               
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-foreground">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                       Public Sample
                     </h3>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
                       Make this sample visible to clients and casting directors
                     </p>
                   </div>
@@ -163,10 +160,10 @@
                 
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-foreground">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                       Downloadable
                     </h3>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
                       Allow clients to download this sample
                     </p>
                   </div>
@@ -182,8 +179,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
@@ -191,29 +188,19 @@ import FormInput from '@/components/atoms/FormInput.vue'
 import Textarea from '@/components/atoms/Textarea.vue'
 import TagInput from '@/components/atoms/TagInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
-import FileInput from '@/components/atoms/FileInput.vue'
 import Checkbox from '@/components/atoms/Checkbox.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import MicrophoneIcon from '~icons/mdi/microphone'
-import XIcon from '~icons/mdi/close'
+import PlayIcon from '~icons/mdi/play'
+import UploadIcon from '~icons/mdi/upload'
 import type { VoiceSample } from '@/types/voice-actor'
+import { mockData } from '@/data/mock-voice-actor-data'
 
+const route = useRoute()
 const router = useRouter()
 
-// Form data
-const sample = ref<Partial<VoiceSample>>({
-  title: '',
-  description: '',
-  genre: [],
-  language: '',
-  accent: '',
-  voiceType: '',
-  tags: [],
-  isPublic: true,
-  isDownloadable: true
-})
-
-const audioFile = ref<File | null>(null)
+const sampleId = computed(() => route.params.id as string)
+const sample = ref<VoiceSample | null>(null)
 
 const languageOptions = [
   { value: 'English (US)', label: 'English (US)' },
@@ -241,34 +228,36 @@ const voiceTypeOptions = [
   { value: 'documentary', label: 'Documentary' }
 ]
 
-const isFormValid = computed(() => {
-  return sample.value.title && 
-         sample.value.language && 
-         audioFile.value
+onMounted(() => {
+  // In real app, this would fetch from API
+  const foundSample = mockData.voiceSamples.find(s => s.id === sampleId.value)
+  if (foundSample) {
+    sample.value = { ...foundSample }
+  }
 })
 
-const handleFileChange = (file: File) => {
-  audioFile.value = file
+const formatDuration = (seconds: number) => {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-const removeFile = () => {
-  audioFile.value = null
+const playCurrentAudio = () => {
+  // In real app, this would play the current audio
+  console.log('Playing current audio for sample:', sample.value?.id)
 }
 
-const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+const replaceAudio = () => {
+  // In real app, this would open file picker to replace audio
+  console.log('Replacing audio for sample:', sample.value?.id)
 }
 
-const uploadSample = () => {
-  if (!isFormValid.value) return
+const saveSample = () => {
+  if (!sample.value) return
   
-  // In real app, this would upload to API
-  console.log('Uploading sample:', { sample: sample.value, file: audioFile.value })
-  router.push('/samples')
+  // In real app, this would save to API
+  console.log('Saving sample:', sample.value)
+  router.push(`/samples/${sampleId.value}`)
 }
 </script>
 
