@@ -113,21 +113,21 @@ const buttonClasses = computed(() => {
   // Variant classes
   const variants = {
     default:
-      'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600',
+      'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary',
     primary:
-      'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-600 dark:hover:bg-primary-700',
+      'bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary',
     secondary:
-      'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700',
+      'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary',
     danger:
-      'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 dark:bg-red-600 dark:hover:bg-red-700',
+      'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive',
     success:
-      'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 dark:bg-green-600 dark:hover:bg-green-700',
+      'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
     warning:
-      'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500 dark:bg-yellow-600 dark:hover:bg-yellow-700',
+      'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500',
     ghost:
-      'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-800',
+      'bg-transparent text-foreground hover:bg-accent focus:ring-accent',
     outline:
-      'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800',
+      'bg-transparent border border-border text-foreground hover:bg-accent focus:ring-accent',
   }
 
   // Shape classes
