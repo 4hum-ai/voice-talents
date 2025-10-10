@@ -233,6 +233,8 @@ const formatCount = (n: number | null | undefined): string => {
 }
 
 const visibleResources = computed(() => {
+  if (!adminResources.value) return []
+  
   const q = filter.value.trim().toLowerCase()
   const mods = q
     ? adminResources.value.filter((m) => {
@@ -252,7 +254,7 @@ const visibleResources = computed(() => {
 const loadCounts = async () => {
   loadingCounts.value = true
   try {
-    if (adminResources.value.length === 0) {
+    if (!adminResources.value || adminResources.value.length === 0) {
       try {
         adminResources.value = await uiConfig.listResources()
       } catch {
