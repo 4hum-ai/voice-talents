@@ -23,6 +23,7 @@
               </div>
             </div>
             <div class="flex items-center space-x-4">
+              <ThemeToggle />
               <Button variant="outline" size="sm" @click="$router.back()">
                 Cancel
               </Button>
@@ -236,6 +237,7 @@ import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import FormInput from '@/components/atoms/FormInput.vue'
 import Textarea from '@/components/atoms/Textarea.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import TagInput from '@/components/atoms/TagInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import Checkbox from '@/components/atoms/Checkbox.vue'

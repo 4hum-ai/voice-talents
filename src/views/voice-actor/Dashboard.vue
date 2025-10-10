@@ -17,6 +17,7 @@
               </div>
             </div>
             <div class="flex items-center space-x-4">
+              <ThemeToggle />
               <Button variant="secondary" size="sm" @click="$router.push('/notifications')">
                 <BellIcon class="h-4 w-4 mr-2" />
                 Notifications
@@ -268,6 +269,7 @@ import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import BellIcon from '~icons/mdi/bell'
 import AccountIcon from '~icons/mdi/account'
 
