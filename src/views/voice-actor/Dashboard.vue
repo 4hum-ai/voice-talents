@@ -288,7 +288,7 @@ const recentProjects = computed(() =>
 )
 
 const recentMessages = computed(() => 
-  mockData.projectMessages.slice(0, 3)
+  (mockData.projectMessages || []).slice(0, 3)
 )
 
 // Helper functions - Updated with error handling
