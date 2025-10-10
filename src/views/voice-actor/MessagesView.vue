@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+  <div class="min-h-screen bg-background flex">
     <VoiceActNavigation />
     <div class="flex-1">
-      <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
@@ -10,10 +10,10 @@
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold text-foreground">
                   Messages
                 </h1>
-                <p class="text-sm text-gray-600 dark:text-gray-300">
+                <p class="text-sm text-muted-foreground">
                   Communication with clients and studios
                 </p>
               </div>
@@ -25,10 +25,10 @@
         <div class="max-w-4xl mx-auto">
           <Card>
             <div class="p-6">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 class="text-lg font-semibold text-foreground mb-4">
                 Messages
               </h2>
-              <p class="text-gray-600 dark:text-gray-300">
+              <p class="text-muted-foreground">
                 View and manage your conversations with clients and studios.
               </p>
             </div>
