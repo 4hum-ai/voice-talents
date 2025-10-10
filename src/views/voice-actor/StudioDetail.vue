@@ -10,10 +10,10 @@
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold text-foreground">
                   {{ studio?.name || 'Studio Details' }}
                 </h1>
-                <p class="text-sm text-gray-600 dark:text-gray-300">
+                <p class="text-sm text-muted-foreground">
                   Studio information and collaboration history
                 </p>
               </div>

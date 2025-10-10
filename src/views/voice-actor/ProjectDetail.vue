@@ -14,10 +14,10 @@
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold text-foreground">
                   {{ project?.title || 'Project Details' }}
                 </h1>
-                <p class="text-sm text-gray-600 dark:text-gray-300">
+                <p class="text-sm text-muted-foreground">
                   Project information and progress
                 </p>
               </div>

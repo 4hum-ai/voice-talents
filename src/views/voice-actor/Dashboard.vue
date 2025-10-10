@@ -10,10 +10,16 @@
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
-              <div class="flex-shrink-0">
+              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
+                <ArrowLeftIcon class="h-4 w-4" />
+              </Button>
+              <div>
                 <h1 class="text-2xl font-bold text-foreground">
                   Dashboard
                 </h1>
+                <p class="text-sm text-muted-foreground">
+                  Welcome back! Here's what's happening with your voice acting career today.
+                </p>
               </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -272,6 +278,7 @@ import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import BellIcon from '~icons/mdi/bell'
 import AccountIcon from '~icons/mdi/account'
+import ArrowLeftIcon from '~icons/mdi/arrow-left'
 
 const router = useRouter()
 
