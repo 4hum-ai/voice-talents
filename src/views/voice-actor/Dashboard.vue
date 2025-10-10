@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+  <div class="min-h-screen bg-background flex">
     <!-- Navigation Sidebar -->
     <VoiceActNavigation />
 
     <!-- Main Content -->
     <div class="flex-1 ml-72">
       <!-- Header -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold text-foreground">
                   Dashboard
                 </h1>
               </div>
@@ -36,10 +36,10 @@
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <!-- Welcome Section -->
         <div class="mb-8">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 class="text-3xl font-bold text-foreground mb-2">
             Welcome back, {{ currentActor?.displayName }}! 👋
           </h2>
-          <p class="text-gray-600 dark:text-gray-300">
+          <p class="text-muted-foreground">
             Here's what's happening with your voice acting career today.
           </p>
         </div>
