@@ -1,8 +1,13 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <!-- Header -->
-    <div class="bg-card shadow-sm border-b border-border">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-background flex">
+    <!-- Navigation Sidebar -->
+    <VoiceActNavigation />
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-72">
+      <!-- Header -->
+      <div class="bg-card shadow-sm border-b border-border">
+        <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center">
             <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
@@ -32,7 +37,8 @@
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto">
       <!-- Filters and Search -->
       <div class="mb-8">
         <div class="flex flex-col sm:flex-row gap-4">
@@ -321,6 +327,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -336,6 +343,7 @@ import Chip from '@/components/atoms/Chip.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import ViewGridIcon from '~icons/mdi/view-grid'
 import ViewListIcon from '~icons/mdi/view-list'

@@ -1,8 +1,13 @@
 <template>
-  <div class="min-h-screen bg-background">
-    <!-- Header -->
-    <div class="bg-card shadow-sm border-b border-border">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-background flex">
+    <!-- Navigation Sidebar -->
+    <VoiceActNavigation />
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-72">
+      <!-- Header -->
+      <div class="bg-card shadow-sm border-b border-border">
+        <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center">
             <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
@@ -36,7 +41,8 @@
       </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-4xl mx-auto">
       <!-- Stats Overview -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <MetricCard
@@ -179,6 +185,7 @@
         </Button>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -194,6 +201,7 @@ import Chip from '@/components/atoms/Chip.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import CheckIcon from '~icons/mdi/check'
 import RefreshIcon from '~icons/mdi/refresh'
