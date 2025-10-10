@@ -23,6 +23,7 @@
             </div>
           </div>
           <div class="flex items-center space-x-4">
+            <ThemeToggle />
             <Button variant="outline" size="sm" @click="toggleView">
               <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4 mr-2" />
               <ViewListIcon v-else class="h-4 w-4 mr-2" />
@@ -344,6 +345,7 @@ import Chip from '@/components/atoms/Chip.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import ViewGridIcon from '~icons/mdi/view-grid'

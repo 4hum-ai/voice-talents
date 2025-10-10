@@ -18,6 +18,9 @@
                 </p>
               </div>
             </div>
+            <div class="flex items-center space-x-4">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>
@@ -43,6 +46,7 @@
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 </script>
 

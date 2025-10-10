@@ -23,6 +23,7 @@
             </div>
           </div>
           <div class="flex items-center space-x-4">
+            <ThemeToggle />
             <Button
               variant="outline"
               size="sm"
@@ -202,6 +203,7 @@ import Chip from '@/components/atoms/Chip.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import CheckIcon from '~icons/mdi/check'
