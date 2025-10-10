@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+  <div class="min-h-screen bg-background flex">
     <!-- Navigation Sidebar -->
     <VoiceActNavigation />
 
     <!-- Main Content -->
     <div class="flex-1 ml-72">
       <!-- Header -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
@@ -14,15 +14,16 @@
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-2xl font-bold text-foreground">
                   Studios
                 </h1>
-                <p class="text-sm text-gray-600 dark:text-gray-300">
+                <p class="text-sm text-muted-foreground">
                   Browse recording studios and collaborators
                 </p>
               </div>
             </div>
             <div class="flex items-center space-x-4">
+              <ThemeToggle />
               <Button variant="outline" size="sm" @click="toggleView">
                 <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4 mr-2" />
                 <ViewListIcon v-else class="h-4 w-4 mr-2" />
@@ -66,10 +67,10 @@
           <!-- Studios Grid/List -->
           <div v-if="studios.length === 0" class="text-center py-12">
             <StudioIcon class="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-medium text-foreground mb-2">
               No studios found
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-muted-foreground">
               Check back later for new studio partnerships
             </p>
           </div>
@@ -85,10 +86,10 @@
               <div class="p-6">
                 <div class="flex items-start justify-between mb-4">
                   <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 class="text-lg font-semibold text-foreground">
                       {{ studio.name }}
                     </h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                    <p class="text-sm text-muted-foreground">
                       {{ studio.location }}
                     </p>
                   </div>
@@ -117,7 +118,7 @@
                     </div>
                   </div>
                   
-                  <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
+                  <div class="flex items-center justify-between text-sm text-muted-foreground">
                     <span>{{ studio.projects?.length || 0 }} projects</span>
                     <span>{{ studio.engineers?.length || 0 }} engineers</span>
                   </div>
@@ -167,16 +168,16 @@
                           </div>
                         </div>
                         <div class="ml-4">
-                          <div class="text-sm font-medium text-gray-900 dark:text-white">
+                          <div class="text-sm font-medium text-foreground">
                             {{ studio.name }}
                           </div>
-                          <div class="text-sm text-gray-500 dark:text-gray-400">
+                          <div class="text-sm text-muted-foreground">
                             {{ studio.contactEmail }}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {{ studio.location }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -193,7 +194,7 @@
                         </span>
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {{ studio.projects?.length || 0 }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -239,6 +240,7 @@ import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import ViewGridIcon from '~icons/mdi/view-grid'
 import ViewListIcon from '~icons/mdi/view-list'
