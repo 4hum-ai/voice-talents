@@ -141,6 +141,27 @@
 
   --font-family-netflix: 'Netflix Sans', Arial, sans-serif;
   --font-family-sans: 'Inter', system-ui, sans-serif;
+
+  /* Semantic color tokens for components */
+  --color-card: #ffffff;
+  --color-card-foreground: #111827;
+  --color-border: #e5e7eb;
+  --color-input: #ffffff;
+  --color-primary: #8b5cf6;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f3f4f6;
+  --color-secondary-foreground: #111827;
+  --color-muted: #f9fafb;
+  --color-muted-foreground: #6b7280;
+  --color-accent: #f3f4f6;
+  --color-accent-foreground: #111827;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-ring: #8b5cf6;
+  --color-background: #ffffff;
+  --color-foreground: #111827;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #111827;
 }
 
 /* Base styles */
@@ -394,6 +415,29 @@
     background-color: #000000;
     color: #ffffff;
   }
+
+  /* Dark mode semantic color tokens */
+  .dark {
+    --color-card: #1f2937;
+    --color-card-foreground: #ffffff;
+    --color-border: #374151;
+    --color-input: #1f2937;
+    --color-primary: #8b5cf6;
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #374151;
+    --color-secondary-foreground: #ffffff;
+    --color-muted: #374151;
+    --color-muted-foreground: #9ca3af;
+    --color-accent: #374151;
+    --color-accent-foreground: #ffffff;
+    --color-destructive: #ef4444;
+    --color-destructive-foreground: #ffffff;
+    --color-ring: #8b5cf6;
+    --color-background: #000000;
+    --color-foreground: #ffffff;
+    --color-popover: #1f2937;
+    --color-popover-foreground: #ffffff;
+  }
 }
 
 @layer components {
@@ -464,5 +508,282 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* VoiceAct Specific Styles */
+@layer components {
+  /* VoiceAct Brand Colors */
+  .voiceact-primary {
+    @apply bg-purple-600 text-white;
+  }
+
+  .voiceact-primary:hover {
+    @apply bg-purple-700;
+  }
+
+  .voiceact-secondary {
+    @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200;
+  }
+
+  /* Voice Sample Player Styles */
+  .voice-sample-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow;
+  }
+
+  .voice-sample-thumbnail {
+    @apply aspect-video bg-gray-100 dark:bg-gray-700 relative overflow-hidden;
+  }
+
+  .voice-sample-overlay {
+    @apply absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity;
+  }
+
+  .voice-sample-play-button {
+    @apply bg-white rounded-full p-3 shadow-lg;
+  }
+
+  /* Project Card Styles */
+  .project-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow cursor-pointer;
+  }
+
+  .project-progress-bar {
+    @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
+  }
+
+  .project-progress-fill {
+    @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+  }
+
+  /* Casting Call Styles */
+  .casting-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow;
+  }
+
+  .casting-budget {
+    @apply text-lg font-semibold text-green-600 dark:text-green-400;
+  }
+
+  .casting-deadline {
+    @apply text-sm text-orange-600 dark:text-orange-400 font-medium;
+  }
+
+  /* Notification Styles */
+  .notification-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow;
+  }
+
+  .notification-unread {
+    @apply ring-2 ring-blue-500;
+  }
+
+  .notification-icon {
+    @apply w-10 h-10 rounded-full flex items-center justify-center;
+  }
+
+  /* Profile Styles */
+  .profile-header {
+    @apply bg-gradient-to-r from-purple-600 to-blue-600 text-white p-8 rounded-lg;
+  }
+
+  .profile-avatar {
+    @apply ring-4 ring-white dark:ring-gray-800;
+  }
+
+  .profile-stats {
+    @apply grid grid-cols-3 gap-4 text-center;
+  }
+
+  .profile-stat {
+    @apply bg-white/20 rounded-lg p-4;
+  }
+
+  /* Dashboard Styles */
+  .dashboard-metric {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6;
+  }
+
+  .dashboard-activity-item {
+    @apply flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  .dashboard-quick-action {
+    @apply w-full justify-start;
+  }
+
+  /* Navigation Styles */
+  .voiceact-nav-item {
+    @apply flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white;
+  }
+
+  .voiceact-nav-item.active {
+    @apply bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700;
+  }
+
+  .voiceact-nav-icon {
+    @apply h-4 w-4 flex-shrink-0;
+  }
+
+  .voiceact-nav-badge {
+    @apply ml-auto flex-shrink-0 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+
+  /* Audio Player Styles */
+  .audio-player {
+    @apply bg-gray-900 rounded-lg overflow-hidden;
+  }
+
+  .audio-player-header {
+    @apply flex items-center justify-between bg-gray-800 p-3;
+  }
+
+  .audio-player-controls {
+    @apply space-y-4 p-4;
+  }
+
+  .audio-progress-bar {
+    @apply h-2 overflow-hidden rounded-full bg-gray-700;
+  }
+
+  .audio-progress-fill {
+    @apply h-full rounded-full bg-purple-500 transition-all duration-150;
+  }
+
+  .audio-time-display {
+    @apply flex justify-between text-xs text-gray-400;
+  }
+
+  /* Waveform Styles */
+  .waveform-container {
+    @apply h-16 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer relative overflow-hidden;
+  }
+
+  .waveform-bar {
+    @apply transition-colors duration-150;
+  }
+
+  .waveform-bar-active {
+    @apply fill-purple-600;
+  }
+
+  .waveform-bar-inactive {
+    @apply fill-gray-300 dark:fill-gray-500;
+  }
+
+  /* Status Badge Styles */
+  .status-badge-voice {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .status-badge-available {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .status-badge-busy {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+
+  .status-badge-unavailable {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+  }
+
+  .status-badge-verified {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
+  }
+
+  /* Chip Styles */
+  .voice-chip {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .voice-chip-primary {
+    @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200;
+  }
+
+  .voice-chip-secondary {
+    @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200;
+  }
+
+  .voice-chip-success {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .voice-chip-warning {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+
+  .voice-chip-danger {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+  }
+
+  /* Animation Styles */
+  .voiceact-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .voiceact-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .voiceact-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  /* Loading States */
+  .voiceact-skeleton {
+    @apply animate-pulse rounded bg-gray-200 dark:bg-gray-700;
+  }
+
+  .voiceact-skeleton-text {
+    @apply h-4 bg-gray-200 dark:bg-gray-700 rounded;
+  }
+
+  .voiceact-skeleton-avatar {
+    @apply h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-full;
+  }
+
+  .voiceact-skeleton-card {
+    @apply h-48 bg-gray-200 dark:bg-gray-700 rounded-lg;
+  }
+}
+
+@layer utilities {
+  /* VoiceAct Utility Classes */
+  .voiceact-gradient {
+    background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+  }
+
+  .voiceact-text-gradient {
+    @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
+  }
+
+  .voiceact-shadow {
+    box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.1), 0 2px 4px -1px rgba(139, 92, 246, 0.06);
+  }
+
+  .voiceact-shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -2px rgba(139, 92, 246, 0.05);
+  }
+
+  /* Audio-specific utilities */
+  .audio-waveform {
+    @apply w-full h-full;
+  }
+
+  .audio-controls {
+    @apply flex items-center space-x-4;
+  }
+
+  .audio-volume-slider {
+    @apply flex-1 h-1 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer;
+  }
+
+  .audio-volume-slider::-webkit-slider-thumb {
+    @apply appearance-none h-4 w-4 rounded-full bg-purple-600 cursor-pointer border-2 border-white shadow-lg;
+  }
+
+  .audio-volume-slider::-moz-range-thumb {
+    @apply h-4 w-4 rounded-full bg-purple-600 cursor-pointer border-2 border-white shadow-lg;
   }
 }
