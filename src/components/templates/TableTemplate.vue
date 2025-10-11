@@ -31,7 +31,7 @@
             >
               <div class="inline-flex items-center gap-1 select-none">
                 <span>{{ column.label }}</span>
-                <svg
+                <ChevronUpIcon
                   class="h-3.5 w-3.5 transition-transform duration-150"
                   :class="[
                     column.sortable ? '' : 'hidden',
@@ -45,16 +45,8 @@
                         ? 'rotate(180deg)'
                         : 'rotate(0deg)',
                   }"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
                   aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M12 7c.3 0 .58.13.77.36l4 5a1 1 0 01-.77 1.64H8a1 1 0 01-.77-1.64l4-5A1 1 0 0112 7z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                />
               </div>
             </th>
           </tr>
@@ -213,6 +205,7 @@ import { toDate } from '@/utils/date'
 import type { DataArray, ActionArray, DataItem } from '@/types/common'
 import { ColumnConfig, UiConfig } from '@/types/ui-config'
 import Image from '@/components/molecules/Image.vue'
+import ChevronUpIcon from '~icons/mdi/chevron-up'
 
 type Props = {
   data: DataArray
