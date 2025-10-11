@@ -381,6 +381,7 @@ const router = useRouter()
 
 // Form state
 const isSubmitting = ref(false)
+const currentClient = ref(mockClientData.voiceClients[0])
 
 const jobForm = reactive({
   jobType: 'open_casting',
@@ -538,6 +539,24 @@ const saveDraft = () => {
   // Show success message
 }
 
+const loadClientDefaults = () => {
+  const client = currentClient.value
+  if (client) {
+    // Load default budget
+    jobForm.budget.min = client.preferences.defaultBudget.min
+    jobForm.budget.max = client.preferences.defaultBudget.max
+    jobForm.budget.currency = client.preferences.defaultBudget.currency
+    
+    // Load default languages and voice types
+    jobForm.requirements.languages = [...client.preferences.preferredLanguages]
+    jobForm.requirements.voiceTypes = [...client.preferences.preferredVoiceTypes]
+    
+    // Load default preferences
+    jobForm.requirePortfolio = true // Default from settings
+    jobForm.isPublic = client.isPublic
+  }
+}
+
 const submitJob = async () => {
   isSubmitting.value = true
   
@@ -545,8 +564,8 @@ const submitJob = async () => {
     // In real app, submit job to API
     const newJob: JobPosting = {
       id: `job-${Date.now()}`,
-      clientId: 'client-001', // Current client ID
-      clientName: 'TechFlow Inc.', // Current client name
+      clientId: currentClient.value.id,
+      clientName: currentClient.value.companyName,
       title: jobForm.title,
       description: jobForm.description,
       jobType: jobForm.jobType as any,
@@ -596,4 +615,8 @@ const submitJob = async () => {
     isSubmitting.value = false
   }
 }
+
+onMounted(() => {
+  loadClientDefaults()
+})
 </script>
