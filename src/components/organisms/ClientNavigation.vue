@@ -110,8 +110,8 @@ const stats = ref<ClientStats>(mockClientData.clientStats)
 const activeItemId = computed(() => {
   const path = route.path
   if (path === '/client' || path === '/client/dashboard') return 'dashboard'
+  if (path === '/client/jobs/create') return 'create-job'
   if (path.startsWith('/client/jobs')) return 'jobs'
-  if (path.startsWith('/client/campaigns')) return 'campaigns'
   if (path.startsWith('/client/talents')) return 'talents'
   if (path.startsWith('/client/invitations')) return 'invitations'
   if (path.startsWith('/client/settings')) return 'settings'
@@ -133,36 +133,41 @@ const navigationSections = computed(() => [
     ]
   },
   {
-    id: 'management',
-    title: 'Management',
+    id: 'jobs',
+    title: 'Jobs',
     items: [
       {
         id: 'jobs',
-        title: 'Job Management',
-        description: 'Create & manage jobs',
+        title: 'All Jobs',
+        description: 'View & manage all jobs',
         icon: BriefcaseIcon,
         badge: stats.value.activeJobs,
         action: () => router.push('/client/jobs')
       },
       {
-        id: 'campaigns',
-        title: 'Campaigns',
-        description: 'Marketing campaigns',
+        id: 'create-job',
+        title: 'Post New Job',
+        description: 'Create a new job posting',
         icon: MegaphoneIcon,
-        badge: stats.value.activeCampaigns,
-        action: () => router.push('/client/campaigns')
-      },
+        action: () => router.push('/client/jobs/create')
+      }
+    ]
+  },
+  {
+    id: 'talent',
+    title: 'Talent',
+    items: [
       {
         id: 'talents',
-        title: 'Talent Pool',
-        description: 'Browse & invite talents',
+        title: 'Browse Talents',
+        description: 'Find & invite voice actors',
         icon: AccountGroupIcon,
         action: () => router.push('/client/talents')
       },
       {
         id: 'invitations',
         title: 'Invitations',
-        description: 'Manage invitations',
+        description: 'Manage sent invitations',
         icon: EmailIcon,
         action: () => router.push('/client/invitations')
       }

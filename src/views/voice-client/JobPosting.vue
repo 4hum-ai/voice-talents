@@ -36,6 +36,41 @@
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-4xl mx-auto">
           <form @submit.prevent="submitJob" class="space-y-8">
+            <!-- Job Type Selection -->
+            <div class="bg-card rounded-lg border border-border p-6">
+              <h2 class="text-lg font-semibold text-foreground mb-4">Job Type</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div 
+                  v-for="type in jobTypes" 
+                  :key="type.value"
+                  class="relative"
+                >
+                  <input
+                    :id="type.value"
+                    v-model="jobForm.jobType"
+                    type="radio"
+                    :value="type.value"
+                    class="sr-only"
+                  />
+                  <label
+                    :for="type.value"
+                    class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all"
+                    :class="jobForm.jobType === type.value 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'"
+                  >
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-3 mb-2">
+                        <component :is="type.icon" class="h-5 w-5 text-primary" />
+                        <h3 class="font-medium text-foreground">{{ type.label }}</h3>
+                      </div>
+                      <p class="text-sm text-muted-foreground">{{ type.description }}</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- Basic Information -->
             <div class="bg-card rounded-lg border border-border p-6">
               <h2 class="text-lg font-semibold text-foreground mb-6">Basic Information</h2>
@@ -337,6 +372,10 @@ import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import SaveIcon from '~icons/mdi/content-save'
 import SendIcon from '~icons/mdi/send'
+import MegaphoneIcon from '~icons/mdi/megaphone'
+import EmailIcon from '~icons/mdi/email'
+import ClockIcon from '~icons/mdi/clock'
+import TargetIcon from '~icons/mdi/target'
 
 const router = useRouter()
 
@@ -344,6 +383,7 @@ const router = useRouter()
 const isSubmitting = ref(false)
 
 const jobForm = reactive({
+  jobType: 'open_casting',
   title: '',
   description: '',
   projectType: '',
@@ -463,6 +503,34 @@ const qualityOptions = [
   { value: 'broadcast', label: 'Broadcast' }
 ]
 
+// Job Types (replacing campaign types)
+const jobTypes = [
+  {
+    value: 'open_casting',
+    label: 'Open Casting',
+    description: 'Open job posting for all voice actors to apply',
+    icon: MegaphoneIcon
+  },
+  {
+    value: 'invite_only',
+    label: 'Invite Only',
+    description: 'Send direct invitations to specific voice actors',
+    icon: EmailIcon
+  },
+  {
+    value: 'urgent_fill',
+    label: 'Urgent Fill',
+    description: 'Need to fill this position as soon as possible',
+    icon: ClockIcon
+  },
+  {
+    value: 'targeted_search',
+    label: 'Targeted Search',
+    description: 'Search for specific voice characteristics',
+    icon: TargetIcon
+  }
+]
+
 // Methods
 const saveDraft = () => {
   // In real app, save draft to API
@@ -481,6 +549,7 @@ const submitJob = async () => {
       clientName: 'TechFlow Inc.', // Current client name
       title: jobForm.title,
       description: jobForm.description,
+      jobType: jobForm.jobType as any,
       projectType: jobForm.projectType as any,
       status: 'published',
       priority: jobForm.priority as any,

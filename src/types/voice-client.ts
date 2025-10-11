@@ -54,6 +54,7 @@ export interface JobPosting extends BaseEntity {
   clientName: string
   title: string
   description: string
+  jobType: 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search'
   projectType: ProjectType
   status: JobStatus
   priority: 'low' | 'medium' | 'high' | 'urgent'
