@@ -586,6 +586,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
 import { useToast } from '@/composables/useToast'
+import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import CountryFlag from '@/components/atoms/CountryFlag.vue'
@@ -605,6 +606,7 @@ const emit = defineEmits<{
 }>()
 
 const { success, error } = useToast()
+const { completeTalentOnboarding } = useOnboarding()
 
 // State
 const currentStep = ref(1)
@@ -779,9 +781,8 @@ const completeOnboarding = async () => {
       completedAt: new Date().toISOString()
     }
 
-    // Store in localStorage for now (in real app, this would be sent to API)
-    localStorage.setItem('voiceact-onboarding-data', JSON.stringify(onboardingData))
-    localStorage.setItem('voiceact-onboarding-completed', 'true')
+    // Use the new onboarding system
+    completeTalentOnboarding(onboardingData)
 
     success('Welcome to VoiceAct! Your profile is ready to go.')
     emit('complete')

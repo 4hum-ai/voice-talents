@@ -87,6 +87,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { VoiceActor, VoiceActorStats } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
+import { useOnboarding } from '@/composables/useOnboarding'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
@@ -100,6 +101,7 @@ import LogoutIcon from '~icons/mdi/logout'
 
 const router = useRouter()
 const route = useRoute()
+const { switchMode } = useOnboarding()
 
 // Mock data - in real app, this would come from API
 const currentActor = ref<VoiceActor>(mockData.voiceActors[0])
@@ -164,8 +166,9 @@ const navigationSections = computed(() => [
 
 // Methods
 const switchToClient = () => {
-  // In real app, this would handle role switching
+  // Switch to client mode and navigate to dashboard
   console.log('Switching to client view')
+  switchMode('client')
   router.push('/client/dashboard')
 }
 

@@ -3,12 +3,16 @@
   <GlobalProgressBar />
   <ToastContainer />
   <GlobalUploadBar />
+  <!-- Talent Onboarding -->
   <OnboardingFlow
-    :show="showOnboarding"
-    @complete="completeOnboarding"
-    @skip="skipOnboarding"
-    @close="closeOnboarding"
+    :show="showTalentOnboarding"
+    @complete="completeTalentOnboarding"
+    @skip="skipTalentOnboarding"
+    @close="closeTalentOnboarding"
   />
+  
+  <!-- Client Onboarding -->
+  <ClientOnboardingFlow />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
       <component :is="Component" :key="route.path" />
@@ -31,62 +35,41 @@ import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue'
 import GlobalProgressBar from '@/components/organisms/GlobalProgressBar.vue'
 import GlobalUploadBar from '@/components/organisms/GlobalUploadBar.vue'
 import OnboardingFlow from '@/components/organisms/OnboardingFlow.vue'
+import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
 
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
-import { computed, ref, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useUiConfig } from '@/composables/useUiConfig'
 import { useToast } from '@/composables/useToast'
+import { useOnboarding } from '@/composables/useOnboarding'
 
 const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
 
 const { state: uiState } = useUiConfig()
 const { success } = useToast()
+const { 
+  shouldShowOnboarding, 
+  isTalentMode
+} = useOnboarding()
 
 const isBootLoading = computed(() => !uiState.initialized || uiState.loading)
-const showOnboarding = ref(false)
+const showTalentOnboarding = computed(() => isTalentMode.value && shouldShowOnboarding.value)
 
-const completeOnboarding = () => {
-  showOnboarding.value = false
-  success('Welcome to VoiceAct! Your profile is ready to go.')
+const completeTalentOnboarding = () => {
+  success('Welcome to VoiceAct! Your talent profile is ready to go.')
 }
 
-const skipOnboarding = () => {
-  showOnboarding.value = false
+const skipTalentOnboarding = () => {
+  success('You can complete your profile later in settings.')
 }
 
-const closeOnboarding = () => {
-  showOnboarding.value = false
+const closeTalentOnboarding = () => {
+  // Onboarding will be hidden automatically by the computed property
 }
 
 onMounted(() => {
-  // Check if user has completed onboarding
-  const hasCompletedOnboarding = localStorage.getItem('voiceact-onboarding-completed')
-  const onboardingData = localStorage.getItem('voiceact-onboarding-data')
-  
-  if (!hasCompletedOnboarding) {
-    // Show onboarding after a short delay
-    setTimeout(() => {
-      showOnboarding.value = true
-    }, 1000)
-  } else if (onboardingData) {
-    // Check if profile is incomplete and suggest re-onboarding
-    try {
-      const data = JSON.parse(onboardingData)
-      const isProfileIncomplete = !data.profile?.displayName || 
-                                 !data.profile?.bio || 
-                                 !data.profile?.experience ||
-                                 !data.profile?.voiceTypes?.length ||
-                                 !data.profile?.languages?.length
-      
-      if (isProfileIncomplete) {
-        // Show a subtle notification to complete profile
-        setTimeout(() => {
-          success('Complete your profile to get the most out of VoiceAct!', 'Profile Incomplete')
-        }, 2000)
-      }
-    } catch (err) {
-      console.warn('Failed to parse onboarding data:', err)
-    }
-  }
+  // The onboarding system will automatically handle showing the appropriate onboarding
+  // based on the current mode and completion status
+  console.log('App mounted - onboarding system initialized')
 })
 </script>
