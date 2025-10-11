@@ -99,8 +99,15 @@
                       via {{ getStudioName(session.studioId) }}
                     </p>
                   </div>
-                  <div class="flex-shrink-0 ml-4">
-                    <StatusBadge :status="session.status" />
+                  <div class="flex-shrink-0 ml-4 space-y-2">
+                    <StatusBadge :status="getCastingSessionStatus(session)" />
+                    <StatusBadge 
+                      :status="getProposalStatusInfo(session).status" 
+                      :variant="getProposalStatusInfo(session).variant"
+                      size="sm"
+                    >
+                      {{ getProposalStatusInfo(session).label }}
+                    </StatusBadge>
                   </div>
                 </div>
 
@@ -168,10 +175,23 @@
                       <ShareIcon class="h-4 w-4" />
                     </Button>
                   </div>
-                  <Button variant="primary" size="sm" @click="$router.push(`/casting/${session.id}/submit`)"
+                  <Button 
+                    v-if="!getUserProposalStatus(session)"
+                    variant="primary" 
+                    size="sm" 
+                    @click="$router.push(`/casting/${session.id}/submit`)"
                     :disabled="session.status !== 'open'">
                     <IconSend class="h-4 w-4 mr-2" />
                     Apply
+                  </Button>
+                  <Button 
+                    v-else
+                    variant="outline" 
+                    size="sm" 
+                    @click="$router.push(`/casting/${session.id}/proposal`)"
+                    :disabled="session.status !== 'open'">
+                    <EyeIcon class="h-4 w-4 mr-2" />
+                    View Proposal
                   </Button>
                 </div>
               </div>
@@ -248,16 +268,37 @@
                       {{ formatDate(session.deadline) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge :status="session.status" />
+                      <div class="space-y-1">
+                        <StatusBadge :status="getCastingSessionStatus(session)" />
+                        <StatusBadge 
+                          :status="getProposalStatusInfo(session).status" 
+                          :variant="getProposalStatusInfo(session).variant"
+                          size="sm"
+                        >
+                          {{ getProposalStatusInfo(session).label }}
+                        </StatusBadge>
+                      </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div class="flex items-center space-x-2">
                         <Button variant="ghost" size="sm" @click="$router.push(`/casting/${session.id}`)">
                           <EyeIcon class="h-4 w-4" />
                         </Button>
-                        <Button variant="primary" size="sm" @click="$router.push(`/casting/${session.id}/submit`)"
+                        <Button 
+                          v-if="!getUserProposalStatus(session)"
+                          variant="primary" 
+                          size="sm" 
+                          @click="$router.push(`/casting/${session.id}/submit`)"
                           :disabled="session.status !== 'open'">
                           <SendIcon class="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          v-else
+                          variant="outline" 
+                          size="sm" 
+                          @click="$router.push(`/casting/${session.id}/proposal`)"
+                          :disabled="session.status !== 'open'">
+                          <EyeIcon class="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -275,8 +316,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import type { CastingSession } from '@/types/voice-actor'
+import type { CastingSession, CastingProposal } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
@@ -295,7 +335,6 @@ import EyeIcon from '~icons/mdi/eye'
 import ShareIcon from '~icons/mdi/share'
 import SendIcon from '~icons/mdi/send'
 
-const router = useRouter()
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')
@@ -306,6 +345,9 @@ const selectedExperience = ref('')
 
 // Mock data - in real app, this would come from API
 const castingSessions = ref<CastingSession[]>(mockData.castingSessions)
+
+// Current user ID - in real app, this would come from auth store
+const currentUserId = 'va-001'
 
 // Computed
 const filteredCastingSessions = computed(() => {
@@ -344,19 +386,95 @@ const openCastingCount = computed(() =>
 )
 
 const mySubmissionsCount = computed(() => {
-  // In real app, this would count actual submissions by current user
-  return 3
+  return castingSessions.value.reduce((count, session) => {
+    const proposal = getUserProposalStatus(session)
+    return count + (proposal && proposal.status !== 'draft' ? 1 : 0)
+  }, 0)
 })
 
 const shortlistedCount = computed(() => {
-  // In real app, this would count actual shortlisted submissions
-  return 1
+  return castingSessions.value.reduce((count, session) => {
+    const proposal = getUserProposalStatus(session)
+    return count + (proposal && proposal.status === 'shortlisted' ? 1 : 0)
+  }, 0)
 })
 
 const selectedCount = computed(() => {
-  // In real app, this would count actual selected submissions
-  return 0
+  return castingSessions.value.reduce((count, session) => {
+    const proposal = getUserProposalStatus(session)
+    return count + (proposal && proposal.status === 'selected' ? 1 : 0)
+  }, 0)
 })
+
+// Get user's proposal status for a casting session
+const getUserProposalStatus = (session: CastingSession): CastingProposal | null => {
+  return session.proposals.find(proposal => proposal.voiceActorId === currentUserId) || null
+}
+
+// Get casting session status for StatusBadge
+const getCastingSessionStatus = (session: CastingSession) => {
+  switch (session.status) {
+    case 'open':
+      return 'active'
+    case 'closed':
+      return 'inactive'
+    case 'completed':
+      return 'completed'
+    default:
+      return 'draft'
+  }
+}
+
+// Get proposal status badge info
+const getProposalStatusInfo = (session: CastingSession) => {
+  const proposal = getUserProposalStatus(session)
+  if (!proposal) {
+    return { 
+      status: 'draft' as const, 
+      label: 'Not Applied', 
+      variant: 'soft' as const 
+    }
+  }
+  
+  switch (proposal.status) {
+    case 'submitted':
+      return { 
+        status: 'pending' as const, 
+        label: 'Applied', 
+        variant: 'soft' as const 
+      }
+    case 'under_review':
+      return { 
+        status: 'processing' as const, 
+        label: 'Under Review', 
+        variant: 'soft' as const 
+      }
+    case 'shortlisted':
+      return { 
+        status: 'success' as const, 
+        label: 'Shortlisted', 
+        variant: 'soft' as const 
+      }
+    case 'selected':
+      return { 
+        status: 'success' as const, 
+        label: 'Selected', 
+        variant: 'solid' as const 
+      }
+    case 'rejected':
+      return { 
+        status: 'rejected' as const, 
+        label: 'Not Selected', 
+        variant: 'soft' as const 
+      }
+    default:
+      return { 
+        status: 'draft' as const, 
+        label: 'Draft', 
+        variant: 'soft' as const 
+      }
+  }
+}
 
 // Options for filters
 const typeOptions = computed(() => [

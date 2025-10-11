@@ -1,7 +1,6 @@
 <template>
   <Sidebar
-    title="VoiceAct"
-    subtitle="Voice Actor Platform"
+    title="VoiceAct.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
     :fixed="false"
@@ -80,16 +79,10 @@ import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import HomeIcon from '~icons/mdi/home'
 import UserIcon from '~icons/mdi/account'
-import MicrophoneIcon from '~icons/mdi/microphone'
 import FolderOpenIcon from '~icons/mdi/folder-open'
 import MegaphoneIcon from '~icons/mdi/megaphone'
-import CurrencyUsdIcon from '~icons/mdi/currency-usd'
-import ChartLineIcon from '~icons/mdi/chart-line'
-import BellIcon from '~icons/mdi/bell'
-import MessageIcon from '~icons/mdi/message'
 import CogIcon from '~icons/mdi/cog'
 import LogoutIcon from '~icons/mdi/logout'
-import EyeIcon from '~icons/mdi/eye'
 
 const router = useRouter()
 const route = useRoute()
@@ -103,14 +96,10 @@ const activeItemId = computed(() => {
   const path = route.path
   if (path === '/') return 'dashboard'
   if (path.startsWith('/profile')) return 'profile'
-  if (path.startsWith('/samples')) return 'samples'
+  if (path.startsWith('/profile/edit')) return 'profile'
   if (path.startsWith('/projects')) return 'projects'
   if (path.startsWith('/studios')) return 'studios'
   if (path.startsWith('/casting')) return 'casting'
-  if (path.startsWith('/earnings')) return 'earnings'
-  if (path.startsWith('/analytics')) return 'analytics'
-  if (path.startsWith('/notifications')) return 'notifications'
-  if (path.startsWith('/messages')) return 'messages'
   if (path.startsWith('/settings')) return 'settings'
   return 'dashboard'
 })
@@ -130,24 +119,16 @@ const navigationSections = computed(() => [
       {
         id: 'profile',
         title: 'My Profile',
-        description: 'Manage your profile',
+        description: 'Profile & voice samples',
         icon: UserIcon,
-        action: () => router.push('/profile')
+        action: () => router.push('/profile/edit')
       }
     ]
   },
   {
-    id: 'portfolio',
-    title: 'Portfolio',
+    id: 'work',
+    title: 'Work',
     items: [
-      {
-        id: 'samples',
-        title: 'Voice Samples',
-        description: 'Manage your samples',
-        icon: MicrophoneIcon,
-        badge: stats.value.totalSamples,
-        action: () => router.push('/samples')
-      },
       {
         id: 'projects',
         title: 'My Projects',
@@ -155,13 +136,7 @@ const navigationSections = computed(() => [
         icon: FolderOpenIcon,
         badge: stats.value.activeProjects,
         action: () => router.push('/projects')
-      }
-    ]
-  },
-  {
-    id: 'opportunities',
-    title: 'Opportunities',
-    items: [
+      },
       {
         id: 'casting',
         title: 'Casting Calls',
@@ -169,54 +144,6 @@ const navigationSections = computed(() => [
         icon: MegaphoneIcon,
         action: () => router.push('/casting')
       },
-      {
-        id: 'studios',
-        title: 'Studios',
-        description: 'Browse studios',
-        icon: EyeIcon,
-        action: () => router.push('/studios')
-      }
-    ]
-  },
-  {
-    id: 'business',
-    title: 'Business',
-    items: [
-      {
-        id: 'earnings',
-        title: 'Earnings',
-        description: 'Track your income',
-        icon: CurrencyUsdIcon,
-        action: () => router.push('/earnings')
-      },
-      {
-        id: 'analytics',
-        title: 'Analytics',
-        description: 'Performance insights',
-        icon: ChartLineIcon,
-        action: () => router.push('/analytics')
-      }
-    ]
-  },
-  {
-    id: 'communication',
-    title: 'Communication',
-    items: [
-      {
-        id: 'notifications',
-        title: 'Notifications',
-        description: 'Stay updated',
-        icon: BellIcon,
-        badge: mockData.notifications.filter(n => !n.isRead).length,
-        action: () => router.push('/notifications')
-      },
-      {
-        id: 'messages',
-        title: 'Messages',
-        description: 'Project communication',
-        icon: MessageIcon,
-        action: () => router.push('/messages')
-      }
     ]
   }
 ])

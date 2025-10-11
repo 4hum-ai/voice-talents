@@ -299,14 +299,63 @@ export interface CastingSession extends BaseEntity {
     max: number
     currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
   }
-  submissions: CastingSubmission[]
+  proposals: CastingProposal[]
+  submissions: CastingSubmission[] // Legacy - for backward compatibility
   selectedActors: string[]
   isPublic: boolean
   createdBy: string
   createdDate: string
 }
 
-// Casting Submission
+// Casting Proposal - Enhanced submission with time, cost, and custom samples
+export interface CastingProposal extends BaseEntity {
+  castingSessionId: string
+  voiceActorId: string
+  voiceActorName: string
+  status: 'draft' | 'submitted' | 'under_review' | 'shortlisted' | 'selected' | 'rejected'
+  submittedDate: string
+  reviewedDate?: string
+  
+  // Proposal Details
+  proposedCost: number
+  proposedCurrency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+  proposedTimeline: string // e.g., "2-3 weeks", "1 month"
+  estimatedHours: number
+  
+  // Custom Samples for this casting
+  customSamples: CustomSample[]
+  
+  // Existing samples from portfolio
+  portfolioSampleIds: string[]
+  
+  // Personal message to studio
+  personalNote?: string
+  
+  // Studio feedback
+  studioFeedback?: string
+  rejectionReason?: string
+}
+
+// Custom Sample - Voice actor can create specific samples for a casting
+export interface CustomSample extends BaseEntity {
+  proposalId: string
+  title: string
+  description?: string
+  audioUrl: string
+  duration: number
+  fileSize: number
+  format: 'mp3' | 'wav' | 'aac' | 'flac'
+  isPublic: boolean
+  tags: string[]
+  metadata: {
+    recordingQuality: 'standard' | 'professional' | 'broadcast'
+    equipment?: string
+    recordingLocation?: string
+    dateRecorded?: string
+  }
+}
+
+// Casting Submission - Legacy interface for backward compatibility
 export interface CastingSubmission extends BaseEntity {
   castingSessionId: string
   voiceActorId: string

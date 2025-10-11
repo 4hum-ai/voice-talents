@@ -61,11 +61,32 @@ const closeOnboarding = () => {
 onMounted(() => {
   // Check if user has completed onboarding
   const hasCompletedOnboarding = localStorage.getItem('voiceact-onboarding-completed')
+  const onboardingData = localStorage.getItem('voiceact-onboarding-data')
+  
   if (!hasCompletedOnboarding) {
     // Show onboarding after a short delay
     setTimeout(() => {
       showOnboarding.value = true
     }, 1000)
+  } else if (onboardingData) {
+    // Check if profile is incomplete and suggest re-onboarding
+    try {
+      const data = JSON.parse(onboardingData)
+      const isProfileIncomplete = !data.profile?.displayName || 
+                                 !data.profile?.bio || 
+                                 !data.profile?.experience ||
+                                 !data.profile?.voiceTypes?.length ||
+                                 !data.profile?.languages?.length
+      
+      if (isProfileIncomplete) {
+        // Show a subtle notification to complete profile
+        setTimeout(() => {
+          success('Complete your profile to get the most out of VoiceAct!', 'Profile Incomplete')
+        }, 2000)
+      }
+    } catch (err) {
+      console.warn('Failed to parse onboarding data:', err)
+    }
   }
 })
 </script>

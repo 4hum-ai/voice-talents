@@ -24,16 +24,11 @@
             </div>
             <div class="flex items-center space-x-4">
               <ThemeToggle />
-              <Button variant="secondary" size="sm" @click="$router.push('/notifications')">
-                <BellIcon class="h-4 w-4" />
-                Notifications
+              <Button variant="secondary" size="md" @click="$router.push('/notifications')">
+                <BellIcon class="h-5 w-5" />
                 <span v-if="unreadNotifications > 0" class="ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
                   {{ unreadNotifications }}
                 </span>
-              </Button>
-              <Button variant="primary" size="sm" @click="$router.push('/profile/edit')">
-                <AccountIcon class="h-4 w-4" />
-                Edit Profile
               </Button>
             </div>
           </div>
@@ -73,16 +68,7 @@
               class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
             />
           </div>
-          <div class="group">
-            <MetricCard
-              title="Voice Samples"
-              :value="stats.totalSamples"
-              icon="mdi:microphone"
-              icon-variant="warning"
-              :trend="{ value: 3, direction: 'up', period: 'vs last month' }"
-              class="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-            />
-          </div>
+
           <div class="group">
             <MetricCard
               title="Rating"
@@ -205,7 +191,7 @@
                   variant="outline"
                   size="sm"
                   class="w-full justify-start"
-                  @click="$router.push('/samples/upload')"
+                  @click="$router.push('/profile/edit')"
                 >
                   <Icon name="upload" class="h-4 w-4" />
                   Upload Voice Sample

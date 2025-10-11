@@ -156,7 +156,7 @@
             :class="{ 'text-blue-400': isPipMode }"
             :aria-label="isPipMode ? 'Exit picture-in-picture' : 'Enter picture-in-picture'"
           >
-            <PictureInPictureOutlineIcon class="h-5 w-5" />
+            <IconPiPOutline class="h-5 w-5" />
           </button>
 
           <!-- Fullscreen -->
@@ -205,7 +205,7 @@ import VolumeHighIcon from '~icons/mdi/volume-high'
 import VolumeOffIcon from '~icons/mdi/volume-off'
 import ChevronDownIcon from '~icons/mdi/chevron-down'
 import SubtitlesIcon from '~icons/mdi/subtitles'
-import PictureInPictureOutlineIcon from '~icons/mdi/picture-in-picture-outline'
+import IconPiPOutline  from '~icons/mdi/picture-in-picture-bottom-right-outline'
 import FullscreenIcon from '~icons/mdi/fullscreen'
 import FullscreenExitIcon from '~icons/mdi/fullscreen-exit'
 import CloseIcon from '~icons/mdi/close'

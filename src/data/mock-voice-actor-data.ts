@@ -10,6 +10,8 @@ import type {
   Studio,
   Notification,
   CastingSession,
+  CastingProposal,
+  CustomSample,
   VoiceActorStats,
   ActivityItem
 } from '@/types/voice-actor'
@@ -546,6 +548,107 @@ export const mockNotifications: Notification[] = [
   }
 ]
 
+// Mock Custom Samples
+export const mockCustomSamples: CustomSample[] = [
+  {
+    id: 'custom-sample-001',
+    proposalId: 'proposal-001',
+    title: 'Character Demo - Adventurer',
+    description: 'Custom sample created specifically for the animated series casting call. Shows range and character development.',
+    audioUrl: 'https://example.com/audio/custom-sample-001.mp3',
+    duration: 60,
+    fileSize: 960000,
+    format: 'mp3',
+    isPublic: false,
+    tags: ['character', 'animation', 'adventurer', 'custom'],
+    metadata: {
+      recordingQuality: 'professional',
+      equipment: 'Neumann U87',
+      recordingLocation: 'Home Studio',
+      dateRecorded: '2024-01-16T14:00:00Z'
+    },
+    createdAt: '2024-01-16T14:00:00Z',
+    updatedAt: '2024-01-16T14:00:00Z'
+  },
+  {
+    id: 'custom-sample-002',
+    proposalId: 'proposal-002',
+    title: 'Commercial Demo - Tech Product',
+    description: 'Custom commercial sample showcasing modern, energetic delivery for tech startup.',
+    audioUrl: 'https://example.com/audio/custom-sample-002.mp3',
+    duration: 30,
+    fileSize: 480000,
+    format: 'mp3',
+    isPublic: false,
+    tags: ['commercial', 'tech', 'energetic', 'custom'],
+    metadata: {
+      recordingQuality: 'professional',
+      equipment: 'Rode NT1',
+      recordingLocation: 'Home Studio',
+      dateRecorded: '2024-01-17T10:00:00Z'
+    },
+    createdAt: '2024-01-17T10:00:00Z',
+    updatedAt: '2024-01-17T10:00:00Z'
+  }
+]
+
+// Mock Casting Proposals
+export const mockCastingProposals: CastingProposal[] = [
+  {
+    id: 'proposal-001',
+    castingSessionId: 'casting-001',
+    voiceActorId: 'va-001',
+    voiceActorName: 'Sarah Johnson',
+    status: 'submitted',
+    submittedDate: '2024-01-16T15:00:00Z',
+    proposedCost: 10000,
+    proposedCurrency: 'USD',
+    proposedTimeline: '2-3 weeks',
+    estimatedHours: 40,
+    customSamples: [mockCustomSamples[0]],
+    portfolioSampleIds: ['sample-001', 'sample-002'],
+    personalNote: 'I\'m very excited about this project! I have extensive experience with character voices and animation work. I can bring the perfect blend of adventure and humor to this character. I\'m available to start immediately and can work within your timeline.',
+    createdAt: '2024-01-16T15:00:00Z',
+    updatedAt: '2024-01-16T15:00:00Z'
+  },
+  {
+    id: 'proposal-002',
+    castingSessionId: 'casting-002',
+    voiceActorId: 'va-001',
+    voiceActorName: 'Sarah Johnson',
+    status: 'under_review',
+    submittedDate: '2024-01-17T11:00:00Z',
+    proposedCost: 3500,
+    proposedCurrency: 'USD',
+    proposedTimeline: '1 week',
+    estimatedHours: 15,
+    customSamples: [mockCustomSamples[1]],
+    portfolioSampleIds: ['sample-001'],
+    personalNote: 'I\'d love to work on this tech startup commercial series. My energetic, modern delivery style would be perfect for your target demographic. I can deliver all 5 spots within a week.',
+    createdAt: '2024-01-17T11:00:00Z',
+    updatedAt: '2024-01-17T11:00:00Z'
+  },
+  {
+    id: 'proposal-003',
+    castingSessionId: 'casting-003',
+    voiceActorId: 'va-001',
+    voiceActorName: 'Sarah Johnson',
+    status: 'shortlisted',
+    submittedDate: '2024-01-10T09:00:00Z',
+    reviewedDate: '2024-01-12T14:00:00Z',
+    proposedCost: 2800,
+    proposedCurrency: 'USD',
+    proposedTimeline: '2 weeks',
+    estimatedHours: 20,
+    customSamples: [],
+    portfolioSampleIds: ['sample-001', 'sample-002'],
+    personalNote: 'I have extensive experience with e-learning content and can deliver clear, engaging narration that keeps learners engaged throughout the 45-minute module.',
+    studioFeedback: 'Great samples and competitive pricing. We\'re considering you for the final selection.',
+    createdAt: '2024-01-10T09:00:00Z',
+    updatedAt: '2024-01-12T14:00:00Z'
+  }
+]
+
 // Mock Casting Sessions
 export const mockCastingSessions: CastingSession[] = [
   {
@@ -570,6 +673,7 @@ export const mockCastingSessions: CastingSession[] = [
       max: 12000,
       currency: 'USD'
     },
+    proposals: [mockCastingProposals[0]],
     submissions: [],
     selectedActors: [],
     isPublic: true,
@@ -577,6 +681,95 @@ export const mockCastingSessions: CastingSession[] = [
     createdDate: '2024-01-15T10:00:00Z',
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z'
+  },
+  {
+    id: 'casting-002',
+    title: 'Tech Startup Commercial Series',
+    description: 'Series of 5 commercials for a new tech startup launching their mobile app. Need energetic, modern voice that appeals to millennials.',
+    clientName: 'TechFlow Inc.',
+    studioId: 'studio-001',
+    projectType: 'commercial',
+    status: 'open',
+    deadline: '2024-01-25T17:00:00Z',
+    requirements: {
+      languages: ['English'],
+      accents: ['American'],
+      voiceTypes: ['commercial'],
+      ageRange: '25-35',
+      gender: 'any',
+      experience: 'professional'
+    },
+    budget: {
+      min: 2000,
+      max: 5000,
+      currency: 'USD'
+    },
+    proposals: [mockCastingProposals[1]],
+    submissions: [],
+    selectedActors: [],
+    isPublic: true,
+    createdBy: 'user-studio-001',
+    createdDate: '2024-01-12T10:00:00Z',
+    createdAt: '2024-01-12T10:00:00Z',
+    updatedAt: '2024-01-12T10:00:00Z'
+  },
+  {
+    id: 'casting-003',
+    title: 'Educational E-Learning Module',
+    description: 'Voice-over for a 45-minute e-learning module about digital marketing. Need clear, engaging narration with occasional character voices.',
+    clientName: 'EduTech Solutions',
+    studioId: 'studio-002',
+    projectType: 'e-learning',
+    status: 'open',
+    deadline: '2024-01-30T17:00:00Z',
+    requirements: {
+      languages: ['English'],
+      accents: ['American'],
+      voiceTypes: ['narrator', 'character'],
+      experience: 'advanced'
+    },
+    budget: {
+      min: 2000,
+      max: 4000,
+      currency: 'USD'
+    },
+    proposals: [mockCastingProposals[2]],
+    submissions: [],
+    selectedActors: [],
+    isPublic: true,
+    createdBy: 'user-studio-003',
+    createdDate: '2024-01-08T10:00:00Z',
+    createdAt: '2024-01-08T10:00:00Z',
+    updatedAt: '2024-01-08T10:00:00Z'
+  },
+  {
+    id: 'casting-004',
+    title: 'Documentary Narration - Nature Series',
+    description: 'Narrating a 6-part nature documentary series. Need authoritative, engaging voice with natural storytelling ability.',
+    clientName: 'Nature Films Co.',
+    studioId: 'studio-002',
+    projectType: 'documentary',
+    status: 'open',
+    deadline: '2024-02-15T17:00:00Z',
+    requirements: {
+      languages: ['English'],
+      accents: ['American', 'British'],
+      voiceTypes: ['narrator', 'documentary'],
+      experience: 'professional'
+    },
+    budget: {
+      min: 15000,
+      max: 25000,
+      currency: 'USD'
+    },
+    proposals: [],
+    submissions: [],
+    selectedActors: [],
+    isPublic: true,
+    createdBy: 'user-studio-003',
+    createdDate: '2024-01-18T10:00:00Z',
+    createdAt: '2024-01-18T10:00:00Z',
+    updatedAt: '2024-01-18T10:00:00Z'
   }
 ]
 
@@ -632,5 +825,7 @@ export const mockData = {
   projects: mockProjects,
   notifications: mockNotifications,
   castingSessions: mockCastingSessions,
+  castingProposals: mockCastingProposals,
+  customSamples: mockCustomSamples,
   voiceActorStats: mockVoiceActorStats
 }
