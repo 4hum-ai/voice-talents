@@ -365,10 +365,10 @@ const handleCancel = () => {
 }
 
 // Handle file changes for preview
-const handleFileChange = (field: string, value: File) => {
-  if (field === 'audioFile' && value) {
-    audioFile.value = value
-    audioPreviewUrl.value = URL.createObjectURL(value)
-  }
-}
+// const handleFileChange = (field: string, value: File) => {
+//   if (field === 'audioFile' && value) {
+//     audioFile.value = value
+//     audioPreviewUrl.value = URL.createObjectURL(value)
+//   }
+// }
 </script>

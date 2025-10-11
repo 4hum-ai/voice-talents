@@ -25,11 +25,11 @@
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="outline" size="sm" @click="markAllAsRead" :disabled="unreadCount === 0">
-                <CheckIcon class="h-4 w-4 mr-2" />
+                <CheckIcon class="h-4 w-4" />
                 Mark All Read
               </Button>
               <Button variant="primary" size="sm" @click="refreshNotifications">
-                <RefreshIcon class="h-4 w-4 mr-2" />
+                <RefreshIcon class="h-4 w-4" />
                 Refresh
               </Button>
             </div>

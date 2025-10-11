@@ -25,12 +25,12 @@
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="outline" size="sm" @click="toggleView">
-                <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4 mr-2" />
-                <ViewListIcon v-else class="h-4 w-4 mr-2" />
+                <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4" />
+                <ViewListIcon v-else class="h-4 w-4" />
                 {{ viewMode === 'list' ? 'Grid' : 'List' }}
               </Button>
               <Button variant="primary" size="sm" @click="$router.push('/samples/upload')">
-                <PlusIcon class="h-4 w-4 mr-2" />
+                <PlusIcon class="h-4 w-4" />
                 Upload Sample
               </Button>
             </div>
@@ -79,7 +79,7 @@
             {{ searchQuery ? 'Try adjusting your search criteria' : 'Upload your first voice sample to get started' }}
           </p>
           <Button variant="primary" @click="$router.push('/samples/upload')">
-            <PlusIcon class="h-4 w-4 mr-2" />
+            <PlusIcon class="h-4 w-4" />
             Upload Sample
           </Button>
         </div>

@@ -25,12 +25,12 @@
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="outline" size="sm" @click="toggleView">
-                <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4 mr-2" />
-                <ViewListIcon v-else class="h-4 w-4 mr-2" />
+                <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4" />
+                <ViewListIcon v-else class="h-4 w-4" />
                 {{ viewMode === 'list' ? 'Grid' : 'List' }}
               </Button>
               <Button variant="primary" size="sm" @click="$router.push('/casting')">
-                <MagnifyIcon class="h-4 w-4 mr-2" />
+                <MagnifyIcon class="h-4 w-4" />
                 Find Projects
               </Button>
             </div>
@@ -80,7 +80,7 @@
               {{ searchQuery ? 'Try adjusting your search criteria' : 'Start by browsing casting opportunities' }}
             </p>
             <Button variant="primary" @click="$router.push('/casting')">
-              <MagnifyIcon class="h-4 w-4 mr-2" />
+              <MagnifyIcon class="h-4 w-4" />
               Browse Casting Calls
             </Button>
           </div>

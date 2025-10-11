@@ -25,12 +25,12 @@
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="outline" size="sm" @click="togglePublicProfile">
-                <EyeIcon v-if="profile.isPublic" class="h-4 w-4 mr-2" />
-                <EyeOffIcon v-else class="h-4 w-4 mr-2" />
+                <EyeIcon v-if="profile.isPublic" class="h-4 w-4" />
+                <EyeOffIcon v-else class="h-4 w-4" />
                 {{ profile.isPublic ? 'Public' : 'Private' }}
               </Button>
               <Button variant="primary" size="sm" @click="$router.push('/profile/edit')">
-                <EditIcon class="h-4 w-4 mr-2" />
+                <EditIcon class="h-4 w-4" />
                 Edit Profile
               </Button>
             </div>

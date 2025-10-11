@@ -25,14 +25,14 @@
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="secondary" size="sm" @click="$router.push('/notifications')">
-                <BellIcon class="h-4 w-4 mr-2" />
+                <BellIcon class="h-4 w-4" />
                 Notifications
                 <span v-if="unreadNotifications > 0" class="ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
                   {{ unreadNotifications }}
                 </span>
               </Button>
               <Button variant="primary" size="sm" @click="$router.push('/profile/edit')">
-                <AccountIcon class="h-4 w-4 mr-2" />
+                <AccountIcon class="h-4 w-4" />
                 Edit Profile
               </Button>
             </div>
@@ -207,7 +207,7 @@
                   class="w-full justify-start"
                   @click="$router.push('/samples/upload')"
                 >
-                  <Icon name="upload" class="h-4 w-4 mr-2" />
+                  <Icon name="upload" class="h-4 w-4" />
                   Upload Voice Sample
                 </Button>
                 <Button
@@ -216,7 +216,7 @@
                   class="w-full justify-start"
                   @click="$router.push('/casting')"
                 >
-                  <Icon name="search" class="h-4 w-4 mr-2" />
+                  <Icon name="search" class="h-4 w-4" />
                   Browse Casting Calls
                 </Button>
                 <Button
@@ -225,7 +225,7 @@
                   class="w-full justify-start"
                   @click="$router.push('/profile/edit')"
                 >
-                  <Icon name="account-edit" class="h-4 w-4 mr-2" />
+                  <Icon name="account-edit" class="h-4 w-4" />
                   Update Profile
                 </Button>
               </div>

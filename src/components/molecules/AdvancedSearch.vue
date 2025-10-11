@@ -7,9 +7,9 @@
           <Icon name="mdi:magnify" class="h-5 w-5 text-gray-400" />
         </div>
         <input
-          v-model="searchQuery"
+      v-model="searchQuery"
           type="text"
-          :placeholder="placeholder"
+      :placeholder="placeholder"
           class="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           @input="handleSearch"
           @keydown.enter="handleSearch"
@@ -33,7 +33,7 @@
         @click="toggleFilters"
         :class="{ 'bg-blue-50 dark:bg-blue-900 border-blue-300 dark:border-blue-700': showFilters }"
       >
-        <Icon name="mdi:filter" class="h-4 w-4 mr-2" />
+        <Icon name="mdi:filter" class="h-4 w-4" />
         Filters
         <span v-if="activeFiltersCount > 0" class="ml-2 bg-blue-500 text-white text-xs rounded-full px-2 py-0.5">
           {{ activeFiltersCount }}
@@ -47,7 +47,7 @@
         @click="saveSearch"
         :disabled="!searchQuery && activeFiltersCount === 0"
       >
-        <Icon name="mdi:bookmark-outline" class="h-4 w-4 mr-2" />
+        <Icon name="mdi:bookmark-outline" class="h-4 w-4" />
         Save
       </Button>
     </div>
@@ -152,7 +152,7 @@
             @click="clearAllFilters"
             :disabled="activeFiltersCount === 0"
           >
-            <Icon name="mdi:close" class="h-4 w-4 mr-2" />
+            <Icon name="mdi:close" class="h-4 w-4" />
             Clear All
           </Button>
           
@@ -194,7 +194,7 @@
           @click="exportResults"
           v-if="showExport"
         >
-          <Icon name="mdi:download" class="h-4 w-4 mr-2" />
+          <Icon name="mdi:download" class="h-4 w-4" />
           Export
         </Button>
       </div>
@@ -239,7 +239,7 @@ interface Props {
   availableTags?: string[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   placeholder: 'Search...',
   filters: () => ({
     category: true,
