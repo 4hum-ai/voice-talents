@@ -36,7 +36,7 @@
             <div class="bg-card rounded-lg border border-border p-6">
               <h2 class="text-lg font-semibold text-foreground mb-6">Account Information</h2>
               
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Company Name *
@@ -143,7 +143,7 @@
             <div class="bg-card rounded-lg border border-border p-6">
               <h2 class="text-lg font-semibold text-foreground mb-6">Job Posting Defaults</h2>
               
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     Default Budget Range
@@ -276,74 +276,12 @@
               </div>
             </div>
 
-            <!-- Notification Settings -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">Notification Preferences</h2>
-              
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Email Notifications</h3>
-                    <p class="text-sm text-muted-foreground">Receive email notifications for important updates</p>
-                  </div>
-                  <input
-                    v-model="settings.notifications.email"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">New Applications</h3>
-                    <p class="text-sm text-muted-foreground">Get notified when voice actors apply to your jobs</p>
-                  </div>
-                  <input
-                    v-model="settings.notifications.newApplications"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Job Deadlines</h3>
-                    <p class="text-sm text-muted-foreground">Reminders for upcoming job deadlines</p>
-                  </div>
-                  <input
-                    v-model="settings.notifications.deadlines"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Payment Updates</h3>
-                    <p class="text-sm text-muted-foreground">Notifications about payment status and invoices</p>
-                  </div>
-                  <input
-                    v-model="settings.notifications.payments"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-              </div>
-              
-              <div class="mt-6">
-                <label class="block text-sm font-medium text-foreground mb-2">
-                  Notification Frequency
-                </label>
-                <SelectInput
-                  v-model="settings.notifications.frequency"
-                  :options="notificationFrequencyOptions"
-                  placeholder="Select frequency"
-                />
-              </div>
-            </div>
 
             <!-- Social Links -->
             <div class="bg-card rounded-lg border border-border p-6">
               <h2 class="text-lg font-semibold text-foreground mb-6">Social Links</h2>
               
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-sm font-medium text-foreground mb-2">
                     LinkedIn
@@ -353,6 +291,17 @@
                     type="url"
                     class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder="https://linkedin.com/company/yourcompany"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    Facebook Page
+                  </label>
+                  <input
+                    v-model="settings.socialLinks.facebook"
+                    type="url"
+                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="https://facebook.com/yourcompany"
                   />
                 </div>
                 <div>
@@ -438,18 +387,11 @@ const settings = reactive({
     requirePortfolio: true
   },
   
-  // Notifications
-  notifications: {
-    email: true,
-    newApplications: true,
-    deadlines: true,
-    payments: true,
-    frequency: 'daily'
-  },
   
   // Social Links
   socialLinks: {
     linkedin: '',
+    facebook: '',
     twitter: ''
   }
 })
@@ -494,7 +436,8 @@ const currencyOptions = [
   { value: 'EUR', label: 'EUR (€)' },
   { value: 'GBP', label: 'GBP (£)' },
   { value: 'CAD', label: 'CAD (C$)' },
-  { value: 'AUD', label: 'AUD (A$)' }
+  { value: 'AUD', label: 'AUD (A$)' },
+  { value: 'VND', label: 'VND (₫)' }
 ]
 
 const languageOptions = [
@@ -539,12 +482,6 @@ const priorityOptions = [
   { value: 'urgent', label: 'Urgent' }
 ]
 
-const notificationFrequencyOptions = [
-  { value: 'immediate', label: 'Immediate' },
-  { value: 'daily', label: 'Daily Digest' },
-  { value: 'weekly', label: 'Weekly Summary' },
-  { value: 'never', label: 'Never' }
-]
 
 // Methods
 const goBack = () => {
@@ -575,6 +512,7 @@ const loadSettings = () => {
   
   // Load social links
   settings.socialLinks.linkedin = client.socialLinks.linkedin || ''
+  settings.socialLinks.facebook = client.socialLinks.facebook || ''
   settings.socialLinks.twitter = client.socialLinks.twitter || ''
 }
 
@@ -609,6 +547,7 @@ const saveSettings = async () => {
       socialLinks: {
         website: settings.website,
         linkedin: settings.socialLinks.linkedin,
+        facebook: settings.socialLinks.facebook,
         twitter: settings.socialLinks.twitter
       }
     }

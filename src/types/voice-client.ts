@@ -33,13 +33,14 @@ export interface VoiceClient extends BaseEntity {
   socialLinks: {
     website?: string
     linkedin?: string
+    facebook?: string
     twitter?: string
   }
   preferences: {
     defaultBudget: {
       min: number
       max: number
-      currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+      currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
     }
     preferredLanguages: string[]
     preferredVoiceTypes: string[]
@@ -61,7 +62,7 @@ export interface JobPosting extends BaseEntity {
   budget: {
     min: number
     max: number
-    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
   }
   deadline: string
   startDate?: string

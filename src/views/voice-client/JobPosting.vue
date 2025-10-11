@@ -440,7 +440,8 @@ const currencyOptions = [
   { value: 'EUR', label: 'EUR (€)' },
   { value: 'GBP', label: 'GBP (£)' },
   { value: 'CAD', label: 'CAD (C$)' },
-  { value: 'AUD', label: 'AUD (A$)' }
+  { value: 'AUD', label: 'AUD (A$)' },
+  { value: 'VND', label: 'VND (₫)' }
 ]
 
 const languageOptions = [
@@ -575,7 +576,7 @@ const submitJob = async () => {
       budget: {
         min: jobForm.budget.min,
         max: jobForm.budget.max,
-        currency: jobForm.budget.currency as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+        currency: jobForm.budget.currency as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
       },
       deadline: jobForm.deadline,
       estimatedDuration: jobForm.estimatedDuration,
