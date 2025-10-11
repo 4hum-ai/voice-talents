@@ -39,6 +39,21 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/voice-actor/CastingView.vue'),
     meta: { title: 'Casting Opportunities', requiresAuth: true },
   },
+  {
+    path: '/casting/:id',
+    component: () => import('../views/voice-actor/CastingDetail.vue'),
+    meta: { title: 'Casting Details', requiresAuth: true },
+  },
+  {
+    path: '/casting/:id/submit',
+    component: () => import('../views/voice-actor/CastingSubmit.vue'),
+    meta: { title: 'Submit Proposal', requiresAuth: true },
+  },
+  {
+    path: '/casting/:id/proposal',
+    component: () => import('../views/voice-actor/CastingProposal.vue'),
+    meta: { title: 'View Proposal', requiresAuth: true },
+  },
   
   
   
