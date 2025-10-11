@@ -23,7 +23,7 @@
               size="sm"
               @click="bulkAction('delete')"
             >
-              <Icon name="mdi:delete" class="h-4 w-4 mr-2" />
+              <Icon name="mdi:delete" class="h-4 w-4" />
               Delete
             </Button>
             <Button
@@ -31,7 +31,7 @@
               size="sm"
               @click="bulkAction('export')"
             >
-              <Icon name="mdi:download" class="h-4 w-4 mr-2" />
+              <Icon name="mdi:download" class="h-4 w-4" />
               Export
             </Button>
           </div>

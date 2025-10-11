@@ -207,7 +207,7 @@
                           class="w-full justify-start"
                           @click="downloadSample"
                         >
-                          <DownloadIcon class="h-4 w-4 mr-2" />
+                          <DownloadIcon class="h-4 w-4" />
                           Download
                         </Button>
                         <Button
@@ -215,7 +215,7 @@
                           class="w-full justify-start"
                           @click="copyLink"
                         >
-                          <CopyIcon class="h-4 w-4 mr-2" />
+                          <CopyIcon class="h-4 w-4" />
                           Copy Link
                         </Button>
                         <Button
@@ -223,7 +223,7 @@
                           class="w-full justify-start"
                           @click="deleteSample"
                         >
-                          <TrashIcon class="h-4 w-4 mr-2" />
+                          <TrashIcon class="h-4 w-4" />
                           Delete
                         </Button>
                       </div>
