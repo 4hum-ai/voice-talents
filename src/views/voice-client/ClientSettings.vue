@@ -5,7 +5,7 @@
 
     <!-- Main Content -->
     <div class="flex-1">
-      <!-- Header -->
+      <!-- Header with Stepper -->
       <div class="bg-card shadow-sm border-b border-border">
         <div class="px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
@@ -15,319 +15,516 @@
               </Button>
               <div>
                 <h1 class="text-2xl font-bold text-foreground">
-                  Account Settings
+                  Client Settings
                 </h1>
                 <p class="text-sm text-muted-foreground">
-                  Manage your client account and preferences
+                  Manage your client account settings and preferences
                 </p>
               </div>
             </div>
             <div class="flex items-center space-x-4">
               <ThemeToggle />
+              <Button variant="outline" size="sm" @click="resetSettings">
+                <RefreshIcon class="h-4 w-4 mr-2" />
+                Reset to Defaults
+              </Button>
+            </div>
+          </div>
+          
+          <!-- Stepper Navigation -->
+          <div class="py-4 border-t border-border">
+            <div class="flex items-center justify-between">
+              <!-- Previous Button -->
+              <Button 
+                v-if="currentStep > 1" 
+                variant="outline" 
+                size="sm" 
+                @click="previousStep"
+                :disabled="!canGoBack"
+              >
+                <ArrowLeftIcon class="h-4 w-4 mr-2" />
+                Previous
+              </Button>
+              <div v-else class="w-20" />
+
+              <!-- Progress Indicator -->
+              <div class="flex items-center space-x-4">
+                <div class="text-sm text-muted-foreground">
+                  Step {{ currentStep }} of {{ totalSteps }}
+                </div>
+                <div class="w-32 bg-muted rounded-full h-2">
+                  <div
+                    class="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
+                    :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
+                  />
+                </div>
+                <div class="text-sm text-muted-foreground">
+                  {{ Math.round((currentStep / totalSteps) * 100) }}%
+                </div>
+              </div>
+
+              <!-- Next Button -->
+              <Button 
+                v-if="currentStep < totalSteps" 
+                variant="primary" 
+                size="sm" 
+                @click="nextStep"
+                :disabled="!canProceedToNext"
+              >
+                Next
+                <ArrowRightIcon class="h-4 w-4 ml-2" />
+              </Button>
+              <Button 
+                v-else 
+                variant="primary" 
+                size="sm" 
+                @click="saveSettings"
+                :disabled="isSaving"
+                :loading="isSaving"
+              >
+                <SaveIcon class="h-4 w-4 mr-2" />
+                {{ isSaving ? 'Saving...' : 'Save Settings' }}
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Main Content Area -->
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-4xl mx-auto">
           <form @submit.prevent="saveSettings" class="space-y-8">
-            <!-- Account Information -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">Account Information</h2>
-              
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Company Name *
-                  </label>
-                  <input
-                    v-model="settings.companyName"
-                    type="text"
-                    required
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Your Company Name"
-                  />
+            
+            <!-- Step 1: Account Information -->
+            <div v-if="currentStep === 1" class="space-y-8">
+              <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="mdi:account" class="h-8 w-8 text-white" />
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Contact Name *
-                  </label>
-                  <input
-                    v-model="settings.contactName"
-                    type="text"
-                    required
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Your Full Name"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    v-model="settings.email"
-                    type="email"
-                    required
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="your@email.com"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    v-model="settings.phone"
-                    type="tel"
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Website
-                  </label>
-                  <input
-                    v-model="settings.website"
-                    type="url"
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="https://yourcompany.com"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Industry
-                  </label>
-                  <SelectInput
-                    v-model="settings.industry"
-                    :options="industryOptions"
-                    placeholder="Select industry"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Company Size
-                  </label>
-                  <SelectInput
-                    v-model="settings.companySize"
-                    :options="companySizeOptions"
-                    placeholder="Select company size"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Timezone
-                  </label>
-                  <SelectInput
-                    v-model="settings.timezone"
-                    :options="timezoneOptions"
-                    placeholder="Select timezone"
-                  />
-                </div>
+                <h2 class="text-2xl font-bold text-foreground mb-2">Account Information</h2>
+                <p class="text-muted-foreground">Set up your company details and contact information</p>
               </div>
-              <div class="mt-6">
-                <label class="block text-sm font-medium text-foreground mb-2">
-                  Company Description
-                </label>
-                <textarea
-                  v-model="settings.description"
-                  rows="4"
-                  class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Tell us about your company and what you do..."
-                />
+
+              <div class="bg-card rounded-lg border border-border p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Company Name *
+                    </label>
+                    <input
+                      v-model="settings.companyName"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Your Company Name"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Contact Name *
+                    </label>
+                    <input
+                      v-model="settings.contactName"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Your Full Name"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      v-model="settings.email"
+                      type="email"
+                      required
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      v-model="settings.phone"
+                      type="tel"
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Website
+                    </label>
+                    <input
+                      v-model="settings.website"
+                      type="url"
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="https://yourcompany.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Location *
+                    </label>
+                    <input
+                      v-model="settings.location"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="City, Country"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Timezone *
+                    </label>
+                    <SelectInput
+                      v-model="settings.timezone"
+                      :options="timezoneOptions"
+                      placeholder="Select timezone"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Industry *
+                    </label>
+                    <input
+                      v-model="settings.industry"
+                      type="text"
+                      required
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="e.g., Technology, Advertising, Education"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Company Size *
+                    </label>
+                    <SelectInput
+                      v-model="settings.companySize"
+                      :options="companySizeOptions"
+                      placeholder="Select company size"
+                      required
+                    />
+                  </div>
+
+                  <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Company Description
+                    </label>
+                    <textarea
+                      v-model="settings.description"
+                      rows="3"
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Brief description of your company and what you do..."
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Job Defaults -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">Job Posting Defaults</h2>
-              
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Default Budget Range
-                  </label>
-                  <div class="grid grid-cols-2 gap-3">
-                    <div>
-                      <input
-                        v-model.number="settings.defaults.budget.min"
-                        type="number"
-                        min="0"
-                        class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="Min"
-                      />
+            <!-- Step 2: Job Defaults -->
+            <div v-if="currentStep === 2" class="space-y-8">
+              <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="mdi:target" class="h-8 w-8 text-white" />
+                </div>
+                <h2 class="text-2xl font-bold text-foreground mb-2">Job Defaults</h2>
+                <p class="text-muted-foreground">Set your default preferences for job postings</p>
+              </div>
+
+              <div class="bg-card rounded-lg border border-border p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Default Budget Range
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          v-model.number="settings.preferences.defaultBudget.min"
+                          type="number"
+                          min="0"
+                          class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Min"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          v-model.number="settings.preferences.defaultBudget.max"
+                          type="number"
+                          min="0"
+                          class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Max"
+                        />
+                      </div>
                     </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Default Currency
+                    </label>
+                    <SelectInput
+                      v-model="settings.preferences.defaultBudget.currency"
+                      :options="currencyOptions"
+                      placeholder="Select currency"
+                    />
+                  </div>
+
+                  <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Preferred Languages
+                    </label>
+                    <SelectInput
+                      v-model="settings.preferences.preferredLanguages"
+                      :options="languageOptions"
+                      placeholder="Select preferred languages"
+                      multiple
+                    />
+                  </div>
+
+                  <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Preferred Voice Types
+                    </label>
+                    <SelectInput
+                      v-model="settings.preferences.preferredVoiceTypes"
+                      :options="voiceTypeOptions"
+                      placeholder="Select preferred voice types"
+                      multiple
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Job Preferences -->
+            <div v-if="currentStep === 3" class="space-y-8">
+              <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="mdi:cog" class="h-8 w-8 text-white" />
+                </div>
+                <h2 class="text-2xl font-bold text-foreground mb-2">Job Preferences</h2>
+                <p class="text-muted-foreground">Configure your workflow and approval settings</p>
+              </div>
+
+              <div class="bg-card rounded-lg border border-border p-8">
+                <div class="space-y-6">
+                  <div class="flex items-center justify-between p-4 border border-border rounded-lg">
                     <div>
-                      <input
-                        v-model.number="settings.defaults.budget.max"
-                        type="number"
-                        min="0"
-                        class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="Max"
-                      />
+                      <h3 class="text-sm font-medium text-foreground">Auto-approve Applications</h3>
+                      <p class="text-sm text-muted-foreground">Automatically approve applications that meet your criteria</p>
+                    </div>
+                    <input
+                      v-model="settings.preferences.autoApprove"
+                      type="checkbox"
+                      class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    />
+                  </div>
+                  
+                  <div class="flex items-center justify-between p-4 border border-border rounded-lg">
+                    <div>
+                      <h3 class="text-sm font-medium text-foreground">Require NDA</h3>
+                      <p class="text-sm text-muted-foreground">Require voice actors to sign an NDA before starting work</p>
+                    </div>
+                    <input
+                      v-model="settings.preferences.requireNDA"
+                      type="checkbox"
+                      class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    />
+                  </div>
+                  
+                  <div class="flex items-center justify-between p-4 border border-border rounded-lg">
+                    <div>
+                      <h3 class="text-sm font-medium text-foreground">Require Portfolio</h3>
+                      <p class="text-sm text-muted-foreground">Only allow voice actors with portfolios to apply</p>
+                    </div>
+                    <input
+                      v-model="settings.preferences.requirePortfolio"
+                      type="checkbox"
+                      class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    />
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-border rounded-lg">
+                    <div>
+                      <h3 class="text-sm font-medium text-foreground">Public Profile</h3>
+                      <p class="text-sm text-muted-foreground">Make your client profile visible to voice actors</p>
+                    </div>
+                    <input
+                      v-model="settings.isPublic"
+                      type="checkbox"
+                      class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Social Links -->
+            <div v-if="currentStep === 4" class="space-y-8">
+              <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="mdi:share-variant" class="h-8 w-8 text-white" />
+                </div>
+                <h2 class="text-2xl font-bold text-foreground mb-2">Social Links</h2>
+                <p class="text-muted-foreground">Connect your social media profiles</p>
+              </div>
+
+              <div class="bg-card rounded-lg border border-border p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      LinkedIn
+                    </label>
+                    <input
+                      v-model="settings.socialLinks.linkedin"
+                      type="url"
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="https://linkedin.com/company/yourcompany"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Facebook Page
+                    </label>
+                    <input
+                      v-model="settings.socialLinks.facebook"
+                      type="url"
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="https://facebook.com/yourcompany"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">
+                      Twitter
+                    </label>
+                    <input
+                      v-model="settings.socialLinks.twitter"
+                      type="url"
+                      class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="https://twitter.com/yourcompany"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5: Review & Save -->
+            <div v-if="currentStep === 5" class="space-y-8">
+              <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="mdi:check-circle" class="h-8 w-8 text-white" />
+                </div>
+                <h2 class="text-2xl font-bold text-foreground mb-2">Review & Save</h2>
+                <p class="text-muted-foreground">Review your settings and save your changes</p>
+              </div>
+
+              <div class="bg-card rounded-lg border border-border p-8">
+                <div class="space-y-6">
+                  <!-- Account Summary -->
+                  <div class="border-b border-border pb-6">
+                    <h3 class="text-lg font-semibold text-foreground mb-4">Account Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span class="text-muted-foreground">Company:</span>
+                        <span class="ml-2 font-medium">{{ settings.companyName || 'Not set' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Contact:</span>
+                        <span class="ml-2 font-medium">{{ settings.contactName || 'Not set' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Email:</span>
+                        <span class="ml-2 font-medium">{{ settings.email || 'Not set' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Industry:</span>
+                        <span class="ml-2 font-medium">{{ settings.industry || 'Not set' }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Job Defaults Summary -->
+                  <div class="border-b border-border pb-6">
+                    <h3 class="text-lg font-semibold text-foreground mb-4">Job Defaults</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span class="text-muted-foreground">Budget Range:</span>
+                        <span class="ml-2 font-medium">
+                          {{ settings.preferences.defaultBudget.min || 0 }} - {{ settings.preferences.defaultBudget.max || 0 }} 
+                          {{ settings.preferences.defaultBudget.currency }}
+                        </span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Languages:</span>
+                        <span class="ml-2 font-medium">{{ settings.preferences.preferredLanguages.length }} selected</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Voice Types:</span>
+                        <span class="ml-2 font-medium">{{ settings.preferences.preferredVoiceTypes.length }} selected</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Preferences Summary -->
+                  <div class="border-b border-border pb-6">
+                    <h3 class="text-lg font-semibold text-foreground mb-4">Preferences</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span class="text-muted-foreground">Auto-approve:</span>
+                        <span class="ml-2 font-medium">{{ settings.preferences.autoApprove ? 'Yes' : 'No' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Require NDA:</span>
+                        <span class="ml-2 font-medium">{{ settings.preferences.requireNDA ? 'Yes' : 'No' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Require Portfolio:</span>
+                        <span class="ml-2 font-medium">{{ settings.preferences.requirePortfolio ? 'Yes' : 'No' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Public Profile:</span>
+                        <span class="ml-2 font-medium">{{ settings.isPublic ? 'Yes' : 'No' }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Social Links Summary -->
+                  <div>
+                    <h3 class="text-lg font-semibold text-foreground mb-4">Social Links</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span class="text-muted-foreground">LinkedIn:</span>
+                        <span class="ml-2 font-medium">{{ settings.socialLinks.linkedin ? 'Set' : 'Not set' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Facebook:</span>
+                        <span class="ml-2 font-medium">{{ settings.socialLinks.facebook ? 'Set' : 'Not set' }}</span>
+                      </div>
+                      <div>
+                        <span class="text-muted-foreground">Twitter:</span>
+                        <span class="ml-2 font-medium">{{ settings.socialLinks.twitter ? 'Set' : 'Not set' }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Default Currency
-                  </label>
-                  <SelectInput
-                    v-model="settings.defaults.budget.currency"
-                    :options="currencyOptions"
-                    placeholder="Select currency"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Preferred Languages
-                  </label>
-                  <SelectInput
-                    v-model="settings.defaults.languages"
-                    :options="languageOptions"
-                    placeholder="Select languages"
-                    multiple
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Preferred Voice Types
-                  </label>
-                  <SelectInput
-                    v-model="settings.defaults.voiceTypes"
-                    :options="voiceTypeOptions"
-                    placeholder="Select voice types"
-                    multiple
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Default Job Type
-                  </label>
-                  <SelectInput
-                    v-model="settings.defaults.jobType"
-                    :options="jobTypeOptions"
-                    placeholder="Select default job type"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Default Priority
-                  </label>
-                  <SelectInput
-                    v-model="settings.defaults.priority"
-                    :options="priorityOptions"
-                    placeholder="Select default priority"
-                  />
-                </div>
               </div>
             </div>
 
-            <!-- Preferences -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">Job Preferences</h2>
-              
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Auto-approve Applications</h3>
-                    <p class="text-sm text-muted-foreground">Automatically approve applications that meet your criteria</p>
-                  </div>
-                  <input
-                    v-model="settings.preferences.autoApprove"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Require NDA</h3>
-                    <p class="text-sm text-muted-foreground">Require voice actors to sign an NDA before starting work</p>
-                  </div>
-                  <input
-                    v-model="settings.preferences.requireNDA"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Require Portfolio</h3>
-                    <p class="text-sm text-muted-foreground">Only allow voice actors with portfolios to apply</p>
-                  </div>
-                  <input
-                    v-model="settings.preferences.requirePortfolio"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h3 class="text-sm font-medium text-foreground">Public Profile</h3>
-                    <p class="text-sm text-muted-foreground">Make your company profile visible to voice actors</p>
-                  </div>
-                  <input
-                    v-model="settings.isPublic"
-                    type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-                  />
-                </div>
-              </div>
-            </div>
-
-
-            <!-- Social Links -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-6">Social Links</h2>
-              
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    LinkedIn
-                  </label>
-                  <input
-                    v-model="settings.socialLinks.linkedin"
-                    type="url"
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="https://linkedin.com/company/yourcompany"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Facebook Page
-                  </label>
-                  <input
-                    v-model="settings.socialLinks.facebook"
-                    type="url"
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="https://facebook.com/yourcompany"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-foreground mb-2">
-                    Twitter
-                  </label>
-                  <input
-                    v-model="settings.socialLinks.twitter"
-                    type="url"
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="https://twitter.com/yourcompany"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Form Actions -->
-            <div class="flex items-center justify-end space-x-4">
-              <Button type="button" variant="outline" @click="resetSettings">
-                Reset to Defaults
-              </Button>
-              <Button type="submit" variant="primary" :disabled="isSaving">
-                <SaveIcon class="h-4 w-4 mr-2" />
-                {{ isSaving ? 'Saving...' : 'Save Settings' }}
-              </Button>
-            </div>
           </form>
         </div>
       </div>
@@ -336,7 +533,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { VoiceClient } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
@@ -344,91 +541,84 @@ import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import Button from '@/components/atoms/Button.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import Icon from '@/components/atoms/Icon.vue'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
+import ArrowRightIcon from '~icons/mdi/arrow-right'
 import SaveIcon from '~icons/mdi/content-save'
+import RefreshIcon from '~icons/mdi/refresh'
 
 const router = useRouter()
 
 // State
 const isSaving = ref(false)
-const currentClient = ref<VoiceClient>(mockClientData.voiceClients[0])
+const currentStep = ref(1)
+const totalSteps = ref(5)
 
 // Settings form
-const settings = reactive({
-  // Account Information
+const settings = reactive<VoiceClient>({
+  id: '',
   companyName: '',
   contactName: '',
   email: '',
   phone: '',
   website: '',
+  location: '',
+  timezone: '',
   industry: '',
   companySize: '',
-  timezone: '',
   description: '',
-  isPublic: true,
-  
-  // Job Defaults
-  defaults: {
-    budget: {
+  logoUrl: '',
+  isPublic: false,
+  activeJobs: 0,
+  completedJobs: 0,
+  totalSpent: 0,
+  averageRating: 0,
+  joinedDate: '',
+  lastActive: '',
+  socialLinks: {
+    website: '',
+    linkedin: '',
+    facebook: '',
+    twitter: ''
+  },
+  preferences: {
+    defaultBudget: {
       min: 0,
       max: 0,
       currency: 'USD'
     },
-    languages: [] as string[],
-    voiceTypes: [] as string[],
-    jobType: 'open_casting',
-    priority: 'medium'
-  },
-  
-  // Preferences
-  preferences: {
+    preferredLanguages: [],
+    preferredVoiceTypes: [],
     autoApprove: false,
-    requireNDA: false,
-    requirePortfolio: true
-  },
-  
-  
-  // Social Links
-  socialLinks: {
-    linkedin: '',
-    facebook: '',
-    twitter: ''
+    requireNDA: false
   }
 })
 
 // Options
-const industryOptions = [
-  { value: 'technology', label: 'Technology' },
-  { value: 'advertising', label: 'Advertising & Marketing' },
-  { value: 'education', label: 'Education' },
-  { value: 'entertainment', label: 'Entertainment & Media' },
-  { value: 'gaming', label: 'Gaming' },
-  { value: 'healthcare', label: 'Healthcare' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'retail', label: 'Retail & E-commerce' },
-  { value: 'nonprofit', label: 'Non-profit' },
-  { value: 'other', label: 'Other' }
+const timezoneOptions = [
+  { value: 'UTC-12', label: '(UTC-12:00) International Date Line West' },
+  { value: 'UTC-11', label: '(UTC-11:00) Coordinated Universal Time-11' },
+  { value: 'UTC+0', label: '(UTC+00:00) Coordinated Universal Time' },
+  { value: 'UTC+1', label: '(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' },
+  { value: 'UTC+2', label: '(UTC+02:00) Athens, Bucharest, Istanbul' },
+  { value: 'UTC+3', label: '(UTC+03:00) Moscow, St. Petersburg, Volgograd' },
+  { value: 'UTC+4', label: '(UTC+04:00) Abu Dhabi, Muscat' },
+  { value: 'UTC+5', label: '(UTC+05:00) Islamabad, Karachi, Tashkent' },
+  { value: 'UTC+6', label: '(UTC+06:00) Almaty, Dhaka' },
+  { value: 'UTC+7', label: '(UTC+07:00) Bangkok, Hanoi, Jakarta' },
+  { value: 'UTC+8', label: '(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi' },
+  { value: 'UTC+9', label: '(UTC+09:00) Osaka, Sapporo, Tokyo' },
+  { value: 'UTC+10', label: '(UTC+10:00) Brisbane, Canberra, Melbourne, Sydney' },
+  { value: 'UTC+11', label: '(UTC+11:00) Magadan, Solomon Islands, New Caledonia' },
+  { value: 'UTC+12', label: '(UTC+12:00) Auckland, Wellington, Fiji, Kamchatka' }
 ]
 
 const companySizeOptions = [
   { value: 'startup', label: 'Startup (1-10 employees)' },
   { value: 'small', label: 'Small (11-50 employees)' },
-  { value: 'medium', label: 'Medium (51-200 employees)' },
-  { value: 'large', label: 'Large (201-1000 employees)' },
+  { value: 'medium', label: 'Medium (51-250 employees)' },
+  { value: 'large', label: 'Large (251-1000 employees)' },
   { value: 'enterprise', label: 'Enterprise (1000+ employees)' }
-]
-
-const timezoneOptions = [
-  { value: 'UTC', label: 'UTC' },
-  { value: 'America/New_York', label: 'Eastern Time (ET)' },
-  { value: 'America/Chicago', label: 'Central Time (CT)' },
-  { value: 'America/Denver', label: 'Mountain Time (MT)' },
-  { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-  { value: 'Europe/London', label: 'London (GMT)' },
-  { value: 'Europe/Paris', label: 'Paris (CET)' },
-  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-  { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
-  { value: 'Australia/Sydney', label: 'Sydney (AEST)' }
 ]
 
 const currencyOptions = [
@@ -468,47 +658,75 @@ const voiceTypeOptions = [
   { value: 'e-learning', label: 'E-Learning' }
 ]
 
-const jobTypeOptions = [
-  { value: 'open_casting', label: 'Open Casting' },
-  { value: 'invite_only', label: 'Invite Only' },
-  { value: 'urgent_fill', label: 'Urgent Fill' },
-  { value: 'targeted_search', label: 'Targeted Search' }
-]
+// Computed
+const canGoBack = computed(() => currentStep.value > 1)
 
-const priorityOptions = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'urgent', label: 'Urgent' }
-]
-
+const canProceedToNext = computed(() => {
+  switch (currentStep.value) {
+    case 1:
+      return settings.companyName && 
+             settings.contactName && 
+             settings.email &&
+             settings.location &&
+             settings.timezone &&
+             settings.industry &&
+             settings.companySize
+    case 2:
+      return settings.preferences.preferredLanguages.length > 0 &&
+             settings.preferences.preferredVoiceTypes.length > 0
+    case 3:
+    case 4:
+      return true // Optional steps
+    case 5:
+      return true // Review step
+    default:
+      return false
+  }
+})
 
 // Methods
 const goBack = () => {
   router.back()
 }
 
+const nextStep = () => {
+  if (currentStep.value < totalSteps.value && canProceedToNext.value) {
+    currentStep.value++
+  }
+}
+
+const previousStep = () => {
+  if (currentStep.value > 1) {
+    currentStep.value--
+  }
+}
+
 const loadSettings = () => {
-  // Load current client settings
-  const client = currentClient.value
+  const client = mockClientData.voiceClients[0]
+  
+  // Load basic info
+  settings.id = client.id
   settings.companyName = client.companyName
   settings.contactName = client.contactName
   settings.email = client.email
   settings.phone = client.phone || ''
   settings.website = client.website || ''
+  settings.location = client.location
+  settings.timezone = client.timezone || 'UTC+0'
   settings.industry = client.industry
-  settings.companySize = client.companySize
-  settings.timezone = client.timezone
+  settings.companySize = client.companySize || 'small'
   settings.description = client.description || ''
+  settings.logoUrl = client.logoUrl || ''
   settings.isPublic = client.isPublic
   
   // Load preferences
-  settings.defaults.budget = { ...client.preferences.defaultBudget }
-  settings.defaults.languages = [...client.preferences.preferredLanguages]
-  settings.defaults.voiceTypes = [...client.preferences.preferredVoiceTypes]
+  settings.preferences.defaultBudget.min = client.preferences.defaultBudget.min
+  settings.preferences.defaultBudget.max = client.preferences.defaultBudget.max
+  settings.preferences.defaultBudget.currency = client.preferences.defaultBudget.currency
+  settings.preferences.preferredLanguages = [...client.preferences.preferredLanguages]
+  settings.preferences.preferredVoiceTypes = [...client.preferences.preferredVoiceTypes]
   settings.preferences.autoApprove = client.preferences.autoApprove
   settings.preferences.requireNDA = client.preferences.requireNDA
-  settings.preferences.requirePortfolio = true // Default value
   
   // Load social links
   settings.socialLinks.linkedin = client.socialLinks.linkedin || ''
@@ -516,58 +734,33 @@ const loadSettings = () => {
   settings.socialLinks.twitter = client.socialLinks.twitter || ''
 }
 
-const resetSettings = () => {
-  loadSettings()
-}
-
 const saveSettings = async () => {
   isSaving.value = true
   
   try {
-    // In real app, save settings to API
-    const updatedClient: VoiceClient = {
-      ...currentClient.value,
-      companyName: settings.companyName,
-      contactName: settings.contactName,
-      email: settings.email,
-      phone: settings.phone,
-      website: settings.website,
-      industry: settings.industry,
-      companySize: settings.companySize as any,
-      timezone: settings.timezone,
-      description: settings.description,
-      isPublic: settings.isPublic,
-      preferences: {
-        defaultBudget: settings.defaults.budget,
-        preferredLanguages: settings.defaults.languages,
-        preferredVoiceTypes: settings.defaults.voiceTypes,
-        autoApprove: settings.preferences.autoApprove,
-        requireNDA: settings.preferences.requireNDA
-      },
-      socialLinks: {
-        website: settings.website,
-        linkedin: settings.socialLinks.linkedin,
-        facebook: settings.socialLinks.facebook,
-        twitter: settings.socialLinks.twitter
-      }
-    }
-    
-    console.log('Saving client settings:', updatedClient)
+    // In real app, send settings to API
+    console.log('Saving client settings:', settings)
     
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Update local data
-    currentClient.value = updatedClient
+    await new Promise(resolve => setTimeout(resolve, 1500))
     
     // Show success message
-    console.log('Settings saved successfully!')
+    alert('Settings saved successfully!')
     
+    // Navigate back or to dashboard
+    router.push('/client/dashboard')
   } catch (error) {
     console.error('Error saving settings:', error)
+    alert('Failed to save settings. Please try again.')
   } finally {
     isSaving.value = false
   }
+}
+
+const resetSettings = () => {
+  loadSettings()
+  currentStep.value = 1
+  alert('Settings reset to default values.')
 }
 
 onMounted(() => {
