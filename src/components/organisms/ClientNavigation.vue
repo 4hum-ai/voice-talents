@@ -1,0 +1,190 @@
+<template>
+  <Sidebar
+    title="VoiceAct.AI"
+    :sections="navigationSections"
+    :active-item-id="activeItemId"
+    :fixed="false"
+    :default-collapsed="false"
+  >
+    <template #header>
+      <div class="p-4">
+        <div class="flex items-center space-x-3">
+          <Avatar
+            :src="currentClient?.logoUrl"
+            :alt="currentClient?.companyName"
+            :seed="currentClient?.companyName || 'Client'"
+            size="sm"
+          />
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-foreground truncate">
+              {{ currentClient?.companyName }}
+            </p>
+            <p class="text-xs text-muted-foreground truncate">
+              {{ currentClient?.contactName }} • {{ currentClient?.industry }}
+            </p>
+          </div>
+        </div>
+        
+        <!-- Role Switcher -->
+        <div class="mt-3 pt-3 border-t border-border">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="w-full justify-start"
+            @click="switchToVoiceActor"
+          >
+            <UserIcon class="h-4 w-4 mr-2" />
+            Switch to Voice Actor
+          </Button>
+        </div>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="space-y-3">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="text-center p-2 bg-muted rounded">
+            <div class="font-semibold text-foreground">
+              {{ stats.activeJobs }}
+            </div>
+            <div class="text-muted-foreground">Active Jobs</div>
+          </div>
+          <div class="text-center p-2 bg-muted rounded">
+            <div class="font-semibold text-foreground">
+              ${{ stats.monthlySpent.toLocaleString() }}
+            </div>
+            <div class="text-muted-foreground">This Month</div>
+          </div>
+        </div>
+
+        <!-- Settings & Logout -->
+        <div class="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="flex-1"
+            @click="$router.push('/client/settings')"
+          >
+            <CogIcon class="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="flex-1"
+            @click="handleLogout"
+          >
+            <LogoutIcon class="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </template>
+  </Sidebar>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import type { VoiceClient, ClientStats } from '@/types/voice-client'
+import { mockClientData } from '@/data/mock-voice-client-data'
+import Sidebar from '@/components/atoms/Sidebar.vue'
+import Button from '@/components/atoms/Button.vue'
+import Avatar from '@/components/atoms/Avatar.vue'
+import HomeIcon from '~icons/mdi/home'
+import BriefcaseIcon from '~icons/mdi/briefcase'
+import MegaphoneIcon from '~icons/mdi/megaphone'
+import AccountGroupIcon from '~icons/mdi/account-group'
+import EmailIcon from '~icons/mdi/email'
+import CogIcon from '~icons/mdi/cog'
+import LogoutIcon from '~icons/mdi/logout'
+import UserIcon from '~icons/mdi/account'
+
+const router = useRouter()
+const route = useRoute()
+
+// Mock data - in real app, this would come from API
+const currentClient = ref<VoiceClient>(mockClientData.voiceClients[0])
+const stats = ref<ClientStats>(mockClientData.clientStats)
+
+// Computed
+const activeItemId = computed(() => {
+  const path = route.path
+  if (path === '/client' || path === '/client/dashboard') return 'dashboard'
+  if (path.startsWith('/client/jobs')) return 'jobs'
+  if (path.startsWith('/client/campaigns')) return 'campaigns'
+  if (path.startsWith('/client/talents')) return 'talents'
+  if (path.startsWith('/client/invitations')) return 'invitations'
+  if (path.startsWith('/client/settings')) return 'settings'
+  return 'dashboard'
+})
+
+const navigationSections = computed(() => [
+  {
+    id: 'main',
+    title: 'Main',
+    items: [
+      {
+        id: 'dashboard',
+        title: 'Dashboard',
+        description: 'Overview & analytics',
+        icon: HomeIcon,
+        action: () => router.push('/client/dashboard')
+      }
+    ]
+  },
+  {
+    id: 'management',
+    title: 'Management',
+    items: [
+      {
+        id: 'jobs',
+        title: 'Job Management',
+        description: 'Create & manage jobs',
+        icon: BriefcaseIcon,
+        badge: stats.value.activeJobs,
+        action: () => router.push('/client/jobs')
+      },
+      {
+        id: 'campaigns',
+        title: 'Campaigns',
+        description: 'Marketing campaigns',
+        icon: MegaphoneIcon,
+        badge: stats.value.activeCampaigns,
+        action: () => router.push('/client/campaigns')
+      },
+      {
+        id: 'talents',
+        title: 'Talent Pool',
+        description: 'Browse & invite talents',
+        icon: AccountGroupIcon,
+        action: () => router.push('/client/talents')
+      },
+      {
+        id: 'invitations',
+        title: 'Invitations',
+        description: 'Manage invitations',
+        icon: EmailIcon,
+        action: () => router.push('/client/invitations')
+      }
+    ]
+  }
+])
+
+// Methods
+const switchToVoiceActor = () => {
+  // In real app, this would handle role switching
+  console.log('Switching to voice actor view')
+  router.push('/')
+}
+
+const handleLogout = () => {
+  // In real app, this would handle logout
+  console.log('Logout clicked')
+  router.push('/auth')
+}
+
+onMounted(() => {
+  // In real app, fetch current client and stats from API
+  console.log('Client navigation loaded')
+})
+</script>

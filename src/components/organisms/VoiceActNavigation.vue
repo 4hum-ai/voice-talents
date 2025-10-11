@@ -45,6 +45,19 @@
           </div>
         </div>
 
+        <!-- Role Switcher -->
+        <div class="mb-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="w-full justify-start"
+            @click="switchToClient"
+          >
+            <BriefcaseIcon class="h-4 w-4 mr-2" />
+            Switch to Client
+          </Button>
+        </div>
+
         <!-- Settings & Logout -->
         <div class="flex space-x-2">
           <Button
@@ -81,6 +94,7 @@ import HomeIcon from '~icons/mdi/home'
 import UserIcon from '~icons/mdi/account'
 import FolderOpenIcon from '~icons/mdi/folder-open'
 import MegaphoneIcon from '~icons/mdi/megaphone'
+import BriefcaseIcon from '~icons/mdi/briefcase'
 import CogIcon from '~icons/mdi/cog'
 import LogoutIcon from '~icons/mdi/logout'
 
@@ -149,6 +163,12 @@ const navigationSections = computed(() => [
 ])
 
 // Methods
+const switchToClient = () => {
+  // In real app, this would handle role switching
+  console.log('Switching to client view')
+  router.push('/client/dashboard')
+}
+
 const handleLogout = () => {
   // In real app, this would handle logout
   console.log('Logout clicked')

@@ -64,6 +64,67 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'Settings', requiresAuth: true },
   },
   
+  // Voice Client Routes
+  {
+    path: '/client',
+    redirect: '/client/dashboard'
+  },
+  {
+    path: '/client/dashboard',
+    component: () => import('../views/voice-client/ClientDashboard.vue'),
+    meta: { title: 'Client Dashboard', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/jobs',
+    component: () => import('../views/voice-client/JobManagement.vue'),
+    meta: { title: 'Job Management', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/jobs/create',
+    component: () => import('../views/voice-client/JobPosting.vue'),
+    meta: { title: 'Create Job', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/jobs/:id',
+    component: () => import('../views/voice-client/JobDetail.vue'),
+    meta: { title: 'Job Details', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/campaigns',
+    component: () => import('../views/voice-client/CampaignManagement.vue'),
+    meta: { title: 'Campaign Management', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/campaigns/create',
+    component: () => import('../views/voice-client/CampaignCreate.vue'),
+    meta: { title: 'Create Campaign', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/campaigns/:id',
+    component: () => import('../views/voice-client/CampaignDetail.vue'),
+    meta: { title: 'Campaign Details', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/talents',
+    component: () => import('../views/voice-client/TalentManagement.vue'),
+    meta: { title: 'Talent Management', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/talents/:id',
+    component: () => import('../views/voice-client/TalentProfile.vue'),
+    meta: { title: 'Talent Profile', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/invitations',
+    component: () => import('../views/voice-client/InvitationManagement.vue'),
+    meta: { title: 'Invitation Management', requiresAuth: true, role: 'client' },
+  },
+  {
+    path: '/client/settings',
+    component: () => import('../views/voice-client/ClientSettings.vue'),
+    meta: { title: 'Client Settings', requiresAuth: true, role: 'client' },
+  },
+  
   // Admin/Design System (keeping existing)
   {
     path: '/admin/design',
