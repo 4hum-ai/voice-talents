@@ -74,38 +74,25 @@
               @previous="previousStep"
             />
 
-            <!-- Step 3: Requirements -->
-            <RequirementsStep
+            <!-- Step 3: Requirements, Budget & Files -->
+            <CombinedRequirementsStep
               v-if="currentStep === 3"
               v-model:requirements="jobForm.requirements as any"
-              @next="nextStep"
-              @previous="previousStep"
-            />
-
-            <!-- Step 4: Budget & Timeline -->
-            <BudgetTimelineStep
-              v-if="currentStep === 4"
               v-model:budget="jobForm.budget as any"
               v-model:deadline="jobForm.deadline"
-              v-model:estimated-duration="jobForm.estimatedDuration"
-              @next="nextStep"
-              @previous="previousStep"
-            />
-
-            <!-- Step 5: Payment Method -->
-            <PaymentStep
-              v-if="currentStep === 5"
+              v-model:files="jobForm.files"
+              v-model:premium-features="jobForm.premiumFeatures"
               v-model:payment-details="jobForm.paymentDetails"
               @next="nextStep"
               @previous="previousStep"
             />
 
-            <!-- Step 6: Review & Publish -->
+            <!-- Step 4: Review & Publish -->
             <ReviewStep
-              v-if="currentStep === 6"
+              v-if="currentStep === 4"
               :job-form="jobForm as any"
               :is-submitting="isSubmitting"
-                @publish="publishJobHandler"
+              @publish="publishJobHandler"
               @previous="previousStep"
               @save-draft="saveDraft"
             />
@@ -129,9 +116,7 @@ import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import JobTypeStep from '../molecules/JobCreationSteps/JobTypeStep.vue'
 import BasicInfoStep from '../molecules/JobCreationSteps/BasicInfoStep.vue'
-import RequirementsStep from '../molecules/JobCreationSteps/RequirementsStep.vue'
-import BudgetTimelineStep from '../molecules/JobCreationSteps/BudgetTimelineStep.vue'
-import PaymentStep from '../molecules/JobCreationSteps/PaymentStep.vue'
+import CombinedRequirementsStep from '../molecules/JobCreationSteps/CombinedRequirementsStep.vue'
 import ReviewStep from '../molecules/JobCreationSteps/ReviewStep.vue'
 
 interface Props {
@@ -155,7 +140,7 @@ const { addToast: showToast } = useToast()
 
 // State
 const currentStep = ref(1)
-const totalSteps = 6
+const totalSteps = 4 // Reduced from 6 to 4 steps
 const transitionName = ref('slide-left')
 const isSubmitting = ref(false)
 const isSavingDraft = ref(false)
@@ -166,48 +151,49 @@ const autoSaveInterval = ref<number | null>(null)
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])
 
-// Job form data
+// Job form data - Streamlined for better UX
 const jobForm = reactive({
-  jobType: 'open_casting' as 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search',
+  jobType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
   title: '',
   description: '',
   projectType: 'commercial' as any,
   priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
   budget: {
-    min: 0,
     max: 0,
     currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
   },
   deadline: '',
-  estimatedDuration: '',
   requirements: {
     language: '',
-    accent: '',
     voiceType: '' as VoiceType,
-    ageRange: '',
     gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
-    specialInstructions: ''
+    specialInstructions: '',
+    deliveryFormat: '',
+    deliveryTimeline: '',
+    revisionRounds: ''
+  },
+  files: {
+    script: undefined as File | undefined,
+    referenceAudio: undefined as File | undefined,
+    additional: undefined as File[] | undefined
+  },
+  premiumFeatures: {
+    expressMatching: false,
+    talentOutreach: false
   },
   paymentDetails: {
-    method: 'direct' as 'direct' | 'online',
-    schedule: undefined as string | undefined,
-    escrowProtection: undefined as string | undefined,
-    timeline: undefined as string | undefined,
-    preferredMethod: undefined as string | undefined
+    method: 'direct' as 'direct' | 'online'
   },
   isPublic: true,
-  requirePortfolio: true,
-  requireCustomSample: false
+  requirePortfolio: true
 })
 
-// Step validation
+// Step validation - Simplified for 4 steps
 const stepValidation = {
   1: () => !!jobForm.jobType,
   2: () => !!jobForm.title.trim() && !!jobForm.description.trim() && !!jobForm.projectType,
-  3: () => !!jobForm.requirements.voiceType && !!jobForm.requirements.language,
-  4: () => jobForm.budget.max > 0,
-  5: () => !!jobForm.paymentDetails.method,
-  6: () => true // Review step is always valid
+  3: () => !!jobForm.requirements.voiceType && !!jobForm.requirements.language && jobForm.budget.max > 0,
+  4: () => true // Review step is always valid
 }
 
 // Methods
@@ -294,24 +280,29 @@ const loadDraftData = (draftId: string) => {
     jobForm.title = draft.title
     jobForm.description = draft.description
     jobForm.projectType = draft.projectType
-    jobForm.priority = draft.priority
-    jobForm.budget = { min: 0, max: draft.budget.max, currency: draft.budget.currency }
+    jobForm.priority = draft.priority || 'medium'
+    jobForm.budget = { max: draft.budget.max, currency: draft.budget.currency }
     jobForm.deadline = draft.deadline
-    jobForm.estimatedDuration = draft.estimatedDuration
     jobForm.requirements = {
       language: (draft.requirements as any).language || '',
-      accent: (draft.requirements as any).accent || '',
       voiceType: (draft.requirements as any).voiceType || '',
-      ageRange: draft.requirements.ageRange || '',
       gender: draft.requirements.gender || 'any',
-      specialInstructions: draft.requirements.specialInstructions || ''
+      specialInstructions: draft.requirements.specialInstructions || '',
+      deliveryFormat: (draft.requirements as any).deliveryFormat || '',
+      deliveryTimeline: (draft.requirements as any).deliveryTimeline || '',
+      revisionRounds: (draft.requirements as any).revisionRounds || ''
+    }
+    jobForm.files = (draft as any).files || {
+      script: undefined,
+      referenceAudio: undefined,
+      additional: undefined
+    }
+    jobForm.premiumFeatures = (draft as any).premiumFeatures || {
+      expressMatching: false,
+      talentOutreach: false
     }
     jobForm.paymentDetails = (draft as any).paymentDetails || {
-      method: 'direct',
-      schedule: undefined,
-      escrowProtection: undefined,
-      timeline: undefined,
-      preferredMethod: undefined
+      method: 'direct'
     }
     jobForm.isPublic = draft.isPublic
     
@@ -373,7 +364,6 @@ const loadClientDefaults = () => {
   const client = currentClient.value
   if (client) {
     // Load default budget
-    jobForm.budget.min = client.preferences.defaultBudget.min
     jobForm.budget.max = client.preferences.defaultBudget.max
     jobForm.budget.currency = client.preferences.defaultBudget.currency
     

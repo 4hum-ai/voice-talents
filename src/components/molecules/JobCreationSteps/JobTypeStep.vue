@@ -1,13 +1,13 @@
 <template>
   <div class="max-w-3xl mx-auto">
     <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-foreground mb-4">Choose Job Type</h1>
+      <h1 class="text-3xl font-bold text-foreground mb-4">Choose Voice Solution</h1>
       <p class="text-lg text-muted-foreground">
-        Select the type of voice acting opportunity you want to create
+        Select how you want to create your voice content
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div 
         v-for="type in jobTypes" 
         :key="type.value"
@@ -54,6 +54,14 @@
               <span>{{ type.features[2] }}</span>
             </div>
           </div>
+          
+          <!-- Pricing Info -->
+          <div v-if="type.pricing" class="mt-4 pt-4 border-t border-border">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-foreground">Starting from:</span>
+              <span class="text-lg font-bold text-primary">{{ type.pricing }}</span>
+            </div>
+          </div>
         </label>
       </div>
     </div>
@@ -77,17 +85,16 @@
 import { ref, watch } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import MegaphoneIcon from '~icons/mdi/megaphone'
-import EmailIcon from '~icons/mdi/email'
-import ClockIcon from '~icons/mdi/clock'
-import TargetIcon from '~icons/mdi/target'
+import AccountIcon from '~icons/mdi/account'
+import RobotIcon from '~icons/mdi/robot'
+import AccountGroupIcon from '~icons/mdi/account-group'
 
 interface Props {
-  jobType: 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search'
+  jobType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {
-  (e: 'update:jobType', value: 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search'): void
+  (e: 'update:jobType', value: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'): void
   (e: 'next'): void
 }
 
@@ -96,51 +103,43 @@ const emit = defineEmits<Emits>()
 
 const localJobType = ref(props.jobType)
 
-// Job Types with enhanced descriptions and features
+// Voice Solution Types with enhanced descriptions and features
 const jobTypes = [
   {
-    value: 'open_casting',
-    label: 'Open Casting',
-    description: 'Open job posting for all voice actors to apply',
-    icon: MegaphoneIcon,
+    value: 'talent_only',
+    label: 'Talent Only',
+    description: 'Hire professional voice actors for authentic human voice',
+    icon: AccountIcon,
     features: [
-      'All voice actors can apply',
-      'Maximum exposure and reach',
-      'Competitive selection process'
-    ]
+      'Authentic human voice',
+      'Professional voice actors',
+      'Full creative control'
+    ],
+    pricing: '$50-500'
   },
   {
-    value: 'invite_only',
-    label: 'Invite Only',
-    description: 'Send direct invitations to specific voice actors',
-    icon: EmailIcon,
+    value: 'ai_synthesis',
+    label: 'AI Voice Synthesis',
+    description: 'Generate voice using licensed AI voice models',
+    icon: RobotIcon,
     features: [
-      'Curated talent selection',
-      'Direct invitations sent',
-      'Exclusive opportunity'
-    ]
+      'Instant voice generation',
+      'Licensed voice models',
+      '24/7 availability'
+    ],
+    pricing: '$25-150'
   },
   {
-    value: 'urgent_fill',
-    label: 'Urgent Fill',
-    description: 'Need to fill this position as soon as possible',
-    icon: ClockIcon,
+    value: 'hybrid_approach',
+    label: 'Hybrid Approach',
+    description: 'AI-generated base with talent refinement',
+    icon: AccountGroupIcon,
     features: [
-      'Priority placement',
-      'Fast-track applications',
-      'Quick turnaround required'
-    ]
-  },
-  {
-    value: 'targeted_search',
-    label: 'Targeted Search',
-    description: 'Search for specific voice characteristics',
-    icon: TargetIcon,
-    features: [
-      'Specific voice requirements',
-      'Advanced filtering',
-      'Precise talent matching'
-    ]
+      'AI efficiency + human touch',
+      'Faster turnaround',
+      'Cost-effective solution'
+    ],
+    pricing: '$35-200'
   }
 ]
 

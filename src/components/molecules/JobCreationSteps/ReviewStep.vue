@@ -25,8 +25,8 @@
                 <span class="font-medium">{{ getProjectTypeLabel(jobForm.projectType) }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-muted-foreground">Priority:</span>
-                <span class="font-medium capitalize">{{ jobForm.priority }}</span>
+                <span class="text-muted-foreground">Payment:</span>
+                <span class="font-medium">{{ getPaymentMethodLabel(jobForm.paymentDetails.method) }}</span>
               </div>
             </div>
           </div>
@@ -41,20 +41,10 @@
               <div class="text-sm text-muted-foreground">Deadline</div>
               <div class="font-semibold text-foreground">{{ formatDate(jobForm.deadline) }}</div>
             </div>
-            <div v-if="jobForm.estimatedDuration" class="p-3 bg-muted/50 rounded-lg">
-              <div class="text-sm text-muted-foreground">Duration</div>
-              <div class="font-semibold text-foreground">{{ jobForm.estimatedDuration }}</div>
-            </div>
             <div class="p-3 bg-muted/50 rounded-lg">
               <div class="text-sm text-muted-foreground">Payment Method</div>
               <div class="font-semibold text-foreground">
-                {{ getPaymentMethodLabel((jobForm as any).paymentDetails?.method || 'direct') }}
-              </div>
-              <div v-if="(jobForm as any).paymentDetails?.method === 'online'" class="text-xs text-muted-foreground mt-1">
-                {{ (jobForm as any).paymentDetails?.schedule ? (jobForm as any).paymentDetails.schedule.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) : 'Upon completion' }}
-              </div>
-              <div v-if="(jobForm as any).paymentDetails?.method === 'direct'" class="text-xs text-muted-foreground mt-1">
-                {{ (jobForm as any).paymentDetails?.timeline ? (jobForm as any).paymentDetails.timeline.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) : 'Flexible' }}
+                {{ getPaymentMethodLabel(jobForm.paymentDetails.method) }}
               </div>
             </div>
           </div>
@@ -66,40 +56,24 @@
         <h3 class="text-lg font-semibold text-foreground mb-4">Voice Requirements</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 class="font-medium text-foreground mb-2">Voice Types</h4>
-            <div class="flex flex-wrap gap-2">
-              <span 
-                v-for="voiceType in jobForm.requirements.voiceTypes" 
-                :key="voiceType"
-                class="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm"
-              >
-                {{ getVoiceTypeLabel(voiceType) }}
-              </span>
-            </div>
+            <h4 class="font-medium text-foreground mb-2">Voice Type</h4>
+            <span class="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm">
+              {{ getVoiceTypeLabel(jobForm.requirements.voiceType) }}
+            </span>
           </div>
           <div>
-            <h4 class="font-medium text-foreground mb-2">Languages</h4>
-            <div class="flex flex-wrap gap-2">
-              <span 
-                v-for="language in jobForm.requirements.languages" 
-                :key="language"
-                class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm"
-              >
-                {{ language }}
-              </span>
-            </div>
+            <h4 class="font-medium text-foreground mb-2">Language</h4>
+            <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm">
+              {{ jobForm.requirements.language }}
+            </span>
           </div>
         </div>
         
         <div v-if="hasAdditionalRequirements" class="mt-4 pt-4 border-t border-border">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div v-if="jobForm.requirements.gender !== 'any'">
               <span class="text-muted-foreground">Gender:</span>
               <span class="font-medium ml-1 capitalize">{{ jobForm.requirements.gender }}</span>
-            </div>
-            <div v-if="jobForm.requirements.ageRange">
-              <span class="text-muted-foreground">Age Range:</span>
-              <span class="font-medium ml-1">{{ jobForm.requirements.ageRange }}</span>
             </div>
           </div>
         </div>
@@ -108,6 +82,65 @@
           <h4 class="font-medium text-foreground mb-2">Special Instructions</h4>
           <p class="text-sm text-muted-foreground">{{ jobForm.requirements.specialInstructions }}</p>
         </div>
+
+        <!-- Delivery Requirements -->
+        <div v-if="jobForm.requirements.deliveryFormat || jobForm.requirements.deliveryTimeline || jobForm.requirements.revisionRounds" class="mt-4">
+          <h4 class="font-medium text-foreground mb-2">Delivery Requirements</h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div v-if="jobForm.requirements.deliveryFormat" class="p-3 bg-muted/50 rounded-lg">
+              <div class="text-sm text-muted-foreground">Format</div>
+              <div class="font-semibold text-foreground">{{ getDeliveryFormatLabel(jobForm.requirements.deliveryFormat) }}</div>
+            </div>
+            <div v-if="jobForm.requirements.deliveryTimeline" class="p-3 bg-muted/50 rounded-lg">
+              <div class="text-sm text-muted-foreground">Timeline</div>
+              <div class="font-semibold text-foreground">{{ getDeliveryTimelineLabel(jobForm.requirements.deliveryTimeline) }}</div>
+            </div>
+            <div v-if="jobForm.requirements.revisionRounds" class="p-3 bg-muted/50 rounded-lg">
+              <div class="text-sm text-muted-foreground">Revisions</div>
+              <div class="font-semibold text-foreground">{{ getRevisionRoundsLabel(jobForm.requirements.revisionRounds) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Files -->
+      <div v-if="hasFiles" class="bg-card rounded-lg border border-border p-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4">Project Files</h3>
+        <div class="space-y-3">
+          <div v-if="jobForm.files.script" class="flex items-center space-x-3">
+            <Icon name="mdi:file-document" class="h-5 w-5 text-muted-foreground" />
+            <span class="text-sm text-foreground">{{ jobForm.files.script.name }}</span>
+          </div>
+          <div v-if="jobForm.files.referenceAudio" class="flex items-center space-x-3">
+            <Icon name="mdi:music" class="h-5 w-5 text-muted-foreground" />
+            <span class="text-sm text-foreground">{{ jobForm.files.referenceAudio.name }}</span>
+          </div>
+          <div v-if="jobForm.files.additional && jobForm.files.additional.length > 0" class="flex items-center space-x-3">
+            <Icon name="mdi:attachment" class="h-5 w-5 text-muted-foreground" />
+            <span class="text-sm text-foreground">{{ jobForm.files.additional.length }} additional file(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Premium Features -->
+      <div v-if="hasPremiumFeatures" class="bg-gradient-to-r from-primary/5 to-purple-500/5 rounded-lg border border-primary/20 p-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4">Premium Features</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-if="jobForm.premiumFeatures.expressMatching" class="flex items-center space-x-2">
+            <Icon name="mdi:star" class="h-4 w-4 text-primary" />
+            <span class="text-sm text-foreground">Express Matching ($15)</span>
+          </div>
+          <div v-if="jobForm.premiumFeatures.talentOutreach" class="flex items-center space-x-2">
+            <Icon name="mdi:star" class="h-4 w-4 text-primary" />
+            <span class="text-sm text-foreground">Talent Outreach ($19)</span>
+          </div>
+        </div>
+        <div v-if="totalPremiumCost > 0" class="mt-4 pt-4 border-t border-primary/20">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-foreground">Total Premium Cost:</span>
+            <span class="text-lg font-bold text-primary">${{ totalPremiumCost }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Quality & Settings -->
@@ -115,50 +148,22 @@
         <h3 class="text-lg font-semibold text-foreground mb-4">Quality & Settings</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 class="font-medium text-foreground mb-2">Quality Level</h4>
-            <div class="flex items-center space-x-2">
-              <Icon :name="getQualityIcon(jobForm.requirements.quality)" class="h-4 w-4 text-primary" />
-              <span class="text-sm">{{ getQualityLabel(jobForm.requirements.quality) }}</span>
-            </div>
-          </div>
-          <div>
             <h4 class="font-medium text-foreground mb-2">Visibility</h4>
             <div class="flex items-center space-x-2">
               <Icon :name="jobForm.isPublic ? 'mdi:earth' : 'mdi:lock'" class="h-4 w-4 text-primary" />
               <span class="text-sm">{{ jobForm.isPublic ? 'Public' : 'Private' }}</span>
             </div>
           </div>
+          <div>
+            <h4 class="font-medium text-foreground mb-2">Portfolio Required</h4>
+            <div class="flex items-center space-x-2">
+              <Icon :name="jobForm.requirePortfolio ? 'mdi:check-circle' : 'mdi:close-circle'" class="h-4 w-4 text-primary" />
+              <span class="text-sm">{{ jobForm.requirePortfolio ? 'Yes' : 'No' }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Publishing Options -->
-      <div class="bg-card rounded-lg border border-border p-6">
-        <h3 class="text-lg font-semibold text-foreground mb-4">Publishing Options</h3>
-        <div class="space-y-4">
-          <div class="flex items-center space-x-3">
-            <input
-              id="requirePortfolio"
-              v-model="jobForm.requirePortfolio"
-              type="checkbox"
-              class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-            />
-            <label for="requirePortfolio" class="text-sm text-foreground">
-              Require portfolio samples from applicants
-            </label>
-          </div>
-          <div class="flex items-center space-x-3">
-            <input
-              id="requireCustomSample"
-              v-model="jobForm.requireCustomSample"
-              type="checkbox"
-              class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
-            />
-            <label for="requireCustomSample" class="text-sm text-foreground">
-              Require custom audition samples
-            </label>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Navigation -->
@@ -207,27 +212,34 @@ interface Props {
     title: string
     description: string
     projectType: string
-    priority: 'low' | 'medium' | 'high' | 'urgent'
     budget: {
-      min: number
       max: number
       currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
     }
     deadline: string
-    estimatedDuration: string
     requirements: {
-      languages: string[]
-      accents: string[]
-      voiceTypes: VoiceType[]
-      ageRange: string
+      language: string
+      voiceType: VoiceType
       gender: 'male' | 'female' | 'non-binary' | 'any'
-      experience: 'beginner' | 'intermediate' | 'advanced' | 'professional'
       specialInstructions: string
-      quality: 'standard' | 'professional' | 'broadcast'
+      deliveryFormat: string
+      deliveryTimeline: string
+      revisionRounds: string
+    }
+    files: {
+      script?: File
+      referenceAudio?: File
+      additional?: File[]
+    }
+    premiumFeatures: {
+      expressMatching: boolean
+      talentOutreach: boolean
+    }
+    paymentDetails: {
+      method: 'direct' | 'online'
     }
     isPublic: boolean
     requirePortfolio: boolean
-    requireCustomSample: boolean
   }
   isSubmitting: boolean
 }
@@ -244,17 +256,36 @@ const emit = defineEmits<Emits>()
 // Computed properties
 const hasAdditionalRequirements = computed(() => {
   return props.jobForm.requirements.gender !== 'any' ||
-         props.jobForm.requirements.ageRange ||
-         props.jobForm.requirements.experience !== 'beginner'
+         props.jobForm.requirements.specialInstructions ||
+         props.jobForm.requirements.deliveryFormat ||
+         props.jobForm.requirements.deliveryTimeline ||
+         props.jobForm.requirements.revisionRounds
+})
+
+const hasFiles = computed(() => {
+  return props.jobForm.files.script || 
+         props.jobForm.files.referenceAudio || 
+         (props.jobForm.files.additional && props.jobForm.files.additional.length > 0)
+})
+
+const hasPremiumFeatures = computed(() => {
+  return props.jobForm.premiumFeatures.expressMatching ||
+         props.jobForm.premiumFeatures.talentOutreach
+})
+
+const totalPremiumCost = computed(() => {
+  let cost = 0
+  if (props.jobForm.premiumFeatures.expressMatching) cost += 15
+  if (props.jobForm.premiumFeatures.talentOutreach) cost += 19
+  return cost
 })
 
 // Methods
 const getJobTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
-    open_casting: 'Open Casting',
-    invite_only: 'Invite Only',
-    urgent_fill: 'Urgent Fill',
-    targeted_search: 'Targeted Search'
+    talent_only: 'Talent Only',
+    ai_synthesis: 'AI Voice Synthesis',
+    hybrid_approach: 'Hybrid Approach'
   }
   return labels[type] || type
 }
@@ -314,24 +345,42 @@ const getPaymentMethodLabel = (method: string) => {
   return labels[method] || method
 }
 
-
-const getQualityLabel = (quality: string) => {
+const getDeliveryFormatLabel = (format: string) => {
   const labels: Record<string, string> = {
-    standard: 'Standard Quality',
-    professional: 'Professional Quality',
-    broadcast: 'Broadcast Quality'
+    'wav': 'WAV (Uncompressed)',
+    'mp3': 'MP3 (Compressed)',
+    'aiff': 'AIFF',
+    'flac': 'FLAC (Lossless)',
+    'm4a': 'M4A',
+    'flexible': 'Flexible'
   }
-  return labels[quality] || quality
+  return labels[format] || format
 }
 
-const getQualityIcon = (quality: string) => {
-  const icons: Record<string, string> = {
-    standard: 'mdi:check-circle',
-    professional: 'mdi:star',
-    broadcast: 'mdi:star-circle'
+const getDeliveryTimelineLabel = (timeline: string) => {
+  const labels: Record<string, string> = {
+    '24_hours': '24 Hours',
+    '48_hours': '48 Hours',
+    '3_days': '3 Days',
+    '1_week': '1 Week',
+    '2_weeks': '2 Weeks',
+    'flexible': 'Flexible'
   }
-  return icons[quality] || 'mdi:check-circle'
+  return labels[timeline] || timeline
 }
+
+const getRevisionRoundsLabel = (rounds: string) => {
+  const labels: Record<string, string> = {
+    '0': 'No Revisions',
+    '1': '1 Round',
+    '2': '2 Rounds',
+    '3': '3 Rounds',
+    'unlimited': 'Unlimited'
+  }
+  return labels[rounds] || rounds
+}
+
+
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)

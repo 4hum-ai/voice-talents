@@ -35,6 +35,11 @@
 
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-7xl mx-auto">
+          <!-- Premium Banner -->
+          <div class="mb-8">
+            <PremiumBanner @upgrade="openJobCreationModal" />
+          </div>
+          
           <!-- Published Jobs Section -->
           <div v-if="clientPublishedJobs.length > 0" class="mb-8">
             <div class="flex items-center justify-between mb-4">
@@ -362,6 +367,7 @@ import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
+import PremiumBanner from '@/components/molecules/PremiumBanner.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
