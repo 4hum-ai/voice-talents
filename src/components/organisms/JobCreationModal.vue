@@ -92,9 +92,17 @@
               @previous="previousStep"
             />
 
-            <!-- Step 5: Review & Publish -->
-            <ReviewStep
+            <!-- Step 5: Payment Method -->
+            <PaymentStep
               v-if="currentStep === 5"
+              v-model:payment-details="jobForm.paymentDetails"
+              @next="nextStep"
+              @previous="previousStep"
+            />
+
+            <!-- Step 6: Review & Publish -->
+            <ReviewStep
+              v-if="currentStep === 6"
               :job-form="jobForm as any"
               :is-submitting="isSubmitting"
                 @publish="publishJobHandler"
@@ -123,6 +131,7 @@ import JobTypeStep from '../molecules/JobCreationSteps/JobTypeStep.vue'
 import BasicInfoStep from '../molecules/JobCreationSteps/BasicInfoStep.vue'
 import RequirementsStep from '../molecules/JobCreationSteps/RequirementsStep.vue'
 import BudgetTimelineStep from '../molecules/JobCreationSteps/BudgetTimelineStep.vue'
+import PaymentStep from '../molecules/JobCreationSteps/PaymentStep.vue'
 import ReviewStep from '../molecules/JobCreationSteps/ReviewStep.vue'
 
 interface Props {
@@ -146,7 +155,7 @@ const { addToast: showToast } = useToast()
 
 // State
 const currentStep = ref(1)
-const totalSteps = 5
+const totalSteps = 6
 const transitionName = ref('slide-left')
 const isSubmitting = ref(false)
 const isSavingDraft = ref(false)
@@ -179,6 +188,13 @@ const jobForm = reactive({
     gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
     specialInstructions: ''
   },
+  paymentDetails: {
+    method: 'direct' as 'direct' | 'online',
+    schedule: undefined as string | undefined,
+    escrowProtection: undefined as string | undefined,
+    timeline: undefined as string | undefined,
+    preferredMethod: undefined as string | undefined
+  },
   isPublic: true,
   requirePortfolio: true,
   requireCustomSample: false
@@ -190,7 +206,8 @@ const stepValidation = {
   2: () => !!jobForm.title.trim() && !!jobForm.description.trim() && !!jobForm.projectType,
   3: () => !!jobForm.requirements.voiceType && !!jobForm.requirements.language,
   4: () => jobForm.budget.max > 0,
-  5: () => true // Review step is always valid
+  5: () => !!jobForm.paymentDetails.method,
+  6: () => true // Review step is always valid
 }
 
 // Methods
@@ -288,6 +305,13 @@ const loadDraftData = (draftId: string) => {
       ageRange: draft.requirements.ageRange || '',
       gender: draft.requirements.gender || 'any',
       specialInstructions: draft.requirements.specialInstructions || ''
+    }
+    jobForm.paymentDetails = (draft as any).paymentDetails || {
+      method: 'direct',
+      schedule: undefined,
+      escrowProtection: undefined,
+      timeline: undefined,
+      preferredMethod: undefined
     }
     jobForm.isPublic = draft.isPublic
     

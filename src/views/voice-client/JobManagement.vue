@@ -107,6 +107,20 @@
                       <p class="text-sm font-medium text-foreground">{{ job.totalApplications || 0 }}</p>
                     </div>
                   </div>
+                  
+                  <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-indigo-500/10 rounded-lg flex items-center justify-center">
+                      <Icon :name="(job as any).paymentDetails?.method === 'direct' ? 'mdi:handshake' : 'mdi:shield-check'" 
+                            :class="(job as any).paymentDetails?.method === 'direct' ? 'text-green-500' : 'text-blue-500'" 
+                            class="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p class="text-xs text-muted-foreground">Payment</p>
+                      <p class="text-sm font-medium text-foreground">
+                        {{ (job as any).paymentDetails?.method === 'direct' ? 'Direct' : 'Online' }}
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 
                 <!-- Requirements summary -->
@@ -231,6 +245,20 @@
                     <div>
                       <p class="text-xs text-muted-foreground">Version</p>
                       <p class="text-sm font-medium text-foreground">v{{ draft.version || 1 }}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-indigo-500/10 rounded-lg flex items-center justify-center">
+                      <Icon :name="(draft as any).paymentDetails?.method === 'direct' ? 'mdi:handshake' : 'mdi:shield-check'" 
+                            :class="(draft as any).paymentDetails?.method === 'direct' ? 'text-green-500' : 'text-blue-500'" 
+                            class="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p class="text-xs text-muted-foreground">Payment</p>
+                      <p class="text-sm font-medium text-foreground">
+                        {{ (draft as any).paymentDetails?.method === 'direct' ? 'Direct' : 'Online' }}
+                      </p>
                     </div>
                   </div>
                 </div>

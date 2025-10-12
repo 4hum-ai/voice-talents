@@ -32,9 +32,8 @@
           </div>
           <div class="space-y-3">
             <div class="p-3 bg-muted/50 rounded-lg">
-              <div class="text-sm text-muted-foreground">Budget Range</div>
+              <div class="text-sm text-muted-foreground">Maximum Budget</div>
               <div class="font-semibold text-foreground">
-                {{ getCurrencySymbol(jobForm.budget.currency) }}{{ jobForm.budget.min.toLocaleString() }} - 
                 {{ getCurrencySymbol(jobForm.budget.currency) }}{{ jobForm.budget.max.toLocaleString() }}
               </div>
             </div>
@@ -45,6 +44,18 @@
             <div v-if="jobForm.estimatedDuration" class="p-3 bg-muted/50 rounded-lg">
               <div class="text-sm text-muted-foreground">Duration</div>
               <div class="font-semibold text-foreground">{{ jobForm.estimatedDuration }}</div>
+            </div>
+            <div class="p-3 bg-muted/50 rounded-lg">
+              <div class="text-sm text-muted-foreground">Payment Method</div>
+              <div class="font-semibold text-foreground">
+                {{ getPaymentMethodLabel((jobForm as any).paymentDetails?.method || 'direct') }}
+              </div>
+              <div v-if="(jobForm as any).paymentDetails?.method === 'online'" class="text-xs text-muted-foreground mt-1">
+                {{ (jobForm as any).paymentDetails?.schedule ? (jobForm as any).paymentDetails.schedule.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) : 'Upon completion' }}
+              </div>
+              <div v-if="(jobForm as any).paymentDetails?.method === 'direct'" class="text-xs text-muted-foreground mt-1">
+                {{ (jobForm as any).paymentDetails?.timeline ? (jobForm as any).paymentDetails.timeline.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()) : 'Flexible' }}
+              </div>
             </div>
           </div>
         </div>
@@ -89,10 +100,6 @@
             <div v-if="jobForm.requirements.ageRange">
               <span class="text-muted-foreground">Age Range:</span>
               <span class="font-medium ml-1">{{ jobForm.requirements.ageRange }}</span>
-            </div>
-            <div v-if="jobForm.requirements.experience !== 'beginner'">
-              <span class="text-muted-foreground">Experience:</span>
-              <span class="font-medium ml-1 capitalize">{{ jobForm.requirements.experience }}</span>
             </div>
           </div>
         </div>
@@ -298,6 +305,15 @@ const getCurrencySymbol = (currency: string) => {
   }
   return symbols[currency] || '$'
 }
+
+const getPaymentMethodLabel = (method: string) => {
+  const labels: Record<string, string> = {
+    direct: 'Pay Directly to Talent',
+    online: 'Online Payment (Escrow)'
+  }
+  return labels[method] || method
+}
+
 
 const getQualityLabel = (quality: string) => {
   const labels: Record<string, string> = {
