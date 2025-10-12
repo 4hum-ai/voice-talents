@@ -93,7 +93,6 @@ import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import HomeIcon from '~icons/mdi/home'
 import BriefcaseIcon from '~icons/mdi/briefcase'
-import MegaphoneIcon from '~icons/mdi/megaphone'
 import AccountGroupIcon from '~icons/mdi/account-group'
 import EmailIcon from '~icons/mdi/email'
 import CogIcon from '~icons/mdi/cog'
@@ -112,7 +111,6 @@ const stats = ref<ClientStats>(mockClientData.clientStats)
 const activeItemId = computed(() => {
   const path = route.path
   if (path === '/client' || path === '/client/dashboard') return 'dashboard'
-  if (path === '/client/jobs/create') return 'create-job'
   if (path.startsWith('/client/jobs')) return 'jobs'
   if (path.startsWith('/client/talents')) return 'talents'
   if (path.startsWith('/client/invitations')) return 'invitations'

@@ -21,7 +21,7 @@
             </div>
             <div class="flex items-center space-x-4">
               <ThemeToggle />
-              <Button variant="primary" size="sm" @click="$router.push('/client/jobs/create')">
+              <Button variant="primary" size="sm" @click="openJobCreationModal">
                 <PlusIcon class="h-4 w-4 mr-2" />
                 Create Job
               </Button>
@@ -63,7 +63,7 @@
                 <Button 
                   variant="outline" 
                   class="w-full justify-start"
-                  @click="$router.push('/client/jobs/create')"
+                  @click="openJobCreationModal"
                 >
                   <BriefcaseIcon class="h-4 w-4 mr-2" />
                   Post New Job
@@ -135,7 +135,7 @@
                   <p class="text-xs text-muted-foreground mb-4">
                     Create your first job posting to get started
                   </p>
-                  <Button variant="primary" size="sm" @click="$router.push('/client/jobs/create')">
+                  <Button variant="primary" size="sm" @click="openJobCreationModal">
                     Create Job
                   </Button>
                 </div>
@@ -220,6 +220,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Job Creation Modal -->
+    <JobCreationModal
+      :open="showJobCreationModal"
+      @close="closeJobCreationModal"
+      @complete="handleJobCreated"
+    />
   </div>
 </template>
 
@@ -232,6 +239,8 @@ import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
+import { useToast } from '@/composables/useToast'
 import PlusIcon from '~icons/mdi/plus'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import MegaphoneIcon from '~icons/mdi/megaphone'
@@ -244,6 +253,10 @@ const stats = ref<ClientStats>(mockClientData.clientStats)
 const jobPostings = ref<JobPosting[]>(mockClientData.jobPostings)
 const applications = ref<JobApplication[]>(mockClientData.jobApplications)
 const campaigns = ref<Campaign[]>(mockClientData.campaigns)
+
+// Modal state
+const showJobCreationModal = ref(false)
+const { addToast: showToast } = useToast()
 
 // Computed
 const recentActivity = computed(() => stats.value.recentActivity.slice(0, 5))
@@ -314,6 +327,29 @@ const formatTimeAgo = (dateString: string) => {
   
   const diffInWeeks = Math.floor(diffInDays / 7)
   return `${diffInWeeks}w ago`
+}
+
+// Modal methods
+const openJobCreationModal = () => {
+  showJobCreationModal.value = true
+}
+
+const closeJobCreationModal = () => {
+  showJobCreationModal.value = false
+}
+
+const handleJobCreated = (job: any) => {
+  showToast({
+    type: 'success',
+    title: 'Job Published',
+    message: `"${job.title}" has been published successfully!`
+  })
+  closeJobCreationModal()
+  
+  // Force refresh the dashboard data
+  setTimeout(() => {
+    window.location.reload()
+  }, 1000)
 }
 
 onMounted(() => {
