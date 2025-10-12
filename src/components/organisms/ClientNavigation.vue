@@ -133,8 +133,8 @@ const navigationSections = computed(() => [
     ]
   },
   {
-    id: 'jobs',
-    title: 'Jobs',
+    id: 'casting',
+    title: 'Casting',
     items: [
       {
         id: 'jobs',
@@ -143,19 +143,6 @@ const navigationSections = computed(() => [
         icon: BriefcaseIcon,
         badge: stats.value.activeJobs,
         action: () => router.push('/client/jobs')
-      }
-    ]
-  },
-  {
-    id: 'talent',
-    title: 'Talent',
-    items: [
-      {
-        id: 'talents',
-        title: 'Browse Talents',
-        description: 'Find & invite voice actors',
-        icon: AccountGroupIcon,
-        action: () => router.push('/client/talents')
       },
       {
         id: 'invitations',
@@ -163,6 +150,13 @@ const navigationSections = computed(() => [
         description: 'Manage sent invitations',
         icon: EmailIcon,
         action: () => router.push('/client/invitations')
+      },
+      {
+        id: 'talents',
+        title: 'Browse Talents',
+        description: 'Find & invite voice actors',
+        icon: AccountGroupIcon,
+        action: () => router.push('/client/talents')
       }
     ]
   }
