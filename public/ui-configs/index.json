@@ -1,108 +1,12 @@
 {
   "models": [
     {
-      "name": "contacts",
-      "displayName": "Contacts",
-      "description": "Manage individual contacts and their information",
-      "icon": "user",
-      "path": "/api/contacts",
-      "configUrl": "/static/ui-configs/contacts.json"
-    },
-    {
-      "name": "members",
-      "displayName": "Members",
-      "description": "Manage subscription members and their billing information",
-      "icon": "users",
-      "path": "/api/members",
-      "configUrl": "/static/ui-configs/members.json"
-    },
-    {
-      "name": "organization-contacts",
-      "displayName": "Organization Contacts",
-      "description": "Manage contacts associated with organizations",
-      "icon": "book-open-variant",
-      "path": "/api/organization-contacts",
-      "configUrl": "/static/ui-configs/organization-contacts.json"
-    },
-    {
-      "name": "organizations",
-      "displayName": "Organizations",
-      "description": "Manage publishers, partners, vendors and other organizations",
-      "icon": "building",
-      "path": "/api/organizations",
-      "configUrl": "/static/ui-configs/organizations.json"
-    },
-    {
-      "name": "payouts",
-      "displayName": "Payouts",
-      "description": "Manage publisher payouts and payment processing",
-      "icon": "currency-usd",
-      "path": "/api/payouts",
-      "configUrl": "/static/ui-configs/payouts.json"
-    },
-    {
-      "name": "profile-title-lists",
-      "displayName": "Profile Title Lists",
-      "description": "Manage title watch lists for user profiles",
-      "icon": "database",
-      "path": "/api/profile-title-lists",
-      "configUrl": "/static/ui-configs/profile-title-lists.json"
-    },
-    {
-      "name": "profiles",
-      "displayName": "Profiles",
-      "description": "User profiles for personalized viewing experience",
-      "icon": "account-circle",
-      "path": "/api/profiles",
-      "configUrl": "/static/ui-configs/profiles.json"
-    },
-    {
-      "name": "ratings",
-      "displayName": "Ratings",
-      "description": "User ratings and reviews for titles",
-      "icon": "star",
-      "path": "/api/ratings",
-      "configUrl": "/static/ui-configs/ratings.json"
-    },
-    {
-      "name": "revenue-distributions",
-      "displayName": "Revenue Distributions",
-      "description": "Manage revenue distribution to publishers and content creators",
-      "icon": "share",
-      "path": "/api/revenue-distributions",
-      "configUrl": "/static/ui-configs/revenue-distributions.json"
-    },
-    {
-      "name": "revenues",
-      "displayName": "Revenues",
-      "description": "Track revenue streams from content monetization",
-      "icon": "chart-line",
-      "path": "/api/revenues",
-      "configUrl": "/static/ui-configs/revenues.json"
-    },
-    {
-      "name": "titles",
-      "displayName": "Titles",
-      "description": "Manage movies, series, episodes and documentaries",
-      "icon": "film",
-      "path": "/api/titles",
-      "configUrl": "/static/ui-configs/titles.json"
-    },
-    {
       "name": "users",
       "displayName": "Users",
       "description": "Manage system users and their permissions",
       "icon": "users",
       "path": "/api/users",
       "configUrl": "/static/ui-configs/users.json"
-    },
-    {
-      "name": "viewing-progress",
-      "displayName": "Viewing Progress",
-      "description": "Track viewing progress for titles per profile",
-      "icon": "play-circle",
-      "path": "/api/viewing-progress",
-      "configUrl": "/static/ui-configs/viewing-progress.json"
     },
     {
       "name": "voice-library",

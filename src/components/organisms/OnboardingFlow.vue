@@ -187,7 +187,7 @@
                       type="text"
                       required
                       placeholder="Your professional name"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-lg text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                     />
                   </div>
 
@@ -205,7 +205,7 @@
                       type="text"
                       required
                       placeholder="City, Country"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-lg text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                     />
                   </div>
 
@@ -223,7 +223,7 @@
                       required
                       rows="4"
                       placeholder="Share your voice acting experience, specialties, and what makes you unique..."
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                     />
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                       {{ profileData.bio.length }}/500 characters
@@ -494,7 +494,7 @@
                               v-model="voiceSamples[voiceType.value].title"
                               type="text"
                               :placeholder="`${voiceType.label} Demo`"
-                              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             />
                           </div>
 
@@ -510,7 +510,7 @@
                               v-model="voiceSamples[voiceType.value].description"
                               type="text"
                               placeholder="Describe this sample..."
-                              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             />
                           </div>
                         </div>
@@ -569,7 +569,7 @@
                             min="0"
                             step="5"
                             placeholder="50"
-                            class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            class="w-full rounded-lg border border-gray-300 bg-white py-3 pr-3 pl-8 text-lg text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                           />
                         </div>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -597,7 +597,7 @@
                             min="0"
                             step="0.01"
                             placeholder="0.25"
-                            class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            class="w-full rounded-lg border border-gray-300 bg-white py-3 pr-3 pl-8 text-lg text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                           />
                         </div>
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -634,7 +634,7 @@
                               min="0"
                               step="25"
                               placeholder="500"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              class="w-full rounded-md border border-gray-300 bg-white py-2 pr-3 pl-8 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             />
                           </div>
                         </div>
@@ -659,7 +659,7 @@
                               min="0"
                               step="25"
                               placeholder="200"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              class="w-full rounded-md border border-gray-300 bg-white py-2 pr-3 pl-8 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             />
                           </div>
                         </div>
@@ -684,7 +684,7 @@
                               min="0"
                               step="25"
                               placeholder="1000"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              class="w-full rounded-md border border-gray-300 bg-white py-2 pr-3 pl-8 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             />
                           </div>
                         </div>
@@ -709,7 +709,7 @@
                               min="0"
                               step="25"
                               placeholder="300"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              class="w-full rounded-md border border-gray-300 bg-white py-2 pr-3 pl-8 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             />
                           </div>
                         </div>
@@ -730,7 +730,7 @@
                       v-model="pricingData.notes"
                       rows="3"
                       placeholder="e.g., Rush jobs +50%, Weekend work +25%, Minimum project fee $100..."
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                     />
                   </div>
                 </div>
