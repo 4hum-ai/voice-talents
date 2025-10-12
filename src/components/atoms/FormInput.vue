@@ -11,7 +11,7 @@
         v-if="prefixIcon"
         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
       >
-        <component :is="prefixIcon" class="h-4 w-4 text-muted-foreground" />
+        <component :is="prefixIcon" class="text-muted-foreground h-4 w-4" />
       </div>
 
       <input
@@ -33,7 +33,7 @@
         v-if="suffixIcon"
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
       >
-        <component :is="suffixIcon" class="h-4 w-4 text-muted-foreground" />
+        <component :is="suffixIcon" class="text-muted-foreground h-4 w-4" />
       </div>
 
       <!-- Password toggle for password type -->
@@ -43,8 +43,8 @@
         class="absolute inset-y-0 right-0 flex items-center pr-3"
         @click="togglePassword"
       >
-        <IconEye v-if="!showPassword" class="h-4 w-4 text-muted-foreground hover:text-foreground" />
-        <IconEyeOff v-else class="h-4 w-4 text-muted-foreground hover:text-foreground" />
+        <IconEye v-if="!showPassword" class="text-muted-foreground hover:text-foreground h-4 w-4" />
+        <IconEyeOff v-else class="text-muted-foreground hover:text-foreground h-4 w-4" />
       </button>
     </div>
 
@@ -135,8 +135,7 @@ const inputClasses = computed(() => {
   const paddingRight =
     props.suffixIcon || (props.type === 'password' && props.showPasswordToggle) ? 'pr-10' : 'pr-3'
 
-  let borderClasses =
-    'border-border focus:border-primary focus:ring-primary'
+  let borderClasses = 'border-border focus:border-primary focus:ring-primary'
 
   if (props.validationState === 'success') {
     borderClasses =

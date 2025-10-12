@@ -2,44 +2,41 @@
   <div class="space-y-4">
     <!-- Search Input with Filters Toggle -->
     <div class="flex items-center space-x-3">
-      <div class="flex-1 relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <div class="relative flex-1">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <Icon name="mdi:magnify" class="h-5 w-5 text-gray-400" />
         </div>
         <input
-      v-model="searchQuery"
+          v-model="searchQuery"
           type="text"
-      :placeholder="placeholder"
-          class="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          :placeholder="placeholder"
+          class="block w-full rounded-lg border border-gray-300 bg-white py-3 pr-12 pl-10 text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
           @input="handleSearch"
           @keydown.enter="handleSearch"
         />
-        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-          <Button
-            v-if="searchQuery"
-            variant="ghost"
-            size="sm"
-            @click="clearSearch"
-            class="p-1"
-          >
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+          <Button v-if="searchQuery" variant="ghost" size="sm" @click="clearSearch" class="p-1">
             <Icon name="mdi:close" class="h-4 w-4" />
           </Button>
         </div>
       </div>
-      
+
       <Button
         variant="outline"
         size="sm"
         @click="toggleFilters"
-        :class="{ 'bg-blue-50 dark:bg-blue-900 border-blue-300 dark:border-blue-700': showFilters }"
+        :class="{ 'border-blue-300 bg-blue-50 dark:border-blue-700 dark:bg-blue-900': showFilters }"
       >
         <Icon name="mdi:filter" class="h-4 w-4" />
         Filters
-        <span v-if="activeFiltersCount > 0" class="ml-2 bg-blue-500 text-white text-xs rounded-full px-2 py-0.5">
+        <span
+          v-if="activeFiltersCount > 0"
+          class="ml-2 rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white"
+        >
           {{ activeFiltersCount }}
         </span>
       </Button>
-      
+
       <Button
         v-if="showSaveSearch"
         variant="ghost"
@@ -61,11 +58,14 @@
       leave-from-class="opacity-100 transform translate-y-0"
       leave-to-class="opacity-0 transform -translate-y-2"
     >
-      <div v-if="showFilters" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        v-if="showFilters"
+        class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <!-- Category Filter -->
           <div v-if="filters.category">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Category
             </label>
             <SelectInput
@@ -78,7 +78,7 @@
 
           <!-- Type Filter -->
           <div v-if="filters.type">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Type
             </label>
             <SelectInput
@@ -91,7 +91,7 @@
 
           <!-- Status Filter -->
           <div v-if="filters.status">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Status
             </label>
             <SelectInput
@@ -104,21 +104,21 @@
 
           <!-- Date Range Filter -->
           <div v-if="filters.dateRange" class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Date Range
             </label>
             <div class="flex items-center space-x-2">
               <input
                 v-model="selectedFilters.dateFrom"
                 type="date"
-                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                 @change="handleFilterChange"
               />
               <span class="text-gray-500 dark:text-gray-400">to</span>
               <input
                 v-model="selectedFilters.dateTo"
                 type="date"
-                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                 @change="handleFilterChange"
               />
             </div>
@@ -126,7 +126,7 @@
 
           <!-- Tags Filter -->
           <div v-if="filters.tags" class="md:col-span-2 lg:col-span-3">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Tags
             </label>
             <div class="flex flex-wrap gap-2">
@@ -145,7 +145,9 @@
         </div>
 
         <!-- Filter Actions -->
-        <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div
+          class="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700"
+        >
           <Button
             variant="ghost"
             size="sm"
@@ -155,45 +157,30 @@
             <Icon name="mdi:close" class="h-4 w-4" />
             Clear All
           </Button>
-          
+
           <div class="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              @click="applyFilters"
-            >
-              Apply Filters
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              @click="searchWithFilters"
-            >
-              Search
-            </Button>
+            <Button variant="outline" size="sm" @click="applyFilters"> Apply Filters </Button>
+            <Button variant="primary" size="sm" @click="searchWithFilters"> Search </Button>
           </div>
         </div>
       </div>
     </Transition>
 
     <!-- Search Results Summary -->
-    <div v-if="showResultsSummary && (searchQuery || activeFiltersCount > 0)" class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+    <div
+      v-if="showResultsSummary && (searchQuery || activeFiltersCount > 0)"
+      class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
+    >
       <div class="flex items-center space-x-4">
-        <span>
-          {{ resultsCount }} results found
-        </span>
+        <span> {{ resultsCount }} results found </span>
         <span v-if="searchQuery" class="flex items-center">
-          for "<span class="font-medium text-gray-900 dark:text-white">{{ searchQuery }}</span>"
+          for "<span class="font-medium text-gray-900 dark:text-white">{{ searchQuery }}</span
+          >"
         </span>
       </div>
-      
+
       <div class="flex items-center space-x-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="exportResults"
-          v-if="showExport"
-        >
+        <Button variant="ghost" size="sm" @click="exportResults" v-if="showExport">
           <Icon name="mdi:download" class="h-4 w-4" />
           Export
         </Button>
@@ -338,14 +325,14 @@ const toggleTag = (tag: string) => {
   if (!selectedFilters.value.tags) {
     selectedFilters.value.tags = []
   }
-  
+
   const index = selectedFilters.value.tags.indexOf(tag)
   if (index > -1) {
     selectedFilters.value.tags.splice(index, 1)
   } else {
     selectedFilters.value.tags.push(tag)
   }
-  
+
   handleFilterChange()
 }
 
@@ -366,7 +353,11 @@ const exportResults = () => {
 }
 
 // Watch for external filter changes
-watch(() => selectedFilters.value, () => {
-  handleFilterChange()
-}, { deep: true })
+watch(
+  () => selectedFilters.value,
+  () => {
+    handleFilterChange()
+  },
+  { deep: true },
+)
 </script>

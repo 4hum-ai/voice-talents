@@ -1,211 +1,239 @@
 <template>
-  <div class="max-w-3xl mx-auto">
-    <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-foreground mb-4">Voice Requirements</h1>
-      <p class="text-lg text-muted-foreground">
-        Specify the voice characteristics and experience you're looking for
+  <div class="mx-auto max-w-3xl">
+    <div class="mb-8 text-center">
+      <h1 class="text-foreground mb-4 text-3xl font-bold">Step 3: Project Requirements</h1>
+      <p class="text-muted-foreground text-lg">
+        Define the voice requirements and delivery specifications
       </p>
     </div>
 
-    <div class="space-y-8">
-      <!-- Voice Type -->
-      <div>
-        <label class="block text-sm font-medium text-foreground mb-3">
-          Voice Type *
-        </label>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div 
-            v-for="voiceType in voiceTypeOptions" 
-            :key="voiceType.value"
-            class="relative"
-          >
-            <input
-              :id="voiceType.value"
+    <div class="space-y-6">
+      <!-- Voice Requirements -->
+      <div class="bg-card border-border rounded-lg border p-6">
+        <h3 class="text-foreground mb-4 text-lg font-semibold">Voice Requirements</h3>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <!-- Voice Type -->
+          <div>
+            <label for="voiceType" class="text-foreground mb-2 block text-sm font-medium">
+              Voice Type <span class="text-red-500">*</span>
+            </label>
+            <SelectInput
+              id="voiceType"
               v-model="localRequirements.voiceType"
-              type="radio"
-              :value="voiceType.value"
-              class="sr-only"
+              :options="voiceTypeOptions"
+              placeholder="Select voice type"
             />
-            <label
-              :for="voiceType.value"
-              class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all"
-              :class="localRequirements.voiceType === voiceType.value
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'"
-            >
-              <Icon :name="voiceType.icon" class="h-4 w-4 mr-2" />
-              <span class="text-sm font-medium">{{ voiceType.label }}</span>
-            </label>
           </div>
-        </div>
-      </div>
 
-      <!-- Language -->
-      <div>
-        <label class="block text-sm font-medium text-foreground mb-3">
-          Language *
-        </label>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div 
-            v-for="language in languageOptions" 
-            :key="language.value"
-            class="relative"
-          >
-            <input
-              :id="language.value"
+          <!-- Language -->
+          <div>
+            <label for="language" class="text-foreground mb-2 block text-sm font-medium">
+              Language <span class="text-red-500">*</span>
+            </label>
+            <SelectInput
+              id="language"
               v-model="localRequirements.language"
-              type="radio"
-              :value="language.value"
-              class="sr-only"
+              :options="languageOptions"
+              placeholder="Select language"
             />
-            <label
-              :for="language.value"
-              class="flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all"
-              :class="localRequirements.language === language.value
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'"
-            >
-              <span class="text-sm font-medium">{{ language.label }}</span>
+          </div>
+
+          <!-- Gender -->
+          <div>
+            <label for="gender" class="text-foreground mb-2 block text-sm font-medium">
+              Gender Preference
             </label>
+            <SelectInput id="gender" v-model="localRequirements.gender" :options="genderOptions" />
           </div>
         </div>
-      </div>
 
-      <!-- Demographics -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-foreground mb-2">
-            Gender
+        <!-- Special Instructions -->
+        <div class="mt-4">
+          <label for="specialInstructions" class="text-foreground mb-2 block text-sm font-medium">
+            Special Instructions
           </label>
-          <SelectInput
-            v-model="localRequirements.gender"
-            :options="genderOptions"
-            placeholder="Select gender"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-foreground mb-2">
-            Age Range
-          </label>
-          <SelectInput
-            v-model="localRequirements.ageRange"
-            :options="ageRangeOptions"
-            placeholder="Select age range"
+          <textarea
+            id="specialInstructions"
+            v-model="localRequirements.specialInstructions"
+            rows="3"
+            class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
+            placeholder="Any specific voice characteristics, tone, or style requirements..."
           />
         </div>
       </div>
 
-      <!-- Accents -->
-      <div v-if="availableAccents.length > 0">
-        <label class="block text-sm font-medium text-foreground mb-3">
-          Accent (Optional)
-        </label>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div 
-            v-for="accent in availableAccents" 
-            :key="accent.value"
-            class="relative"
-          >
+      <!-- Delivery Requirements -->
+      <div class="bg-card border-border rounded-lg border p-6">
+        <h3 class="text-foreground mb-4 text-lg font-semibold">Delivery Requirements</h3>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <!-- Delivery Format -->
+          <div>
+            <label for="deliveryFormat" class="text-foreground mb-2 block text-sm font-medium">
+              Delivery Format
+            </label>
+            <SelectInput
+              id="deliveryFormat"
+              v-model="localRequirements.deliveryFormat"
+              :options="deliveryFormatOptions"
+              placeholder="Select format"
+            />
+          </div>
+
+          <!-- Delivery Timeline -->
+          <div>
+            <label for="deliveryTimeline" class="text-foreground mb-2 block text-sm font-medium">
+              Delivery Timeline
+            </label>
+            <SelectInput
+              id="deliveryTimeline"
+              v-model="localRequirements.deliveryTimeline"
+              :options="deliveryTimelineOptions"
+              placeholder="Select timeline"
+            />
+          </div>
+
+          <!-- Revision Rounds -->
+          <div>
+            <label for="revisionRounds" class="text-foreground mb-2 block text-sm font-medium">
+              Revision Rounds
+            </label>
+            <SelectInput
+              id="revisionRounds"
+              v-model="localRequirements.revisionRounds"
+              :options="revisionRoundsOptions"
+              placeholder="Select revisions"
+            />
+          </div>
+
+          <!-- Project Deadline -->
+          <div>
+            <label for="deadline" class="text-foreground mb-2 block text-sm font-medium">
+              Project Deadline <span class="text-red-500">*</span>
+            </label>
             <input
-              :id="accent.value"
-              v-model="localRequirements.accent"
-              type="radio"
-              :value="accent.value"
-              class="sr-only"
+              id="deadline"
+              v-model="localDeadline"
+              type="date"
+              required
+              class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
             />
-            <label
-              :for="accent.value"
-              class="flex items-center justify-center p-2 border-2 rounded-lg cursor-pointer transition-all"
-              :class="localRequirements.accent === accent.value
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'"
-            >
-              <span class="text-sm">{{ accent.label }}</span>
-            </label>
           </div>
         </div>
       </div>
 
-      <!-- Special Instructions -->
-      <div>
-        <label class="block text-sm font-medium text-foreground mb-2">
-          Special Instructions
-        </label>
-        <textarea
-          v-model="localRequirements.specialInstructions"
-          rows="4"
-          class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Any specific requirements, tone, style, or other instructions..."
-        ></textarea>
-      </div>
+      <!-- File Uploads -->
+      <div class="bg-card border-border rounded-lg border p-6">
+        <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
 
-      <!-- Requirements Summary -->
-      <div v-if="hasRequirements" class="bg-muted/50 rounded-lg p-4">
-        <h4 class="font-medium text-foreground mb-2">Requirements Summary</h4>
-        <div class="space-y-1 text-sm text-muted-foreground">
-          <div v-if="localRequirements.voiceType">
-            <strong>Voice Type:</strong> {{ getVoiceTypeLabel(localRequirements.voiceType) }}
+        <div class="space-y-4">
+          <!-- Script Upload -->
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              Script/Transcript
+            </label>
+            <FileUpload
+              v-model="localFiles.script"
+              accept=".pdf,.doc,.docx,.txt"
+              :max-size="10"
+              @upload="
+                (file: File | File[]) => handleScriptUpload(Array.isArray(file) ? file[0] : file)
+              "
+            />
+            <p class="text-muted-foreground mt-2 text-xs">
+              Upload your script or transcript. Max 10MB.
+            </p>
           </div>
-          <div v-if="localRequirements.language">
-            <strong>Language:</strong> {{ localRequirements.language }}
+
+          <!-- Reference Audio -->
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              Reference Audio (Optional)
+            </label>
+            <FileUpload
+              v-model="localFiles.referenceAudio"
+              accept=".mp3,.wav,.m4a"
+              :max-size="25"
+              @upload="
+                (file: File | File[]) => handleReferenceUpload(Array.isArray(file) ? file[0] : file)
+              "
+            />
+            <p class="text-muted-foreground mt-2 text-xs">
+              Upload reference audio for voice matching. Max 25MB.
+            </p>
           </div>
-          <div v-if="localRequirements.gender !== 'any'">
-            <strong>Gender:</strong> {{ localRequirements.gender }}
-          </div>
-          <div v-if="localRequirements.ageRange">
-            <strong>Age Range:</strong> {{ localRequirements.ageRange }}
-          </div>
-          <div v-if="localRequirements.accent">
-            <strong>Accent:</strong> {{ getAccentLabel(localRequirements.accent) }}
+
+          <!-- Additional Files -->
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              Additional Files (Optional)
+            </label>
+            <FileUpload
+              v-model="localFiles.additional"
+              accept=".pdf,.doc,.docx,.txt,.srt,.vtt,.jpg,.png,.mp4"
+              :max-size="50"
+              :multiple="true"
+              @upload="
+                (file: File | File[]) => handleAdditionalUpload(Array.isArray(file) ? file : [file])
+              "
+            />
+            <p class="text-muted-foreground mt-2 text-xs">
+              Upload additional files like subtitles, images, or videos. Max 50MB total.
+            </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="flex justify-between mt-8">
-      <Button variant="outline" size="lg" @click="handlePrevious">
-        <Icon name="mdi:arrow-left" class="h-4 w-4 mr-2" />
+    <div class="mt-8 flex justify-between">
+      <Button variant="outline" size="lg" @click="emit('previous')">
+        <Icon name="mdi:arrow-left" class="mr-2 h-4 w-4" />
         Previous
       </Button>
-      
-      <Button 
-        variant="primary" 
-        size="lg" 
-        @click="handleNext"
-        :disabled="!isValid"
-        class="px-8"
-      >
+      <Button variant="primary" size="lg" @click="emit('next')" :disabled="!isStepValid">
         Continue
-        <Icon name="mdi:arrow-right" class="h-4 w-4 ml-2" />
+        <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
       </Button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
+import FileUpload from '@/components/atoms/FileUpload.vue'
+import Icon from '@/components/atoms/Icon.vue'
 import type { VoiceType } from '@/types/voice-actor'
 
 interface Requirements {
   language: string
-  accent: string
   voiceType: VoiceType
-  ageRange: string
   gender: 'male' | 'female' | 'non-binary' | 'any'
   specialInstructions: string
+  deliveryFormat: string
+  deliveryTimeline: string
+  revisionRounds: string
+}
+
+interface ProjectFiles {
+  script?: File
+  referenceAudio?: File
+  additional?: File[]
 }
 
 interface Props {
   requirements: Requirements
+  deadline: string
+  files: ProjectFiles
+  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {
   (e: 'update:requirements', value: Requirements): void
+  (e: 'update:deadline', value: string): void
+  (e: 'update:files', value: ProjectFiles): void
   (e: 'next'): void
   (e: 'previous'): void
 }
@@ -213,133 +241,108 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const localRequirements = ref({ ...props.requirements })
+const localRequirements = ref<Requirements>({ ...props.requirements })
+const localDeadline = ref(props.deadline)
+const localFiles = ref<ProjectFiles>({ ...props.files })
 
 // Options
 const voiceTypeOptions = [
-  { value: 'narrator', label: 'Narrator', icon: 'mdi:microphone' },
-  { value: 'character', label: 'Character', icon: 'mdi:account' },
-  { value: 'announcer', label: 'Announcer', icon: 'mdi:bullhorn' },
-  { value: 'commercial', label: 'Commercial', icon: 'mdi:tv' },
-  { value: 'audiobook', label: 'Audiobook', icon: 'mdi:book-open' },
-  { value: 'podcast', label: 'Podcast', icon: 'mdi:podcast' },
-  { value: 'animation', label: 'Animation', icon: 'mdi:animation' },
-  { value: 'video_game', label: 'Video Game', icon: 'mdi:gamepad' },
-  { value: 'documentary', label: 'Documentary', icon: 'mdi:film' },
-  { value: 'e_learning', label: 'E-Learning', icon: 'mdi:school' }
+  { value: 'narrator', label: 'Narrator' },
+  { value: 'character', label: 'Character Voice' },
+  { value: 'commercial', label: 'Commercial' },
+  { value: 'announcer', label: 'Announcer' },
+  { value: 'presenter', label: 'Presenter' },
+  { value: 'storyteller', label: 'Storyteller' },
 ]
 
 const languageOptions = [
-  { value: 'English', label: 'English' },
-  { value: 'Spanish', label: 'Spanish' },
-  { value: 'French', label: 'French' },
-  { value: 'German', label: 'German' },
-  { value: 'Italian', label: 'Italian' },
-  { value: 'Portuguese', label: 'Portuguese' },
-  { value: 'Japanese', label: 'Japanese' },
-  { value: 'Korean', label: 'Korean' },
-  { value: 'Chinese', label: 'Chinese' },
-  { value: 'Arabic', label: 'Arabic' },
-  { value: 'Russian', label: 'Russian' },
-  { value: 'Dutch', label: 'Dutch' }
+  { value: 'english', label: 'English' },
+  { value: 'spanish', label: 'Spanish' },
+  { value: 'french', label: 'French' },
+  { value: 'german', label: 'German' },
+  { value: 'italian', label: 'Italian' },
+  { value: 'portuguese', label: 'Portuguese' },
+  { value: 'chinese', label: 'Chinese' },
+  { value: 'japanese', label: 'Japanese' },
+  { value: 'korean', label: 'Korean' },
+  { value: 'arabic', label: 'Arabic' },
 ]
 
 const genderOptions = [
   { value: 'any', label: 'Any' },
   { value: 'male', label: 'Male' },
   { value: 'female', label: 'Female' },
-  { value: 'non-binary', label: 'Non-binary' }
+  { value: 'non-binary', label: 'Non-binary' },
 ]
 
-const ageRangeOptions = [
-  { value: '18-25', label: '18-25' },
-  { value: '26-35', label: '26-35' },
-  { value: '36-45', label: '36-45' },
-  { value: '46-55', label: '46-55' },
-  { value: '56-65', label: '56-65' },
-  { value: '65+', label: '65+' },
-  { value: 'Any', label: 'Any Age' }
+const deliveryFormatOptions = [
+  { value: 'mp3_44khz', label: 'MP3 (44.1kHz)' },
+  { value: 'wav_48khz', label: 'WAV (48kHz)' },
+  { value: 'wav_96khz', label: 'WAV (96kHz)' },
+  { value: 'aiff', label: 'AIFF' },
+  { value: 'flac', label: 'FLAC' },
 ]
 
-// Language-dependent accents
-const accentMap: Record<string, Array<{value: string, label: string}>> = {
-  'English': [
-    { value: 'american', label: 'American' },
-    { value: 'british', label: 'British' },
-    { value: 'australian', label: 'Australian' },
-    { value: 'canadian', label: 'Canadian' },
-    { value: 'irish', label: 'Irish' },
-    { value: 'scottish', label: 'Scottish' },
-    { value: 'southern', label: 'Southern' },
-    { value: 'neutral', label: 'Neutral' }
-  ],
-  'Spanish': [
-    { value: 'mexican', label: 'Mexican' },
-    { value: 'spain', label: 'Spain' },
-    { value: 'argentinian', label: 'Argentinian' },
-    { value: 'colombian', label: 'Colombian' },
-    { value: 'neutral', label: 'Neutral' }
-  ],
-  'French': [
-    { value: 'parisian', label: 'Parisian' },
-    { value: 'quebec', label: 'Quebec' },
-    { value: 'belgian', label: 'Belgian' },
-    { value: 'neutral', label: 'Neutral' }
-  ],
-  'German': [
-    { value: 'standard', label: 'Standard' },
-    { value: 'austrian', label: 'Austrian' },
-    { value: 'swiss', label: 'Swiss' },
-    { value: 'neutral', label: 'Neutral' }
-  ]
-}
+const deliveryTimelineOptions = [
+  { value: 'same_day', label: 'Same Day' },
+  { value: '1_day', label: '1 Day' },
+  { value: '2_3_days', label: '2-3 Days' },
+  { value: '1_week', label: '1 Week' },
+  { value: '2_weeks', label: '2 Weeks' },
+  { value: '1_month', label: '1 Month' },
+]
 
-// Computed properties
-const availableAccents = computed(() => {
-  return accentMap[localRequirements.value.language] || []
+const revisionRoundsOptions = [
+  { value: '0', label: 'No Revisions' },
+  { value: '1', label: '1 Revision' },
+  { value: '2', label: '2 Revisions' },
+  { value: '3', label: '3 Revisions' },
+  { value: 'unlimited', label: 'Unlimited' },
+]
+
+// Validation
+const isStepValid = computed(() => {
+  return (
+    !!localRequirements.value.voiceType &&
+    !!localRequirements.value.language &&
+    !!localDeadline.value
+  )
 })
 
-const isValid = computed(() => {
-  return !!localRequirements.value.voiceType && !!localRequirements.value.language
-})
-
-const hasRequirements = computed(() => {
-  return !!localRequirements.value.voiceType ||
-         !!localRequirements.value.language ||
-         localRequirements.value.gender !== 'any' ||
-         !!localRequirements.value.ageRange ||
-         !!localRequirements.value.accent
-})
-
-// Methods
-const getVoiceTypeLabel = (voiceType: string) => {
-  const option = voiceTypeOptions.find(vt => vt.value === voiceType)
-  return option?.label || voiceType
+// File upload handlers
+const handleScriptUpload = (file: File) => {
+  localFiles.value.script = file
+  emit('update:files', localFiles.value)
 }
 
-const getAccentLabel = (accent: string) => {
-  const accents = availableAccents.value
-  const option = accents.find(acc => acc.value === accent)
-  return option?.label || accent
+const handleReferenceUpload = (file: File) => {
+  localFiles.value.referenceAudio = file
+  emit('update:files', localFiles.value)
 }
 
-const handleNext = () => {
-  if (isValid.value) {
-    emit('next')
-  }
-}
-
-const handlePrevious = () => {
-  emit('previous')
+const handleAdditionalUpload = (files: File[]) => {
+  localFiles.value.additional = files
+  emit('update:files', localFiles.value)
 }
 
 // Watch for changes and emit updates
-watch(localRequirements, (newValue) => {
-  emit('update:requirements', newValue)
-}, { deep: true })
+watch(
+  localRequirements,
+  (newValue) => {
+    emit('update:requirements', newValue)
+  },
+  { deep: true },
+)
 
-// Clear accent when language changes
-watch(() => localRequirements.value.language, () => {
-  localRequirements.value.accent = ''
+watch(localDeadline, (newValue) => {
+  emit('update:deadline', newValue)
 })
+
+watch(
+  localFiles,
+  (newValue) => {
+    emit('update:files', newValue)
+  },
+  { deep: true },
+)
 </script>

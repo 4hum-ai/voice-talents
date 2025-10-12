@@ -133,9 +133,7 @@
                 {{ track.label }}
               </option>
             </select>
-            <ChevronDownIcon
-              class="absolute top-1/2 right-1 h-3 w-3 -translate-y-1/2 text-white"
-            />
+            <ChevronDownIcon class="absolute top-1/2 right-1 h-3 w-3 -translate-y-1/2 text-white" />
           </div>
 
           <!-- Subtitle Toggle -->
@@ -205,7 +203,7 @@ import VolumeHighIcon from '~icons/mdi/volume-high'
 import VolumeOffIcon from '~icons/mdi/volume-off'
 import ChevronDownIcon from '~icons/mdi/chevron-down'
 import SubtitlesIcon from '~icons/mdi/subtitles'
-import IconPiPOutline  from '~icons/mdi/picture-in-picture-bottom-right-outline'
+import IconPiPOutline from '~icons/mdi/picture-in-picture-bottom-right-outline'
 import FullscreenIcon from '~icons/mdi/fullscreen'
 import FullscreenExitIcon from '~icons/mdi/fullscreen-exit'
 import CloseIcon from '~icons/mdi/close'

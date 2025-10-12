@@ -85,8 +85,7 @@ const textareaClasses = computed(() => {
     lg: 'px-4 py-3 text-base',
   }
 
-  let borderClasses =
-    'border-border focus:border-primary focus:ring-primary'
+  let borderClasses = 'border-border focus:border-primary focus:ring-primary'
 
   if (props.validationState === 'success') {
     borderClasses =

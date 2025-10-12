@@ -1,44 +1,22 @@
 <template>
-  <div class="min-h-screen bg-background flex">
+  <div class="bg-background flex min-h-screen">
     <!-- Navigation Sidebar -->
     <ClientNavigation />
 
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card shadow-sm border-b border-border">
+      <div class="bg-card border-border border-b shadow-sm">
         <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-16">
+          <div class="flex h-16 items-center justify-between">
             <div class="flex items-center">
               <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
-              <div>
-                <h1 class="text-2xl font-bold text-foreground">
-                  Invitation Management
-                </h1>
-                <p class="text-sm text-muted-foreground">
-                  Manage talent invitations and responses
-                </p>
-              </div>
             </div>
             <div class="flex items-center space-x-4">
               <ThemeToggle />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="px-4 sm:px-6 lg:px-8 py-8">
-        <div class="max-w-7xl mx-auto">
-          <div class="text-center py-12">
-            <EmailIcon class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 class="text-lg font-medium text-foreground mb-2">
-              Invitation Management
-            </h3>
-            <p class="text-muted-foreground mb-6">
-              This view will show all sent invitations and their responses
-            </p>
           </div>
         </div>
       </div>

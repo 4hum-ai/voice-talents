@@ -44,13 +44,13 @@ export function useToast() {
       persistent: options.persistent,
       action: options.action,
     }
-    
+
     toasts.value.push(toast)
     return id
   }
 
   const removeToast = (id: string) => {
-    const index = toasts.value.findIndex(toast => toast.id === id)
+    const index = toasts.value.findIndex((toast) => toast.id === id)
     if (index > -1) {
       toasts.value.splice(index, 1)
     }

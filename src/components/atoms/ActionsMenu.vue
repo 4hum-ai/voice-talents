@@ -60,7 +60,7 @@
                 @click="onSelect(item)"
               >
                 <!-- Icon -->
-                <div v-if="item.icon" class="flex-shrink-0 flex items-center">
+                <div v-if="item.icon" class="flex flex-shrink-0 items-center">
                   <Icon :name="`mdi:${item.icon}`" class="h-4 w-4" />
                 </div>
 

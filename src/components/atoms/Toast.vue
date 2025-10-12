@@ -34,9 +34,9 @@
             </Button>
           </div>
         </div>
-        <div class="ml-4 flex-shrink-0 flex">
+        <div class="ml-4 flex flex-shrink-0">
           <button
-            class="bg-white dark:bg-gray-800 rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none dark:bg-gray-800"
             @click="close"
           >
             <span class="sr-only">Close</span>
@@ -94,15 +94,16 @@ const iconName = computed(() => {
 })
 
 const toastClasses = computed(() => {
-  const base = 'max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden'
-  
+  const base =
+    'max-w-sm w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden'
+
   const variants = {
     success: 'border-l-4 border-green-400',
     error: 'border-l-4 border-red-400',
     warning: 'border-l-4 border-yellow-400',
     info: 'border-l-4 border-blue-400',
   }
-  
+
   return `${base} ${variants[props.type]}`
 })
 
@@ -154,7 +155,7 @@ const handleAction = () => {
 
 onMounted(() => {
   show.value = true
-  
+
   if (!props.persistent && props.duration > 0) {
     timeoutId = window.setTimeout(() => {
       close()

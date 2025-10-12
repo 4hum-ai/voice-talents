@@ -181,7 +181,7 @@
 
   /* Netflix-style focus styles */
   *:focus {
-    @apply ring-2 ring-primary ring-offset-2 ring-offset-background outline-none;
+    @apply ring-primary ring-offset-background ring-2 ring-offset-2 outline-none;
   }
 
   /* Custom selection */
@@ -528,37 +528,37 @@
 
   /* Voice Sample Player Styles */
   .voice-sample-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow;
+    @apply overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800;
   }
 
   .voice-sample-thumbnail {
-    @apply aspect-video bg-gray-100 dark:bg-gray-700 relative overflow-hidden;
+    @apply relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700;
   }
 
   .voice-sample-overlay {
-    @apply absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity;
+    @apply absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity hover:opacity-100;
   }
 
   .voice-sample-play-button {
-    @apply bg-white rounded-full p-3 shadow-lg;
+    @apply rounded-full bg-white p-3 shadow-lg;
   }
 
   /* Project Card Styles */
   .project-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow cursor-pointer;
+    @apply cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800;
   }
 
   .project-progress-bar {
-    @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
+    @apply h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700;
   }
 
   .project-progress-fill {
-    @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+    @apply h-2 rounded-full bg-blue-600 transition-all duration-300;
   }
 
   /* Casting Call Styles */
   .casting-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow;
+    @apply overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800;
   }
 
   .casting-budget {
@@ -566,12 +566,12 @@
   }
 
   .casting-deadline {
-    @apply text-sm text-orange-600 dark:text-orange-400 font-medium;
+    @apply text-sm font-medium text-orange-600 dark:text-orange-400;
   }
 
   /* Notification Styles */
   .notification-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow;
+    @apply overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800;
   }
 
   .notification-unread {
@@ -579,12 +579,12 @@
   }
 
   .notification-icon {
-    @apply w-10 h-10 rounded-full flex items-center justify-center;
+    @apply flex h-10 w-10 items-center justify-center rounded-full;
   }
 
   /* Profile Styles */
   .profile-header {
-    @apply bg-gradient-to-r from-purple-600 to-blue-600 text-white p-8 rounded-lg;
+    @apply rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-8 text-white;
   }
 
   .profile-avatar {
@@ -596,16 +596,16 @@
   }
 
   .profile-stat {
-    @apply bg-white/20 rounded-lg p-4;
+    @apply rounded-lg bg-white/20 p-4;
   }
 
   /* Dashboard Styles */
   .dashboard-metric {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6;
+    @apply rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800;
   }
 
   .dashboard-activity-item {
-    @apply flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+    @apply flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700;
   }
 
   .dashboard-quick-action {
@@ -614,11 +614,11 @@
 
   /* Navigation Styles */
   .voiceact-nav-item {
-    @apply flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white;
+    @apply flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white;
   }
 
   .voiceact-nav-item.active {
-    @apply bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700;
+    @apply border border-purple-200 bg-purple-100 text-purple-700 dark:border-purple-700 dark:bg-purple-900 dark:text-purple-300;
   }
 
   .voiceact-nav-icon {
@@ -626,12 +626,12 @@
   }
 
   .voiceact-nav-badge {
-    @apply ml-auto flex-shrink-0 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full px-2 py-0.5 text-xs font-medium;
+    @apply ml-auto flex-shrink-0 rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-800 dark:text-purple-200;
   }
 
   /* Audio Player Styles */
   .audio-player {
-    @apply bg-gray-900 rounded-lg overflow-hidden;
+    @apply overflow-hidden rounded-lg bg-gray-900;
   }
 
   .audio-player-header {
@@ -656,7 +656,7 @@
 
   /* Waveform Styles */
   .waveform-container {
-    @apply h-16 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer relative overflow-hidden;
+    @apply relative h-16 cursor-pointer overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-700;
   }
 
   .waveform-bar {
@@ -736,22 +736,22 @@
   }
 
   .voiceact-skeleton-text {
-    @apply h-4 bg-gray-200 dark:bg-gray-700 rounded;
+    @apply h-4 rounded bg-gray-200 dark:bg-gray-700;
   }
 
   .voiceact-skeleton-avatar {
-    @apply h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-full;
+    @apply h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700;
   }
 
   .voiceact-skeleton-card {
-    @apply h-48 bg-gray-200 dark:bg-gray-700 rounded-lg;
+    @apply h-48 rounded-lg bg-gray-200 dark:bg-gray-700;
   }
 }
 
 @layer utilities {
   /* VoiceAct Utility Classes */
   .voiceact-gradient {
-    background: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
   }
 
   .voiceact-text-gradient {
@@ -759,16 +759,20 @@
   }
 
   .voiceact-shadow {
-    box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.1), 0 2px 4px -1px rgba(139, 92, 246, 0.06);
+    box-shadow:
+      0 4px 6px -1px rgba(139, 92, 246, 0.1),
+      0 2px 4px -1px rgba(139, 92, 246, 0.06);
   }
 
   .voiceact-shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -2px rgba(139, 92, 246, 0.05);
+    box-shadow:
+      0 10px 15px -3px rgba(139, 92, 246, 0.1),
+      0 4px 6px -2px rgba(139, 92, 246, 0.05);
   }
 
   /* Audio-specific utilities */
   .audio-waveform {
-    @apply w-full h-full;
+    @apply h-full w-full;
   }
 
   .audio-controls {
@@ -776,14 +780,14 @@
   }
 
   .audio-volume-slider {
-    @apply flex-1 h-1 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer;
+    @apply h-1 flex-1 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-600;
   }
 
   .audio-volume-slider::-webkit-slider-thumb {
-    @apply appearance-none h-4 w-4 rounded-full bg-purple-600 cursor-pointer border-2 border-white shadow-lg;
+    @apply h-4 w-4 cursor-pointer appearance-none rounded-full border-2 border-white bg-purple-600 shadow-lg;
   }
 
   .audio-volume-slider::-moz-range-thumb {
-    @apply h-4 w-4 rounded-full bg-purple-600 cursor-pointer border-2 border-white shadow-lg;
+    @apply h-4 w-4 cursor-pointer rounded-full border-2 border-white bg-purple-600 shadow-lg;
   }
 }

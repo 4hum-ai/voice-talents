@@ -1,7 +1,12 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+  <div
+    class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+  >
     <!-- Table Header with Actions -->
-    <div v-if="showHeader" class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+    <div
+      v-if="showHeader"
+      class="border-b border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-700"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <h3 class="text-lg font-medium text-gray-900 dark:text-white">
@@ -11,37 +16,29 @@
             {{ totalItems }} items
           </span>
         </div>
-        
+
         <div class="flex items-center space-x-3">
           <!-- Bulk Actions -->
           <div v-if="selectedItems.length > 0" class="flex items-center space-x-2">
             <span class="text-sm text-gray-600 dark:text-gray-400">
               {{ selectedItems.length }} selected
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              @click="bulkAction('delete')"
-            >
+            <Button variant="outline" size="sm" @click="bulkAction('delete')">
               <Icon name="mdi:delete" class="h-4 w-4" />
               Delete
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              @click="bulkAction('export')"
-            >
+            <Button variant="outline" size="sm" @click="bulkAction('export')">
               <Icon name="mdi:download" class="h-4 w-4" />
               Export
             </Button>
           </div>
-          
+
           <!-- View Toggle -->
-          <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
+          <div class="flex items-center rounded-md border border-gray-300 dark:border-gray-600">
             <Button
               variant="ghost"
               size="sm"
-              :class="{ 'bg-white dark:bg-gray-800 shadow-sm': viewMode === 'table' }"
+              :class="{ 'bg-white shadow-sm dark:bg-gray-800': viewMode === 'table' }"
               @click="viewMode = 'table'"
             >
               <Icon name="mdi:view-list" class="h-4 w-4" />
@@ -49,20 +46,15 @@
             <Button
               variant="ghost"
               size="sm"
-              :class="{ 'bg-white dark:bg-gray-800 shadow-sm': viewMode === 'grid' }"
+              :class="{ 'bg-white shadow-sm dark:bg-gray-800': viewMode === 'grid' }"
               @click="viewMode = 'grid'"
             >
               <Icon name="mdi:view-grid" class="h-4 w-4" />
             </Button>
           </div>
-          
+
           <!-- Refresh Button -->
-          <Button
-            variant="ghost"
-            size="sm"
-            @click="refresh"
-            :loading="loading"
-          >
+          <Button variant="ghost" size="sm" @click="refresh" :loading="loading">
             <Icon name="mdi:refresh" class="h-4 w-4" />
           </Button>
         </div>
@@ -86,15 +78,15 @@
                 :checked="allSelected"
                 :indeterminate="someSelected"
                 @change="toggleSelectAll"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
               />
             </th>
-            
+
             <!-- Column Headers -->
             <th
               v-for="column in columns"
               :key="column.key"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+              class="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
               @click="sort(column.key)"
             >
               <div class="flex items-center space-x-1">
@@ -104,36 +96,39 @@
                     name="mdi:chevron-up"
                     :class="[
                       'h-3 w-3',
-                      sortKey === column.key && sortDirection === 'asc' 
-                        ? 'text-blue-600 dark:text-blue-400' 
-                        : 'text-gray-400'
+                      sortKey === column.key && sortDirection === 'asc'
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-gray-400',
                     ]"
                   />
                   <Icon
                     name="mdi:chevron-down"
                     :class="[
-                      'h-3 w-3 -mt-1',
-                      sortKey === column.key && sortDirection === 'desc' 
-                        ? 'text-blue-600 dark:text-blue-400' 
-                        : 'text-gray-400'
+                      '-mt-1 h-3 w-3',
+                      sortKey === column.key && sortDirection === 'desc'
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-gray-400',
                     ]"
                   />
                 </div>
               </div>
             </th>
-            
+
             <!-- Actions Column -->
-            <th v-if="showActions" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            <th
+              v-if="showActions"
+              class="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+            >
               Actions
             </th>
           </tr>
         </thead>
-        
-        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+
+        <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
           <tr
             v-for="(item, index) in paginatedData"
             :key="getItemKey(item, index)"
-            class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <!-- Select Checkbox -->
             <td v-if="selectable" class="px-6 py-4 whitespace-nowrap">
@@ -141,10 +136,10 @@
                 type="checkbox"
                 :checked="isSelected(item)"
                 @change="toggleSelect(item)"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
               />
             </td>
-            
+
             <!-- Data Cells -->
             <td
               v-for="column in columns"
@@ -163,27 +158,18 @@
                 </span>
               </slot>
             </td>
-            
+
             <!-- Actions Cell -->
-            <td v-if="showActions" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <td
+              v-if="showActions"
+              class="px-6 py-4 text-right text-sm font-medium whitespace-nowrap"
+            >
               <div class="flex items-center justify-end space-x-2">
-                <slot
-                  name="actions"
-                  :item="item"
-                  :index="index"
-                >
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    @click="editItem(item)"
-                  >
+                <slot name="actions" :item="item" :index="index">
+                  <Button variant="ghost" size="sm" @click="editItem(item)">
                     <Icon name="mdi:pencil" class="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    @click="deleteItem(item)"
-                  >
+                  <Button variant="ghost" size="sm" @click="deleteItem(item)">
                     <Icon name="mdi:delete" class="h-4 w-4" />
                   </Button>
                 </slot>
@@ -196,17 +182,13 @@
 
     <!-- Grid View -->
     <div v-else class="p-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="(item, index) in paginatedData"
           :key="getItemKey(item, index)"
-          class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+          class="rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
         >
-          <slot
-            name="grid-item"
-            :item="item"
-            :index="index"
-          >
+          <slot name="grid-item" :item="item" :index="index">
             <div class="space-y-2">
               <h4 class="font-medium text-gray-900 dark:text-white">
                 {{ getNestedValue(item, 'title') || 'Item' }}
@@ -221,14 +203,18 @@
     </div>
 
     <!-- Pagination -->
-    <div v-if="showPagination && totalPages > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+    <div
+      v-if="showPagination && totalPages > 1"
+      class="border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-700"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
           <span>
-            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} results
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+            {{ Math.min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} results
           </span>
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <Button
             variant="outline"
@@ -238,7 +224,7 @@
           >
             <Icon name="mdi:chevron-left" class="h-4 w-4" />
           </Button>
-          
+
           <div class="flex items-center space-x-1">
             <Button
               v-for="page in visiblePages"
@@ -246,12 +232,12 @@
               :variant="page === currentPage ? 'primary' : 'outline'"
               size="sm"
               @click="goToPage(page)"
-              class="w-8 h-8 p-0"
+              class="h-8 w-8 p-0"
             >
               {{ page }}
             </Button>
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -327,11 +313,11 @@ const totalPages = computed(() => Math.ceil(totalItems.value / props.itemsPerPag
 
 const sortedData = computed(() => {
   if (!sortKey.value) return props.data
-  
+
   return [...props.data].sort((a, b) => {
     const aVal = getNestedValue(a, sortKey.value)
     const bVal = getNestedValue(b, sortKey.value)
-    
+
     if (aVal < bVal) return sortDirection.value === 'asc' ? -1 : 1
     if (aVal > bVal) return sortDirection.value === 'asc' ? 1 : -1
     return 0
@@ -356,11 +342,11 @@ const visiblePages = computed(() => {
   const pages = []
   const start = Math.max(1, currentPage.value - 2)
   const end = Math.min(totalPages.value, start + 4)
-  
+
   for (let i = start; i <= end; i++) {
     pages.push(i)
   }
-  
+
   return pages
 })
 
@@ -377,15 +363,15 @@ const formatCellValue = (value: any, column: Column) => {
   if (column.formatter) {
     return column.formatter(value)
   }
-  
+
   if (value === null || value === undefined) {
     return '-'
   }
-  
+
   if (typeof value === 'boolean') {
     return value ? 'Yes' : 'No'
   }
-  
+
   return String(value)
 }
 
@@ -396,7 +382,7 @@ const sort = (key: string) => {
     sortKey.value = key
     sortDirection.value = 'asc'
   }
-  
+
   emit('sort', key, sortDirection.value)
 }
 
@@ -406,24 +392,26 @@ const toggleSelectAll = () => {
   } else {
     selectedItems.value = [...paginatedData.value]
   }
-  
+
   emit('select', selectedItems.value)
 }
 
 const toggleSelect = (item: any) => {
-  const index = selectedItems.value.findIndex(selected => getItemKey(selected, 0) === getItemKey(item, 0))
-  
+  const index = selectedItems.value.findIndex(
+    (selected) => getItemKey(selected, 0) === getItemKey(item, 0),
+  )
+
   if (index > -1) {
     selectedItems.value.splice(index, 1)
   } else {
     selectedItems.value.push(item)
   }
-  
+
   emit('select', selectedItems.value)
 }
 
 const isSelected = (item: any) => {
-  return selectedItems.value.some(selected => getItemKey(selected, 0) === getItemKey(item, 0))
+  return selectedItems.value.some((selected) => getItemKey(selected, 0) === getItemKey(item, 0))
 }
 
 const goToPage = (page: number) => {
@@ -449,8 +437,11 @@ const bulkAction = (action: string) => {
 }
 
 // Watch for data changes
-watch(() => props.data, () => {
-  currentPage.value = 1
-  selectedItems.value = []
-})
+watch(
+  () => props.data,
+  () => {
+    currentPage.value = 1
+    selectedItems.value = []
+  },
+)
 </script>

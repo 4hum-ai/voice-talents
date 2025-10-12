@@ -1,35 +1,31 @@
 <template>
-  <div class="max-w-3xl mx-auto">
-    <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-foreground mb-4">Budget & Timeline</h1>
-      <p class="text-lg text-muted-foreground">
-        Set your budget range and project timeline
-      </p>
+  <div class="mx-auto max-w-3xl">
+    <div class="mb-8 text-center">
+      <h1 class="text-foreground mb-4 text-3xl font-bold">Budget & Timeline</h1>
+      <p class="text-muted-foreground text-lg">Set your budget range and project timeline</p>
     </div>
 
     <div class="space-y-8">
       <!-- Budget Section -->
-      <div class="bg-card rounded-lg border border-border p-6">
-        <h3 class="text-lg font-semibold text-foreground mb-4">Budget</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-card border-border rounded-lg border p-6">
+        <h3 class="text-foreground mb-4 text-lg font-semibold">Budget</h3>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">
-              Currency
-            </label>
+            <label class="text-foreground mb-2 block text-sm font-medium"> Currency </label>
             <SelectInput
               v-model="localBudget.currency"
               :options="currencyOptions"
               placeholder="Select currency"
             />
           </div>
-          
+
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">
-              Maximum Budget *
-            </label>
+            <label class="text-foreground mb-2 block text-sm font-medium"> Maximum Budget * </label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+              <span
+                class="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 transform"
+              >
                 {{ getCurrencySymbol(localBudget.currency) }}
               </span>
               <input
@@ -38,21 +34,21 @@
                 min="0"
                 step="1"
                 required
-                class="w-full pl-8 pr-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                class="border-border focus:ring-primary w-full rounded-md border py-2 pr-3 pl-8 focus:ring-2 focus:outline-none"
                 placeholder="0"
               />
             </div>
-            <p class="text-sm text-muted-foreground mt-1">
+            <p class="text-muted-foreground mt-1 text-sm">
               The maximum amount you're willing to pay for this project
             </p>
           </div>
         </div>
-        
+
         <!-- Budget Display -->
-        <div v-if="localBudget.max > 0" class="mt-4 p-3 bg-muted/50 rounded-lg">
+        <div v-if="localBudget.max > 0" class="bg-muted/50 mt-4 rounded-lg p-3">
           <div class="flex items-center justify-between text-sm">
             <span class="text-muted-foreground">Maximum Budget:</span>
-            <span class="font-medium text-foreground">
+            <span class="text-foreground font-medium">
               {{ getCurrencySymbol(localBudget.currency) }}{{ localBudget.max.toLocaleString() }}
             </span>
           </div>
@@ -60,12 +56,12 @@
       </div>
 
       <!-- Timeline Section -->
-      <div class="bg-card rounded-lg border border-border p-6">
-        <h3 class="text-lg font-semibold text-foreground mb-4">Project Timeline</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-card border-border rounded-lg border p-6">
+        <h3 class="text-foreground mb-4 text-lg font-semibold">Project Timeline</h3>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">
+            <label class="text-foreground mb-2 block text-sm font-medium">
               Project Deadline *
             </label>
             <input
@@ -73,15 +69,15 @@
               type="date"
               required
               :min="minDate"
-              class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
             />
-            <p class="text-sm text-muted-foreground mt-1">
+            <p class="text-muted-foreground mt-1 text-sm">
               When do you need the final deliverables?
             </p>
           </div>
-          
+
           <div>
-            <label class="block text-sm font-medium text-foreground mb-2">
+            <label class="text-foreground mb-2 block text-sm font-medium">
               Estimated Duration
             </label>
             <SelectInput
@@ -89,21 +85,18 @@
               :options="durationOptions"
               placeholder="Select duration"
             />
-            <p class="text-sm text-muted-foreground mt-1">
+            <p class="text-muted-foreground mt-1 text-sm">
               How long will the project take to complete?
             </p>
           </div>
         </div>
       </div>
 
-
       <!-- Timeline Summary -->
       <div v-if="hasTimeline" class="bg-muted/50 rounded-lg p-4">
-        <h4 class="font-medium text-foreground mb-2">Timeline Summary</h4>
-        <div class="space-y-1 text-sm text-muted-foreground">
-          <div v-if="localDeadline">
-            <strong>Deadline:</strong> {{ formatDate(localDeadline) }}
-          </div>
+        <h4 class="text-foreground mb-2 font-medium">Timeline Summary</h4>
+        <div class="text-muted-foreground space-y-1 text-sm">
+          <div v-if="localDeadline"><strong>Deadline:</strong> {{ formatDate(localDeadline) }}</div>
           <div v-if="localEstimatedDuration">
             <strong>Duration:</strong> {{ localEstimatedDuration }}
           </div>
@@ -112,21 +105,15 @@
     </div>
 
     <!-- Navigation -->
-    <div class="flex justify-between mt-8">
+    <div class="mt-8 flex justify-between">
       <Button variant="outline" size="lg" @click="handlePrevious">
-        <Icon name="mdi:arrow-left" class="h-4 w-4 mr-2" />
+        <Icon name="mdi:arrow-left" class="mr-2 h-4 w-4" />
         Previous
       </Button>
-      
-      <Button 
-        variant="primary" 
-        size="lg" 
-        @click="handleNext"
-        :disabled="!isValid"
-        class="px-8"
-      >
+
+      <Button variant="primary" size="lg" @click="handleNext" :disabled="!isValid" class="px-8">
         Continue
-        <Icon name="mdi:arrow-right" class="h-4 w-4 ml-2" />
+        <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
       </Button>
     </div>
   </div>
@@ -171,7 +158,7 @@ const currencyOptions = [
   { value: 'GBP', label: 'GBP (£)' },
   { value: 'CAD', label: 'CAD (C$)' },
   { value: 'AUD', label: 'AUD (A$)' },
-  { value: 'VND', label: 'VND (₫)' }
+  { value: 'VND', label: 'VND (₫)' },
 ]
 
 const durationOptions = [
@@ -182,9 +169,8 @@ const durationOptions = [
   { value: '3-4 weeks', label: '3-4 weeks' },
   { value: '1 month', label: '1 month' },
   { value: '2-3 months', label: '2-3 months' },
-  { value: 'Ongoing', label: 'Ongoing' }
+  { value: 'Ongoing', label: 'Ongoing' },
 ]
-
 
 // Computed properties
 const minDate = computed(() => {
@@ -208,18 +194,17 @@ const getCurrencySymbol = (currency: string) => {
     GBP: '£',
     CAD: 'C$',
     AUD: 'A$',
-    VND: '₫'
+    VND: '₫',
   }
   return symbols[currency] || '$'
 }
 
-
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   })
 }
 

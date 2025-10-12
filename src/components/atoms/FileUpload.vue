@@ -1,8 +1,8 @@
 <template>
   <div class="file-upload">
     <!-- Upload Area -->
-    <div 
-      class="relative border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+    <div
+      class="border-border hover:border-primary/50 relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors"
       :class="{ 'border-primary bg-primary/5': isDragOver, 'border-destructive': hasError }"
       @click="triggerFileInput"
       @dragover.prevent="handleDragOver"
@@ -17,71 +17,82 @@
         class="hidden"
         @change="handleFileSelect"
       />
-      
+
       <div class="space-y-3">
-        <div class="w-12 h-12 mx-auto bg-muted rounded-lg flex items-center justify-center">
-          <Icon name="mdi:cloud-upload" class="h-6 w-6 text-muted-foreground" />
+        <div class="bg-muted mx-auto flex h-12 w-12 items-center justify-center rounded-lg">
+          <Icon name="mdi:cloud-upload" class="text-muted-foreground h-6 w-6" />
         </div>
-        
+
         <div>
-          <p class="text-sm font-medium text-foreground">
+          <p class="text-foreground text-sm font-medium">
             {{ isDragOver ? 'Drop files here' : 'Click to upload or drag and drop' }}
           </p>
-          <p class="text-xs text-muted-foreground mt-1">
+          <p class="text-muted-foreground mt-1 text-xs">
             {{ acceptText }} (max {{ maxSize }}MB{{ multiple ? ' each' : '' }})
           </p>
         </div>
-        
+
         <div v-if="premiumFeature" class="flex items-center justify-center space-x-2">
-          <Icon name="mdi:star" class="h-4 w-4 text-primary" />
-          <span class="text-xs text-primary font-medium">Premium Feature</span>
+          <Icon name="mdi:star" class="text-primary h-4 w-4" />
+          <span class="text-primary text-xs font-medium">Premium Feature</span>
         </div>
       </div>
     </div>
-    
+
     <!-- Error Message -->
-    <div v-if="hasError" class="mt-2 text-sm text-destructive">
+    <div v-if="hasError" class="text-destructive mt-2 text-sm">
       {{ errorMessage }}
     </div>
-    
+
     <!-- File Preview -->
     <div v-if="modelValue && !multiple" class="mt-3">
-      <div class="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+      <div class="bg-muted/50 flex items-center justify-between rounded-lg p-3">
         <div class="flex items-center space-x-3">
-          <Icon :name="getFileIcon(modelValue.type)" class="h-5 w-5 text-muted-foreground" />
+          <Icon
+            :name="getFileIcon(Array.isArray(modelValue) ? modelValue[0]?.type : modelValue.type)"
+            class="text-muted-foreground h-5 w-5"
+          />
           <div>
-            <p class="text-sm font-medium text-foreground">{{ modelValue.name }}</p>
-            <p class="text-xs text-muted-foreground">{{ formatFileSize(modelValue.size) }}</p>
+            <p class="text-foreground text-sm font-medium">
+              {{ Array.isArray(modelValue) ? `${modelValue.length} files` : modelValue.name }}
+            </p>
+            <p class="text-muted-foreground text-xs">
+              {{
+                Array.isArray(modelValue)
+                  ? formatFileSize(modelValue.reduce((sum, file) => sum + file.size, 0))
+                  : formatFileSize(modelValue.size)
+              }}
+            </p>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          @click="removeFile"
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="() => removeFile()"
           class="text-destructive hover:text-destructive"
         >
           <Icon name="mdi:close" class="h-4 w-4" />
         </Button>
       </div>
     </div>
-    
+
     <!-- Multiple Files Preview -->
     <div v-if="modelValue && multiple && Array.isArray(modelValue)" class="mt-3 space-y-2">
-      <div 
-        v-for="(file, index) in modelValue" 
+      <div
+        v-for="(file, index) in modelValue"
         :key="index"
-        class="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+        class="bg-muted/50 flex items-center justify-between rounded-lg p-3"
       >
         <div class="flex items-center space-x-3">
-          <Icon :name="getFileIcon(file.type)" class="h-5 w-5 text-muted-foreground" />
+          <Icon :name="getFileIcon(file.type)" class="text-muted-foreground h-5 w-5" />
           <div>
-            <p class="text-sm font-medium text-foreground">{{ file.name }}</p>
-            <p class="text-xs text-muted-foreground">{{ formatFileSize(file.size) }}</p>
+            <p class="text-foreground text-sm font-medium">{{ file.name }}</p>
+            <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           @click="removeFile(index)"
           class="text-destructive hover:text-destructive"
         >
@@ -109,12 +120,12 @@ const props = withDefaults(defineProps<Props>(), {
   accept: '*/*',
   maxSize: 10,
   multiple: false,
-  premiumFeature: false
+  premiumFeature: false,
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: File | File[] | null]
-  'upload': [file: File | File[]]
+  upload: [file: File | File[]]
 }>()
 
 const fileInput = ref<HTMLInputElement>()
@@ -125,12 +136,12 @@ const errorMessage = ref('')
 // Computed properties
 const acceptText = computed(() => {
   if (props.accept === '*/*') return 'Any file type'
-  
-  const extensions = props.accept.split(',').map(ext => {
+
+  const extensions = props.accept.split(',').map((ext) => {
     const clean = ext.trim().replace('.', '')
     return clean.toUpperCase()
   })
-  
+
   return extensions.join(', ')
 })
 
@@ -158,7 +169,7 @@ const handleDragLeave = () => {
 const handleDrop = (event: DragEvent) => {
   event.preventDefault()
   isDragOver.value = false
-  
+
   if (event.dataTransfer?.files) {
     processFiles(Array.from(event.dataTransfer.files))
   }
@@ -167,34 +178,32 @@ const handleDrop = (event: DragEvent) => {
 const processFiles = (files: File[]) => {
   hasError.value = false
   errorMessage.value = ''
-  
+
   // Validate file size
-  const oversizedFiles = files.filter(file => file.size > props.maxSize * 1024 * 1024)
+  const oversizedFiles = files.filter((file) => file.size > props.maxSize * 1024 * 1024)
   if (oversizedFiles.length > 0) {
     hasError.value = true
     errorMessage.value = `File(s) too large. Maximum size is ${props.maxSize}MB.`
     return
   }
-  
+
   // Validate file type
   if (props.accept !== '*/*') {
-    const acceptedTypes = props.accept.split(',').map(type => type.trim())
-    const invalidFiles = files.filter(file => {
+    const acceptedTypes = props.accept.split(',').map((type) => type.trim())
+    const invalidFiles = files.filter((file) => {
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
-      return !acceptedTypes.some(type => 
-        type === fileExtension || 
-        type === file.type ||
-        type === '*/*'
+      return !acceptedTypes.some(
+        (type) => type === fileExtension || type === file.type || type === '*/*',
       )
     })
-    
+
     if (invalidFiles.length > 0) {
       hasError.value = true
       errorMessage.value = 'Invalid file type. Please check accepted formats.'
       return
     }
   }
-  
+
   // Process files
   if (props.multiple) {
     const currentFiles = Array.isArray(props.modelValue) ? props.modelValue : []

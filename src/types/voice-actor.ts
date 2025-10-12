@@ -315,22 +315,22 @@ export interface CastingProposal extends BaseEntity {
   status: 'draft' | 'submitted' | 'under_review' | 'shortlisted' | 'selected' | 'rejected'
   submittedDate: string
   reviewedDate?: string
-  
+
   // Proposal Details
   proposedCost: number
   proposedCurrency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
   proposedTimeline: string // e.g., "2-3 weeks", "1 month"
   estimatedHours: number
-  
+
   // Custom Samples for this casting
   customSamples: CustomSample[]
-  
+
   // Existing samples from portfolio
   portfolioSampleIds: string[]
-  
+
   // Personal message to studio
   personalNote?: string
-  
+
   // Studio feedback
   studioFeedback?: string
   rejectionReason?: string
@@ -369,91 +369,91 @@ export interface CastingSubmission extends BaseEntity {
 }
 
 // Enums and Types
-export type VoiceType = 
-  | 'narrator' 
-  | 'character' 
-  | 'announcer' 
-  | 'commercial' 
-  | 'audiobook' 
-  | 'podcast' 
-  | 'animation' 
-  | 'video_game' 
-  | 'documentary' 
+export type VoiceType =
+  | 'narrator'
+  | 'character'
+  | 'announcer'
+  | 'commercial'
+  | 'audiobook'
+  | 'podcast'
+  | 'animation'
+  | 'video_game'
+  | 'documentary'
   | 'e-learning'
 
-export type VoiceGenre = 
-  | 'commercial' 
-  | 'audiobook' 
-  | 'podcast' 
-  | 'animation' 
-  | 'video_game' 
-  | 'documentary' 
-  | 'e-learning' 
-  | 'radio' 
-  | 'television' 
-  | 'film' 
-  | 'theater' 
+export type VoiceGenre =
+  | 'commercial'
+  | 'audiobook'
+  | 'podcast'
+  | 'animation'
+  | 'video_game'
+  | 'documentary'
+  | 'e-learning'
+  | 'radio'
+  | 'television'
+  | 'film'
+  | 'theater'
   | 'presentation'
 
-export type VoiceTone = 
-  | 'professional' 
-  | 'friendly' 
-  | 'authoritative' 
-  | 'warm' 
-  | 'energetic' 
-  | 'calm' 
-  | 'dramatic' 
-  | 'playful' 
-  | 'serious' 
-  | 'conversational' 
-  | 'mysterious' 
+export type VoiceTone =
+  | 'professional'
+  | 'friendly'
+  | 'authoritative'
+  | 'warm'
+  | 'energetic'
+  | 'calm'
+  | 'dramatic'
+  | 'playful'
+  | 'serious'
+  | 'conversational'
+  | 'mysterious'
   | 'inspiring'
 
-export type ProjectType = 
-  | 'commercial' 
-  | 'audiobook' 
-  | 'podcast' 
-  | 'animation' 
-  | 'video_game' 
-  | 'documentary' 
-  | 'e-learning' 
-  | 'radio' 
-  | 'television' 
-  | 'film' 
-  | 'presentation' 
-  | 'phone_system' 
+export type ProjectType =
+  | 'commercial'
+  | 'audiobook'
+  | 'podcast'
+  | 'animation'
+  | 'video_game'
+  | 'documentary'
+  | 'e-learning'
+  | 'radio'
+  | 'television'
+  | 'film'
+  | 'presentation'
+  | 'phone_system'
   | 'app_voice'
 
-export type ProjectStatus = 
-  | 'draft' 
-  | 'open' 
-  | 'in_progress' 
-  | 'review' 
-  | 'completed' 
-  | 'cancelled' 
+export type ProjectStatus =
+  | 'draft'
+  | 'open'
+  | 'in_progress'
+  | 'review'
+  | 'completed'
+  | 'cancelled'
   | 'on_hold'
 
-export type AssignmentStatus = 
-  | 'assigned' 
-  | 'accepted' 
-  | 'in_progress' 
-  | 'submitted' 
-  | 'review' 
-  | 'approved' 
-  | 'revision_requested' 
-  | 'completed' 
+export type AssignmentStatus =
+  | 'assigned'
+  | 'accepted'
+  | 'in_progress'
+  | 'submitted'
+  | 'review'
+  | 'approved'
+  | 'revision_requested'
+  | 'completed'
   | 'cancelled'
 
-export type NotificationType = 
-  | 'project_assigned' 
-  | 'project_updated' 
-  | 'recording_submitted' 
-  | 'recording_approved' 
-  | 'recording_rejected' 
-  | 'payment_received' 
-  | 'message_received' 
-  | 'deadline_reminder' 
-  | 'casting_opportunity' 
+export type NotificationType =
+  | 'project_assigned'
+  | 'project_updated'
+  | 'recording_submitted'
+  | 'recording_approved'
+  | 'recording_rejected'
+  | 'payment_received'
+  | 'message_received'
+  | 'deadline_reminder'
+  | 'casting_opportunity'
   | 'system_announcement'
 
 // Dashboard Statistics

@@ -24,7 +24,7 @@ const STORAGE_KEYS = {
   TALENT_ONBOARDING_DATA: 'voiceact-talent-onboarding-data',
   CLIENT_ONBOARDING_DATA: 'voiceact-client-onboarding-data',
   CURRENT_STEP: 'voiceact-current-onboarding-step',
-  TOTAL_STEPS: 'voiceact-total-onboarding-steps'
+  TOTAL_STEPS: 'voiceact-total-onboarding-steps',
 }
 
 // Global state
@@ -33,7 +33,7 @@ const onboardingState = ref<OnboardingState>({
   talentOnboarding: 'not_started',
   clientOnboarding: 'not_started',
   currentStep: 1,
-  totalSteps: 1
+  totalSteps: 1,
 })
 
 export function useOnboarding() {
@@ -50,7 +50,7 @@ export function useOnboarding() {
       talentOnboarding: talentCompleted ? 'completed' : 'not_started',
       clientOnboarding: clientCompleted ? 'completed' : 'not_started',
       currentStep,
-      totalSteps
+      totalSteps,
     }
   }
 
@@ -58,13 +58,17 @@ export function useOnboarding() {
   const currentMode = computed(() => onboardingState.value.mode)
   const isTalentMode = computed(() => onboardingState.value.mode === 'talent')
   const isClientMode = computed(() => onboardingState.value.mode === 'client')
-  
+
   const talentOnboardingStatus = computed(() => onboardingState.value.talentOnboarding)
   const clientOnboardingStatus = computed(() => onboardingState.value.clientOnboarding)
-  
-  const isTalentOnboardingCompleted = computed(() => onboardingState.value.talentOnboarding === 'completed')
-  const isClientOnboardingCompleted = computed(() => onboardingState.value.clientOnboarding === 'completed')
-  
+
+  const isTalentOnboardingCompleted = computed(
+    () => onboardingState.value.talentOnboarding === 'completed',
+  )
+  const isClientOnboardingCompleted = computed(
+    () => onboardingState.value.clientOnboarding === 'completed',
+  )
+
   const currentOnboardingStatus = computed(() => {
     if (onboardingState.value.mode === 'talent') {
       return onboardingState.value.talentOnboarding
@@ -73,11 +77,11 @@ export function useOnboarding() {
     }
     return 'not_started'
   })
-  
+
   const isCurrentOnboardingCompleted = computed(() => {
     return currentOnboardingStatus.value === 'completed'
   })
-  
+
   const shouldShowOnboarding = computed(() => {
     return !isCurrentOnboardingCompleted.value && onboardingState.value.mode !== null
   })
@@ -158,15 +162,16 @@ export function useOnboarding() {
     onboardingState.value.clientOnboarding = 'not_started'
     onboardingState.value.currentStep = 1
     onboardingState.value.totalSteps = 1
-    
+
     // Clear all localStorage
-    Object.values(STORAGE_KEYS).forEach(key => {
+    Object.values(STORAGE_KEYS).forEach((key) => {
       localStorage.removeItem(key)
     })
   }
 
   const getOnboardingData = (mode: UserMode) => {
-    const key = mode === 'talent' ? STORAGE_KEYS.TALENT_ONBOARDING_DATA : STORAGE_KEYS.CLIENT_ONBOARDING_DATA
+    const key =
+      mode === 'talent' ? STORAGE_KEYS.TALENT_ONBOARDING_DATA : STORAGE_KEYS.CLIENT_ONBOARDING_DATA
     const data = localStorage.getItem(key)
     return data ? JSON.parse(data) : null
   }
@@ -193,7 +198,7 @@ export function useOnboarding() {
     currentOnboardingStatus,
     isCurrentOnboardingCompleted,
     shouldShowOnboarding,
-    
+
     // Actions
     setUserMode,
     startTalentOnboarding,
@@ -208,8 +213,8 @@ export function useOnboarding() {
     resetAllOnboarding,
     getOnboardingData,
     switchMode,
-    
+
     // Storage keys (for debugging)
-    STORAGE_KEYS
+    STORAGE_KEYS,
   }
 }

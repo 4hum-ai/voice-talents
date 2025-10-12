@@ -1,10 +1,6 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-6">
-    <div
-      v-for="field in fields"
-      :key="field.name"
-      class="space-y-2"
-    >
+    <div v-for="field in fields" :key="field.name" class="space-y-2">
       <!-- Field Label -->
       <label
         v-if="field.label"
@@ -13,7 +9,7 @@
         :class="{ 'text-red-600 dark:text-red-400': hasError(field.name) }"
       >
         {{ field.label }}
-        <span v-if="field.required" class="text-red-500 ml-1">*</span>
+        <span v-if="field.required" class="ml-1 text-red-500">*</span>
       </label>
 
       <!-- Field Description -->
@@ -23,7 +19,12 @@
 
       <!-- Text Input -->
       <input
-        v-if="field.type === 'text' || field.type === 'email' || field.type === 'password' || field.type === 'url'"
+        v-if="
+          field.type === 'text' ||
+          field.type === 'email' ||
+          field.type === 'password' ||
+          field.type === 'url'
+        "
         :id="field.name"
         :type="field.type"
         :name="field.name"
@@ -64,11 +65,7 @@
         @blur="validateField(field.name)"
       >
         <option v-if="field.placeholder" value="">{{ field.placeholder }}</option>
-        <option
-          v-for="option in field.options"
-          :key="option.value"
-          :value="option.value"
-        >
+        <option v-for="option in field.options" :key="option.value" :value="option.value">
           {{ option.label }}
         </option>
       </select>
@@ -124,7 +121,10 @@
             :class="radioClasses(field)"
             @change="updateField(field.name, option.value)"
           />
-          <label :for="`${field.name}-${option.value}`" class="text-sm text-gray-700 dark:text-gray-300">
+          <label
+            :for="`${field.name}-${option.value}`"
+            class="text-sm text-gray-700 dark:text-gray-300"
+          >
             {{ option.label }}
           </label>
         </div>
@@ -133,11 +133,11 @@
       <!-- File Upload -->
       <div v-else-if="field.type === 'file'" class="space-y-2">
         <div
-          class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+          class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400 dark:border-gray-600 dark:hover:border-blue-500"
           :class="{ 'border-red-300 dark:border-red-600': hasError(field.name) }"
         >
-          <Icon name="mdi:cloud-upload" class="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <Icon name="mdi:cloud-upload" class="mx-auto mb-4 h-12 w-12 text-gray-400" />
+          <p class="mb-2 text-sm text-gray-600 dark:text-gray-400">
             {{ field.placeholder || 'Click to upload or drag and drop' }}
           </p>
           <input
@@ -157,7 +157,7 @@
             @click="triggerFileInput(field.name)"
             :disabled="field.disabled"
           >
-            <Icon name="mdi:folder-open" class="h-4 w-4 mr-2" />
+            <Icon name="mdi:folder-open" class="mr-2 h-4 w-4" />
             Choose File
           </Button>
         </div>
@@ -205,21 +205,13 @@
     </div>
 
     <!-- Form Actions -->
-    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-      <Button
-        v-if="showCancel"
-        variant="outline"
-        @click="handleCancel"
-        :disabled="loading"
-      >
+    <div
+      class="flex items-center justify-end space-x-4 border-t border-gray-200 pt-6 dark:border-gray-700"
+    >
+      <Button v-if="showCancel" variant="outline" @click="handleCancel" :disabled="loading">
         Cancel
       </Button>
-      <Button
-        type="submit"
-        variant="primary"
-        :loading="loading"
-        :disabled="!isValid || loading"
-      >
+      <Button type="submit" variant="primary" :loading="loading" :disabled="!isValid || loading">
         {{ submitText }}
       </Button>
     </div>
@@ -234,7 +226,19 @@ import Chip from '@/components/atoms/Chip.vue'
 
 interface FormField {
   name: string
-  type: 'text' | 'email' | 'password' | 'url' | 'textarea' | 'select' | 'multiselect' | 'checkbox' | 'radio' | 'file' | 'date' | 'number'
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'url'
+    | 'textarea'
+    | 'select'
+    | 'multiselect'
+    | 'checkbox'
+    | 'radio'
+    | 'file'
+    | 'date'
+    | 'number'
   label?: string
   description?: string
   placeholder?: string
@@ -282,18 +286,21 @@ const errors = reactive<Record<string, string>>({})
 const touched = reactive<Record<string, boolean>>({})
 
 // Initialize form data
-Object.keys(props.initialValues || {}).forEach(key => {
+Object.keys(props.initialValues || {}).forEach((key) => {
   formData[key] = props.initialValues![key]
 })
 
 // Computed
 const isValid = computed(() => {
-  return Object.keys(errors).length === 0 && props.fields.every(field => {
-    if (field.required && !formData[field.name]) {
-      return false
-    }
-    return true
-  })
+  return (
+    Object.keys(errors).length === 0 &&
+    props.fields.every((field) => {
+      if (field.required && !formData[field.name]) {
+        return false
+      }
+      return true
+    })
+  )
 })
 
 // Methods
@@ -305,7 +312,7 @@ const updateField = (name: string, value: any) => {
   formData[name] = value
   touched[name] = true
   emit('change', name, value)
-  
+
   // Clear error when user starts typing
   if (errors[name]) {
     delete errors[name]
@@ -313,7 +320,7 @@ const updateField = (name: string, value: any) => {
 }
 
 const validateField = (name: string) => {
-  const field = props.fields.find(f => f.name === name)
+  const field = props.fields.find((f) => f.name === name)
   if (!field || !field.validation) return
 
   const value = formData[name]
@@ -368,24 +375,30 @@ const getErrorMessage = (name: string) => {
 }
 
 const inputClasses = (field: FormField) => {
-  const base = 'block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors'
-  const error = hasError(field.name) ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-  const disabled = field.disabled ? 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
-  
+  const base =
+    'block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors'
+  const error = hasError(field.name)
+    ? 'border-red-300 dark:border-red-600'
+    : 'border-gray-300 dark:border-gray-600'
+  const disabled = field.disabled
+    ? 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+    : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+
   return `${base} ${error} ${disabled}`
 }
 
 const checkboxClasses = (field: FormField) => {
-  const base = 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded'
+  const base =
+    'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded'
   const error = hasError(field.name) ? 'border-red-300 dark:border-red-600' : ''
-  
+
   return `${base} ${error}`
 }
 
 const radioClasses = (field: FormField) => {
   const base = 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600'
   const error = hasError(field.name) ? 'border-red-300 dark:border-red-600' : ''
-  
+
   return `${base} ${error}`
 }
 
@@ -397,14 +410,14 @@ const isSelected = (name: string, value: string | number) => {
 const toggleSelection = (name: string, value: string | number) => {
   const currentValues = formData[name] || []
   const newValues = Array.isArray(currentValues) ? [...currentValues] : []
-  
+
   const index = newValues.indexOf(value)
   if (index > -1) {
     newValues.splice(index, 1)
   } else {
     newValues.push(value)
   }
-  
+
   updateField(name, newValues)
 }
 
@@ -425,7 +438,7 @@ const triggerFileInput = (name: string) => {
 
 const handleSubmit = () => {
   // Validate all fields
-  props.fields.forEach(field => {
+  props.fields.forEach((field) => {
     validateField(field.name)
   })
 

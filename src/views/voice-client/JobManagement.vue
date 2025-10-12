@@ -1,31 +1,27 @@
 <template>
-  <div class="min-h-screen bg-background flex">
+  <div class="bg-background flex min-h-screen">
     <!-- Navigation Sidebar -->
     <ClientNavigation />
 
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card shadow-sm border-b border-border">
+      <div class="bg-card border-border border-b shadow-sm">
         <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-16">
+          <div class="flex h-16 items-center justify-between">
             <div class="flex items-center">
               <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-foreground">
-                  Job Management
-                </h1>
-                <p class="text-sm text-muted-foreground">
-                  Manage your voice acting job postings
-                </p>
+                <h1 class="text-foreground text-2xl font-bold">Job Management</h1>
+                <p class="text-muted-foreground text-sm">Manage your voice acting job postings</p>
               </div>
             </div>
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="primary" size="sm" @click="openJobCreationModal">
-                <PlusIcon class="h-4 w-4 mr-2" />
+                <PlusIcon class="mr-2 h-4 w-4" />
                 Create Job
               </Button>
             </div>
@@ -33,146 +29,113 @@
         </div>
       </div>
 
-      <div class="px-4 sm:px-6 lg:px-8 py-8">
-        <div class="max-w-7xl mx-auto">
-          <!-- Premium Banner -->
-          <div class="mb-8">
-            <PremiumBanner @upgrade="openJobCreationModal" />
-          </div>
-          
+      <div class="px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
           <!-- Published Jobs Section -->
           <div v-if="clientPublishedJobs.length > 0" class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-semibold text-foreground">Published Jobs</h2>
-              <span class="text-sm text-muted-foreground">{{ clientPublishedJobs.length }} job{{ clientPublishedJobs.length !== 1 ? 's' : '' }}</span>
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-foreground text-lg font-semibold">Published Jobs</h2>
+              <span class="text-muted-foreground text-sm"
+                >{{ clientPublishedJobs.length }} job{{
+                  clientPublishedJobs.length !== 1 ? 's' : ''
+                }}</span
+              >
             </div>
-            
+
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <div 
-                v-for="job in clientPublishedJobs" 
+              <div
+                v-for="job in clientPublishedJobs"
                 :key="job.id"
-                class="bg-card border border-border rounded-lg p-6 hover:shadow-lg hover:border-primary/20 transition-all duration-200 group"
+                class="bg-card border-border hover:border-primary/20 group rounded-lg border p-6 transition-all duration-200 hover:shadow-lg"
               >
                 <!-- Header with status indicator -->
-                <div class="flex items-start justify-between mb-4">
+                <div class="mb-4 flex items-start justify-between">
                   <div class="flex-1">
-                    <div class="flex items-center space-x-2 mb-2">
-                      <h3 class="font-semibold text-foreground text-lg group-hover:text-primary transition-colors">
+                    <div class="mb-2 flex items-center space-x-2">
+                      <h3
+                        class="text-foreground group-hover:text-primary text-lg font-semibold transition-colors"
+                      >
                         {{ job.title || 'Untitled Job' }}
                       </h3>
                       <div class="flex items-center space-x-1">
-                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Published"></div>
-                        <span class="text-xs text-green-600 dark:text-green-400 font-medium">LIVE</span>
+                        <div
+                          class="h-2 w-2 animate-pulse rounded-full bg-green-500"
+                          title="Published"
+                        ></div>
+                        <span class="text-xs font-medium text-green-600 dark:text-green-400"
+                          >LIVE</span
+                        >
                       </div>
                     </div>
-                    <p class="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                    <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
                       {{ job.description || 'No description provided' }}
                     </p>
                   </div>
                 </div>
-                
-                <!-- Job details grid -->
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:briefcase" class="h-4 w-4 text-primary" />
+
+                <!-- Job details - simplified -->
+                <div class="mb-4 space-y-3">
+                  <!-- Key metrics row -->
+                  <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center space-x-4">
+                      <span class="text-muted-foreground">{{ formatJobType(job.jobType) }}</span>
+                      <span class="text-foreground font-medium">{{
+                        formatBudget(job.budget)
+                      }}</span>
                     </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Type</p>
-                      <p class="text-sm font-medium text-foreground">{{ formatJobType(job.jobType) }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:currency-usd" class="h-4 w-4 text-blue-500" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Budget</p>
-                      <p class="text-sm font-medium text-foreground">{{ formatBudget(job.budget) }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:clock-outline" class="h-4 w-4 text-orange-500" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Deadline</p>
-                      <p class="text-sm font-medium text-foreground">{{ formatDeadline(job.deadline) }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:account-group" class="h-4 w-4 text-purple-500" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Applications</p>
-                      <p class="text-sm font-medium text-foreground">{{ job.totalApplications || 0 }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-indigo-500/10 rounded-lg flex items-center justify-center">
-                      <Icon :name="(job as any).paymentDetails?.method === 'direct' ? 'mdi:handshake' : 'mdi:shield-check'" 
-                            :class="(job as any).paymentDetails?.method === 'direct' ? 'text-green-500' : 'text-blue-500'" 
-                            class="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Payment</p>
-                      <p class="text-sm font-medium text-foreground">
-                        {{ (job as any).paymentDetails?.method === 'direct' ? 'Direct' : 'Online' }}
-                      </p>
+                    <div class="text-muted-foreground flex items-center space-x-4">
+                      <span>{{ formatDeadline(job.deadline) }}</span>
+                      <span>{{ job.totalApplications || 0 }} applications</span>
                     </div>
                   </div>
                 </div>
-                
-                <!-- Requirements summary -->
-                <div v-if="job.requirements" class="mb-4 p-3 bg-muted/30 rounded-lg">
-                  <div class="flex items-center space-x-2 mb-2">
-                    <Icon name="mdi:microphone" class="h-4 w-4 text-muted-foreground" />
-                    <span class="text-xs font-medium text-muted-foreground">Requirements</span>
-                  </div>
+
+                <!-- Requirements summary - simplified -->
+                <div v-if="job.requirements" class="mb-4">
                   <div class="flex flex-wrap gap-2">
-                    <span v-if="job.requirements.voiceTypes?.length" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
+                    <span
+                      v-if="job.requirements.voiceTypes?.length"
+                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
+                    >
                       {{ job.requirements.voiceTypes[0] }}
                     </span>
-                    <span v-if="job.requirements.languages?.length" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                    <span
+                      v-if="job.requirements.languages?.length"
+                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
+                    >
                       {{ job.requirements.languages[0] }}
                     </span>
-                    <span v-if="job.requirements.gender && job.requirements.gender !== 'any'" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/10 text-green-600 dark:text-green-400">
+                    <span
+                      v-if="job.requirements.gender && job.requirements.gender !== 'any'"
+                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
+                    >
                       {{ job.requirements.gender }}
                     </span>
                   </div>
                 </div>
-                
-                <!-- Footer with actions and timestamp -->
-                <div class="flex items-center justify-between pt-4 border-t border-border">
-                  <div class="flex items-center space-x-2 text-xs text-muted-foreground">
-                    <Icon name="mdi:eye" class="h-3 w-3" />
-                    <span>{{ job.viewCount || 0 }} views</span>
-                    <span>•</span>
-                    <span>Published {{ formatDate(job.publishedDate || job.createdDate) }}</span>
+
+                <!-- Footer with actions and timestamp - simplified -->
+                <div class="border-border flex items-center justify-between border-t pt-4">
+                  <div class="text-muted-foreground text-xs">
+                    Published {{ formatDate(job.publishedDate || job.createdDate) }}
                   </div>
-                  
+
                   <div class="flex items-center space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       @click="viewJob(job.id)"
                       class="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                     >
-                      <Icon name="mdi:eye" class="h-3 w-3 mr-1" />
                       View Details
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       @click="editJob(job.id)"
-                      class="opacity-0 group-hover:opacity-100 transition-opacity"
+                      class="opacity-0 transition-opacity group-hover:opacity-100"
                     >
-                      <EditIcon class="h-3 w-3" />
+                      <EditIcon class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -182,138 +145,104 @@
 
           <!-- Drafts Section -->
           <div v-if="clientDrafts.length > 0" class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-semibold text-foreground">Draft Jobs</h2>
-              <span class="text-sm text-muted-foreground">{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span>
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
+              <span class="text-muted-foreground text-sm"
+                >{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span
+              >
             </div>
-            
+
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <div 
-                v-for="draft in clientDrafts" 
+              <div
+                v-for="draft in clientDrafts"
                 :key="draft.id"
-                class="bg-card border border-border rounded-lg p-6 hover:shadow-lg hover:border-orange-500/20 transition-all duration-200 group"
+                class="bg-card border-border group rounded-lg border p-6 transition-all duration-200 hover:border-orange-500/20 hover:shadow-lg"
               >
                 <!-- Header with draft status -->
-                <div class="flex items-start justify-between mb-4">
+                <div class="mb-4 flex items-start justify-between">
                   <div class="flex-1">
-                    <div class="flex items-center space-x-2 mb-2">
-                      <h3 class="font-semibold text-foreground text-lg group-hover:text-orange-500 transition-colors">
+                    <div class="mb-2 flex items-center space-x-2">
+                      <h3
+                        class="text-foreground text-lg font-semibold transition-colors group-hover:text-orange-500"
+                      >
                         {{ draft.title || 'Untitled Job' }}
                       </h3>
                       <div class="flex items-center space-x-1">
-                        <div class="w-2 h-2 bg-orange-500 rounded-full" title="Draft"></div>
-                        <span class="text-xs text-orange-600 dark:text-orange-400 font-medium">DRAFT</span>
+                        <div class="h-2 w-2 rounded-full bg-orange-500" title="Draft"></div>
+                        <span class="text-xs font-medium text-orange-600 dark:text-orange-400"
+                          >DRAFT</span
+                        >
                       </div>
                     </div>
-                    <p class="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                    <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
                       {{ draft.description || 'No description provided' }}
                     </p>
                   </div>
                 </div>
-                
-                <!-- Job details grid -->
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:briefcase" class="h-4 w-4 text-primary" />
+
+                <!-- Job details - simplified -->
+                <div class="mb-4 space-y-3">
+                  <!-- Key metrics row -->
+                  <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center space-x-4">
+                      <span class="text-muted-foreground">{{ formatJobType(draft.jobType) }}</span>
+                      <span class="text-foreground font-medium">{{
+                        formatBudget(draft.budget)
+                      }}</span>
                     </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Type</p>
-                      <p class="text-sm font-medium text-foreground">{{ formatJobType(draft.jobType) }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:currency-usd" class="h-4 w-4 text-blue-500" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Budget</p>
-                      <p class="text-sm font-medium text-foreground">{{ formatBudget(draft.budget) }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:clock-outline" class="h-4 w-4 text-orange-500" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Deadline</p>
-                      <p class="text-sm font-medium text-foreground">{{ formatDeadline(draft.deadline) }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gray-500/10 rounded-lg flex items-center justify-center">
-                      <Icon name="mdi:file-document-edit" class="h-4 w-4 text-gray-500" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Version</p>
-                      <p class="text-sm font-medium text-foreground">v{{ draft.version || 1 }}</p>
-                    </div>
-                  </div>
-                  
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-indigo-500/10 rounded-lg flex items-center justify-center">
-                      <Icon :name="(draft as any).paymentDetails?.method === 'direct' ? 'mdi:handshake' : 'mdi:shield-check'" 
-                            :class="(draft as any).paymentDetails?.method === 'direct' ? 'text-green-500' : 'text-blue-500'" 
-                            class="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p class="text-xs text-muted-foreground">Payment</p>
-                      <p class="text-sm font-medium text-foreground">
-                        {{ (draft as any).paymentDetails?.method === 'direct' ? 'Direct' : 'Online' }}
-                      </p>
+                    <div class="text-muted-foreground flex items-center space-x-4">
+                      <span>{{ formatDeadline(draft.deadline) }}</span>
+                      <span>v{{ draft.version || 1 }}</span>
                     </div>
                   </div>
                 </div>
-                
-                <!-- Requirements summary -->
-                <div v-if="draft.requirements" class="mb-4 p-3 bg-muted/30 rounded-lg">
-                  <div class="flex items-center space-x-2 mb-2">
-                    <Icon name="mdi:microphone" class="h-4 w-4 text-muted-foreground" />
-                    <span class="text-xs font-medium text-muted-foreground">Requirements</span>
-                  </div>
+
+                <!-- Requirements summary - simplified -->
+                <div v-if="draft.requirements" class="mb-4">
                   <div class="flex flex-wrap gap-2">
-                    <span v-if="draft.requirements.voiceTypes?.length" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
+                    <span
+                      v-if="draft.requirements.voiceTypes?.length"
+                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
+                    >
                       {{ draft.requirements.voiceTypes[0] }}
                     </span>
-                    <span v-if="draft.requirements.languages?.length" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                    <span
+                      v-if="draft.requirements.languages?.length"
+                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
+                    >
                       {{ draft.requirements.languages[0] }}
                     </span>
-                    <span v-if="draft.requirements.gender && draft.requirements.gender !== 'any'" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-500/10 text-green-600 dark:text-green-400">
+                    <span
+                      v-if="draft.requirements.gender && draft.requirements.gender !== 'any'"
+                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
+                    >
                       {{ draft.requirements.gender }}
                     </span>
                   </div>
                 </div>
-                
-                <!-- Footer with actions and timestamp -->
-                <div class="flex items-center justify-between pt-4 border-t border-border">
-                  <div class="flex items-center space-x-2 text-xs text-muted-foreground">
-                    <Icon name="mdi:content-save" class="h-3 w-3" />
-                    <span v-if="draft.autoSaved" class="text-orange-600 dark:text-orange-400">Auto-saved</span>
-                    <span v-else>Saved</span>
-                    <span>•</span>
-                    <span>{{ formatDate(draft.lastSaved) }}</span>
+
+                <!-- Footer with actions and timestamp - simplified -->
+                <div class="border-border flex items-center justify-between border-t pt-4">
+                  <div class="text-muted-foreground text-xs">
+                    {{ formatDate(draft.lastSaved) }}
                   </div>
-                  
+
                   <div class="flex items-center space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       @click="editDraft(draft.id)"
                       class="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                     >
-                      <EditIcon class="h-3 w-3 mr-1" />
                       Continue Editing
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       @click="confirmDiscardDraft(draft)"
                       class="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
                     >
-                      <TrashIcon class="h-3 w-3" />
+                      <TrashIcon class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -322,16 +251,17 @@
           </div>
 
           <!-- Empty State -->
-          <div v-if="clientDrafts.length === 0 && clientPublishedJobs.length === 0" class="text-center py-12">
-            <BriefcaseIcon class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 class="text-lg font-medium text-foreground mb-2">
-              No Jobs Yet
-            </h3>
+          <div
+            v-if="clientDrafts.length === 0 && clientPublishedJobs.length === 0"
+            class="py-12 text-center"
+          >
+            <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+            <h3 class="text-foreground mb-2 text-lg font-medium">No Jobs Yet</h3>
             <p class="text-muted-foreground mb-6">
               Start creating your first job posting or save a draft to continue later
             </p>
             <Button variant="primary" @click="openJobCreationModal">
-              <PlusIcon class="h-4 w-4 mr-2" />
+              <PlusIcon class="mr-2 h-4 w-4" />
               Create Your First Job
             </Button>
           </div>
@@ -364,10 +294,8 @@
 import { ref, computed } from 'vue'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
-import PremiumBanner from '@/components/molecules/PremiumBanner.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
@@ -407,12 +335,13 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-  
+
   if (diffInHours < 1) {
     return 'Just now'
   } else if (diffInHours < 24) {
     return `${Math.floor(diffInHours)}h ago`
-  } else if (diffInHours < 168) { // 7 days
+  } else if (diffInHours < 168) {
+    // 7 days
     return `${Math.floor(diffInHours / 24)}d ago`
   } else {
     return date.toLocaleDateString()
@@ -439,13 +368,13 @@ const discardDraft = () => {
       showToast({
         type: 'success',
         title: 'Draft Discarded',
-        message: `"${draftToDiscard.value.title || 'Untitled Job'}" has been discarded.`
+        message: `"${draftToDiscard.value.title || 'Untitled Job'}" has been discarded.`,
       })
     } else {
       showToast({
         type: 'error',
         title: 'Error',
-        message: 'Failed to discard draft. Please try again.'
+        message: 'Failed to discard draft. Please try again.',
       })
     }
   }
@@ -474,10 +403,10 @@ const handleJobCreated = (job: any) => {
   showToast({
     type: 'success',
     title: 'Job Published',
-    message: `"${job.title}" has been published successfully!`
+    message: `"${job.title}" has been published successfully!`,
   })
   closeJobCreationModal()
-  
+
   // Refresh the jobs list to show the updated status
   refreshJobs()
 }
@@ -487,7 +416,7 @@ const viewJob = (_jobId: string) => {
   showToast({
     type: 'info',
     title: 'Job Details',
-    message: 'Job detail view would open here'
+    message: 'Job detail view would open here',
   })
 }
 
@@ -499,7 +428,7 @@ const editJob = (jobId: string) => {
 
 // Formatting functions
 const formatJobType = (jobType: string) => {
-  return jobType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+  return jobType.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 const formatBudget = (budget: any) => {
@@ -513,7 +442,7 @@ const formatDeadline = (deadline: string) => {
   const date = new Date(deadline)
   const now = new Date()
   const diffInDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-  
+
   if (diffInDays < 0) return 'Overdue'
   if (diffInDays === 0) return 'Today'
   if (diffInDays === 1) return 'Tomorrow'
@@ -528,7 +457,7 @@ const getCurrencySymbol = (currency: string) => {
     GBP: '£',
     CAD: 'C$',
     AUD: 'A$',
-    VND: '₫'
+    VND: '₫',
   }
   return symbols[currency] || '$'
 }

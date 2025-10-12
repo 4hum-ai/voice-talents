@@ -13,7 +13,7 @@ import type {
   CastingProposal,
   CustomSample,
   VoiceActorStats,
-  ActivityItem
+  ActivityItem,
 } from '@/types/voice-actor'
 
 // Mock Voice Actors
@@ -23,8 +23,10 @@ export const mockVoiceActors: VoiceActor[] = [
     userId: 'user-001',
     displayName: 'Sarah Johnson',
     bio: 'Professional voice actor with 8+ years of experience in commercial, audiobook, and animation work. Known for warm, conversational tones and versatile character voices.',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-    headshotUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=600&fit=crop&crop=face',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+    headshotUrl:
+      'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=600&fit=crop&crop=face',
     languages: ['English', 'Spanish'],
     accents: ['American', 'British', 'Australian'],
     voiceTypes: ['narrator', 'commercial', 'audiobook', 'character'],
@@ -40,7 +42,7 @@ export const mockVoiceActors: VoiceActor[] = [
     socialLinks: {
       twitter: '@sarahjvoice',
       linkedin: 'sarah-johnson-voice',
-      instagram: '@sarahjvoice'
+      instagram: '@sarahjvoice',
     },
     isVerified: true,
     isPublic: true,
@@ -51,15 +53,17 @@ export const mockVoiceActors: VoiceActor[] = [
     joinedDate: '2020-03-15T10:00:00Z',
     lastActive: '2024-01-15T14:30:00Z',
     createdAt: '2020-03-15T10:00:00Z',
-    updatedAt: '2024-01-15T14:30:00Z'
+    updatedAt: '2024-01-15T14:30:00Z',
   },
   {
     id: 'va-002',
     userId: 'user-002',
     displayName: 'Marcus Chen',
     bio: 'Versatile voice actor specializing in video games, animation, and e-learning. Deep, authoritative voice perfect for documentaries and corporate presentations.',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    headshotUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+    headshotUrl:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face',
     languages: ['English', 'Mandarin'],
     accents: ['American', 'British'],
     voiceTypes: ['character', 'narrator', 'commercial', 'video_game'],
@@ -74,7 +78,7 @@ export const mockVoiceActors: VoiceActor[] = [
     website: 'https://marcuschenvoice.com',
     socialLinks: {
       twitter: '@marcuschenvo',
-      linkedin: 'marcus-chen-voice'
+      linkedin: 'marcus-chen-voice',
     },
     isVerified: true,
     isPublic: true,
@@ -85,15 +89,17 @@ export const mockVoiceActors: VoiceActor[] = [
     joinedDate: '2019-08-22T09:00:00Z',
     lastActive: '2024-01-14T16:45:00Z',
     createdAt: '2019-08-22T09:00:00Z',
-    updatedAt: '2024-01-14T16:45:00Z'
+    updatedAt: '2024-01-14T16:45:00Z',
   },
   {
     id: 'va-003',
     userId: 'user-003',
     displayName: 'Emma Rodriguez',
     bio: 'Bilingual voice actor fluent in English and Spanish. Specializes in commercial work, audiobooks, and educational content with a warm, engaging delivery.',
-    avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-    headshotUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop&crop=face',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+    headshotUrl:
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=600&fit=crop&crop=face',
     languages: ['English', 'Spanish'],
     accents: ['American', 'Mexican', 'Colombian'],
     voiceTypes: ['commercial', 'audiobook', 'e-learning', 'narrator'],
@@ -108,7 +114,7 @@ export const mockVoiceActors: VoiceActor[] = [
     website: 'https://emmarodriguezvoice.com',
     socialLinks: {
       instagram: '@emmarodriguezvo',
-      linkedin: 'emma-rodriguez-voice'
+      linkedin: 'emma-rodriguez-voice',
     },
     isVerified: true,
     isPublic: true,
@@ -119,8 +125,8 @@ export const mockVoiceActors: VoiceActor[] = [
     joinedDate: '2021-01-10T11:00:00Z',
     lastActive: '2024-01-15T12:20:00Z',
     createdAt: '2021-01-10T11:00:00Z',
-    updatedAt: '2024-01-15T12:20:00Z'
-  }
+    updatedAt: '2024-01-15T12:20:00Z',
+  },
 ]
 
 // Mock Studios
@@ -128,7 +134,8 @@ export const mockStudios: Studio[] = [
   {
     id: 'studio-001',
     name: 'SoundWave Studios',
-    description: 'Premier voice-over production studio specializing in commercial, audiobook, and animation projects. State-of-the-art equipment and experienced producers.',
+    description:
+      'Premier voice-over production studio specializing in commercial, audiobook, and animation projects. State-of-the-art equipment and experienced producers.',
     logoUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop',
     website: 'https://soundwavestudios.com',
     location: 'Los Angeles, CA',
@@ -153,7 +160,7 @@ export const mockStudios: Studio[] = [
         joinedDate: '2018-01-15T00:00:00Z',
         isActive: true,
         createdAt: '2018-01-15T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z'
+        updatedAt: '2024-01-15T00:00:00Z',
       },
       {
         id: 'member-002',
@@ -166,22 +173,23 @@ export const mockStudios: Studio[] = [
         joinedDate: '2019-03-20T00:00:00Z',
         isActive: true,
         createdAt: '2019-03-20T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z'
-      }
+        updatedAt: '2024-01-15T00:00:00Z',
+      },
     ],
     equipment: ['Neumann U87', 'Pro Tools HDX', 'SSL Console', 'Acoustic Treatment'],
     services: ['Recording', 'Mixing', 'Mastering', 'Post-Production'],
     socialLinks: {
       website: 'https://soundwavestudios.com',
-      linkedin: 'soundwave-studios'
+      linkedin: 'soundwave-studios',
     },
     createdAt: '2018-01-15T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z'
+    updatedAt: '2024-01-15T00:00:00Z',
   },
   {
     id: 'studio-002',
     name: 'Creative Audio Productions',
-    description: 'Full-service audio production company with expertise in corporate training, e-learning, and documentary narration.',
+    description:
+      'Full-service audio production company with expertise in corporate training, e-learning, and documentary narration.',
     logoUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop',
     website: 'https://creativeaudioproductions.com',
     location: 'New York, NY',
@@ -206,18 +214,18 @@ export const mockStudios: Studio[] = [
         joinedDate: '2020-06-10T00:00:00Z',
         isActive: true,
         createdAt: '2020-06-10T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z'
-      }
+        updatedAt: '2024-01-15T00:00:00Z',
+      },
     ],
     equipment: ['Rode NT1', 'Logic Pro', 'Focusrite Interface', 'Sound Booth'],
     services: ['Recording', 'Editing', 'Mixing', 'Script Writing'],
     socialLinks: {
       website: 'https://creativeaudioproductions.com',
-      linkedin: 'creative-audio-productions'
+      linkedin: 'creative-audio-productions',
     },
     createdAt: '2020-06-10T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z'
-  }
+    updatedAt: '2024-01-15T00:00:00Z',
+  },
 ]
 
 // Mock Voice Samples
@@ -226,7 +234,8 @@ export const mockVoiceSamples: VoiceSample[] = [
     id: 'sample-001',
     voiceActorId: 'va-001',
     title: 'Warm Commercial - Coffee Shop',
-    description: 'Friendly, inviting commercial for a local coffee shop. Warm and conversational tone.',
+    description:
+      'Friendly, inviting commercial for a local coffee shop. Warm and conversational tone.',
     audioUrl: 'https://example.com/audio/sample-001.mp3',
     duration: 30,
     fileSize: 480000,
@@ -242,22 +251,24 @@ export const mockVoiceSamples: VoiceSample[] = [
     verifiedBy: 'studio-001',
     playCount: 1247,
     downloadCount: 23,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=200&fit=crop',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=200&fit=crop',
     waveformUrl: 'https://example.com/waveforms/sample-001.json',
     metadata: {
       recordingQuality: 'professional',
       equipment: 'Neumann U87',
       recordingLocation: 'SoundWave Studios',
-      dateRecorded: '2023-11-15T14:00:00Z'
+      dateRecorded: '2023-11-15T14:00:00Z',
     },
     createdAt: '2023-11-15T14:00:00Z',
-    updatedAt: '2023-11-15T14:00:00Z'
+    updatedAt: '2023-11-15T14:00:00Z',
   },
   {
     id: 'sample-002',
     voiceActorId: 'va-001',
     title: 'Audiobook Narration - Fiction',
-    description: 'Engaging narration for a fantasy novel. Character voices and descriptive passages.',
+    description:
+      'Engaging narration for a fantasy novel. Character voices and descriptive passages.',
     audioUrl: 'https://example.com/audio/sample-002.mp3',
     duration: 120,
     fileSize: 1920000,
@@ -273,22 +284,24 @@ export const mockVoiceSamples: VoiceSample[] = [
     verifiedBy: 'studio-001',
     playCount: 892,
     downloadCount: 15,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=200&fit=crop',
     waveformUrl: 'https://example.com/waveforms/sample-002.json',
     metadata: {
       recordingQuality: 'professional',
       equipment: 'Neumann U87',
       recordingLocation: 'SoundWave Studios',
-      dateRecorded: '2023-10-20T10:00:00Z'
+      dateRecorded: '2023-10-20T10:00:00Z',
     },
     createdAt: '2023-10-20T10:00:00Z',
-    updatedAt: '2023-10-20T10:00:00Z'
+    updatedAt: '2023-10-20T10:00:00Z',
   },
   {
     id: 'sample-003',
     voiceActorId: 'va-002',
     title: 'Video Game Character - Villain',
-    description: 'Deep, menacing voice for a video game antagonist. Authoritative and intimidating.',
+    description:
+      'Deep, menacing voice for a video game antagonist. Authoritative and intimidating.',
     audioUrl: 'https://example.com/audio/sample-003.mp3',
     duration: 45,
     fileSize: 720000,
@@ -304,17 +317,18 @@ export const mockVoiceSamples: VoiceSample[] = [
     verifiedBy: 'studio-001',
     playCount: 2156,
     downloadCount: 42,
-    thumbnailUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop',
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop',
     waveformUrl: 'https://example.com/waveforms/sample-003.json',
     metadata: {
       recordingQuality: 'professional',
       equipment: 'Neumann U87',
       recordingLocation: 'SoundWave Studios',
-      dateRecorded: '2023-12-05T16:00:00Z'
+      dateRecorded: '2023-12-05T16:00:00Z',
     },
     createdAt: '2023-12-05T16:00:00Z',
-    updatedAt: '2023-12-05T16:00:00Z'
-  }
+    updatedAt: '2023-12-05T16:00:00Z',
+  },
 ]
 
 // Mock Projects
@@ -322,7 +336,8 @@ export const mockProjects: Project[] = [
   {
     id: 'project-001',
     title: 'Tech Startup Commercial Series',
-    description: 'Series of 5 commercials for a new tech startup launching their mobile app. Need energetic, modern voice that appeals to millennials.',
+    description:
+      'Series of 5 commercials for a new tech startup launching their mobile app. Need energetic, modern voice that appeals to millennials.',
     clientName: 'TechFlow Inc.',
     studioId: 'studio-001',
     studioName: 'SoundWave Studios',
@@ -349,8 +364,8 @@ export const mockProjects: Project[] = [
         payment: 2500,
         currency: 'USD',
         createdAt: '2024-01-10T09:00:00Z',
-        updatedAt: '2024-01-15T14:30:00Z'
-      }
+        updatedAt: '2024-01-15T14:30:00Z',
+      },
     ],
     deliverables: [
       {
@@ -363,8 +378,8 @@ export const mockProjects: Project[] = [
         dueDate: '2024-02-15T17:00:00Z',
         files: [],
         createdAt: '2024-01-10T09:00:00Z',
-        updatedAt: '2024-01-10T09:00:00Z'
-      }
+        updatedAt: '2024-01-10T09:00:00Z',
+      },
     ],
     communication: [
       {
@@ -373,12 +388,13 @@ export const mockProjects: Project[] = [
         senderId: 'user-studio-002',
         senderName: 'Lisa Park',
         senderType: 'studio',
-        message: 'Welcome to the project! Please review the script and reference materials. Let me know if you have any questions.',
+        message:
+          'Welcome to the project! Please review the script and reference materials. Let me know if you have any questions.',
         messageType: 'text',
         isRead: true,
         readBy: ['va-001'],
         createdAt: '2024-01-10T09:30:00Z',
-        updatedAt: '2024-01-10T09:30:00Z'
+        updatedAt: '2024-01-10T09:30:00Z',
       },
       {
         id: 'message-002',
@@ -386,13 +402,14 @@ export const mockProjects: Project[] = [
         senderId: 'va-001',
         senderName: 'Sarah Johnson',
         senderType: 'actor',
-        message: 'Thanks! I\'ve reviewed the materials. The script looks great. I\'ll start recording tomorrow morning.',
+        message:
+          "Thanks! I've reviewed the materials. The script looks great. I'll start recording tomorrow morning.",
         messageType: 'text',
         isRead: true,
         readBy: ['user-studio-002'],
         createdAt: '2024-01-10T10:15:00Z',
-        updatedAt: '2024-01-10T10:15:00Z'
-      }
+        updatedAt: '2024-01-10T10:15:00Z',
+      },
     ],
     requirements: {
       languages: ['English'],
@@ -400,7 +417,7 @@ export const mockProjects: Project[] = [
       voiceTypes: ['commercial'],
       duration: 30,
       quality: 'professional',
-      specialInstructions: 'Energetic, modern tone. Appeal to 25-35 age demographic.'
+      specialInstructions: 'Energetic, modern tone. Appeal to 25-35 age demographic.',
     },
     files: [
       {
@@ -416,19 +433,20 @@ export const mockProjects: Project[] = [
         uploadedDate: '2024-01-10T08:00:00Z',
         isPublic: false,
         createdAt: '2024-01-10T08:00:00Z',
-        updatedAt: '2024-01-10T08:00:00Z'
-      }
+        updatedAt: '2024-01-10T08:00:00Z',
+      },
     ],
     paymentStatus: 'pending',
     totalPayment: 5000,
     paidAmount: 0,
     createdAt: '2024-01-10T08:00:00Z',
-    updatedAt: '2024-01-15T14:30:00Z'
+    updatedAt: '2024-01-15T14:30:00Z',
   },
   {
     id: 'project-002',
     title: 'Educational E-Learning Module',
-    description: 'Voice-over for a 45-minute e-learning module about digital marketing. Need clear, engaging narration with occasional character voices.',
+    description:
+      'Voice-over for a 45-minute e-learning module about digital marketing. Need clear, engaging narration with occasional character voices.',
     clientName: 'EduTech Solutions',
     studioId: 'studio-002',
     studioName: 'Creative Audio Productions',
@@ -456,8 +474,8 @@ export const mockProjects: Project[] = [
         payment: 3200,
         currency: 'USD',
         createdAt: '2024-01-05T09:00:00Z',
-        updatedAt: '2024-01-18T15:30:00Z'
-      }
+        updatedAt: '2024-01-18T15:30:00Z',
+      },
     ],
     deliverables: [
       {
@@ -471,8 +489,8 @@ export const mockProjects: Project[] = [
         completedDate: '2024-01-18T15:30:00Z',
         files: ['https://example.com/deliverables/elearning-001.mp3'],
         createdAt: '2024-01-05T09:00:00Z',
-        updatedAt: '2024-01-18T15:30:00Z'
-      }
+        updatedAt: '2024-01-18T15:30:00Z',
+      },
     ],
     communication: [],
     requirements: {
@@ -481,15 +499,15 @@ export const mockProjects: Project[] = [
       voiceTypes: ['narrator', 'character'],
       duration: 2700,
       quality: 'professional',
-      specialInstructions: 'Clear, engaging delivery. Occasional character voices for examples.'
+      specialInstructions: 'Clear, engaging delivery. Occasional character voices for examples.',
     },
     files: [],
     paymentStatus: 'pending',
     totalPayment: 3200,
     paidAmount: 0,
     createdAt: '2024-01-05T08:00:00Z',
-    updatedAt: '2024-01-18T15:30:00Z'
-  }
+    updatedAt: '2024-01-18T15:30:00Z',
+  },
 ]
 
 // Mock Notifications
@@ -505,11 +523,11 @@ export const mockNotifications: Notification[] = [
     metadata: {
       projectId: 'project-001',
       projectTitle: 'Tech Startup Commercial Series',
-      dueDate: '2024-02-10T17:00:00Z'
+      dueDate: '2024-02-10T17:00:00Z',
     },
     priority: 'high',
     createdAt: '2024-01-10T09:00:00Z',
-    updatedAt: '2024-01-10T09:00:00Z'
+    updatedAt: '2024-01-10T09:00:00Z',
   },
   {
     id: 'notif-002',
@@ -523,11 +541,11 @@ export const mockNotifications: Notification[] = [
     metadata: {
       senderId: 'user-studio-002',
       senderName: 'Lisa Park',
-      projectId: 'project-001'
+      projectId: 'project-001',
     },
     priority: 'medium',
     createdAt: '2024-01-10T10:00:00Z',
-    updatedAt: '2024-01-10T10:30:00Z'
+    updatedAt: '2024-01-10T10:30:00Z',
   },
   {
     id: 'notif-003',
@@ -540,12 +558,12 @@ export const mockNotifications: Notification[] = [
     metadata: {
       projectId: 'project-001',
       projectTitle: 'Tech Startup Commercial Series',
-      daysRemaining: 3
+      daysRemaining: 3,
     },
     priority: 'high',
     createdAt: '2024-01-12T09:00:00Z',
-    updatedAt: '2024-01-12T09:00:00Z'
-  }
+    updatedAt: '2024-01-12T09:00:00Z',
+  },
 ]
 
 // Mock Custom Samples
@@ -554,7 +572,8 @@ export const mockCustomSamples: CustomSample[] = [
     id: 'custom-sample-001',
     proposalId: 'proposal-001',
     title: 'Character Demo - Adventurer',
-    description: 'Custom sample created specifically for the animated series casting call. Shows range and character development.',
+    description:
+      'Custom sample created specifically for the animated series casting call. Shows range and character development.',
     audioUrl: 'https://example.com/audio/custom-sample-001.mp3',
     duration: 60,
     fileSize: 960000,
@@ -565,10 +584,10 @@ export const mockCustomSamples: CustomSample[] = [
       recordingQuality: 'professional',
       equipment: 'Neumann U87',
       recordingLocation: 'Home Studio',
-      dateRecorded: '2024-01-16T14:00:00Z'
+      dateRecorded: '2024-01-16T14:00:00Z',
     },
     createdAt: '2024-01-16T14:00:00Z',
-    updatedAt: '2024-01-16T14:00:00Z'
+    updatedAt: '2024-01-16T14:00:00Z',
   },
   {
     id: 'custom-sample-002',
@@ -585,11 +604,11 @@ export const mockCustomSamples: CustomSample[] = [
       recordingQuality: 'professional',
       equipment: 'Rode NT1',
       recordingLocation: 'Home Studio',
-      dateRecorded: '2024-01-17T10:00:00Z'
+      dateRecorded: '2024-01-17T10:00:00Z',
     },
     createdAt: '2024-01-17T10:00:00Z',
-    updatedAt: '2024-01-17T10:00:00Z'
-  }
+    updatedAt: '2024-01-17T10:00:00Z',
+  },
 ]
 
 // Mock Casting Proposals
@@ -607,9 +626,10 @@ export const mockCastingProposals: CastingProposal[] = [
     estimatedHours: 40,
     customSamples: [mockCustomSamples[0]],
     portfolioSampleIds: ['sample-001', 'sample-002'],
-    personalNote: 'I\'m very excited about this project! I have extensive experience with character voices and animation work. I can bring the perfect blend of adventure and humor to this character. I\'m available to start immediately and can work within your timeline.',
+    personalNote:
+      "I'm very excited about this project! I have extensive experience with character voices and animation work. I can bring the perfect blend of adventure and humor to this character. I'm available to start immediately and can work within your timeline.",
     createdAt: '2024-01-16T15:00:00Z',
-    updatedAt: '2024-01-16T15:00:00Z'
+    updatedAt: '2024-01-16T15:00:00Z',
   },
   {
     id: 'proposal-002',
@@ -624,9 +644,10 @@ export const mockCastingProposals: CastingProposal[] = [
     estimatedHours: 15,
     customSamples: [mockCustomSamples[1]],
     portfolioSampleIds: ['sample-001'],
-    personalNote: 'I\'d love to work on this tech startup commercial series. My energetic, modern delivery style would be perfect for your target demographic. I can deliver all 5 spots within a week.',
+    personalNote:
+      "I'd love to work on this tech startup commercial series. My energetic, modern delivery style would be perfect for your target demographic. I can deliver all 5 spots within a week.",
     createdAt: '2024-01-17T11:00:00Z',
-    updatedAt: '2024-01-17T11:00:00Z'
+    updatedAt: '2024-01-17T11:00:00Z',
   },
   {
     id: 'proposal-003',
@@ -642,11 +663,13 @@ export const mockCastingProposals: CastingProposal[] = [
     estimatedHours: 20,
     customSamples: [],
     portfolioSampleIds: ['sample-001', 'sample-002'],
-    personalNote: 'I have extensive experience with e-learning content and can deliver clear, engaging narration that keeps learners engaged throughout the 45-minute module.',
-    studioFeedback: 'Great samples and competitive pricing. We\'re considering you for the final selection.',
+    personalNote:
+      'I have extensive experience with e-learning content and can deliver clear, engaging narration that keeps learners engaged throughout the 45-minute module.',
+    studioFeedback:
+      "Great samples and competitive pricing. We're considering you for the final selection.",
     createdAt: '2024-01-10T09:00:00Z',
-    updatedAt: '2024-01-12T14:00:00Z'
-  }
+    updatedAt: '2024-01-12T14:00:00Z',
+  },
 ]
 
 // Mock Casting Sessions
@@ -654,7 +677,8 @@ export const mockCastingSessions: CastingSession[] = [
   {
     id: 'casting-001',
     title: 'Animated Series - Lead Character',
-    description: 'Seeking a versatile voice actor for the lead character in a new animated series. Character is a 25-year-old adventurer with a sense of humor.',
+    description:
+      'Seeking a versatile voice actor for the lead character in a new animated series. Character is a 25-year-old adventurer with a sense of humor.',
     clientName: 'Animation Studios Inc.',
     studioId: 'studio-001',
     projectType: 'animation',
@@ -666,12 +690,12 @@ export const mockCastingSessions: CastingSession[] = [
       voiceTypes: ['character', 'animation'],
       ageRange: '25-35',
       gender: 'any',
-      experience: 'professional'
+      experience: 'professional',
     },
     budget: {
       min: 8000,
       max: 12000,
-      currency: 'USD'
+      currency: 'USD',
     },
     proposals: [mockCastingProposals[0]],
     submissions: [],
@@ -680,12 +704,13 @@ export const mockCastingSessions: CastingSession[] = [
     createdBy: 'user-studio-001',
     createdDate: '2024-01-15T10:00:00Z',
     createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z'
+    updatedAt: '2024-01-15T10:00:00Z',
   },
   {
     id: 'casting-002',
     title: 'Tech Startup Commercial Series',
-    description: 'Series of 5 commercials for a new tech startup launching their mobile app. Need energetic, modern voice that appeals to millennials.',
+    description:
+      'Series of 5 commercials for a new tech startup launching their mobile app. Need energetic, modern voice that appeals to millennials.',
     clientName: 'TechFlow Inc.',
     studioId: 'studio-001',
     projectType: 'commercial',
@@ -697,12 +722,12 @@ export const mockCastingSessions: CastingSession[] = [
       voiceTypes: ['commercial'],
       ageRange: '25-35',
       gender: 'any',
-      experience: 'professional'
+      experience: 'professional',
     },
     budget: {
       min: 2000,
       max: 5000,
-      currency: 'USD'
+      currency: 'USD',
     },
     proposals: [mockCastingProposals[1]],
     submissions: [],
@@ -711,12 +736,13 @@ export const mockCastingSessions: CastingSession[] = [
     createdBy: 'user-studio-001',
     createdDate: '2024-01-12T10:00:00Z',
     createdAt: '2024-01-12T10:00:00Z',
-    updatedAt: '2024-01-12T10:00:00Z'
+    updatedAt: '2024-01-12T10:00:00Z',
   },
   {
     id: 'casting-003',
     title: 'Educational E-Learning Module',
-    description: 'Voice-over for a 45-minute e-learning module about digital marketing. Need clear, engaging narration with occasional character voices.',
+    description:
+      'Voice-over for a 45-minute e-learning module about digital marketing. Need clear, engaging narration with occasional character voices.',
     clientName: 'EduTech Solutions',
     studioId: 'studio-002',
     projectType: 'e-learning',
@@ -726,12 +752,12 @@ export const mockCastingSessions: CastingSession[] = [
       languages: ['English'],
       accents: ['American'],
       voiceTypes: ['narrator', 'character'],
-      experience: 'advanced'
+      experience: 'advanced',
     },
     budget: {
       min: 2000,
       max: 4000,
-      currency: 'USD'
+      currency: 'USD',
     },
     proposals: [mockCastingProposals[2]],
     submissions: [],
@@ -740,12 +766,13 @@ export const mockCastingSessions: CastingSession[] = [
     createdBy: 'user-studio-003',
     createdDate: '2024-01-08T10:00:00Z',
     createdAt: '2024-01-08T10:00:00Z',
-    updatedAt: '2024-01-08T10:00:00Z'
+    updatedAt: '2024-01-08T10:00:00Z',
   },
   {
     id: 'casting-004',
     title: 'Documentary Narration - Nature Series',
-    description: 'Narrating a 6-part nature documentary series. Need authoritative, engaging voice with natural storytelling ability.',
+    description:
+      'Narrating a 6-part nature documentary series. Need authoritative, engaging voice with natural storytelling ability.',
     clientName: 'Nature Films Co.',
     studioId: 'studio-002',
     projectType: 'documentary',
@@ -755,12 +782,12 @@ export const mockCastingSessions: CastingSession[] = [
       languages: ['English'],
       accents: ['American', 'British'],
       voiceTypes: ['narrator', 'documentary'],
-      experience: 'professional'
+      experience: 'professional',
     },
     budget: {
       min: 15000,
       max: 25000,
-      currency: 'USD'
+      currency: 'USD',
     },
     proposals: [],
     submissions: [],
@@ -769,8 +796,8 @@ export const mockCastingSessions: CastingSession[] = [
     createdBy: 'user-studio-003',
     createdDate: '2024-01-18T10:00:00Z',
     createdAt: '2024-01-18T10:00:00Z',
-    updatedAt: '2024-01-18T10:00:00Z'
-  }
+    updatedAt: '2024-01-18T10:00:00Z',
+  },
 ]
 
 // Mock Voice Actor Stats
@@ -794,7 +821,7 @@ export const mockVoiceActorStats: VoiceActorStats = {
       description: 'Successfully completed "Educational E-Learning Module" project',
       timestamp: '2024-01-18T15:30:00Z',
       status: 'completed',
-      url: '/projects/project-002'
+      url: '/projects/project-002',
     },
     {
       id: 'activity-002',
@@ -803,7 +830,7 @@ export const mockVoiceActorStats: VoiceActorStats = {
       description: 'Submitted recording for "Tech Startup Commercial Series"',
       timestamp: '2024-01-15T14:30:00Z',
       status: 'submitted',
-      url: '/projects/project-001'
+      url: '/projects/project-001',
     },
     {
       id: 'activity-003',
@@ -812,9 +839,9 @@ export const mockVoiceActorStats: VoiceActorStats = {
       description: 'Received payment of $2,400 for "Corporate Training Video" project',
       timestamp: '2024-01-12T09:00:00Z',
       status: 'completed',
-      url: '/earnings'
-    }
-  ]
+      url: '/earnings',
+    },
+  ],
 }
 
 // Export all mock data
@@ -827,5 +854,5 @@ export const mockData = {
   castingSessions: mockCastingSessions,
   castingProposals: mockCastingProposals,
   customSamples: mockCustomSamples,
-  voiceActorStats: mockVoiceActorStats
+  voiceActorStats: mockVoiceActorStats,
 }

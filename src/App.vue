@@ -10,7 +10,7 @@
     @skip="skipTalentOnboarding"
     @close="closeTalentOnboarding"
   />
-  
+
   <!-- Client Onboarding -->
   <ClientOnboardingFlow />
   <router-view v-slot="{ Component, route }">
@@ -47,10 +47,7 @@ const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
 
 const { state: uiState } = useUiConfig()
 const { success } = useToast()
-const { 
-  shouldShowOnboarding, 
-  isTalentMode
-} = useOnboarding()
+const { shouldShowOnboarding, isTalentMode } = useOnboarding()
 
 const isBootLoading = computed(() => !uiState.initialized || uiState.loading)
 const showTalentOnboarding = computed(() => isTalentMode.value && shouldShowOnboarding.value)

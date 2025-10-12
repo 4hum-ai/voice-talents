@@ -1,21 +1,17 @@
 <template>
-  <div class="min-h-screen bg-background flex">
+  <div class="bg-background flex min-h-screen">
     <VoiceActNavigation />
     <div class="flex-1">
-      <div class="bg-card shadow-sm border-b border-border">
+      <div class="bg-card border-border border-b shadow-sm">
         <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-16">
+          <div class="flex h-16 items-center justify-between">
             <div class="flex items-center">
               <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-foreground">
-                  Settings
-                </h1>
-                <p class="text-sm text-muted-foreground">
-                  Manage your account and preferences
-                </p>
+                <h1 class="text-foreground text-2xl font-bold">Settings</h1>
+                <p class="text-muted-foreground text-sm">Manage your account and preferences</p>
               </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -24,73 +20,89 @@
           </div>
         </div>
       </div>
-      
-      <div class="px-4 sm:px-6 lg:px-8 py-8">
-        <div class="max-w-4xl mx-auto">
-          
+
+      <div class="px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-4xl">
           <!-- Tab Navigation -->
           <div class="mb-8">
-            <TabNavigation 
-              v-model="activeTab" 
-              :tabs="settingsTabs" 
-              variant="underline"
-              size="lg"
-            />
+            <TabNavigation v-model="activeTab" :tabs="settingsTabs" variant="underline" size="lg" />
           </div>
 
           <!-- Tab Content -->
           <div class="min-h-[600px]">
-            
             <!-- Account Settings Tab -->
             <div v-if="activeTab === 'account'" class="space-y-8">
               <Card class="p-6">
-                <div class="text-center mb-8">
-                  <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="mb-8 text-center">
+                  <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500"
+                  >
                     <Icon name="mdi:account-cog" class="h-8 w-8 text-white" />
                   </div>
-                  <h2 class="text-2xl font-semibold text-foreground mb-2">
-                    Account Settings
-                  </h2>
+                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Account Settings</h2>
                   <p class="text-muted-foreground">
                     Manage your account information and security settings.
                   </p>
                 </div>
-                
-                <div class="max-w-2xl mx-auto space-y-6">
+
+                <div class="mx-auto max-w-2xl space-y-6">
                   <div>
-                    <label for="email" class="block text-sm font-medium text-foreground mb-2">
+                    <label for="email" class="text-foreground mb-2 block text-sm font-medium">
                       Email Address
                     </label>
-                    <input id="email" v-model="accountSettings.email" type="email" required
+                    <input
+                      id="email"
+                      v-model="accountSettings.email"
+                      type="email"
+                      required
                       placeholder="your.email@example.com"
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
 
                   <div>
-                    <label for="currentPassword" class="block text-sm font-medium text-foreground mb-2">
+                    <label
+                      for="currentPassword"
+                      class="text-foreground mb-2 block text-sm font-medium"
+                    >
                       Current Password
                     </label>
-                    <input id="currentPassword" v-model="accountSettings.currentPassword" type="password"
+                    <input
+                      id="currentPassword"
+                      v-model="accountSettings.currentPassword"
+                      type="password"
                       placeholder="Enter current password"
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
 
                   <div>
-                    <label for="newPassword" class="block text-sm font-medium text-foreground mb-2">
+                    <label for="newPassword" class="text-foreground mb-2 block text-sm font-medium">
                       New Password
                     </label>
-                    <input id="newPassword" v-model="accountSettings.newPassword" type="password"
+                    <input
+                      id="newPassword"
+                      v-model="accountSettings.newPassword"
+                      type="password"
                       placeholder="Enter new password"
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
 
                   <div>
-                    <label for="confirmPassword" class="block text-sm font-medium text-foreground mb-2">
+                    <label
+                      for="confirmPassword"
+                      class="text-foreground mb-2 block text-sm font-medium"
+                    >
                       Confirm New Password
                     </label>
-                    <input id="confirmPassword" v-model="accountSettings.confirmPassword" type="password"
+                    <input
+                      id="confirmPassword"
+                      v-model="accountSettings.confirmPassword"
+                      type="password"
                       placeholder="Confirm new password"
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
 
                   <div class="flex justify-end">
@@ -105,65 +117,111 @@
             <!-- Notification Preferences Tab -->
             <div v-if="activeTab === 'notifications'" class="space-y-8">
               <Card class="p-6">
-                <div class="text-center mb-8">
-                  <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="mb-8 text-center">
+                  <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-teal-500"
+                  >
                     <Icon name="mdi:bell" class="h-8 w-8 text-white" />
                   </div>
-                  <h2 class="text-2xl font-semibold text-foreground mb-2">
+                  <h2 class="text-foreground mb-2 text-2xl font-semibold">
                     Notification Preferences
                   </h2>
                   <p class="text-muted-foreground">
                     Choose how you want to be notified about new opportunities and updates.
                   </p>
                 </div>
-                
-                <div class="max-w-2xl mx-auto space-y-6">
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+
+                <div class="mx-auto max-w-2xl space-y-6">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">New Project Notifications</h3>
-                      <p class="text-sm text-muted-foreground">Get notified when new projects match your profile</p>
+                      <h3 class="text-foreground text-sm font-medium">New Project Notifications</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Get notified when new projects match your profile
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="notificationSettings.newProjects" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="notificationSettings.newProjects"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">Message Notifications</h3>
-                      <p class="text-sm text-muted-foreground">Get notified when clients send you messages</p>
+                      <h3 class="text-foreground text-sm font-medium">Message Notifications</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Get notified when clients send you messages
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="notificationSettings.messages" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="notificationSettings.messages"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">Payment Notifications</h3>
-                      <p class="text-sm text-muted-foreground">Get notified about payments and invoices</p>
+                      <h3 class="text-foreground text-sm font-medium">Payment Notifications</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Get notified about payments and invoices
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="notificationSettings.payments" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="notificationSettings.payments"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">Marketing Updates</h3>
-                      <p class="text-sm text-muted-foreground">Receive tips, industry news, and platform updates</p>
+                      <h3 class="text-foreground text-sm font-medium">Marketing Updates</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Receive tips, industry news, and platform updates
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="notificationSettings.marketing" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="notificationSettings.marketing"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
                   <div class="flex justify-end">
-                    <Button variant="primary" @click="updateNotifications" class="onboarding-button">
+                    <Button
+                      variant="primary"
+                      @click="updateNotifications"
+                      class="onboarding-button"
+                    >
                       Save Preferences
                     </Button>
                   </div>
@@ -174,49 +232,79 @@
             <!-- Privacy Settings Tab -->
             <div v-if="activeTab === 'privacy'" class="space-y-8">
               <Card class="p-6">
-                <div class="text-center mb-8">
-                  <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="mb-8 text-center">
+                  <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
+                  >
                     <Icon name="mdi:shield-account" class="h-8 w-8 text-white" />
                   </div>
-                  <h2 class="text-2xl font-semibold text-foreground mb-2">
-                    Privacy Settings
-                  </h2>
+                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Privacy Settings</h2>
                   <p class="text-muted-foreground">
                     Control who can see your profile and contact information.
                   </p>
                 </div>
-                
-                <div class="max-w-2xl mx-auto space-y-6">
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+
+                <div class="mx-auto max-w-2xl space-y-6">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">Public Profile</h3>
-                      <p class="text-sm text-muted-foreground">Make your profile visible to clients and casting directors</p>
+                      <h3 class="text-foreground text-sm font-medium">Public Profile</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Make your profile visible to clients and casting directors
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="privacySettings.isPublic" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="privacySettings.isPublic"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">Show Contact Information</h3>
-                      <p class="text-sm text-muted-foreground">Display your email and phone number on your profile</p>
+                      <h3 class="text-foreground text-sm font-medium">Show Contact Information</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Display your email and phone number on your profile
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="privacySettings.showContact" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="privacySettings.showContact"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
-                  <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                  >
                     <div>
-                      <h3 class="text-sm font-medium text-foreground">Show Earnings</h3>
-                      <p class="text-sm text-muted-foreground">Display your earnings statistics on your profile</p>
+                      <h3 class="text-foreground text-sm font-medium">Show Earnings</h3>
+                      <p class="text-muted-foreground text-sm">
+                        Display your earnings statistics on your profile
+                      </p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                      <input v-model="privacySettings.showEarnings" type="checkbox" class="sr-only peer" />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input
+                        v-model="privacySettings.showEarnings"
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div
+                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                      ></div>
                     </label>
                   </div>
 
@@ -232,40 +320,48 @@
             <!-- Data & Export Tab -->
             <div v-if="activeTab === 'data'" class="space-y-8">
               <Card class="p-6">
-                <div class="text-center mb-8">
-                  <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="mb-8 text-center">
+                  <div
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
+                  >
                     <Icon name="mdi:database" class="h-8 w-8 text-white" />
                   </div>
-                  <h2 class="text-2xl font-semibold text-foreground mb-2">
-                    Data & Export
-              </h2>
-              <p class="text-muted-foreground">
+                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Data & Export</h2>
+                  <p class="text-muted-foreground">
                     Manage your data and export your profile information.
                   </p>
                 </div>
-                
-                <div class="max-w-2xl mx-auto space-y-6">
-                  <div class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+
+                <div class="mx-auto max-w-2xl space-y-6">
+                  <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
                     <div class="flex items-center justify-between">
                       <div>
-                        <h3 class="text-sm font-medium text-foreground">Export Profile Data</h3>
-                        <p class="text-sm text-muted-foreground">Download a copy of your profile and voice samples</p>
+                        <h3 class="text-foreground text-sm font-medium">Export Profile Data</h3>
+                        <p class="text-muted-foreground text-sm">
+                          Download a copy of your profile and voice samples
+                        </p>
                       </div>
                       <Button variant="outline" @click="exportData" class="onboarding-button">
-                        <Icon name="mdi:download" class="h-4 w-4 mr-2" />
+                        <Icon name="mdi:download" class="mr-2 h-4 w-4" />
                         Export
                       </Button>
                     </div>
                   </div>
 
-                  <div class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
+                  <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
                     <div class="flex items-center justify-between">
                       <div>
-                        <h3 class="text-sm font-medium text-foreground">Delete Account</h3>
-                        <p class="text-sm text-muted-foreground">Permanently delete your account and all data</p>
+                        <h3 class="text-foreground text-sm font-medium">Delete Account</h3>
+                        <p class="text-muted-foreground text-sm">
+                          Permanently delete your account and all data
+                        </p>
                       </div>
-                      <Button variant="outline" @click="deleteAccount" class="text-red-600 hover:text-red-700 border-red-300 hover:border-red-400">
-                        <Icon name="mdi:delete" class="h-4 w-4 mr-2" />
+                      <Button
+                        variant="outline"
+                        @click="deleteAccount"
+                        class="border-red-300 text-red-600 hover:border-red-400 hover:text-red-700"
+                      >
+                        <Icon name="mdi:delete" class="mr-2 h-4 w-4" />
                         Delete
                       </Button>
                     </div>
@@ -273,7 +369,6 @@
                 </div>
               </Card>
             </div>
-
           </div>
         </div>
       </div>
@@ -301,7 +396,7 @@ const settingsTabs = [
   { id: 'account', label: 'Account' },
   { id: 'notifications', label: 'Notifications' },
   { id: 'privacy', label: 'Privacy' },
-  { id: 'data', label: 'Data & Export' }
+  { id: 'data', label: 'Data & Export' },
 ]
 
 // Account settings
@@ -309,7 +404,7 @@ const accountSettings = reactive({
   email: '',
   currentPassword: '',
   newPassword: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
 // Notification settings
@@ -317,14 +412,14 @@ const notificationSettings = reactive({
   newProjects: true,
   messages: true,
   payments: true,
-  marketing: false
+  marketing: false,
 })
 
 // Privacy settings
 const privacySettings = reactive({
   isPublic: true,
   showContact: false,
-  showEarnings: false
+  showEarnings: false,
 })
 
 // Load settings from localStorage
@@ -344,16 +439,16 @@ const updateAccount = () => {
     error('New passwords do not match')
     return
   }
-  
+
   const settings = {
     account: { ...accountSettings },
     notifications: { ...notificationSettings },
-    privacy: { ...privacySettings }
+    privacy: { ...privacySettings },
   }
-  
+
   localStorage.setItem('voiceact-settings', JSON.stringify(settings))
   success('Account settings updated successfully')
-  
+
   // Clear password fields
   accountSettings.currentPassword = ''
   accountSettings.newPassword = ''
@@ -365,9 +460,9 @@ const updateNotifications = () => {
   const settings = {
     account: { ...accountSettings },
     notifications: { ...notificationSettings },
-    privacy: { ...privacySettings }
+    privacy: { ...privacySettings },
   }
-  
+
   localStorage.setItem('voiceact-settings', JSON.stringify(settings))
   success('Notification preferences updated successfully')
 }
@@ -377,9 +472,9 @@ const updatePrivacy = () => {
   const settings = {
     account: { ...accountSettings },
     notifications: { ...notificationSettings },
-    privacy: { ...privacySettings }
+    privacy: { ...privacySettings },
   }
-  
+
   localStorage.setItem('voiceact-settings', JSON.stringify(settings))
   success('Privacy settings updated successfully')
 }
@@ -390,9 +485,9 @@ const exportData = () => {
     onboarding: localStorage.getItem('voiceact-onboarding-data'),
     profile: localStorage.getItem('voiceact-profile-data'),
     settings: localStorage.getItem('voiceact-settings'),
-    voiceSamples: localStorage.getItem('voiceact-voice-samples')
+    voiceSamples: localStorage.getItem('voiceact-voice-samples'),
   }
-  
+
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -402,7 +497,7 @@ const exportData = () => {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
-  
+
   success('Profile data exported successfully')
 }
 
@@ -415,7 +510,7 @@ const deleteAccount = () => {
     localStorage.removeItem('voiceact-settings')
     localStorage.removeItem('voiceact-voice-samples')
     localStorage.removeItem('voiceact-onboarding-completed')
-    
+
     success('Account deleted successfully')
     router.push('/')
   }
@@ -450,12 +545,11 @@ input:focus {
 }
 
 /* Toggle switch animations */
-input[type="checkbox"] {
+input[type='checkbox'] {
   transition: all 0.2s ease;
 }
 
-input[type="checkbox"]:checked {
+input[type='checkbox']:checked {
   transform: scale(1.1);
 }
 </style>
-

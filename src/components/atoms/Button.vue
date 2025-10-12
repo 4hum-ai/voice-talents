@@ -112,20 +112,14 @@ const buttonClasses = computed(() => {
 
   // Variant classes
   const variants = {
-    default:
-      'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary',
-    primary:
-      'bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary',
-    secondary:
-      'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary',
+    default: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary',
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary',
     danger:
       'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive',
-    success:
-      'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
-    warning:
-      'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500',
-    ghost:
-      'bg-transparent text-foreground hover:bg-accent focus:ring-accent',
+    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
+    warning: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500',
+    ghost: 'bg-transparent text-foreground hover:bg-accent focus:ring-accent',
     outline:
       'bg-transparent border border-border text-foreground hover:bg-accent focus:ring-accent',
   }

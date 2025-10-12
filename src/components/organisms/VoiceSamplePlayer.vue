@@ -1,48 +1,42 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+  <div
+    class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
+  >
     <!-- Header -->
-    <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+    <div
+      class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700"
+    >
       <div class="flex items-center space-x-3">
         <div class="flex-shrink-0">
-          <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900"
+          >
             <MicrophoneIcon class="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
         <div class="min-w-0 flex-1">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-white truncate">
+          <h3 class="truncate text-sm font-medium text-gray-900 dark:text-white">
             {{ sample?.title || 'Voice Sample' }}
           </h3>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ sample?.genre }} • {{ sample?.tone }} • {{ formatDuration(currentTime) }} / {{ formatDuration(duration) }}
+            {{ sample?.genre }} • {{ sample?.tone }} • {{ formatDuration(currentTime) }} /
+            {{ formatDuration(duration) }}
           </p>
         </div>
       </div>
-      
+
       <div class="flex items-center space-x-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="togglePlayPause"
-          :disabled="!audioUrl"
-        >
+        <Button variant="ghost" size="sm" @click="togglePlayPause" :disabled="!audioUrl">
           <PlayIcon v-if="!isPlaying" class="h-4 w-4" />
           <PauseIcon v-else class="h-4 w-4" />
         </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="toggleMute"
-        >
+
+        <Button variant="ghost" size="sm" @click="toggleMute">
           <VolumeHighIcon v-if="!isMuted && volume > 0" class="h-4 w-4" />
           <VolumeOffIcon v-else class="h-4 w-4" />
         </Button>
-        
-        <ActionsMenu
-          :items="playerActions"
-          size="sm"
-          @select="handlePlayerAction"
-        />
+
+        <ActionsMenu :items="playerActions" size="sm" @select="handlePlayerAction" />
       </div>
     </div>
 
@@ -52,13 +46,13 @@
         <!-- Waveform Container -->
         <div
           ref="waveformContainer"
-          class="h-16 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer relative overflow-hidden"
+          class="relative h-16 cursor-pointer overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-700"
           @click="seekToPosition"
         >
           <!-- Waveform SVG -->
           <svg
             v-if="waveformData"
-            class="w-full h-full"
+            class="h-full w-full"
             viewBox="0 0 400 64"
             preserveAspectRatio="none"
           >
@@ -75,27 +69,27 @@
               />
             </g>
           </svg>
-          
+
           <!-- Loading State -->
-          <div v-else class="w-full h-full flex items-center justify-center">
+          <div v-else class="flex h-full w-full items-center justify-center">
             <LoadingSpinner size="sm" />
           </div>
-          
+
           <!-- Progress Overlay -->
           <div
-            class="absolute inset-0 bg-purple-500/20 pointer-events-none"
+            class="pointer-events-none absolute inset-0 bg-purple-500/20"
             :style="{ width: `${progressPercent}%` }"
           />
-          
+
           <!-- Current Time Indicator -->
           <div
-            class="absolute top-0 bottom-0 w-0.5 bg-purple-600 pointer-events-none"
+            class="pointer-events-none absolute top-0 bottom-0 w-0.5 bg-purple-600"
             :style="{ left: `${progressPercent}%` }"
           />
         </div>
-        
+
         <!-- Time Labels -->
-        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <div class="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>{{ formatTime(currentTime) }}</span>
           <span>{{ formatTime(duration) }}</span>
         </div>
@@ -106,22 +100,22 @@
     <div class="px-4 pb-4">
       <div class="flex items-center space-x-4">
         <!-- Volume Control -->
-        <div class="flex items-center space-x-2 min-w-0 flex-1">
-          <VolumeHighIcon class="h-4 w-4 text-gray-400 flex-shrink-0" />
+        <div class="flex min-w-0 flex-1 items-center space-x-2">
+          <VolumeHighIcon class="h-4 w-4 flex-shrink-0 text-gray-400" />
           <input
             v-model="volume"
             type="range"
             min="0"
             max="1"
             step="0.1"
-            class="flex-1 h-1 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+            class="slider h-1 flex-1 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-600"
             @input="updateVolume"
           />
-          <span class="text-xs text-gray-500 dark:text-gray-400 w-8 flex-shrink-0">
+          <span class="w-8 flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
             {{ Math.round(volume * 100) }}%
           </span>
         </div>
-        
+
         <!-- Playback Speed -->
         <SelectInput
           v-model="playbackSpeed"
@@ -130,21 +124,16 @@
           class="w-20"
           @update:model-value="updatePlaybackSpeed"
         />
-        
+
         <!-- Download Button -->
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="downloadSample"
-          :disabled="!sample"
-        >
+        <Button variant="ghost" size="sm" @click="downloadSample" :disabled="!sample">
           <DownloadIcon class="h-4 w-4" />
         </Button>
       </div>
     </div>
 
     <!-- Sample Info -->
-    <div v-if="sample" class="px-4 pb-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+    <div v-if="sample" class="border-t border-gray-200 px-4 pt-4 pb-4 dark:border-gray-700">
       <div class="grid grid-cols-2 gap-4 text-sm">
         <div>
           <span class="text-gray-500 dark:text-gray-400">Language:</span>
@@ -156,23 +145,20 @@
         </div>
         <div>
           <span class="text-gray-500 dark:text-gray-400">File Size:</span>
-          <span class="ml-2 text-gray-900 dark:text-white">{{ formatFileSize(sample.fileSize) }}</span>
+          <span class="ml-2 text-gray-900 dark:text-white">{{
+            formatFileSize(sample.fileSize)
+          }}</span>
         </div>
         <div>
           <span class="text-gray-500 dark:text-gray-400">Format:</span>
-          <span class="ml-2 text-gray-900 dark:text-white uppercase">{{ sample.format }}</span>
+          <span class="ml-2 text-gray-900 uppercase dark:text-white">{{ sample.format }}</span>
         </div>
       </div>
-      
+
       <!-- Tags -->
       <div v-if="sample.tags.length" class="mt-3">
         <div class="flex flex-wrap gap-1">
-          <Chip
-            v-for="tag in sample.tags"
-            :key="tag"
-            size="sm"
-            variant="secondary"
-          >
+          <Chip v-for="tag in sample.tags" :key="tag" size="sm" variant="secondary">
             {{ tag }}
           </Chip>
         </div>
@@ -205,7 +191,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   autoplay: false,
-  showInfo: true
+  showInfo: true,
 })
 
 const emit = defineEmits<{
@@ -247,64 +233,64 @@ const speedOptions = [
   { value: 1, label: '1x' },
   { value: 1.25, label: '1.25x' },
   { value: 1.5, label: '1.5x' },
-  { value: 2, label: '2x' }
+  { value: 2, label: '2x' },
 ]
 
 const playerActions = [
   {
     key: 'share',
     label: 'Share Sample',
-    icon: 'share'
+    icon: 'share',
   },
   {
     key: 'copy-link',
     label: 'Copy Link',
-    icon: 'copy'
+    icon: 'copy',
   },
   {
     key: 'favorite',
     label: 'Add to Favorites',
-    icon: 'heart-outline'
+    icon: 'heart-outline',
   },
   {
     key: 'report',
     label: 'Report Issue',
     icon: 'flag',
-    variant: 'danger' as const
-  }
+    variant: 'danger' as const,
+  },
 ]
 
 // Methods
 const initializeAudio = () => {
   if (!props.audioUrl) return
-  
+
   audio.value = new Audio(props.audioUrl)
-  
+
   audio.value.addEventListener('loadedmetadata', () => {
     duration.value = audio.value?.duration || 0
   })
-  
+
   audio.value.addEventListener('timeupdate', () => {
     currentTime.value = audio.value?.currentTime || 0
     emit('timeUpdate', currentTime.value)
   })
-  
+
   audio.value.addEventListener('ended', () => {
     isPlaying.value = false
     currentTime.value = 0
     emit('ended')
   })
-  
+
   audio.value.addEventListener('play', () => {
     isPlaying.value = true
     emit('play')
   })
-  
+
   audio.value.addEventListener('pause', () => {
     isPlaying.value = false
     emit('pause')
   })
-  
+
   audio.value.volume = volume.value
   audio.value.playbackRate = playbackSpeed.value
 }
@@ -315,7 +301,7 @@ const loadWaveform = async () => {
     waveformData.value = Array.from({ length: 200 }, () => Math.random() * 64)
     return
   }
-  
+
   try {
     isLoading.value = true
     const response = await fetch(props.waveformUrl)
@@ -332,7 +318,7 @@ const loadWaveform = async () => {
 
 const togglePlayPause = () => {
   if (!audio.value) return
-  
+
   if (isPlaying.value) {
     audio.value.pause()
   } else {
@@ -342,26 +328,26 @@ const togglePlayPause = () => {
 
 const toggleMute = () => {
   if (!audio.value) return
-  
+
   isMuted.value = !isMuted.value
   audio.value.muted = isMuted.value
 }
 
 const seekToPosition = (event: MouseEvent) => {
   if (!audio.value || !waveformContainer.value) return
-  
+
   const rect = waveformContainer.value.getBoundingClientRect()
   const x = event.clientX - rect.left
   const percentage = x / rect.width
   const newTime = percentage * duration.value
-  
+
   audio.value.currentTime = newTime
   currentTime.value = newTime
 }
 
 const updateVolume = () => {
   if (!audio.value) return
-  
+
   audio.value.volume = volume.value
   isMuted.value = volume.value === 0
   audio.value.muted = isMuted.value
@@ -370,13 +356,13 @@ const updateVolume = () => {
 
 const updatePlaybackSpeed = () => {
   if (!audio.value) return
-  
+
   audio.value.playbackRate = playbackSpeed.value
 }
 
 const downloadSample = () => {
   if (!props.sample?.audioUrl) return
-  
+
   const link = document.createElement('a')
   link.href = props.sample.audioUrl
   link.download = `${props.sample.title}.${props.sample.format}`
@@ -399,7 +385,7 @@ const formatFileSize = (bytes: number) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   if (bytes === 0) return '0 Bytes'
   const i = Math.floor(Math.log(bytes) / Math.log(1024))
-  return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i]
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 const handlePlayerAction = (action: string) => {
@@ -420,17 +406,23 @@ const handlePlayerAction = (action: string) => {
 }
 
 // Watchers
-watch(() => props.audioUrl, () => {
-  if (props.audioUrl) {
-    initializeAudio()
-  }
-})
+watch(
+  () => props.audioUrl,
+  () => {
+    if (props.audioUrl) {
+      initializeAudio()
+    }
+  },
+)
 
-watch(() => props.waveformUrl, () => {
-  if (props.waveformUrl) {
-    loadWaveform()
-  }
-})
+watch(
+  () => props.waveformUrl,
+  () => {
+    if (props.waveformUrl) {
+      loadWaveform()
+    }
+  },
+)
 
 // Lifecycle
 onMounted(() => {
@@ -456,7 +448,7 @@ onUnmounted(() => {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #8B5CF6;
+  background: #8b5cf6;
   cursor: pointer;
   border: 2px solid #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -466,7 +458,7 @@ onUnmounted(() => {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #8B5CF6;
+  background: #8b5cf6;
   cursor: pointer;
   border: 2px solid #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

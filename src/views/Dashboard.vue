@@ -234,7 +234,7 @@ const formatCount = (n: number | null | undefined): string => {
 
 const visibleResources = computed(() => {
   if (!adminResources.value) return []
-  
+
   const q = filter.value.trim().toLowerCase()
   const mods = q
     ? adminResources.value.filter((m) => {
@@ -372,10 +372,10 @@ function openItem(module: string, id: string) {
 function formatTimeAgo(ts: number | string): string {
   // Convert string timestamps to numbers
   const timestamp = typeof ts === 'string' ? new Date(ts).getTime() : ts
-  
+
   // Handle invalid timestamps
   if (isNaN(timestamp)) return 'Unknown'
-  
+
   const diff = Date.now() - timestamp
   const s = Math.floor(diff / 1000)
   if (s < 60) return `${s}s ago`

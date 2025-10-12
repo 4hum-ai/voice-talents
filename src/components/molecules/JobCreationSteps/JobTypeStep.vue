@@ -1,18 +1,25 @@
 <template>
-  <div class="max-w-3xl mx-auto">
-    <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-foreground mb-4">Choose Voice Solution</h1>
-      <p class="text-lg text-muted-foreground">
-        Select how you want to create your voice content
+  <div class="mx-auto max-w-full px-8">
+    <!-- Header Section -->
+    <div class="mb-12 text-center">
+      <div
+        class="from-primary/20 to-primary/10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br"
+      >
+        <Icon name="mdi:microphone" class="text-primary h-8 w-8" />
+      </div>
+      <h1
+        class="text-foreground from-foreground to-foreground/80 mb-4 bg-gradient-to-r bg-clip-text text-4xl font-bold"
+      >
+        Step 1: Choose Your Voice Solution
+      </h1>
+      <p class="text-muted-foreground mx-auto max-w-2xl text-xl leading-relaxed">
+        Select the perfect approach for your voice content creation needs
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div 
-        v-for="type in jobTypes" 
-        :key="type.value"
-        class="relative group"
-      >
+    <!-- Cards Grid -->
+    <div class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div v-for="type in jobTypes" :key="type.value" class="group relative">
         <input
           :id="type.value"
           v-model="localJobType"
@@ -22,67 +29,96 @@
         />
         <label
           :for="type.value"
-          class="flex flex-col p-6 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg"
-          :class="localJobType === type.value 
-            ? 'border-primary bg-primary/5 shadow-md' 
-            : 'border-border hover:border-primary/50'"
+          class="relative flex h-full cursor-pointer flex-col rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          :class="
+            localJobType === type.value
+              ? 'border-primary from-primary/10 via-primary/5 shadow-primary/20 bg-gradient-to-br to-transparent shadow-xl'
+              : 'border-border hover:border-primary/50 bg-card/50 hover:bg-card/80'
+          "
         >
-          <div class="flex items-center space-x-4 mb-4">
-            <div class="w-12 h-12 rounded-lg flex items-center justify-center"
-                 :class="localJobType === type.value 
-                   ? 'bg-primary text-white' 
-                   : 'bg-muted text-muted-foreground'">
-              <component :is="type.icon" class="h-6 w-6" />
-            </div>
-            <div class="flex-1">
-              <h3 class="text-xl font-semibold text-foreground">{{ type.label }}</h3>
-              <p class="text-sm text-muted-foreground">{{ type.description }}</p>
+          <!-- Selection Indicator -->
+          <div
+            v-if="localJobType === type.value"
+            class="bg-primary absolute -top-3 -right-3 flex h-6 w-6 items-center justify-center rounded-full"
+          >
+            <Icon name="mdi:check" class="h-4 w-4 text-white" />
+          </div>
+
+          <!-- Icon and Badge -->
+          <div class="mb-6 flex items-start justify-between">
+            <div class="relative">
+              <div
+                class="flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300"
+                :class="
+                  localJobType === type.value
+                    ? 'from-primary to-primary/80 shadow-primary/30 bg-gradient-to-br text-white shadow-lg'
+                    : 'from-muted to-muted/80 text-muted-foreground group-hover:from-primary/20 group-hover:to-primary/10 group-hover:text-primary bg-gradient-to-br'
+                "
+              >
+                <component :is="type.icon" class="h-8 w-8" />
+              </div>
             </div>
           </div>
-          
-          <div class="space-y-2 text-sm text-muted-foreground">
-            <div class="flex items-center space-x-2">
-              <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
-              <span>{{ type.features[0] }}</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
-              <span>{{ type.features[1] }}</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
-              <span>{{ type.features[2] }}</span>
+
+          <!-- Title and Description -->
+          <div class="mb-6">
+            <h3 class="text-foreground mb-3 text-2xl font-bold">{{ type.label }}</h3>
+            <p class="text-muted-foreground leading-relaxed">{{ type.description }}</p>
+          </div>
+
+          <!-- Features -->
+          <div class="mb-6 flex-1 space-y-3">
+            <div
+              v-for="feature in type.features"
+              :key="feature"
+              class="flex items-center space-x-3"
+            >
+              <div
+                class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500"
+              >
+                <Icon name="mdi:check" class="h-3 w-3 text-white" />
+              </div>
+              <span class="text-muted-foreground text-sm">{{ feature }}</span>
             </div>
           </div>
-          
-          <!-- Pricing Info -->
-          <div v-if="type.pricing" class="mt-4 pt-4 border-t border-border">
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-foreground">Starting from:</span>
-              <span class="text-lg font-bold text-primary">{{ type.pricing }}</span>
+
+          <!-- Pricing -->
+          <div class="border-border/50 mt-auto border-t pt-6">
+            <div>
+              <span class="text-muted-foreground text-sm font-medium">Starting from</span>
+              <div class="text-foreground text-2xl font-bold">{{ type.pricing }}</div>
+              <div v-if="type.value === 'ai_synthesis'" class="mt-2">
+                <div class="text-xs font-medium text-green-600">✓ Includes talent fees</div>
+              </div>
             </div>
           </div>
+
+          <!-- Hover Effect Overlay -->
+          <div
+            class="from-primary/5 pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          ></div>
         </label>
       </div>
     </div>
 
-    <div class="flex justify-center mt-8">
-      <Button 
-        variant="primary" 
-        size="lg" 
+    <!-- Continue Button -->
+    <div class="flex justify-center">
+      <Button
+        variant="primary"
+        size="lg"
         @click="handleNext"
         :disabled="!localJobType"
-        class="px-8"
+        class="rounded-xl px-12 py-4 text-lg font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
       >
-        Continue
-        <Icon name="mdi:arrow-right" class="h-4 w-4 ml-2" />
+        Continue to Next Step
+        <Icon name="mdi:arrow-right" class="ml-2 h-5 w-5" />
       </Button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import AccountIcon from '~icons/mdi/account'
@@ -101,56 +137,58 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const localJobType = ref(props.jobType)
+const localJobType = ref(props.jobType || 'hybrid_approach')
 
 // Voice Solution Types with enhanced descriptions and features
 const jobTypes = [
   {
     value: 'talent_only',
-    label: 'Talent Only',
-    description: 'Hire professional voice actors for authentic human voice',
+    label: 'Professional Talent',
+    description:
+      'Work directly with skilled voice actors for authentic, personalized performances that bring your content to life',
     icon: AccountIcon,
     features: [
-      'Authentic human voice',
-      'Professional voice actors',
-      'Full creative control'
+      '100% authentic human voice',
+      'Direct collaboration with talent',
+      'Complete creative control & customization',
     ],
-    pricing: '$50-500'
-  },
-  {
-    value: 'ai_synthesis',
-    label: 'AI Voice Synthesis',
-    description: 'Generate voice using licensed AI voice models',
-    icon: RobotIcon,
-    features: [
-      'Instant voice generation',
-      'Licensed voice models',
-      '24/7 availability'
-    ],
-    pricing: '$25-150'
+    pricing: '$15/hr',
   },
   {
     value: 'hybrid_approach',
-    label: 'Hybrid Approach',
-    description: 'AI-generated base with talent refinement',
+    label: 'Hybrid Solution',
+    description:
+      'Combine AI efficiency with human expertise for the perfect balance of speed, quality, and cost-effectiveness',
     icon: AccountGroupIcon,
     features: [
-      'AI efficiency + human touch',
-      'Faster turnaround',
-      'Cost-effective solution'
+      'AI foundation + talent refinement',
+      'Faster delivery than traditional',
+      'Optimal quality-to-cost ratio',
     ],
-    pricing: '$35-200'
-  }
+    pricing: '$10/hr',
+  },
+  {
+    value: 'ai_synthesis',
+    label: 'AI Voice',
+    description:
+      'Leverage cutting-edge AI technology powered by licensed talent voices, ensuring creators are fairly compensated',
+    icon: RobotIcon,
+    features: [
+      'Licensed from real voice talent',
+      'Talent receives ongoing compensation',
+      'Instant generation & 24/7 availability',
+    ],
+    pricing: '$5/hr',
+  },
 ]
 
 const handleNext = () => {
   if (localJobType.value) {
+    // Ensure the selection is emitted before proceeding
+    emit('update:jobType', localJobType.value)
     emit('next')
   }
 }
 
-// Watch for changes and emit updates
-watch(localJobType, (newValue) => {
-  emit('update:jobType', newValue)
-})
+// Note: We only emit updates when Continue is clicked, not on selection change
 </script>

@@ -1,9 +1,9 @@
 <template>
   <div
     aria-live="assertive"
-    class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-50"
+    class="pointer-events-none fixed inset-0 z-50 flex items-end px-4 py-6 sm:items-start sm:p-6"
   >
-    <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
+    <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
       <TransitionGroup
         enter-active-class="transform ease-out duration-300 transition"
         enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
@@ -55,7 +55,7 @@ const addToast = (toast: Omit<ToastData, 'id'>) => {
 }
 
 const removeToast = (id: string) => {
-  const index = toasts.value.findIndex(toast => toast.id === id)
+  const index = toasts.value.findIndex((toast) => toast.id === id)
   if (index > -1) {
     toasts.value.splice(index, 1)
   }

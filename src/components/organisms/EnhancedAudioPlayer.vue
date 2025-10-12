@@ -1,9 +1,11 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+  <div class="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
     <!-- Audio Info Header -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600"
+        >
           <Icon name="mdi:music-note" class="h-6 w-6 text-white" />
         </div>
         <div>
@@ -24,12 +26,7 @@
         >
           <Icon :name="isMuted ? 'mdi:volume-off' : 'mdi:volume-high'" class="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="downloadAudio"
-          aria-label="Download audio"
-        >
+        <Button variant="ghost" size="sm" @click="downloadAudio" aria-label="Download audio">
           <Icon name="mdi:download" class="h-4 w-4" />
         </Button>
       </div>
@@ -40,7 +37,7 @@
       <div class="relative">
         <div
           ref="waveformContainer"
-          class="h-16 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer relative overflow-hidden"
+          class="relative h-16 cursor-pointer overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700"
           @click="seekToPosition"
         >
           <!-- Waveform bars -->
@@ -49,28 +46,28 @@
               v-for="(bar, index) in waveformData"
               :key="index"
               :class="[
-                'bg-gray-400 dark:bg-gray-500 rounded-sm transition-all duration-150',
+                'rounded-sm bg-gray-400 transition-all duration-150 dark:bg-gray-500',
                 index < currentBarIndex ? 'bg-blue-500 dark:bg-blue-400' : '',
-                isPlaying ? 'animate-pulse' : ''
+                isPlaying ? 'animate-pulse' : '',
               ]"
               :style="{
                 height: `${Math.max(4, bar * 100)}%`,
-                width: '2px'
+                width: '2px',
               }"
             />
           </div>
-          
+
           <!-- Progress overlay -->
           <div
-            class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-transparent pointer-events-none"
+            class="pointer-events-none absolute inset-0 bg-gradient-to-r from-blue-500/20 to-transparent"
             :style="{ width: `${progressPercentage}%` }"
           />
-          
+
           <!-- Time markers -->
           <div class="absolute bottom-1 left-2 text-xs text-gray-500 dark:text-gray-400">
             {{ formatTime(currentTime) }}
           </div>
-          <div class="absolute bottom-1 right-2 text-xs text-gray-500 dark:text-gray-400">
+          <div class="absolute right-2 bottom-1 text-xs text-gray-500 dark:text-gray-400">
             {{ formatTime(duration) }}
           </div>
         </div>
@@ -86,7 +83,7 @@
           size="sm"
           @click="togglePlay"
           :disabled="!audioSrc"
-          class="w-10 h-10 rounded-full p-0"
+          class="h-10 w-10 rounded-full p-0"
         >
           <Icon :name="isPlaying ? 'mdi:pause' : 'mdi:play'" class="h-5 w-5" />
         </Button>
@@ -98,11 +95,13 @@
             size="sm"
             @click="decreaseSpeed"
             :disabled="playbackRate <= 0.5"
-            class="w-8 h-8 p-0"
+            class="h-8 w-8 p-0"
           >
             <Icon name="mdi:minus" class="h-3 w-3" />
           </Button>
-          <span class="text-xs font-medium text-gray-600 dark:text-gray-400 min-w-[2rem] text-center">
+          <span
+            class="min-w-[2rem] text-center text-xs font-medium text-gray-600 dark:text-gray-400"
+          >
             {{ playbackRate }}x
           </span>
           <Button
@@ -110,7 +109,7 @@
             size="sm"
             @click="increaseSpeed"
             :disabled="playbackRate >= 2"
-            class="w-8 h-8 p-0"
+            class="h-8 w-8 p-0"
           >
             <Icon name="mdi:plus" class="h-3 w-3" />
           </Button>
@@ -126,7 +125,7 @@
           max="100"
           :value="volume * 100"
           @input="updateVolume"
-          class="w-20 h-1 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+          class="slider h-1 w-20 cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-600"
         />
         <Icon name="mdi:volume-high" class="h-4 w-4 text-gray-500" />
       </div>
@@ -223,7 +222,7 @@ const togglePlay = async () => {
 
 const toggleMute = () => {
   if (!audioElement.value) return
-  
+
   isMuted.value = !isMuted.value
   audioElement.value.muted = isMuted.value
 }
@@ -232,7 +231,7 @@ const updateVolume = (event: Event) => {
   const target = event.target as HTMLInputElement
   const newVolume = parseInt(target.value) / 100
   volume.value = newVolume
-  
+
   if (audioElement.value) {
     audioElement.value.volume = newVolume
   }
@@ -270,7 +269,7 @@ const seekToPosition = (event: MouseEvent) => {
 
 const formatDuration = (seconds: number) => {
   if (isNaN(seconds)) return '0:00'
-  
+
   const mins = Math.floor(seconds / 60)
   const secs = Math.floor(seconds % 60)
   return `${mins}:${secs.toString().padStart(2, '0')}`
@@ -321,15 +320,18 @@ const onPause = () => {
 }
 
 // Watch for audio source changes
-watch(() => props.audioSrc, (newSrc) => {
-  if (newSrc && audioElement.value) {
-    audioElement.value.load()
-  }
-})
+watch(
+  () => props.audioSrc,
+  (newSrc) => {
+    if (newSrc && audioElement.value) {
+      audioElement.value.load()
+    }
+  },
+)
 
 onMounted(() => {
   generateWaveformData()
-  
+
   if (audioElement.value) {
     audioElement.value.loop = props.loop
     audioElement.value.volume = volume.value

@@ -8,19 +8,18 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/voice-actor/Dashboard.vue'),
     meta: { title: 'VoiceAct Dashboard', requiresAuth: true, keepAlive: true },
   },
-  
+
   // Voice Actor Profile Management
   {
     path: '/profile',
-    redirect: '/profile/edit'
+    redirect: '/profile/edit',
   },
   {
     path: '/profile/edit',
     component: () => import('../views/voice-actor/ProfileEdit.vue'),
     meta: { title: 'My Profile', requiresAuth: true },
   },
-  
-  
+
   // Project Management
   {
     path: '/projects',
@@ -32,7 +31,7 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/voice-actor/ProjectDetail.vue'),
     meta: { title: 'Audio Studio', requiresAuth: true },
   },
-  
+
   // Casting & Opportunities
   {
     path: '/casting',
@@ -54,20 +53,18 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/voice-actor/CastingProposal.vue'),
     meta: { title: 'View Proposal', requiresAuth: true },
   },
-  
-  
-  
+
   // Settings
   {
     path: '/settings',
     component: () => import('../views/voice-actor/SettingsView.vue'),
     meta: { title: 'Settings', requiresAuth: true },
   },
-  
+
   // Voice Client Routes
   {
     path: '/client',
-    redirect: '/client/dashboard'
+    redirect: '/client/dashboard',
   },
   {
     path: '/client/dashboard',
@@ -95,16 +92,11 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'Talent Profile', requiresAuth: true, role: 'client' },
   },
   {
-    path: '/client/invitations',
-    component: () => import('../views/voice-client/InvitationManagement.vue'),
-    meta: { title: 'Invitation Management', requiresAuth: true, role: 'client' },
-  },
-  {
     path: '/client/settings',
     component: () => import('../views/voice-client/ClientSettings.vue'),
     meta: { title: 'Client Settings', requiresAuth: true, role: 'client' },
   },
-  
+
   // Admin/Design System (keeping existing)
   {
     path: '/admin/design',

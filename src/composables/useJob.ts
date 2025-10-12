@@ -25,7 +25,7 @@ const state = reactive<JobState>({
   jobs: [],
   currentJob: null,
   loading: false,
-  error: null
+  error: null,
 })
 
 // Initialize jobs from localStorage
@@ -65,43 +65,50 @@ export function useJob() {
 
   // Computed properties
   const jobs = computed(() => state.jobs)
-  const drafts = computed(() => state.jobs.filter(job => job.status === 'draft'))
-  const publishedJobs = computed(() => state.jobs.filter(job => job.status === 'published'))
+  const drafts = computed(() => state.jobs.filter((job) => job.status === 'draft'))
+  const publishedJobs = computed(() => state.jobs.filter((job) => job.status === 'published'))
   const currentJob = computed(() => state.currentJob)
   const loading = computed(() => state.loading)
   const error = computed(() => state.error)
-  const draftCount = computed(() => state.jobs.filter(job => job.status === 'draft').length)
-  const publishedCount = computed(() => state.jobs.filter(job => job.status === 'published').length)
+  const draftCount = computed(() => state.jobs.filter((job) => job.status === 'draft').length)
+  const publishedCount = computed(
+    () => state.jobs.filter((job) => job.status === 'published').length,
+  )
 
   // Get job by ID
   const getJob = (id: string): Job | null => {
-    return state.jobs.find(job => job.id === id) || null
+    return state.jobs.find((job) => job.id === id) || null
   }
 
   // Get draft by ID (alias for backward compatibility)
   const getDraft = (id: string): Job | null => {
-    return state.jobs.find(job => job.id === id && job.status === 'draft') || null
+    return state.jobs.find((job) => job.id === id && job.status === 'draft') || null
   }
 
   // Get jobs by client
   const getJobsByClient = (clientId: string): Job[] => {
-    return state.jobs.filter(job => job.clientId === clientId)
+    return state.jobs.filter((job) => job.clientId === clientId)
   }
 
   // Get drafts by client
   const getDraftsByClient = (clientId: string): Job[] => {
-    return state.jobs.filter(job => job.clientId === clientId && job.status === 'draft')
+    return state.jobs.filter((job) => job.clientId === clientId && job.status === 'draft')
   }
 
   // Get published jobs by client
   const getPublishedJobsByClient = (clientId: string): Job[] => {
-    return state.jobs.filter(job => job.clientId === clientId && job.status === 'published')
+    return state.jobs.filter((job) => job.clientId === clientId && job.status === 'published')
   }
 
   // Create new job from form data
-  const createJob = (jobData: Partial<JobPosting>, clientId: string, clientName: string, status: 'draft' | 'published' = 'draft'): Job => {
+  const createJob = (
+    jobData: Partial<JobPosting>,
+    clientId: string,
+    clientName: string,
+    status: 'draft' | 'published' = 'draft',
+  ): Job => {
     const now = new Date().toISOString()
-    
+
     const job: Job = {
       id: generateJobId(),
       clientId,
@@ -123,7 +130,7 @@ export function useJob() {
         gender: 'any',
         experience: 'beginner',
         specialInstructions: '',
-        quality: 'professional'
+        quality: 'professional',
       },
       deliverables: jobData.deliverables || [],
       files: jobData.files || [],
@@ -137,9 +144,9 @@ export function useJob() {
       updatedAt: now,
       lastSaved: now,
       autoSaved: false,
-      version: 1
+      version: 1,
     }
-    
+
     state.jobs.push(job)
     state.currentJob = job
     saveJobsToStorage()
@@ -147,12 +154,17 @@ export function useJob() {
   }
 
   // Save draft (alias for backward compatibility)
-  const saveDraft = (jobData: Partial<JobPosting>, clientId: string, clientName: string, draftId?: string): Job => {
+  const saveDraft = (
+    jobData: Partial<JobPosting>,
+    clientId: string,
+    clientName: string,
+    draftId?: string,
+  ): Job => {
     const now = new Date().toISOString()
-    
+
     if (draftId) {
       // Update existing draft
-      const existingIndex = state.jobs.findIndex(job => job.id === draftId)
+      const existingIndex = state.jobs.findIndex((job) => job.id === draftId)
       if (existingIndex !== -1) {
         const existingJob = state.jobs[existingIndex]
         const updatedJob: Job = {
@@ -161,32 +173,37 @@ export function useJob() {
           status: 'draft', // Ensure status is always 'draft' for drafts
           lastSaved: now,
           version: existingJob.version + 1,
-          updatedAt: now
+          updatedAt: now,
         }
-        
+
         state.jobs[existingIndex] = updatedJob
         state.currentJob = updatedJob
         saveJobsToStorage()
         return updatedJob
       }
     }
-    
+
     // Create new draft
     return createJob(jobData, clientId, clientName, 'draft')
   }
 
   // Auto-save draft
-  const autoSaveDraft = (jobData: Partial<JobPosting>, clientId: string, clientName: string, draftId?: string): Job | null => {
+  const autoSaveDraft = (
+    jobData: Partial<JobPosting>,
+    clientId: string,
+    clientName: string,
+    draftId?: string,
+  ): Job | null => {
     // Only auto-save if there's meaningful content
     if (!jobData.title?.trim() && !jobData.description?.trim()) {
       return null
     }
-    
+
     const now = new Date().toISOString()
-    
+
     if (draftId) {
       // Update existing draft
-      const existingIndex = state.jobs.findIndex(job => job.id === draftId)
+      const existingIndex = state.jobs.findIndex((job) => job.id === draftId)
       if (existingIndex !== -1) {
         const existingJob = state.jobs[existingIndex]
         const updatedJob: Job = {
@@ -196,16 +213,16 @@ export function useJob() {
           lastSaved: now,
           autoSaved: true,
           version: existingJob.version + 1,
-          updatedAt: now
+          updatedAt: now,
         }
-        
+
         state.jobs[existingIndex] = updatedJob
         state.currentJob = updatedJob
         saveJobsToStorage()
         return updatedJob
       }
     }
-    
+
     // Create new auto-saved draft
     const job = createJob(jobData, clientId, clientName, 'draft')
     job.autoSaved = true
@@ -223,7 +240,7 @@ export function useJob() {
 
   // Publish job (convert draft to published)
   const publishJob = (jobId: string): Job | null => {
-    const jobIndex = state.jobs.findIndex(job => job.id === jobId)
+    const jobIndex = state.jobs.findIndex((job) => job.id === jobId)
     if (jobIndex !== -1) {
       const now = new Date().toISOString()
       const updatedJob: Job = {
@@ -232,9 +249,9 @@ export function useJob() {
         publishedDate: now,
         lastSaved: now,
         updatedAt: now,
-        version: state.jobs[jobIndex].version + 1
+        version: state.jobs[jobIndex].version + 1,
       }
-      
+
       state.jobs[jobIndex] = updatedJob
       state.currentJob = updatedJob
       saveJobsToStorage()
@@ -245,7 +262,7 @@ export function useJob() {
 
   // Delete job/draft
   const deleteJob = (id: string): boolean => {
-    const index = state.jobs.findIndex(job => job.id === id)
+    const index = state.jobs.findIndex((job) => job.id === id)
     if (index !== -1) {
       state.jobs.splice(index, 1)
       if (state.currentJob?.id === id) {
@@ -284,7 +301,7 @@ export function useJob() {
     error,
     draftCount,
     publishedCount,
-    
+
     // Methods
     getJob,
     getDraft,
@@ -299,6 +316,6 @@ export function useJob() {
     deleteJob,
     deleteDraft,
     clearAllJobs,
-    refreshJobs
+    refreshJobs,
   }
 }

@@ -1,20 +1,18 @@
 <template>
-  <div class="min-h-screen bg-background flex">
+  <div class="bg-background flex min-h-screen">
     <!-- Navigation Sidebar -->
     <ClientNavigation />
 
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card shadow-sm border-b border-border">
+      <div class="bg-card border-border border-b shadow-sm">
         <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-16">
+          <div class="flex h-16 items-center justify-between">
             <div class="flex items-center">
               <div>
-                <h1 class="text-2xl font-bold text-foreground">
-                  Client Dashboard
-                </h1>
-                <p class="text-sm text-muted-foreground">
+                <h1 class="text-foreground text-2xl font-bold">Client Dashboard</h1>
+                <p class="text-muted-foreground text-sm">
                   Welcome back, {{ currentClient?.contactName }}
                 </p>
               </div>
@@ -22,7 +20,7 @@
             <div class="flex items-center space-x-4">
               <ThemeToggle />
               <Button variant="primary" size="sm" @click="openJobCreationModal">
-                <PlusIcon class="h-4 w-4 mr-2" />
+                <PlusIcon class="mr-2 h-4 w-4" />
                 Create Job
               </Button>
             </div>
@@ -30,84 +28,84 @@
         </div>
       </div>
 
-      <div class="px-4 sm:px-6 lg:px-8 py-8">
-        <div class="max-w-7xl mx-auto">
+      <div class="px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
           <!-- Stats Overview -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <MetricCard 
-              title="Active Jobs" 
-              :value="stats.activeJobs" 
-              icon="mdi:briefcase" 
-              color="blue" 
+          <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              title="Active Jobs"
+              :value="stats.activeJobs"
+              icon="mdi:briefcase"
+              color="blue"
             />
-            <MetricCard 
-              title="Total Spent" 
-              :value="`$${stats.totalSpent.toLocaleString()}`" 
-              icon="mdi:currency-usd" 
-              color="green" 
+            <MetricCard
+              title="Total Spent"
+              :value="`$${stats.totalSpent.toLocaleString()}`"
+              icon="mdi:currency-usd"
+              color="green"
             />
-            <MetricCard 
-              title="Hired Talents" 
-              :value="stats.hiredTalents" 
-              icon="mdi:account-check" 
-              color="purple" 
+            <MetricCard
+              title="Hired Talents"
+              :value="stats.hiredTalents"
+              icon="mdi:account-check"
+              color="purple"
             />
           </div>
 
           <!-- Quick Actions -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Create New -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h3 class="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h3 class="text-foreground mb-4 text-lg font-semibold">Quick Actions</h3>
               <div class="space-y-3">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   class="w-full justify-start"
                   @click="openJobCreationModal"
                 >
-                  <BriefcaseIcon class="h-4 w-4 mr-2" />
+                  <BriefcaseIcon class="mr-2 h-4 w-4" />
                   Post New Job
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   class="w-full justify-start"
                   @click="$router.push('/client/campaigns/create')"
                 >
-                  <MegaphoneIcon class="h-4 w-4 mr-2" />
+                  <MegaphoneIcon class="mr-2 h-4 w-4" />
                   Create Campaign
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   class="w-full justify-start"
                   @click="$router.push('/client/talents')"
                 >
-                  <AccountGroupIcon class="h-4 w-4 mr-2" />
-                  Browse Talents
+                  <AccountGroupIcon class="mr-2 h-4 w-4" />
+                  Talents
                 </Button>
               </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h3 class="text-lg font-semibold text-foreground mb-4">Recent Activity</h3>
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h3 class="text-foreground mb-4 text-lg font-semibold">Recent Activity</h3>
               <div class="space-y-3">
-                <div 
-                  v-for="activity in recentActivity" 
+                <div
+                  v-for="activity in recentActivity"
                   :key="activity.id"
-                  class="flex items-start space-x-3 p-3 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+                  class="hover:bg-muted flex cursor-pointer items-start space-x-3 rounded-lg p-3 transition-colors"
                   @click="activity.url && $router.push(activity.url)"
                 >
                   <div class="flex-shrink-0">
-                    <div class="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                    <div class="bg-primary mt-2 h-2 w-2 rounded-full"></div>
                   </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-foreground">
+                  <div class="min-w-0 flex-1">
+                    <p class="text-foreground text-sm font-medium">
                       {{ activity.title }}
                     </p>
-                    <p class="text-xs text-muted-foreground">
+                    <p class="text-muted-foreground text-xs">
                       {{ activity.description }}
                     </p>
-                    <p class="text-xs text-muted-foreground mt-1">
+                    <p class="text-muted-foreground mt-1 text-xs">
                       {{ formatTimeAgo(activity.timestamp) }}
                     </p>
                   </div>
@@ -117,22 +115,22 @@
           </div>
 
           <!-- Jobs Overview -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Active Jobs -->
-            <div class="bg-card rounded-lg border border-border">
-              <div class="p-6 border-b border-border">
+            <div class="bg-card border-border rounded-lg border">
+              <div class="border-border border-b p-6">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-lg font-semibold text-foreground">Active Jobs</h3>
+                  <h3 class="text-foreground text-lg font-semibold">Active Jobs</h3>
                   <Button variant="ghost" size="sm" @click="$router.push('/client/jobs')">
                     View All
                   </Button>
                 </div>
               </div>
               <div class="p-6">
-                <div v-if="activeJobs.length === 0" class="text-center py-8">
-                  <BriefcaseIcon class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h4 class="text-sm font-medium text-foreground mb-2">No active jobs</h4>
-                  <p class="text-xs text-muted-foreground mb-4">
+                <div v-if="activeJobs.length === 0" class="py-8 text-center">
+                  <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                  <h4 class="text-foreground mb-2 text-sm font-medium">No active jobs</h4>
+                  <p class="text-muted-foreground mb-4 text-xs">
                     Create your first job posting to get started
                   </p>
                   <Button variant="primary" size="sm" @click="openJobCreationModal">
@@ -140,19 +138,19 @@
                   </Button>
                 </div>
                 <div v-else class="space-y-4">
-                  <div 
-                    v-for="job in activeJobs" 
+                  <div
+                    v-for="job in activeJobs"
                     :key="job.id"
-                    class="p-4 rounded-lg border border-border hover:shadow-sm transition-shadow cursor-pointer"
+                    class="border-border cursor-pointer rounded-lg border p-4 transition-shadow hover:shadow-sm"
                     @click="$router.push(`/client/jobs/${job.id}`)"
                   >
-                    <div class="flex items-start justify-between mb-2">
-                      <h4 class="text-sm font-medium text-foreground">
+                    <div class="mb-2 flex items-start justify-between">
+                      <h4 class="text-foreground text-sm font-medium">
                         {{ job.title }}
                       </h4>
                       <StatusBadge :status="getJobStatus(job.status)" />
                     </div>
-                    <p class="text-xs text-muted-foreground mb-3 line-clamp-2">
+                    <p class="text-muted-foreground mb-3 line-clamp-2 text-xs">
                       {{ job.description }}
                     </p>
                     <div class="flex items-center justify-between text-xs">
@@ -160,7 +158,9 @@
                         {{ job.totalApplications }} applications
                       </span>
                       <span class="text-foreground font-medium">
-                        ${{ job.budget.min.toLocaleString() }} - ${{ job.budget.max.toLocaleString() }}
+                        ${{ job.budget.min.toLocaleString() }} - ${{
+                          job.budget.max.toLocaleString()
+                        }}
                       </span>
                     </div>
                   </div>
@@ -169,36 +169,36 @@
             </div>
 
             <!-- Recent Applications -->
-            <div class="bg-card rounded-lg border border-border">
-              <div class="p-6 border-b border-border">
+            <div class="bg-card border-border rounded-lg border">
+              <div class="border-border border-b p-6">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-lg font-semibold text-foreground">Recent Applications</h3>
+                  <h3 class="text-foreground text-lg font-semibold">Recent Applications</h3>
                   <Button variant="ghost" size="sm" @click="$router.push('/client/jobs')">
                     View All
                   </Button>
                 </div>
               </div>
               <div class="p-6">
-                <div v-if="recentApplications.length === 0" class="text-center py-8">
-                  <EmailIcon class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h4 class="text-sm font-medium text-foreground mb-2">No applications yet</h4>
-                  <p class="text-xs text-muted-foreground">
+                <div v-if="recentApplications.length === 0" class="py-8 text-center">
+                  <EmailIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                  <h4 class="text-foreground mb-2 text-sm font-medium">No applications yet</h4>
+                  <p class="text-muted-foreground text-xs">
                     Applications will appear here once you post jobs
                   </p>
                 </div>
                 <div v-else class="space-y-4">
-                  <div 
-                    v-for="application in recentApplications" 
+                  <div
+                    v-for="application in recentApplications"
                     :key="application.id"
-                    class="p-4 rounded-lg border border-border hover:shadow-sm transition-shadow cursor-pointer"
+                    class="border-border cursor-pointer rounded-lg border p-4 transition-shadow hover:shadow-sm"
                     @click="$router.push(`/client/jobs/${application.jobId}`)"
                   >
-                    <div class="flex items-start justify-between mb-2">
+                    <div class="mb-2 flex items-start justify-between">
                       <div>
-                        <h4 class="text-sm font-medium text-foreground">
+                        <h4 class="text-foreground text-sm font-medium">
                           {{ application.voiceActorName }}
                         </h4>
-                        <p class="text-xs text-muted-foreground">
+                        <p class="text-muted-foreground text-xs">
                           Applied to {{ getJobTitle(application.jobId) }}
                         </p>
                       </div>
@@ -232,7 +232,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { VoiceClient, ClientStats, JobPosting, JobApplication, Campaign } from '@/types/voice-client'
+import type {
+  VoiceClient,
+  ClientStats,
+  JobPosting,
+  JobApplication,
+  Campaign,
+} from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
@@ -261,56 +267,74 @@ const { addToast: showToast } = useToast()
 // Computed
 const recentActivity = computed(() => stats.value.recentActivity.slice(0, 5))
 
-const activeJobs = computed(() => 
-  jobPostings.value.filter(job => job.status === 'active').slice(0, 3)
+const activeJobs = computed(() =>
+  jobPostings.value.filter((job) => job.status === 'active').slice(0, 3),
 )
 
-const recentApplications = computed(() => 
+const recentApplications = computed(() =>
   applications.value
     .sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime())
-    .slice(0, 3)
+    .slice(0, 3),
 )
 
-const activeCampaigns = computed(() => 
-  campaigns.value.filter(campaign => campaign.status === 'active').slice(0, 2)
+const activeCampaigns = computed(() =>
+  campaigns.value.filter((campaign) => campaign.status === 'active').slice(0, 2),
 )
 
 // Methods
 const getCampaignStatus = (status: string) => {
   switch (status) {
-    case 'active': return 'active'
-    case 'paused': return 'inactive'
-    case 'completed': return 'completed'
-    case 'cancelled': return 'rejected'
-    default: return 'draft'
+    case 'active':
+      return 'active'
+    case 'paused':
+      return 'inactive'
+    case 'completed':
+      return 'completed'
+    case 'cancelled':
+      return 'rejected'
+    default:
+      return 'draft'
   }
 }
 
 const getJobStatus = (status: string) => {
   switch (status) {
-    case 'active': return 'active'
-    case 'published': return 'active'
-    case 'paused': return 'inactive'
-    case 'closed': return 'inactive'
-    case 'completed': return 'completed'
-    case 'cancelled': return 'rejected'
-    default: return 'draft'
+    case 'active':
+      return 'active'
+    case 'published':
+      return 'active'
+    case 'paused':
+      return 'inactive'
+    case 'closed':
+      return 'inactive'
+    case 'completed':
+      return 'completed'
+    case 'cancelled':
+      return 'rejected'
+    default:
+      return 'draft'
   }
 }
 
 const getApplicationStatus = (status: string) => {
   switch (status) {
-    case 'submitted': return 'pending'
-    case 'under_review': return 'processing'
-    case 'shortlisted': return 'success'
-    case 'selected': return 'success'
-    case 'rejected': return 'rejected'
-    default: return 'draft'
+    case 'submitted':
+      return 'pending'
+    case 'under_review':
+      return 'processing'
+    case 'shortlisted':
+      return 'success'
+    case 'selected':
+      return 'success'
+    case 'rejected':
+      return 'rejected'
+    default:
+      return 'draft'
   }
 }
 
 const getJobTitle = (jobId: string) => {
-  const job = jobPostings.value.find(j => j.id === jobId)
+  const job = jobPostings.value.find((j) => j.id === jobId)
   return job?.title || 'Unknown Job'
 }
 
@@ -318,13 +342,13 @@ const formatTimeAgo = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-  
+
   if (diffInHours < 1) return 'Just now'
   if (diffInHours < 24) return `${diffInHours}h ago`
-  
+
   const diffInDays = Math.floor(diffInHours / 24)
   if (diffInDays < 7) return `${diffInDays}d ago`
-  
+
   const diffInWeeks = Math.floor(diffInDays / 7)
   return `${diffInWeeks}w ago`
 }
@@ -342,10 +366,10 @@ const handleJobCreated = (job: any) => {
   showToast({
     type: 'success',
     title: 'Job Published',
-    message: `"${job.title}" has been published successfully!`
+    message: `"${job.title}" has been published successfully!`,
   })
   closeJobCreationModal()
-  
+
   // Force refresh the dashboard data
   setTimeout(() => {
     window.location.reload()

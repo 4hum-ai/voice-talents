@@ -16,24 +16,24 @@
             size="sm"
           />
           <div class="min-w-0 flex-1">
-            <p class="text-sm font-medium text-foreground truncate">
+            <p class="text-foreground truncate text-sm font-medium">
               {{ currentClient?.companyName }}
             </p>
-            <p class="text-xs text-muted-foreground truncate">
+            <p class="text-muted-foreground truncate text-xs">
               {{ currentClient?.contactName }} • {{ currentClient?.industry }}
             </p>
           </div>
         </div>
-        
+
         <!-- Role Switcher -->
-        <div class="mt-3 pt-3 border-t border-border">
+        <div class="border-border mt-3 border-t pt-3">
           <Button
             variant="ghost"
             size="sm"
             class="w-full justify-start"
             @click="switchToVoiceActor"
           >
-            <UserIcon class="h-4 w-4 mr-2" />
+            <UserIcon class="mr-2 h-4 w-4" />
             Switch to Voice Actor
           </Button>
         </div>
@@ -44,14 +44,14 @@
       <div class="space-y-3">
         <!-- Quick Stats -->
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="text-center p-2 bg-muted rounded">
-            <div class="font-semibold text-foreground">
+          <div class="bg-muted rounded p-2 text-center">
+            <div class="text-foreground font-semibold">
               {{ stats.activeJobs }}
             </div>
             <div class="text-muted-foreground">Active Jobs</div>
           </div>
-          <div class="text-center p-2 bg-muted rounded">
-            <div class="font-semibold text-foreground">
+          <div class="bg-muted rounded p-2 text-center">
+            <div class="text-foreground font-semibold">
               ${{ stats.monthlySpent.toLocaleString() }}
             </div>
             <div class="text-muted-foreground">This Month</div>
@@ -68,12 +68,7 @@
           >
             <CogIcon class="h-4 w-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            class="flex-1"
-            @click="handleLogout"
-          >
+          <Button variant="ghost" size="sm" class="flex-1" @click="handleLogout">
             <LogoutIcon class="h-4 w-4" />
           </Button>
         </div>
@@ -128,9 +123,9 @@ const navigationSections = computed(() => [
         title: 'Dashboard',
         description: 'Overview & analytics',
         icon: HomeIcon,
-        action: () => router.push('/client/dashboard')
-      }
-    ]
+        action: () => router.push('/client/dashboard'),
+      },
+    ],
   },
   {
     id: 'casting',
@@ -138,28 +133,21 @@ const navigationSections = computed(() => [
     items: [
       {
         id: 'jobs',
-        title: 'All Jobs',
-        description: 'View & manage all jobs',
+        title: 'Jobs',
+        description: 'View & manage casting jobs',
         icon: BriefcaseIcon,
         badge: stats.value.activeJobs,
-        action: () => router.push('/client/jobs')
-      },
-      {
-        id: 'invitations',
-        title: 'Invitations',
-        description: 'Manage sent invitations',
-        icon: EmailIcon,
-        action: () => router.push('/client/invitations')
+        action: () => router.push('/client/jobs'),
       },
       {
         id: 'talents',
-        title: 'Browse Talents',
+        title: 'Talents',
         description: 'Find & invite voice actors',
         icon: AccountGroupIcon,
-        action: () => router.push('/client/talents')
-      }
-    ]
-  }
+        action: () => router.push('/client/talents'),
+      },
+    ],
+  },
 ])
 
 // Methods

@@ -1,23 +1,21 @@
 <template>
-  <div class="min-h-screen bg-background flex">
+  <div class="bg-background flex min-h-screen">
     <!-- Navigation Sidebar -->
     <ClientNavigation />
 
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card shadow-sm border-b border-border">
+      <div class="bg-card border-border border-b shadow-sm">
         <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-16">
+          <div class="flex h-16 items-center justify-between">
             <div class="flex items-center">
               <Button variant="ghost" size="sm" @click="goBack" class="mr-4">
                 <ArrowLeftIcon class="h-4 w-4" />
               </Button>
               <div>
-                <h1 class="text-2xl font-bold text-foreground">
-                  Create Campaign
-                </h1>
-                <p class="text-sm text-muted-foreground">
+                <h1 class="text-foreground text-2xl font-bold">Create Campaign</h1>
+                <p class="text-muted-foreground text-sm">
                   Set up a new talent acquisition campaign
                 </p>
               </div>
@@ -29,18 +27,14 @@
         </div>
       </div>
 
-      <div class="px-4 sm:px-6 lg:px-8 py-8">
-        <div class="max-w-4xl mx-auto">
+      <div class="px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-4xl">
           <form @submit.prevent="createCampaign" class="space-y-8">
             <!-- Campaign Type Selection -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-4">Campaign Type</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div 
-                  v-for="type in campaignTypes" 
-                  :key="type.value"
-                  class="relative"
-                >
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Campaign Type</h2>
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div v-for="type in campaignTypes" :key="type.value" class="relative">
                   <input
                     :id="type.value"
                     v-model="form.type"
@@ -50,17 +44,19 @@
                   />
                   <label
                     :for="type.value"
-                    class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all"
-                    :class="form.type === type.value 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-border hover:border-primary/50'"
+                    class="flex cursor-pointer items-start rounded-lg border-2 p-4 transition-all"
+                    :class="
+                      form.type === type.value
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    "
                   >
                     <div class="flex-1">
-                      <div class="flex items-center space-x-3 mb-2">
-                        <component :is="type.icon" class="h-5 w-5 text-primary" />
-                        <h3 class="font-medium text-foreground">{{ type.label }}</h3>
+                      <div class="mb-2 flex items-center space-x-3">
+                        <component :is="type.icon" class="text-primary h-5 w-5" />
+                        <h3 class="text-foreground font-medium">{{ type.label }}</h3>
                       </div>
-                      <p class="text-sm text-muted-foreground">{{ type.description }}</p>
+                      <p class="text-muted-foreground text-sm">{{ type.description }}</p>
                     </div>
                   </label>
                 </div>
@@ -68,11 +64,11 @@
             </div>
 
             <!-- Basic Campaign Information -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-4">Campaign Details</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Campaign Details</h2>
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label for="name" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="name" class="text-foreground mb-2 block text-sm font-medium">
                     Campaign Name *
                   </label>
                   <input
@@ -80,12 +76,12 @@
                     v-model="form.name"
                     type="text"
                     required
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                     placeholder="e.g., Q1 Voice Over Campaign"
                   />
                 </div>
                 <div>
-                  <label for="priority" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="priority" class="text-foreground mb-2 block text-sm font-medium">
                     Priority
                   </label>
                   <SelectInput
@@ -96,25 +92,25 @@
                 </div>
               </div>
               <div class="mt-6">
-                <label for="description" class="block text-sm font-medium text-foreground mb-2">
+                <label for="description" class="text-foreground mb-2 block text-sm font-medium">
                   Description
                 </label>
                 <textarea
                   id="description"
                   v-model="form.description"
                   rows="4"
-                  class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   placeholder="Describe your campaign goals and requirements..."
                 />
               </div>
             </div>
 
             <!-- Budget & Timeline -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-4">Budget & Timeline</h2>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Budget & Timeline</h2>
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div>
-                  <label for="budget" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="budget" class="text-foreground mb-2 block text-sm font-medium">
                     Total Budget *
                   </label>
                   <input
@@ -124,12 +120,12 @@
                     required
                     min="0"
                     step="100"
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                     placeholder="10000"
                   />
                 </div>
                 <div>
-                  <label for="currency" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="currency" class="text-foreground mb-2 block text-sm font-medium">
                     Currency
                   </label>
                   <SelectInput
@@ -139,7 +135,7 @@
                   />
                 </div>
                 <div>
-                  <label for="duration" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="duration" class="text-foreground mb-2 block text-sm font-medium">
                     Duration
                   </label>
                   <SelectInput
@@ -149,9 +145,9 @@
                   />
                 </div>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label for="startDate" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="startDate" class="text-foreground mb-2 block text-sm font-medium">
                     Start Date *
                   </label>
                   <input
@@ -159,11 +155,11 @@
                     v-model="form.startDate"
                     type="date"
                     required
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label for="endDate" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="endDate" class="text-foreground mb-2 block text-sm font-medium">
                     End Date *
                   </label>
                   <input
@@ -171,18 +167,18 @@
                     v-model="form.endDate"
                     type="date"
                     required
-                    class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
             <!-- Target Audience -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-4">Target Audience</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Target Audience</h2>
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label for="languages" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="languages" class="text-foreground mb-2 block text-sm font-medium">
                     Languages *
                   </label>
                   <SelectInput
@@ -193,7 +189,7 @@
                   />
                 </div>
                 <div>
-                  <label for="voiceTypes" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="voiceTypes" class="text-foreground mb-2 block text-sm font-medium">
                     Voice Types *
                   </label>
                   <SelectInput
@@ -204,9 +200,9 @@
                   />
                 </div>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label for="experience" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="experience" class="text-foreground mb-2 block text-sm font-medium">
                     Experience Level
                   </label>
                   <SelectInput
@@ -216,7 +212,7 @@
                   />
                 </div>
                 <div>
-                  <label for="minRating" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="minRating" class="text-foreground mb-2 block text-sm font-medium">
                     Minimum Rating
                   </label>
                   <SelectInput
@@ -227,71 +223,82 @@
                 </div>
               </div>
               <div class="mt-6">
-                <label for="customCriteria" class="block text-sm font-medium text-foreground mb-2">
+                <label for="customCriteria" class="text-foreground mb-2 block text-sm font-medium">
                   Custom Criteria
                 </label>
                 <textarea
                   id="customCriteria"
                   v-model="form.target.customCriteria"
                   rows="3"
-                  class="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   placeholder="Any specific requirements or preferences..."
                 />
               </div>
             </div>
 
             <!-- Campaign Settings -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-4">Campaign Settings</h2>
+            <div class="bg-card border-border rounded-lg border p-6">
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Campaign Settings</h2>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-foreground">Auto-approve Applications</h3>
-                    <p class="text-sm text-muted-foreground">Automatically approve applications that meet criteria</p>
+                    <h3 class="text-foreground text-sm font-medium">Auto-approve Applications</h3>
+                    <p class="text-muted-foreground text-sm">
+                      Automatically approve applications that meet criteria
+                    </p>
                   </div>
                   <input
                     v-model="form.settings.autoApprove"
                     type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    class="text-primary focus:ring-primary border-border h-4 w-4 rounded"
                   />
                 </div>
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-foreground">Require Portfolio</h3>
-                    <p class="text-sm text-muted-foreground">Require voice actors to have a portfolio</p>
+                    <h3 class="text-foreground text-sm font-medium">Require Portfolio</h3>
+                    <p class="text-muted-foreground text-sm">
+                      Require voice actors to have a portfolio
+                    </p>
                   </div>
                   <input
                     v-model="form.settings.requirePortfolio"
                     type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    class="text-primary focus:ring-primary border-border h-4 w-4 rounded"
                   />
                 </div>
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-foreground">Require Custom Sample</h3>
-                    <p class="text-sm text-muted-foreground">Require custom voice samples for this campaign</p>
+                    <h3 class="text-foreground text-sm font-medium">Require Custom Sample</h3>
+                    <p class="text-muted-foreground text-sm">
+                      Require custom voice samples for this campaign
+                    </p>
                   </div>
                   <input
                     v-model="form.settings.requireCustomSample"
                     type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    class="text-primary focus:ring-primary border-border h-4 w-4 rounded"
                   />
                 </div>
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-sm font-medium text-foreground">Allow Multiple Applications</h3>
-                    <p class="text-sm text-muted-foreground">Allow voice actors to apply to multiple jobs</p>
+                    <h3 class="text-foreground text-sm font-medium">Allow Multiple Applications</h3>
+                    <p class="text-muted-foreground text-sm">
+                      Allow voice actors to apply to multiple jobs
+                    </p>
                   </div>
                   <input
                     v-model="form.settings.allowMultipleApplications"
                     type="checkbox"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    class="text-primary focus:ring-primary border-border h-4 w-4 rounded"
                   />
                 </div>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label for="notificationFrequency" class="block text-sm font-medium text-foreground mb-2">
+                  <label
+                    for="notificationFrequency"
+                    class="text-foreground mb-2 block text-sm font-medium"
+                  >
                     Notification Frequency
                   </label>
                   <SelectInput
@@ -301,7 +308,7 @@
                   />
                 </div>
                 <div>
-                  <label for="privacyLevel" class="block text-sm font-medium text-foreground mb-2">
+                  <label for="privacyLevel" class="text-foreground mb-2 block text-sm font-medium">
                     Privacy Level
                   </label>
                   <SelectInput
@@ -314,24 +321,27 @@
             </div>
 
             <!-- Job Selection (for campaigns with specific jobs) -->
-            <div v-if="form.type === 'invite_specific' || form.type === 'custom'" class="bg-card rounded-lg border border-border p-6">
-              <h2 class="text-lg font-semibold text-foreground mb-4">Associated Jobs</h2>
+            <div
+              v-if="form.type === 'invite_specific' || form.type === 'custom'"
+              class="bg-card border-border rounded-lg border p-6"
+            >
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Associated Jobs</h2>
               <div class="space-y-3">
-                <div 
-                  v-for="job in availableJobs" 
+                <div
+                  v-for="job in availableJobs"
                   :key="job.id"
-                  class="flex items-center justify-between p-3 border border-border rounded-lg"
+                  class="border-border flex items-center justify-between rounded-lg border p-3"
                 >
                   <div>
-                    <h3 class="font-medium text-foreground">{{ job.title }}</h3>
-                    <p class="text-sm text-muted-foreground">{{ job.description }}</p>
+                    <h3 class="text-foreground font-medium">{{ job.title }}</h3>
+                    <p class="text-muted-foreground text-sm">{{ job.description }}</p>
                   </div>
                   <input
                     :id="job.id"
                     v-model="form.jobs"
                     type="checkbox"
                     :value="job.id"
-                    class="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                    class="text-primary focus:ring-primary border-border h-4 w-4 rounded"
                   />
                 </div>
               </div>
@@ -339,11 +349,9 @@
 
             <!-- Form Actions -->
             <div class="flex items-center justify-end space-x-4">
-              <Button type="button" variant="outline" @click="goBack">
-                Cancel
-              </Button>
+              <Button type="button" variant="outline" @click="goBack"> Cancel </Button>
               <Button type="submit" variant="primary" :disabled="!isFormValid">
-                <PlusIcon class="h-4 w-4 mr-2" />
+                <PlusIcon class="mr-2 h-4 w-4" />
                 Create Campaign
               </Button>
             </div>
@@ -389,7 +397,7 @@ const form = ref({
     voiceTypes: [] as string[],
     experience: '',
     minRating: 0,
-    customCriteria: ''
+    customCriteria: '',
   } as CampaignTarget,
   settings: {
     autoApprove: false,
@@ -398,20 +406,22 @@ const form = ref({
     allowMultipleApplications: true,
     notificationFrequency: 'daily' as 'immediate' | 'daily' | 'weekly',
     privacyLevel: 'public' as 'public' | 'private' | 'invite_only',
-    ndaRequired: false
+    ndaRequired: false,
   } as CampaignSettings,
-  jobs: [] as string[]
+  jobs: [] as string[],
 })
 
 // Computed
 const isFormValid = computed(() => {
-  return form.value.type && 
-         form.value.name && 
-         form.value.budget > 0 && 
-         form.value.startDate && 
-         form.value.endDate &&
-         form.value.target.languages.length > 0 &&
-         form.value.target.voiceTypes.length > 0
+  return (
+    form.value.type &&
+    form.value.name &&
+    form.value.budget > 0 &&
+    form.value.startDate &&
+    form.value.endDate &&
+    form.value.target.languages.length > 0 &&
+    form.value.target.voiceTypes.length > 0
+  )
 })
 
 const availableJobs = computed(() => mockClientData.jobPostings)
@@ -422,26 +432,26 @@ const campaignTypes = [
     value: 'fill_asap',
     label: 'Fill ASAP',
     description: 'Open casting calls for immediate talent acquisition',
-    icon: MegaphoneIcon
+    icon: MegaphoneIcon,
   },
   {
     value: 'invite_specific',
     label: 'Invite Specific',
     description: 'Targeted invitations to preferred voice actors',
-    icon: EmailIcon
+    icon: EmailIcon,
   },
   {
     value: 'targeted_search',
     label: 'Targeted Search',
     description: 'Filter-based talent discovery and outreach',
-    icon: TargetIcon
+    icon: TargetIcon,
   },
   {
     value: 'custom',
     label: 'Custom Campaign',
     description: 'Flexible targeting with specific requirements',
-    icon: AccountGroupIcon
-  }
+    icon: AccountGroupIcon,
+  },
 ]
 
 // Options
@@ -449,7 +459,7 @@ const priorityOptions = [
   { value: 'low', label: 'Low' },
   { value: 'medium', label: 'Medium' },
   { value: 'high', label: 'High' },
-  { value: 'urgent', label: 'Urgent' }
+  { value: 'urgent', label: 'Urgent' },
 ]
 
 const currencyOptions = [
@@ -457,7 +467,7 @@ const currencyOptions = [
   { value: 'EUR', label: 'EUR (€)' },
   { value: 'GBP', label: 'GBP (£)' },
   { value: 'CAD', label: 'CAD (C$)' },
-  { value: 'AUD', label: 'AUD (A$)' }
+  { value: 'AUD', label: 'AUD (A$)' },
 ]
 
 const durationOptions = [
@@ -467,7 +477,7 @@ const durationOptions = [
   { value: '2_months', label: '2 Months' },
   { value: '3_months', label: '3 Months' },
   { value: '6_months', label: '6 Months' },
-  { value: '1_year', label: '1 Year' }
+  { value: '1_year', label: '1 Year' },
 ]
 
 const languageOptions = [
@@ -480,7 +490,7 @@ const languageOptions = [
   { value: 'ru', label: 'Russian' },
   { value: 'ja', label: 'Japanese' },
   { value: 'ko', label: 'Korean' },
-  { value: 'zh', label: 'Chinese' }
+  { value: 'zh', label: 'Chinese' },
 ]
 
 const voiceTypeOptions = [
@@ -489,14 +499,14 @@ const voiceTypeOptions = [
   { value: 'child', label: 'Child' },
   { value: 'teen', label: 'Teen' },
   { value: 'senior', label: 'Senior' },
-  { value: 'neutral', label: 'Neutral' }
+  { value: 'neutral', label: 'Neutral' },
 ]
 
 const experienceOptions = [
   { value: 'beginner', label: 'Beginner (0-1 years)' },
   { value: 'intermediate', label: 'Intermediate (1-3 years)' },
   { value: 'experienced', label: 'Experienced (3-5 years)' },
-  { value: 'expert', label: 'Expert (5+ years)' }
+  { value: 'expert', label: 'Expert (5+ years)' },
 ]
 
 const ratingOptions = [
@@ -504,19 +514,19 @@ const ratingOptions = [
   { value: 3, label: '3+ stars' },
   { value: 4, label: '4+ stars' },
   { value: 4.5, label: '4.5+ stars' },
-  { value: 5, label: '5 stars only' }
+  { value: 5, label: '5 stars only' },
 ]
 
 const notificationOptions = [
   { value: 'immediate', label: 'Immediate' },
   { value: 'daily', label: 'Daily' },
-  { value: 'weekly', label: 'Weekly' }
+  { value: 'weekly', label: 'Weekly' },
 ]
 
 const privacyOptions = [
   { value: 'public', label: 'Public' },
   { value: 'private', label: 'Private' },
-  { value: 'invite_only', label: 'Invite Only' }
+  { value: 'invite_only', label: 'Invite Only' },
 ]
 
 // Methods
@@ -539,12 +549,12 @@ const createCampaign = () => {
     budget: {
       total: form.value.budget,
       spent: 0,
-      currency: form.value.currency as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
+      currency: form.value.currency as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD',
     },
     timeline: {
       startDate: form.value.startDate,
       endDate: form.value.endDate,
-      duration: form.value.duration
+      duration: form.value.duration,
     },
     jobs: form.value.jobs,
     invitations: [],
@@ -560,20 +570,20 @@ const createCampaign = () => {
         views: 0,
         applications: 0,
         shortlists: 0,
-        hires: 0
-      }
+        hires: 0,
+      },
     },
     settings: form.value.settings,
     createdDate: new Date().toISOString(),
-    target: form.value.target
+    target: form.value.target,
   }
 
   // In real app, save to API
   console.log('Creating campaign:', newCampaign)
-  
+
   // Add to mock data
   mockClientData.campaigns.push(newCampaign)
-  
+
   // Navigate to campaign management
   router.push('/client/campaigns')
 }
@@ -581,15 +591,15 @@ const createCampaign = () => {
 onMounted(() => {
   // Set campaign type from URL parameter if provided
   const typeParam = route.query.type as string
-  if (typeParam && campaignTypes.some(t => t.value === typeParam)) {
+  if (typeParam && campaignTypes.some((t) => t.value === typeParam)) {
     form.value.type = typeParam as CampaignType
   }
-  
+
   // Set default dates
   const today = new Date()
   const nextMonth = new Date(today)
   nextMonth.setMonth(nextMonth.getMonth() + 1)
-  
+
   form.value.startDate = today.toISOString().split('T')[0]
   form.value.endDate = nextMonth.toISOString().split('T')[0]
 })

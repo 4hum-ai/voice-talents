@@ -118,19 +118,14 @@ export interface Campaign extends BaseEntity {
 }
 
 // Campaign Types
-export type CampaignType = 
-  | 'fill_asap'           // Open casting calls for immediate talent acquisition
-  | 'invite_specific'     // Targeted invitations to preferred voice actors
-  | 'targeted_search'     // Filter-based talent discovery
-  | 'custom'              // Flexible targeting with specific requirements
+export type CampaignType =
+  | 'fill_asap' // Open casting calls for immediate talent acquisition
+  | 'invite_specific' // Targeted invitations to preferred voice actors
+  | 'targeted_search' // Filter-based talent discovery
+  | 'custom' // Flexible targeting with specific requirements
 
 // Campaign Status
-export type CampaignStatus = 
-  | 'draft' 
-  | 'active' 
-  | 'paused' 
-  | 'completed' 
-  | 'cancelled'
+export type CampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled'
 
 // Campaign Target Audience
 export interface CampaignTarget {
@@ -207,12 +202,12 @@ export interface TalentInvitation extends BaseEntity {
 }
 
 // Invitation Status
-export type InvitationStatus = 
-  | 'sent' 
-  | 'delivered' 
-  | 'viewed' 
-  | 'responded' 
-  | 'expired' 
+export type InvitationStatus =
+  | 'sent'
+  | 'delivered'
+  | 'viewed'
+  | 'responded'
+  | 'expired'
   | 'cancelled'
 
 // Job Application - Voice actor applications to job postings
@@ -223,26 +218,26 @@ export interface JobApplication extends BaseEntity {
   status: ApplicationStatus
   appliedDate: string
   reviewedDate?: string
-  
+
   // Application Details
   proposedRate: number
   proposedCurrency: string
   proposedTimeline: string
   estimatedHours: number
-  
+
   // Portfolio Samples
   portfolioSampleIds: string[]
   customSamples: CustomSample[]
-  
+
   // Personal Message
   coverLetter?: string
   relevantExperience?: string
-  
+
   // Client Review
   clientRating?: number
   clientFeedback?: string
   rejectionReason?: string
-  
+
   // Interview/Next Steps
   interviewScheduled?: string
   interviewNotes?: string
@@ -250,23 +245,23 @@ export interface JobApplication extends BaseEntity {
 }
 
 // Application Status
-export type ApplicationStatus = 
-  | 'submitted' 
-  | 'under_review' 
-  | 'shortlisted' 
-  | 'interview_scheduled' 
-  | 'selected' 
-  | 'rejected' 
+export type ApplicationStatus =
+  | 'submitted'
+  | 'under_review'
+  | 'shortlisted'
+  | 'interview_scheduled'
+  | 'selected'
+  | 'rejected'
   | 'withdrawn'
 
 // Job Status
-export type JobStatus = 
-  | 'draft' 
-  | 'published' 
-  | 'active' 
-  | 'paused' 
-  | 'closed' 
-  | 'completed' 
+export type JobStatus =
+  | 'draft'
+  | 'published'
+  | 'active'
+  | 'paused'
+  | 'closed'
+  | 'completed'
   | 'cancelled'
 
 // Job Deliverable

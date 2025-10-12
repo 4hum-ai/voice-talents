@@ -16,10 +16,10 @@
             size="sm"
           />
           <div class="min-w-0 flex-1">
-            <p class="text-sm font-medium text-foreground truncate">
+            <p class="text-foreground truncate text-sm font-medium">
               {{ currentActor?.displayName }}
             </p>
-            <p class="text-xs text-muted-foreground truncate">
+            <p class="text-muted-foreground truncate text-xs">
               {{ currentActor?.experience }} • {{ currentActor?.location }}
             </p>
           </div>
@@ -31,14 +31,14 @@
       <div class="space-y-3">
         <!-- Quick Stats -->
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="text-center p-2 bg-muted rounded">
-            <div class="font-semibold text-foreground">
+          <div class="bg-muted rounded p-2 text-center">
+            <div class="text-foreground font-semibold">
               {{ stats.activeProjects }}
             </div>
             <div class="text-muted-foreground">Active</div>
           </div>
-          <div class="text-center p-2 bg-muted rounded">
-            <div class="font-semibold text-foreground">
+          <div class="bg-muted rounded p-2 text-center">
+            <div class="text-foreground font-semibold">
               ${{ stats.monthlyEarnings.toLocaleString() }}
             </div>
             <div class="text-muted-foreground">This Month</div>
@@ -47,33 +47,18 @@
 
         <!-- Role Switcher -->
         <div class="mb-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="w-full justify-start"
-            @click="switchToClient"
-          >
-            <BriefcaseIcon class="h-4 w-4 mr-2" />
+          <Button variant="ghost" size="sm" class="w-full justify-start" @click="switchToClient">
+            <BriefcaseIcon class="mr-2 h-4 w-4" />
             Switch to Client
           </Button>
         </div>
 
         <!-- Settings & Logout -->
         <div class="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="flex-1"
-            @click="$router.push('/settings')"
-          >
+          <Button variant="ghost" size="sm" class="flex-1" @click="$router.push('/settings')">
             <CogIcon class="h-4 w-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            class="flex-1"
-            @click="handleLogout"
-          >
+          <Button variant="ghost" size="sm" class="flex-1" @click="handleLogout">
             <LogoutIcon class="h-4 w-4" />
           </Button>
         </div>
@@ -130,16 +115,16 @@ const navigationSections = computed(() => [
         title: 'Dashboard',
         description: 'Overview & activity',
         icon: HomeIcon,
-        action: () => router.push('/')
+        action: () => router.push('/'),
       },
       {
         id: 'profile',
         title: 'My Profile',
         description: 'Profile & voice samples',
         icon: UserIcon,
-        action: () => router.push('/profile/edit')
-      }
-    ]
+        action: () => router.push('/profile/edit'),
+      },
+    ],
   },
   {
     id: 'work',
@@ -151,17 +136,17 @@ const navigationSections = computed(() => [
         description: 'Track your work',
         icon: FolderOpenIcon,
         badge: stats.value.activeProjects,
-        action: () => router.push('/projects')
+        action: () => router.push('/projects'),
       },
       {
         id: 'casting',
         title: 'Casting Calls',
         description: 'Find new projects',
         icon: MegaphoneIcon,
-        action: () => router.push('/casting')
+        action: () => router.push('/casting'),
       },
-    ]
-  }
+    ],
+  },
 ])
 
 // Methods

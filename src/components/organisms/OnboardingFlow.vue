@@ -1,8 +1,9 @@
 <template>
-  <div v-if="showOnboarding" class="fixed inset-0 z-50 bg-white dark:bg-gray-900 overflow-hidden">
+  <div v-if="showOnboarding" class="fixed inset-0 z-50 overflow-hidden bg-white dark:bg-gray-900">
     <!-- Top Navigation Bar -->
     <div
-      class="absolute top-0 left-0 right-0 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+      class="absolute top-0 right-0 left-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95"
+    >
       <div class="flex items-center justify-between px-6 py-4">
         <!-- Left: Previous Button -->
         <Button v-if="currentStep > 1" variant="outline" size="md" @click="previousStep">
@@ -18,10 +19,11 @@
           <div class="text-sm text-gray-600 dark:text-gray-400">
             Step {{ currentStep }} of {{ totalSteps }}
           </div>
-          <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+          <div class="h-2 w-32 rounded-full bg-gray-200 dark:bg-gray-700">
             <div
-              class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
-              :style="{ width: `${(currentStep / totalSteps) * 100}%` }" />
+              class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
+              :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
+            />
           </div>
           <div class="text-sm text-gray-600 dark:text-gray-400">
             {{ Math.round((currentStep / totalSteps) * 100) }}%
@@ -30,17 +32,26 @@
 
         <!-- Right: Close and Next/Skip -->
         <div class="flex items-center space-x-3">
-          <Button v-if="currentStep < totalSteps" variant="primary" :disabled="!canProceedToNext" @click="nextStep"
-            class="onboarding-button">
+          <Button
+            v-if="currentStep < totalSteps"
+            variant="primary"
+            :disabled="!canProceedToNext"
+            @click="nextStep"
+            class="onboarding-button"
+          >
             Next
-            <Icon name="mdi:chevron-right" class="h-4 w-4 ml-2" />
+            <Icon name="mdi:chevron-right" class="ml-2 h-4 w-4" />
           </Button>
           <Button v-else variant="primary" @click="completeOnboarding" class="onboarding-button">
             Get Started
-            <Icon name="mdi:rocket-launch" class="h-4 w-4 ml-2" />
+            <Icon name="mdi:rocket-launch" class="ml-2 h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" @click="closeOnboarding"
-            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <Button
+            variant="ghost"
+            size="sm"
+            @click="closeOnboarding"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
             <Icon name="mdi:close" class="h-5 w-5" />
           </Button>
         </div>
@@ -48,48 +59,56 @@
     </div>
 
     <!-- Main Content -->
-    <div class="pt-20 h-full overflow-y-auto">
-      <div class="max-w-4xl mx-auto px-6 py-8">
+    <div class="h-full overflow-y-auto pt-20">
+      <div class="mx-auto max-w-4xl px-6 py-8">
         <!-- Content -->
         <div class="px-8 py-6">
           <Transition :name="transitionName" mode="out-in">
             <div :key="currentStep" class="space-y-8">
-
               <!-- Step 1: Welcome -->
-              <div v-if="currentStep === 1" class="text-center space-y-8">
+              <div v-if="currentStep === 1" class="space-y-8 text-center">
                 <div
-                  class="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto icon-bounce">
+                  class="icon-bounce mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600"
+                >
                   <Icon name="mdi:microphone" class="h-16 w-16 text-white" />
                 </div>
                 <div>
-                  <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
                     Welcome to VoiceAct! 🎙️
                   </h3>
-                  <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                    Let's get you set up for success! We'll help you create a professional profile that showcases your
-                    voice acting talent.
+                  <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+                    Let's get you set up for success! We'll help you create a professional profile
+                    that showcases your voice acting talent.
                   </p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-                  <div class="text-center p-4">
-                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <div class="mx-auto grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-3">
+                  <div class="p-4 text-center">
+                    <div
+                      class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500"
+                    >
                       <Icon name="mdi:account" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Profile Setup</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Create your professional profile</p>
+                    <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">Profile Setup</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      Create your professional profile
+                    </p>
                   </div>
-                  <div class="text-center p-4">
-                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <div class="p-4 text-center">
+                    <div
+                      class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500"
+                    >
                       <Icon name="mdi:upload" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Voice Samples</h4>
+                    <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">Voice Samples</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Upload your best work</p>
                   </div>
-                  <div class="text-center p-4">
-                    <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <div class="p-4 text-center">
+                    <div
+                      class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500"
+                    >
                       <Icon name="mdi:currency-usd" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-gray-900 dark:text-white mb-1">Set Rates</h4>
+                    <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">Set Rates</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Define your pricing</p>
                   </div>
                 </div>
@@ -99,10 +118,11 @@
               <div v-if="currentStep === 2" class="space-y-8">
                 <div class="text-center">
                   <div
-                    class="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-500"
+                  >
                     <Icon name="mdi:account" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
                     Let's Start with the Basics
                   </h3>
                   <p class="text-gray-600 dark:text-gray-400">
@@ -110,59 +130,103 @@
                   </p>
                 </div>
 
-                <div class="max-w-2xl mx-auto space-y-6">
+                <div class="mx-auto max-w-2xl space-y-6">
                   <!-- Avatar Upload -->
                   <div class="text-center">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                    <label class="mb-4 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Profile Photo
                     </label>
                     <div class="relative inline-block">
                       <div
-                        class="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-600 mx-auto">
-                        <img v-if="profileData.avatarUrl" :src="profileData.avatarUrl" alt="Profile"
-                          class="w-full h-full object-cover" />
-                        <div v-else class="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        class="mx-auto h-24 w-24 overflow-hidden rounded-full border-4 border-gray-200 dark:border-gray-600"
+                      >
+                        <img
+                          v-if="profileData.avatarUrl"
+                          :src="profileData.avatarUrl"
+                          alt="Profile"
+                          class="h-full w-full object-cover"
+                        />
+                        <div
+                          v-else
+                          class="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700"
+                        >
                           <Icon name="mdi:account" class="h-8 w-8 text-gray-400" />
                         </div>
                       </div>
-                      <input ref="avatarInput" type="file" accept="image/*" class="hidden"
-                        @change="handleAvatarUpload" />
-                      <button type="button" @click="triggerAvatarUpload"
-                        class="absolute -bottom-1 -right-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 shadow-lg transition-colors">
+                      <input
+                        ref="avatarInput"
+                        type="file"
+                        accept="image/*"
+                        class="hidden"
+                        @change="handleAvatarUpload"
+                      />
+                      <button
+                        type="button"
+                        @click="triggerAvatarUpload"
+                        class="absolute -right-1 -bottom-1 rounded-full bg-blue-500 p-2 text-white shadow-lg transition-colors hover:bg-blue-600"
+                      >
                         <Icon name="mdi:camera" class="h-4 w-4" />
                       </button>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Click camera icon to upload</p>
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      Click camera icon to upload
+                    </p>
                   </div>
 
                   <!-- Display Name -->
                   <div>
-                    <label for="displayName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label
+                      for="displayName"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
                       What should we call you? *
                     </label>
-                    <input id="displayName" v-model="profileData.displayName" type="text" required
+                    <input
+                      id="displayName"
+                      v-model="profileData.displayName"
+                      type="text"
+                      required
                       placeholder="Your professional name"
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
 
                   <!-- Location -->
                   <div>
-                    <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label
+                      for="location"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
                       Where are you based? *
                     </label>
-                    <input id="location" v-model="profileData.location" type="text" required placeholder="City, Country"
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                    <input
+                      id="location"
+                      v-model="profileData.location"
+                      type="text"
+                      required
+                      placeholder="City, Country"
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
 
                   <!-- Bio -->
                   <div>
-                    <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label
+                      for="bio"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
                       Tell us about yourself *
                     </label>
-                    <textarea id="bio" v-model="profileData.bio" required rows="4"
+                    <textarea
+                      id="bio"
+                      v-model="profileData.bio"
+                      required
+                      rows="4"
                       placeholder="Share your voice acting experience, specialties, and what makes you unique..."
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ profileData.bio.length }}/500 characters
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {{ profileData.bio.length }}/500 characters
                     </p>
                   </div>
                 </div>
@@ -172,43 +236,61 @@
               <div v-if="currentStep === 3" class="space-y-8">
                 <div class="text-center">
                   <div
-                    class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
+                  >
                     <Icon name="mdi:microphone" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
                     What's Your Voice Type?
                   </h3>
                   <p class="text-gray-600 dark:text-gray-400">
-                    Select all the voice types you specialize in. This helps clients find the right voice for their
-                    projects.
+                    Select all the voice types you specialize in. This helps clients find the right
+                    voice for their projects.
                   </p>
                 </div>
 
-                <div class="max-w-4xl mx-auto">
-                  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <label v-for="voiceType in voiceTypeOptions" :key="voiceType.value" class="group">
-                      <input v-model="profileData.voiceTypes" :value="voiceType.value" type="checkbox"
-                        class="sr-only" />
+                <div class="mx-auto max-w-4xl">
+                  <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                    <label
+                      v-for="voiceType in voiceTypeOptions"
+                      :key="voiceType.value"
+                      class="group"
+                    >
+                      <input
+                        v-model="profileData.voiceTypes"
+                        :value="voiceType.value"
+                        type="checkbox"
+                        class="sr-only"
+                      />
                       <div
-                        class="p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer transition-all duration-200 group-has-[:checked]:border-purple-500 group-has-[:checked]:bg-purple-50 dark:group-has-[:checked]:bg-purple-900/20">
+                        class="cursor-pointer rounded-xl border-2 border-gray-200 p-4 transition-all duration-200 group-has-[:checked]:border-purple-500 group-has-[:checked]:bg-purple-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-purple-900/20 dark:hover:border-gray-500"
+                      >
                         <div class="text-center">
                           <div
-                            :class="`w-12 h-12 bg-gray-400 group-has-[:checked]:${getVoiceTypeColor(voiceType.value)} rounded-lg flex items-center justify-center mx-auto mb-3 transition-all duration-200`">
-                            <Icon :name="voiceType.icon"
-                              class="h-6 w-6 text-white grayscale group-has-[:checked]:grayscale-0 transition-all duration-200" />
+                            :class="`h-12 w-12 bg-gray-400 group-has-[:checked]:${getVoiceTypeColor(voiceType.value)} mx-auto mb-3 flex items-center justify-center rounded-lg transition-all duration-200`"
+                          >
+                            <Icon
+                              :name="voiceType.icon"
+                              class="h-6 w-6 text-white grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
+                            />
                           </div>
-                          <h4 class="font-medium text-gray-900 dark:text-white">{{ voiceType.label }}</h4>
+                          <h4 class="font-medium text-gray-900 dark:text-white">
+                            {{ voiceType.label }}
+                          </h4>
                         </div>
                       </div>
                     </label>
                   </div>
 
-                  <div v-if="profileData.voiceTypes.length > 0"
-                    class="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <div
+                    v-if="profileData.voiceTypes.length > 0"
+                    class="mt-6 rounded-lg bg-purple-50 p-4 dark:bg-purple-900/20"
+                  >
                     <p class="text-sm text-purple-700 dark:text-purple-300">
-                      <Icon name="mdi:check-circle" class="h-4 w-4 inline mr-1" />
-                      You've selected {{ profileData.voiceTypes.length }} voice type{{ profileData.voiceTypes.length > 1
-                      ? 's' : '' }}
+                      <Icon name="mdi:check-circle" class="mr-1 inline h-4 w-4" />
+                      You've selected {{ profileData.voiceTypes.length }} voice type{{
+                        profileData.voiceTypes.length > 1 ? 's' : ''
+                      }}
                     </p>
                   </div>
                 </div>
@@ -218,41 +300,61 @@
               <div v-if="currentStep === 4" class="space-y-8">
                 <div class="text-center">
                   <div
-                    class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-500"
+                  >
                     <Icon name="mdi:translate" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
                     What Languages Do You Speak?
                   </h3>
                   <p class="text-gray-600 dark:text-gray-400">
-                    Select all the languages you can perform voice work in. This opens up more opportunities for you.
+                    Select all the languages you can perform voice work in. This opens up more
+                    opportunities for you.
                   </p>
                 </div>
 
-                <div class="max-w-4xl mx-auto">
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+                <div class="mx-auto max-w-4xl">
+                  <div
+                    class="grid max-h-96 grid-cols-1 gap-3 overflow-y-auto md:grid-cols-2 lg:grid-cols-3"
+                  >
                     <label v-for="language in languageOptions" :key="language.value" class="group">
-                      <input v-model="profileData.languages" :value="language.value" type="checkbox" class="sr-only" />
+                      <input
+                        v-model="profileData.languages"
+                        :value="language.value"
+                        type="checkbox"
+                        class="sr-only"
+                      />
                       <div
-                        class="p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer transition-all duration-200 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 dark:group-has-[:checked]:bg-indigo-900/20">
+                        class="cursor-pointer rounded-lg border border-gray-200 p-3 transition-all duration-200 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-indigo-900/20 dark:hover:border-gray-500"
+                      >
                         <div class="flex items-center">
                           <div
-                            :class="`w-8 h-6 bg-gray-400 group-has-[:checked]:${getLanguageColor(language.value)} rounded flex items-center justify-center mr-3 transition-all duration-200`">
-                            <CountryFlag :country-code="language.countryCode" size="sm" variant="rounded"
-                              class="w-6 h-4 grayscale group-has-[:checked]:grayscale-0 transition-all duration-200" />
+                            :class="`h-6 w-8 bg-gray-400 group-has-[:checked]:${getLanguageColor(language.value)} mr-3 flex items-center justify-center rounded transition-all duration-200`"
+                          >
+                            <CountryFlag
+                              :country-code="language.countryCode"
+                              size="sm"
+                              variant="rounded"
+                              class="h-4 w-6 grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
+                            />
                           </div>
-                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ language.label }}</span>
+                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                            language.label
+                          }}</span>
                         </div>
                       </div>
                     </label>
                   </div>
 
-                  <div v-if="profileData.languages.length > 0"
-                    class="mt-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                  <div
+                    v-if="profileData.languages.length > 0"
+                    class="mt-6 rounded-lg bg-indigo-50 p-4 dark:bg-indigo-900/20"
+                  >
                     <p class="text-sm text-indigo-700 dark:text-indigo-300">
-                      <Icon name="mdi:check-circle" class="h-4 w-4 inline mr-1" />
-                      You can perform in {{ profileData.languages.length }} language{{ profileData.languages.length > 1
-                      ? 's' : '' }}
+                      <Icon name="mdi:check-circle" class="mr-1 inline h-4 w-4" />
+                      You can perform in {{ profileData.languages.length }} language{{
+                        profileData.languages.length > 1 ? 's' : ''
+                      }}
                     </p>
                   </div>
                 </div>
@@ -262,30 +364,40 @@
               <div v-if="currentStep === 5" class="space-y-8">
                 <div class="text-center">
                   <div
-                    class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
+                  >
                     <Icon name="mdi:upload" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
                     Upload Voice Samples
                   </h3>
                   <p class="text-gray-600 dark:text-gray-400">
-                    Upload samples for each voice type you selected. This showcases your range and versatility!
+                    Upload samples for each voice type you selected. This showcases your range and
+                    versatility!
                   </p>
                 </div>
 
                 <!-- Voice Type Upload Areas -->
                 <div class="space-y-6">
-                  <div v-for="voiceType in selectedVoiceTypes" :key="voiceType.value"
-                    class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-4">
+                  <div
+                    v-for="voiceType in selectedVoiceTypes"
+                    :key="voiceType.value"
+                    class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800"
+                  >
+                    <div class="mb-4 flex items-center justify-between">
                       <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                        <div
+                          class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500"
+                        >
                           <Icon name="mdi:microphone" class="h-5 w-5 text-white" />
                         </div>
                         <div>
-                          <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ voiceType.label }}</h4>
-                          <p class="text-sm text-gray-600 dark:text-gray-400">Upload a sample for {{
-                            voiceType.label.toLowerCase() }}</p>
+                          <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            {{ voiceType.label }}
+                          </h4>
+                          <p class="text-sm text-gray-600 dark:text-gray-400">
+                            Upload a sample for {{ voiceType.label.toLowerCase() }}
+                          </p>
                         </div>
                       </div>
                       <div v-if="voiceSamples[voiceType.value]" class="flex items-center space-x-2">
@@ -296,29 +408,44 @@
 
                     <!-- Upload Area for this Voice Type -->
                     <div
-                      class="upload-area border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer"
+                      class="upload-area cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400 dark:border-gray-600 dark:hover:border-blue-500"
                       :class="{
-                        'border-blue-400 bg-blue-50 dark:bg-blue-900/20 drag-over': isDragOver === voiceType.value,
-                        'border-green-400 bg-green-50 dark:bg-green-900/20': voiceSamples[voiceType.value]
-                      }" @dragover.prevent="isDragOver = voiceType.value" @dragleave.prevent="isDragOver = null"
+                        'drag-over border-blue-400 bg-blue-50 dark:bg-blue-900/20':
+                          isDragOver === voiceType.value,
+                        'border-green-400 bg-green-50 dark:bg-green-900/20':
+                          voiceSamples[voiceType.value],
+                      }"
+                      @dragover.prevent="isDragOver = voiceType.value"
+                      @dragleave.prevent="isDragOver = null"
                       @drop.prevent="handleFileDrop($event, voiceType.value)"
-                      @click.stop="triggerFileInput(voiceType.value)">
-                      <input :id="`file-input-${voiceType.value}`" :data-voice-type="voiceType.value" type="file"
-                        accept="audio/mp3,audio/wav,audio/ogg,audio/aac" class="hidden"
-                        @change="handleFileSelect($event, voiceType.value)" />
+                      @click.stop="triggerFileInput(voiceType.value)"
+                    >
+                      <input
+                        :id="`file-input-${voiceType.value}`"
+                        :data-voice-type="voiceType.value"
+                        type="file"
+                        accept="audio/mp3,audio/wav,audio/ogg,audio/aac"
+                        class="hidden"
+                        @change="handleFileSelect($event, voiceType.value)"
+                      />
 
                       <div v-if="!voiceSamples[voiceType.value]">
-                        <Icon name="mdi:cloud-upload" class="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h5 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                        <Icon
+                          name="mdi:cloud-upload"
+                          class="mx-auto mb-4 h-12 w-12 text-gray-400"
+                        />
+                        <h5 class="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                           Drop your {{ voiceType.label.toLowerCase() }} sample here
                         </h5>
-                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                        <p class="mb-4 text-gray-600 dark:text-gray-400">
                           or click to browse files
                         </p>
-                        <Button variant="primary"
-                          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
-                          @click.stop="triggerFileInput(voiceType.value)">
-                          <Icon name="mdi:folder-open" class="h-4 w-4 mr-2" />
+                        <Button
+                          variant="primary"
+                          class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
+                          @click.stop="triggerFileInput(voiceType.value)"
+                        >
+                          <Icon name="mdi:folder-open" class="mr-2 h-4 w-4" />
                           Choose File
                         </Button>
                       </div>
@@ -329,8 +456,8 @@
                           <div class="flex-shrink-0">
                             <Icon name="mdi:music-note" class="h-8 w-8 text-purple-500" />
                           </div>
-                          <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                          <div class="min-w-0 flex-1">
+                            <p class="truncate text-sm font-medium text-gray-900 dark:text-white">
                               {{ voiceSamples[voiceType.value].name }}
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -346,30 +473,45 @@
 
                         <!-- Audio Preview -->
                         <div>
-                          <audio :src="voiceSamples[voiceType.value].previewUrl" controls class="w-full" />
+                          <audio
+                            :src="voiceSamples[voiceType.value].previewUrl"
+                            controls
+                            class="w-full"
+                          />
                         </div>
 
                         <!-- Sample Details -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <div>
-                            <label :for="`title-${voiceType.value}`"
-                              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label
+                              :for="`title-${voiceType.value}`"
+                              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                            >
                               Sample Title
                             </label>
-                            <input :id="`title-${voiceType.value}`" v-model="voiceSamples[voiceType.value].title"
-                              type="text" :placeholder="`${voiceType.label} Demo`"
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <input
+                              :id="`title-${voiceType.value}`"
+                              v-model="voiceSamples[voiceType.value].title"
+                              type="text"
+                              :placeholder="`${voiceType.label} Demo`"
+                              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
                           </div>
 
                           <div>
-                            <label :for="`description-${voiceType.value}`"
-                              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <label
+                              :for="`description-${voiceType.value}`"
+                              class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                            >
                               Description
                             </label>
-                            <input :id="`description-${voiceType.value}`"
-                              v-model="voiceSamples[voiceType.value].description" type="text"
+                            <input
+                              :id="`description-${voiceType.value}`"
+                              v-model="voiceSamples[voiceType.value].description"
+                              type="text"
                               placeholder="Describe this sample..."
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
                           </div>
                         </div>
                       </div>
@@ -377,131 +519,198 @@
                   </div>
                 </div>
 
-                <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                <div class="text-center text-sm text-gray-500 dark:text-gray-400">
                   <p>Supported formats: MP3, WAV, OGG, AAC</p>
                   <p>Maximum file size: 50MB per file</p>
                 </div>
               </div>
 
-
               <!-- Step 6: Pricing & Rates -->
               <div v-if="currentStep === 6" class="space-y-8">
                 <div class="text-center">
                   <div
-                    class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
+                  >
                     <Icon name="mdi:currency-usd" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
                     Set Your Pricing & Rates
                   </h3>
                   <p class="text-gray-600 dark:text-gray-400">
-                    Define your rates for different types of voice work. This helps clients understand your pricing
-                    structure.
+                    Define your rates for different types of voice work. This helps clients
+                    understand your pricing structure.
                   </p>
                 </div>
 
                 <div class="space-y-8">
                   <!-- Rate Structure -->
-                  <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Rate Structure</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
+                    <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+                      Rate Structure
+                    </h4>
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <div>
-                        <label for="hourlyRate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label
+                          for="hourlyRate"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
                           Hourly Rate (USD) *
                         </label>
                         <div class="relative">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
+                          <div
+                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                          >
+                            <span class="text-sm text-gray-500 dark:text-gray-400">$</span>
                           </div>
-                          <input id="hourlyRate" v-model="pricingData.hourlyRate" type="number" min="0" step="5"
+                          <input
+                            id="hourlyRate"
+                            v-model="pricingData.hourlyRate"
+                            type="number"
+                            min="0"
+                            step="5"
                             placeholder="50"
-                            class="w-full pl-8 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                            class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                          />
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Your standard hourly rate for voice
-                          work</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          Your standard hourly rate for voice work
+                        </p>
                       </div>
 
                       <div>
-                        <label for="perWordRate"
-                          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label
+                          for="perWordRate"
+                          class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        >
                           Per Word Rate (USD)
                         </label>
                         <div class="relative">
-                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
+                          <div
+                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                          >
+                            <span class="text-sm text-gray-500 dark:text-gray-400">$</span>
                           </div>
-                          <input id="perWordRate" v-model="pricingData.perWordRate" type="number" min="0" step="0.01"
+                          <input
+                            id="perWordRate"
+                            v-model="pricingData.perWordRate"
+                            type="number"
+                            min="0"
+                            step="0.01"
                             placeholder="0.25"
-                            class="w-full pl-8 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg" />
+                            class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                          />
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Rate per word for audiobooks,
-                          e-learning</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          Rate per word for audiobooks, e-learning
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <!-- Project Type Rates -->
-                  <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Project Type Rates</h4>
+                  <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
+                    <h4 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+                      Project Type Rates
+                    </h4>
                     <div class="space-y-4">
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                          <label for="commercialRate"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label
+                            for="commercialRate"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                          >
                             Commercial (30 seconds)
                           </label>
                           <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
+                            <div
+                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                            >
+                              <span class="text-sm text-gray-500 dark:text-gray-400">$</span>
                             </div>
-                            <input id="commercialRate" v-model="pricingData.commercialRate" type="number" min="0"
-                              step="25" placeholder="500"
-                              class="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <input
+                              id="commercialRate"
+                              v-model="pricingData.commercialRate"
+                              type="number"
+                              min="0"
+                              step="25"
+                              placeholder="500"
+                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
                           </div>
                         </div>
 
                         <div>
-                          <label for="audiobookRate"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label
+                            for="audiobookRate"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                          >
                             Audiobook (per finished hour)
                           </label>
                           <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
+                            <div
+                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                            >
+                              <span class="text-sm text-gray-500 dark:text-gray-400">$</span>
                             </div>
-                            <input id="audiobookRate" v-model="pricingData.audiobookRate" type="number" min="0"
-                              step="25" placeholder="200"
-                              class="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <input
+                              id="audiobookRate"
+                              v-model="pricingData.audiobookRate"
+                              type="number"
+                              min="0"
+                              step="25"
+                              placeholder="200"
+                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
                           </div>
                         </div>
 
                         <div>
-                          <label for="animationRate"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label
+                            for="animationRate"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                          >
                             Animation (per character)
                           </label>
                           <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
+                            <div
+                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                            >
+                              <span class="text-sm text-gray-500 dark:text-gray-400">$</span>
                             </div>
-                            <input id="animationRate" v-model="pricingData.animationRate" type="number" min="0"
-                              step="25" placeholder="1000"
-                              class="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <input
+                              id="animationRate"
+                              v-model="pricingData.animationRate"
+                              type="number"
+                              min="0"
+                              step="25"
+                              placeholder="1000"
+                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
                           </div>
                         </div>
 
                         <div>
-                          <label for="elearningRate"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          <label
+                            for="elearningRate"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                          >
                             E-Learning (per hour)
                           </label>
                           <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
+                            <div
+                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                            >
+                              <span class="text-sm text-gray-500 dark:text-gray-400">$</span>
                             </div>
-                            <input id="elearningRate" v-model="pricingData.elearningRate" type="number" min="0"
-                              step="25" placeholder="300"
-                              class="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <input
+                              id="elearningRate"
+                              v-model="pricingData.elearningRate"
+                              type="number"
+                              min="0"
+                              step="25"
+                              placeholder="300"
+                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
                           </div>
                         </div>
                       </div>
@@ -510,66 +719,94 @@
 
                   <!-- Additional Information -->
                   <div>
-                    <label for="pricingNotes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label
+                      for="pricingNotes"
+                      class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
                       Additional Pricing Notes
                     </label>
-                    <textarea id="pricingNotes" v-model="pricingData.notes" rows="3"
+                    <textarea
+                      id="pricingNotes"
+                      v-model="pricingData.notes"
+                      rows="3"
                       placeholder="e.g., Rush jobs +50%, Weekend work +25%, Minimum project fee $100..."
-                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+                      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
                   </div>
                 </div>
               </div>
 
-
               <!-- Step 7: Completion -->
-              <div v-if="currentStep === 7" class="text-center space-y-8">
+              <div v-if="currentStep === 7" class="space-y-8 text-center">
                 <div
-                  class="w-24 h-24 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto">
+                  class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-500"
+                >
                   <Icon name="mdi:check" class="h-12 w-12 text-white" />
                 </div>
                 <div>
-                  <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
                     Welcome to VoiceAct! 🎉
                   </h3>
-                  <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                  <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
                     Your profile is complete and you're ready to start your voice acting journey.
                     Let's get you connected with amazing opportunities!
                   </p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                  <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
-                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <div class="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+                  <div class="rounded-xl bg-blue-50 p-6 dark:bg-blue-900/20">
+                    <div
+                      class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500"
+                    >
                       <Icon name="mdi:rocket-launch" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">Ready to Launch</h4>
-                    <p class="text-sm text-blue-800 dark:text-blue-200">Your profile is live and discoverable by clients
+                    <h4 class="mb-2 font-semibold text-blue-900 dark:text-blue-100">
+                      Ready to Launch
+                    </h4>
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                      Your profile is live and discoverable by clients
                     </p>
                   </div>
 
-                  <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-6">
-                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div class="rounded-xl bg-purple-50 p-6 dark:bg-purple-900/20">
+                    <div
+                      class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500"
+                    >
                       <Icon name="mdi:account-search" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-purple-900 dark:text-purple-100 mb-2">Find Opportunities</h4>
-                    <p class="text-sm text-purple-800 dark:text-purple-200">Browse casting calls and apply for projects
+                    <h4 class="mb-2 font-semibold text-purple-900 dark:text-purple-100">
+                      Find Opportunities
+                    </h4>
+                    <p class="text-sm text-purple-800 dark:text-purple-200">
+                      Browse casting calls and apply for projects
                     </p>
                   </div>
 
-                  <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-6">
-                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div class="rounded-xl bg-green-50 p-6 dark:bg-green-900/20">
+                    <div
+                      class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-500"
+                    >
                       <Icon name="mdi:chart-line" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-green-900 dark:text-green-100 mb-2">Track Progress</h4>
-                    <p class="text-sm text-green-800 dark:text-green-200">Monitor your career growth and earnings</p>
+                    <h4 class="mb-2 font-semibold text-green-900 dark:text-green-100">
+                      Track Progress
+                    </h4>
+                    <p class="text-sm text-green-800 dark:text-green-200">
+                      Monitor your career growth and earnings
+                    </p>
                   </div>
 
-                  <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-6">
-                    <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div class="rounded-xl bg-orange-50 p-6 dark:bg-orange-900/20">
+                    <div
+                      class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500"
+                    >
                       <Icon name="mdi:account-group" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="font-semibold text-orange-900 dark:text-orange-100 mb-2">Build Network</h4>
-                    <p class="text-sm text-orange-800 dark:text-orange-200">Connect with other voice actors and clients
+                    <h4 class="mb-2 font-semibold text-orange-900 dark:text-orange-100">
+                      Build Network
+                    </h4>
+                    <p class="text-sm text-orange-800 dark:text-orange-200">
+                      Connect with other voice actors and clients
                     </p>
                   </div>
                 </div>
@@ -577,7 +814,6 @@
             </div>
           </Transition>
         </div>
-
       </div>
     </div>
   </div>
@@ -620,20 +856,25 @@ const profileData = reactive({
   location: '',
   avatarUrl: '',
   voiceTypes: [] as string[],
-  languages: [] as string[]
+  languages: [] as string[],
 })
 
 const avatarInput = ref<HTMLInputElement | null>(null)
 
 // Voice samples data - one per voice type
-const voiceSamples = reactive<Record<string, {
-  file: File
-  name: string
-  size: number
-  previewUrl: string
-  title: string
-  description: string
-}>>({})
+const voiceSamples = reactive<
+  Record<
+    string,
+    {
+      file: File
+      name: string
+      size: number
+      previewUrl: string
+      title: string
+      description: string
+    }
+  >
+>({})
 
 const isDragOver = ref<string | null>(null)
 
@@ -643,14 +884,14 @@ const preferencesData = reactive({
     newProjects: true,
     castingCalls: true,
     messages: true,
-    deadlines: true
+    deadlines: true,
   },
   privacy: {
     profilePublic: true,
     showContactInfo: false,
-    allowDirectMessages: true
+    allowDirectMessages: true,
   },
-  audioQuality: 'professional'
+  audioQuality: 'professional',
 })
 
 // Pricing data
@@ -661,7 +902,7 @@ const pricingData = reactive({
   audiobookRate: '',
   animationRate: '',
   elearningRate: '',
-  notes: ''
+  notes: '',
 })
 
 // Options
@@ -675,7 +916,7 @@ const voiceTypeOptions = [
   { value: 'animation', label: 'Animation', icon: 'mdi:animation', color: 'bg-orange-500' },
   { value: 'video_game', label: 'Video Game', icon: 'mdi:gamepad-variant', color: 'bg-teal-500' },
   { value: 'documentary', label: 'Documentary', icon: 'mdi:filmstrip', color: 'bg-gray-500' },
-  { value: 'e-learning', label: 'E-Learning', icon: 'mdi:school', color: 'bg-yellow-500' }
+  { value: 'e-learning', label: 'E-Learning', icon: 'mdi:school', color: 'bg-yellow-500' },
 ]
 
 const languageOptions = [
@@ -705,19 +946,28 @@ const languageOptions = [
   { value: 'Portuguese', label: 'Portuguese', countryCode: 'pt', color: 'bg-green-600' },
   { value: 'Japanese', label: 'Japanese', countryCode: 'jp', color: 'bg-red-500' },
   { value: 'Korean', label: 'Korean', countryCode: 'kr', color: 'bg-blue-500' },
-  { value: 'Chinese (Mandarin)', label: 'Chinese (Mandarin)', countryCode: 'cn', color: 'bg-red-500' },
-  { value: 'Chinese (Cantonese)', label: 'Chinese (Cantonese)', countryCode: 'hk', color: 'bg-red-500' },
+  {
+    value: 'Chinese (Mandarin)',
+    label: 'Chinese (Mandarin)',
+    countryCode: 'cn',
+    color: 'bg-red-500',
+  },
+  {
+    value: 'Chinese (Cantonese)',
+    label: 'Chinese (Cantonese)',
+    countryCode: 'hk',
+    color: 'bg-red-500',
+  },
   { value: 'Arabic', label: 'Arabic', countryCode: 'sa', color: 'bg-green-500' },
   { value: 'Russian', label: 'Russian', countryCode: 'ru', color: 'bg-blue-500' },
-  { value: 'Hindi', label: 'Hindi', countryCode: 'in', color: 'bg-orange-500' }
+  { value: 'Hindi', label: 'Hindi', countryCode: 'in', color: 'bg-orange-500' },
 ]
-
 
 // Computed
 const showOnboarding = computed(() => props.show)
 
 const selectedVoiceTypes = computed(() => {
-  return voiceTypeOptions.filter(option => profileData.voiceTypes.includes(option.value))
+  return voiceTypeOptions.filter((option) => profileData.voiceTypes.includes(option.value))
 })
 
 const canProceedToNext = computed(() => {
@@ -725,9 +975,7 @@ const canProceedToNext = computed(() => {
     case 1:
       return true // Welcome step
     case 2:
-      return profileData.displayName &&
-        profileData.bio &&
-        profileData.location
+      return profileData.displayName && profileData.bio && profileData.location
     case 3:
       return profileData.voiceTypes.length > 0
     case 4:
@@ -747,12 +995,12 @@ const canProceedToNext = computed(() => {
 
 // Methods
 const getVoiceTypeColor = (voiceTypeValue: string) => {
-  const voiceType = voiceTypeOptions.find(vt => vt.value === voiceTypeValue)
+  const voiceType = voiceTypeOptions.find((vt) => vt.value === voiceTypeValue)
   return voiceType?.color || 'bg-gray-500'
 }
 
 const getLanguageColor = (languageValue: string) => {
-  const language = languageOptions.find(lang => lang.value === languageValue)
+  const language = languageOptions.find((lang) => lang.value === languageValue)
   return language?.color || 'bg-gray-500'
 }
 
@@ -778,7 +1026,7 @@ const completeOnboarding = async () => {
       voiceSamples: voiceSamples,
       preferences: preferencesData,
       pricing: pricingData,
-      completedAt: new Date().toISOString()
+      completedAt: new Date().toISOString(),
     }
 
     // Use the new onboarding system
@@ -847,8 +1095,8 @@ const triggerFileInput = (voiceType: string) => {
   if (!input) {
     // Last resort: find by accept attribute and voice type
     const inputs = document.querySelectorAll('input[type="file"][accept*="audio"]')
-    input = Array.from(inputs).find(inp =>
-      inp.getAttribute('data-voice-type') === voiceType
+    input = Array.from(inputs).find(
+      (inp) => inp.getAttribute('data-voice-type') === voiceType,
     ) as HTMLInputElement
   }
 
@@ -910,11 +1158,11 @@ const processFile = (file: File, voiceType: string) => {
     size: file.size,
     previewUrl,
     title: file.name.replace(/\.[^/.]+$/, ''),
-    description: ''
+    description: '',
   }
 
   console.log('File processed successfully:', voiceSamples[voiceType])
-  success(`Sample uploaded for ${voiceTypeOptions.find(vt => vt.value === voiceType)?.label}`)
+  success(`Sample uploaded for ${voiceTypeOptions.find((vt) => vt.value === voiceType)?.label}`)
 }
 
 const removeFile = (voiceType: string) => {
@@ -931,7 +1179,6 @@ const formatFileSize = (bytes: number): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
-
 </script>
 
 <style scoped>
@@ -1017,13 +1264,13 @@ const formatFileSize = (bytes: number): string => {
 }
 
 /* Checkbox and radio animations */
-input[type="checkbox"],
-input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
   transition: all 0.2s ease;
 }
 
-input[type="checkbox"]:checked,
-input[type="radio"]:checked {
+input[type='checkbox']:checked,
+input[type='radio']:checked {
   transform: scale(1.1);
 }
 
@@ -1043,7 +1290,6 @@ input[type="radio"]:checked {
 }
 
 @keyframes bounce {
-
   0%,
   20%,
   50%,
