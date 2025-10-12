@@ -6,32 +6,17 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">
-                  {{ project?.title || 'Project Workspace' }}
-                </h1>
-                <p class="text-muted-foreground text-sm">
-                  {{ project?.clientName || 'Client Project' }}
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="outline" size="sm" @click="saveProject">
-                <Icon name="mdi:content-save" class="mr-2 h-4 w-4" />
-                Save Project
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>{{ project?.title || 'Project Workspace' }}</template>
+        <template #subtitle>{{ project?.clientName || 'Client Project' }}</template>
+        <template #actions>
+          <ThemeToggle />
+          <Button variant="outline" size="sm" @click="saveProject">
+            <Icon name="mdi:content-save" class="mr-2 h-4 w-4" />
+            Save Project
+          </Button>
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
@@ -449,11 +434,11 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import { useToast } from '@/composables/useToast'
 
 const route = useRoute()

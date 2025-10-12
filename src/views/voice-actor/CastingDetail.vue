@@ -6,32 +6,17 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">
-                  {{ castingSession?.title }}
-                </h1>
-                <p class="text-muted-foreground text-sm">
-                  {{ castingSession?.clientName }}
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="outline" size="sm" @click="shareCasting">
-                <ShareIcon class="mr-2 h-4 w-4" />
-                Share
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>{{ castingSession?.title }}</template>
+        <template #subtitle>{{ castingSession?.clientName }}</template>
+        <template #actions>
+          <ThemeToggle />
+          <Button variant="outline" size="sm" @click="shareCasting">
+            <ShareIcon class="mr-2 h-4 w-4" />
+            Share
+          </Button>
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
@@ -192,7 +177,7 @@
           </div>
 
           <div v-else class="py-12 text-center">
-            <MegaphoneIcon class="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <MegaphoneIcon class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 class="text-foreground mb-2 text-lg font-medium">Casting call not found</h3>
             <p class="text-muted-foreground mb-6">
               The casting call you're looking for doesn't exist or has been removed.
@@ -218,7 +203,7 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
+import AppBar from '@/components/molecules/AppBar.vue'
 import ShareIcon from '~icons/mdi/share'
 import SendIcon from '~icons/mdi/send'
 import EyeIcon from '~icons/mdi/eye'

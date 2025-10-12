@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800',
+      'rounded-lg border border-border bg-card',
       sizeClasses.padding,
       customClass,
     ]"
@@ -41,7 +41,7 @@
 
           <!-- Title slot -->
           <slot name="title" :title="title" :size-classes="sizeClasses">
-            <h3 :class="['font-medium text-gray-900 dark:text-gray-100', sizeClasses.title]">
+            <h3 :class="['font-medium text-foreground', sizeClasses.title]">
               {{ title }}
             </h3>
           </slot>
@@ -86,7 +86,7 @@
         :size-classes="sizeClasses"
       >
         <div class="mb-1">
-          <span :class="['font-bold text-gray-900 dark:text-gray-100', sizeClasses.value]">
+          <span :class="['font-bold text-foreground', sizeClasses.value]">
             {{ formattedValue }}
           </span>
         </div>
@@ -94,7 +94,7 @@
 
       <!-- Subtitle slot -->
       <slot name="subtitle" :subtitle="subtitle" :size-classes="sizeClasses">
-        <p v-if="subtitle" :class="['text-gray-500 dark:text-gray-400', sizeClasses.subtitle]">
+        <p v-if="subtitle" :class="['text-muted-foreground', sizeClasses.subtitle]">
           {{ subtitle }}
         </p>
       </slot>
@@ -185,7 +185,7 @@ const trendIconClasses = computed(() => {
     case 'down':
       return 'text-red-500'
     default:
-      return 'text-gray-400'
+      return 'text-muted-foreground'
   }
 })
 
@@ -198,7 +198,7 @@ const trendTextClasses = computed(() => {
     case 'down':
       return 'text-red-600 dark:text-red-400'
     default:
-      return 'text-gray-500 dark:text-gray-400'
+      return 'text-muted-foreground'
   }
 })
 

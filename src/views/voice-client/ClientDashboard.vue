@@ -6,27 +6,17 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Client Dashboard</h1>
-                <p class="text-muted-foreground text-sm">
-                  Welcome back, {{ currentClient?.contactName }}
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="primary" size="sm" @click="openJobCreationModal">
-                <PlusIcon class="mr-2 h-4 w-4" />
-                Create Job
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar>
+        <template #title>Client Dashboard</template>
+        <template #subtitle>Welcome back, {{ currentClient?.contactName }}</template>
+        <template #actions>
+          <ThemeToggle />
+          <Button variant="primary" size="sm" @click="openJobCreationModal">
+            <PlusIcon class="mr-2 h-4 w-4" />
+            Create Job
+          </Button>
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
@@ -241,6 +231,7 @@ import type {
 } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'

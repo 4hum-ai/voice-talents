@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-6xl">
+  <div class="mx-auto max-w-5xl">
     <div class="mb-8 text-center">
       <h1 class="text-foreground mb-4 text-3xl font-bold">
         Step 2: Project Details & Requirements
@@ -44,16 +44,7 @@
               />
             </div>
 
-            <!-- Project Type Info Card -->
-            <div v-if="selectedProjectType" class="bg-muted/50 rounded-lg p-4">
-              <div class="flex items-start space-x-3">
-                <Icon name="mdi:information" class="text-primary mt-0.5 h-5 w-5" />
-                <div>
-                  <h4 class="text-foreground mb-1 font-medium">{{ selectedProjectType.label }}</h4>
-                  <p class="text-muted-foreground text-sm">{{ selectedProjectType.description }}</p>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
 
@@ -216,12 +207,12 @@
 
     <div class="mt-8 flex justify-between">
       <Button variant="outline" size="lg" @click="emit('previous')">
-        <Icon name="mdi:arrow-left" class="mr-2 h-4 w-4" />
+        <Icon name="mdi:arrow-left" class="mr-2 h-6 w-6" />
         Previous
       </Button>
       <Button variant="primary" size="lg" @click="emit('next')" :disabled="!isStepValid">
         Continue
-        <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
+        <Icon name="mdi:arrow-right" class="ml-2 h-6 w-6" />
       </Button>
     </div>
   </div>

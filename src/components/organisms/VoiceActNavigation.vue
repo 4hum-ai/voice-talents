@@ -55,7 +55,7 @@
 
         <!-- Settings & Logout -->
         <div class="flex space-x-2">
-          <Button variant="ghost" size="sm" class="flex-1" @click="$router.push('/settings')">
+          <Button variant="ghost" size="sm" class="flex-1" @click="$router.push('/talent/settings')">
             <CogIcon class="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm" class="flex-1" @click="handleLogout">
@@ -95,13 +95,11 @@ const stats = ref<VoiceActorStats>(mockData.voiceActorStats)
 // Computed
 const activeItemId = computed(() => {
   const path = route.path
-  if (path === '/') return 'dashboard'
-  if (path.startsWith('/profile')) return 'profile'
-  if (path.startsWith('/profile/edit')) return 'profile'
-  if (path.startsWith('/projects')) return 'projects'
-  if (path.startsWith('/studios')) return 'studios'
-  if (path.startsWith('/casting')) return 'casting'
-  if (path.startsWith('/settings')) return 'settings'
+  if (path === '/talent/dashboard') return 'dashboard'
+  if (path.startsWith('/talent/profile')) return 'profile'
+  if (path.startsWith('/talent/projects')) return 'projects'
+  if (path.startsWith('/talent/casting')) return 'casting'
+  if (path.startsWith('/talent/settings')) return 'settings'
   return 'dashboard'
 })
 
@@ -115,14 +113,14 @@ const navigationSections = computed(() => [
         title: 'Dashboard',
         description: 'Overview & activity',
         icon: HomeIcon,
-        action: () => router.push('/'),
+        action: () => router.push('/talent/dashboard'),
       },
       {
         id: 'profile',
         title: 'My Profile',
         description: 'Profile & voice samples',
         icon: UserIcon,
-        action: () => router.push('/profile/edit'),
+        action: () => router.push('/talent/profile/edit'),
       },
     ],
   },
@@ -136,14 +134,14 @@ const navigationSections = computed(() => [
         description: 'Track your work',
         icon: FolderOpenIcon,
         badge: stats.value.activeProjects,
-        action: () => router.push('/projects'),
+        action: () => router.push('/talent/projects'),
       },
       {
         id: 'casting',
         title: 'Casting Calls',
         description: 'Find new projects',
         icon: MegaphoneIcon,
-        action: () => router.push('/casting'),
+        action: () => router.push('/talent/casting'),
       },
     ],
   },

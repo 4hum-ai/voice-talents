@@ -6,26 +6,13 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="goBack" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Create Campaign</h1>
-                <p class="text-muted-foreground text-sm">
-                  Set up a new talent acquisition campaign
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="goBack">
+        <template #title>Create Campaign</template>
+        <template #subtitle>Set up a new talent acquisition campaign</template>
+        <template #actions>
+          <ThemeToggle />
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
@@ -106,8 +93,13 @@
             </div>
 
             <!-- Budget & Timeline -->
-            <div class="bg-card border-border rounded-lg border p-6">
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Budget & Timeline</h2>
+            <FormSection
+              title="Budget & Timeline"
+              description="Set your campaign budget and timeline"
+              icon="mdi:currency-usd"
+              icon-color="green"
+              :columns="2"
+            >
               <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div>
                   <label for="budget" class="text-foreground mb-2 block text-sm font-medium">
@@ -145,7 +137,7 @@
                   />
                 </div>
               </div>
-              <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label for="startDate" class="text-foreground mb-2 block text-sm font-medium">
                     Start Date *
@@ -171,7 +163,7 @@
                   />
                 </div>
               </div>
-            </div>
+            </FormSection>
 
             <!-- Target Audience -->
             <div class="bg-card border-border rounded-lg border p-6">
@@ -368,10 +360,11 @@ import { useRouter, useRoute } from 'vue-router'
 import type { Campaign, CampaignType, CampaignTarget, CampaignSettings } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
+import FormSection from '@/components/molecules/FormSection.vue'
 import Button from '@/components/atoms/Button.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import PlusIcon from '~icons/mdi/plus'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import EmailIcon from '~icons/mdi/email'

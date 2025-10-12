@@ -6,31 +6,14 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Talent Management</h1>
-                <p class="text-muted-foreground text-sm">
-                  Browse and invite voice actors for your projects
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="outline" size="sm" @click="toggleView">
-                <ViewGridIcon v-if="viewMode === 'list'" class="mr-2 h-4 w-4" />
-                <ViewListIcon v-else class="mr-2 h-4 w-4" />
-                {{ viewMode === 'list' ? 'Grid' : 'List' }}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>Talent Management</template>
+        <template #subtitle>Browse and invite voice actors for your projects</template>
+        <template #actions>
+          <ThemeToggle />
+          <ViewToggle v-model="viewMode" />
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
@@ -408,6 +391,8 @@ import { ref, computed, onMounted } from 'vue'
 import type { VoiceActor } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
+import ViewToggle from '@/components/molecules/ViewToggle.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -417,9 +402,6 @@ import SelectInput from '@/components/atoms/SelectInput.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobSelectionModal from '@/components/molecules/JobSelectionModal.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
-import ViewGridIcon from '~icons/mdi/view-grid'
-import ViewListIcon from '~icons/mdi/view-list'
 import AccountGroupIcon from '~icons/mdi/account-group'
 import RefreshIcon from '~icons/mdi/refresh'
 import EyeIcon from '~icons/mdi/eye'

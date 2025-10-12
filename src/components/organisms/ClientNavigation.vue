@@ -155,7 +155,7 @@ const switchToVoiceActor = () => {
   // Switch to talent mode and navigate to dashboard
   console.log('Switching to voice actor view')
   switchMode('talent')
-  router.push('/')
+  router.push('/talent/dashboard')
 }
 
 const handleLogout = () => {

@@ -6,26 +6,13 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Submit Proposal</h1>
-                <p class="text-muted-foreground text-sm">
-                  {{ castingSession?.title }}
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>Submit Proposal</template>
+        <template #subtitle>{{ castingSession?.title }}</template>
+        <template #actions>
+          <ThemeToggle />
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
@@ -291,7 +278,7 @@ import Chip from '@/components/atoms/Chip.vue'
 import FileInput from '@/components/atoms/FileInput.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
+import AppBar from '@/components/molecules/AppBar.vue'
 import PlayIcon from '~icons/mdi/play'
 import TrashIcon from '~icons/mdi/trash'
 import PlusIcon from '~icons/mdi/plus'

@@ -6,30 +6,17 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Campaign Management</h1>
-                <p class="text-muted-foreground text-sm">
-                  Manage your talent acquisition campaigns
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="primary" size="sm" @click="$router.push('/client/campaigns/create')">
-                <PlusIcon class="mr-2 h-4 w-4" />
-                Create Campaign
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>Campaign Management</template>
+        <template #subtitle>Manage your talent acquisition campaigns</template>
+        <template #actions>
+          <ThemeToggle />
+          <Button variant="primary" size="sm" @click="$router.push('/client/campaigns/create')">
+            <PlusIcon class="mr-2 h-4 w-4" />
+            Create Campaign
+          </Button>
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
@@ -301,11 +288,11 @@ import { useRouter } from 'vue-router'
 import type { Campaign } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
 import PlusIcon from '~icons/mdi/plus'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import EmailIcon from '~icons/mdi/email'

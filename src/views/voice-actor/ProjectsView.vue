@@ -6,35 +6,18 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">My Projects</h1>
-                <p class="text-muted-foreground text-sm">
-                  Track your voice acting projects and assignments
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="outline" size="sm" @click="toggleView">
-                <ViewGridIcon v-if="viewMode === 'list'" class="h-4 w-4" />
-                <ViewListIcon v-else class="h-4 w-4" />
-                {{ viewMode === 'list' ? 'Grid' : 'List' }}
-              </Button>
-              <Button variant="primary" size="sm" @click="$router.push('/casting')">
-                <MagnifyIcon class="h-4 w-4" />
-                Find Projects
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>My Projects</template>
+        <template #subtitle>Track your voice acting projects and assignments</template>
+        <template #actions>
+          <ThemeToggle />
+          <ViewToggle v-model="viewMode" />
+          <Button variant="primary" size="sm" @click="$router.push('/casting')">
+            <MagnifyIcon class="h-4 w-4" />
+            Find Projects
+          </Button>
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
@@ -88,7 +71,7 @@
 
           <!-- Projects Grid/List -->
           <div v-if="filteredProjects.length === 0" class="py-12 text-center">
-            <FolderOpenIcon class="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <FolderOpenIcon class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 class="text-foreground mb-2 text-lg font-medium">No projects found</h3>
             <p class="text-muted-foreground mb-6">
               {{
@@ -376,9 +359,8 @@ import AdvancedSearch from '@/components/molecules/AdvancedSearch.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
-import ViewGridIcon from '~icons/mdi/view-grid'
-import ViewListIcon from '~icons/mdi/view-list'
+import AppBar from '@/components/molecules/AppBar.vue'
+import ViewToggle from '@/components/molecules/ViewToggle.vue'
 import MagnifyIcon from '~icons/mdi/magnify'
 import FolderOpenIcon from '~icons/mdi/folder-open'
 import EyeIcon from '~icons/mdi/eye'

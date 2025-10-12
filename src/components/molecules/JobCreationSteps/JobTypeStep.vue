@@ -2,11 +2,6 @@
   <div class="mx-auto max-w-full px-8">
     <!-- Header Section -->
     <div class="mb-12 text-center">
-      <div
-        class="from-primary/20 to-primary/10 mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br"
-      >
-        <Icon name="mdi:microphone" class="text-primary h-8 w-8" />
-      </div>
       <h1
         class="text-foreground from-foreground to-foreground/80 mb-4 bg-gradient-to-r bg-clip-text text-4xl font-bold"
       >

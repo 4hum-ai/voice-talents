@@ -1,14 +1,14 @@
 <template>
-  <div v-if="open" class="fixed inset-0 z-50 overflow-hidden bg-white dark:bg-gray-900">
+  <div v-if="open" class="fixed inset-0 z-50 pt-16 overflow-y-auto bg-background">
     <!-- Top Navigation Bar -->
     <div
-      class="absolute top-0 right-0 left-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95"
+      class="absolute top-0 right-0 left-0 z-10 border-b border-border bg-card/95 backdrop-blur-sm"
     >
       <div class="flex items-center justify-between px-6 py-4">
         <!-- Left: Previous Button -->
         <Button v-if="currentStep > 1" variant="outline" size="md" @click="previousStep">
           <div class="flex items-center gap-2">
-            <Icon name="mdi:chevron-left" class="h-4 w-4" />
+            <Icon name="mdi:chevron-left" class="h-6 w-6" />
             <span>Previous</span>
           </div>
         </Button>
@@ -16,16 +16,16 @@
 
         <!-- Center: Progress -->
         <div class="flex items-center space-x-4">
-          <div class="text-sm text-gray-600 dark:text-gray-400">
+          <div class="text-sm text-muted-foreground">
             Step {{ currentStep }} of {{ totalSteps }}
           </div>
-          <div class="h-2 w-32 rounded-full bg-gray-200 dark:bg-gray-700">
+          <div class="h-2 w-32 rounded-full bg-muted">
             <div
               class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
               :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
             />
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">
+          <div class="text-sm text-muted-foreground">
             {{ Math.round((currentStep / totalSteps) * 100) }}%
           </div>
         </div>
@@ -42,20 +42,20 @@
           </div>
 
           <Button variant="outline" size="sm" @click="saveDraft" :disabled="isSavingDraft">
-            <Icon name="mdi:content-save" class="mr-2 h-4 w-4" />
+            <Icon name="mdi:content-save" class="mr-2 h-6 w-6" />
             {{ isSavingDraft ? 'Saving...' : 'Save Draft' }}
           </Button>
 
           <Button variant="ghost" size="sm" @click="closeModal">
-            <Icon name="mdi:close" class="h-4 w-4" />
+            <Icon name="mdi:close" class="h-6 w-6" />
           </Button>
         </div>
       </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="h-full overflow-y-auto pt-20">
-      <div class="mx-auto max-w-4xl px-6 py-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="mx-auto  py-8">
         <!-- Step Content -->
         <Transition :name="transitionName" mode="out-in">
           <div :key="currentStep" class="min-h-[600px]">
@@ -124,6 +124,7 @@ import JobTypeStep from '../molecules/JobCreationSteps/JobTypeStep.vue'
 import BasicInfoRequirementsStep from '../molecules/JobCreationSteps/BasicInfoRequirementsStep.vue'
 import TalentOptionsStep from '../molecules/JobCreationSteps/TalentOptionsStep.vue'
 import ReviewPaymentStep from '../molecules/JobCreationSteps/ReviewPaymentStep.vue'
+import { useScrollLock } from '@vueuse/core'
 
 interface Props {
   open: boolean
@@ -524,11 +525,13 @@ watch(
   },
   { deep: true },
 )
+const scrollLock = useScrollLock(document.documentElement) // or document.body
 
 // Watch for modal open/close
 watch(
   () => props.open,
   (isOpen) => {
+    scrollLock.value=isOpen;
     if (isOpen) {
       // If opening for a new job (no draftId), reset the form
       if (!props.draftId) {

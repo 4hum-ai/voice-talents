@@ -2,24 +2,13 @@
   <div class="bg-background flex min-h-screen">
     <VoiceActNavigation />
     <div class="flex-1">
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Settings</h1>
-                <p class="text-muted-foreground text-sm">Manage your account and preferences</p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>Settings</template>
+        <template #subtitle>Manage your account and preferences</template>
+        <template #actions>
+          <ThemeToggle />
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
@@ -380,6 +369,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'

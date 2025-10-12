@@ -2,61 +2,72 @@ import type { RouteRecordRaw } from 'vue-router'
 
 // VoiceAct - Voice Actor Management App Routes
 export const customRoutes: RouteRecordRaw[] = [
-  // Main Dashboard
+  // Landing Page
   {
     path: '/',
+    component: () => import('../views/LandingPage.vue'),
+    meta: { title: 'VoiceAct - Voice Talent Platform', requiresAuth: false },
+  },
+
+  // Voice Actor Dashboard
+  {
+    path: '/talent',
+    redirect: '/talent/dashboard',
+  },
+  {
+    path: '/talent/dashboard',
     component: () => import('../views/voice-actor/Dashboard.vue'),
     meta: { title: 'VoiceAct Dashboard', requiresAuth: true, keepAlive: true },
   },
 
   // Voice Actor Profile Management
   {
-    path: '/profile',
-    redirect: '/profile/edit',
+    path: '/talent/profile',
+    redirect: '/talent/profile/edit',
   },
   {
-    path: '/profile/edit',
+    path: '/talent/profile/edit',
     component: () => import('../views/voice-actor/ProfileEdit.vue'),
     meta: { title: 'My Profile', requiresAuth: true },
   },
 
   // Project Management
   {
-    path: '/projects',
+    path: '/talent/projects',
     component: () => import('../views/voice-actor/ProjectsView.vue'),
     meta: { title: 'My Projects', requiresAuth: true },
   },
   {
-    path: '/projects/:id',
+    path: '/talent/projects/:id',
     component: () => import('../views/voice-actor/ProjectDetail.vue'),
     meta: { title: 'Audio Studio', requiresAuth: true },
   },
 
   // Casting & Opportunities
   {
-    path: '/casting',
+    path: '/talent/casting',
     component: () => import('../views/voice-actor/CastingView.vue'),
     meta: { title: 'Casting Opportunities', requiresAuth: true },
   },
   {
-    path: '/casting/:id',
+    path: '/talent/casting/:id',
     component: () => import('../views/voice-actor/CastingDetail.vue'),
     meta: { title: 'Casting Details', requiresAuth: true },
   },
   {
-    path: '/casting/:id/submit',
+    path: '/talent/casting/:id/submit',
     component: () => import('../views/voice-actor/CastingSubmit.vue'),
     meta: { title: 'Submit Proposal', requiresAuth: true },
   },
   {
-    path: '/casting/:id/proposal',
+    path: '/talent/casting/:id/proposal',
     component: () => import('../views/voice-actor/CastingProposal.vue'),
     meta: { title: 'View Proposal', requiresAuth: true },
   },
 
   // Settings
   {
-    path: '/settings',
+    path: '/talent/settings',
     component: () => import('../views/voice-actor/SettingsView.vue'),
     meta: { title: 'Settings', requiresAuth: true },
   },

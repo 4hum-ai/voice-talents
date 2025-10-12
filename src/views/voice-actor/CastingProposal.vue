@@ -6,32 +6,19 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">My Proposal</h1>
-                <p class="text-muted-foreground text-sm">
-                  {{ castingSession?.title }}
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <StatusBadge
-                :status="getProposalStatusInfo().status"
-                :variant="getProposalStatusInfo().variant"
-              >
-                {{ getProposalStatusInfo().label }}
-              </StatusBadge>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar :show-back="true" @back="$router.back()">
+        <template #title>My Proposal</template>
+        <template #subtitle>{{ castingSession?.title }}</template>
+        <template #actions>
+          <StatusBadge
+            :status="getProposalStatusInfo().status"
+            :variant="getProposalStatusInfo().variant"
+          >
+            {{ getProposalStatusInfo().label }}
+          </StatusBadge>
+          <ThemeToggle />
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
@@ -199,7 +186,7 @@
           </div>
 
           <div v-else class="py-12 text-center">
-            <MegaphoneIcon class="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <MegaphoneIcon class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <h3 class="text-foreground mb-2 text-lg font-medium">Proposal not found</h3>
             <p class="text-muted-foreground mb-6">
               The proposal you're looking for doesn't exist or has been removed.
@@ -225,7 +212,7 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
+import AppBar from '@/components/molecules/AppBar.vue'
 import PlayIcon from '~icons/mdi/play'
 import EyeIcon from '~icons/mdi/eye'
 import MegaphoneIcon from '~icons/mdi/megaphone'

@@ -6,35 +6,22 @@
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
-              <Button variant="ghost" size="sm" @click="$router.back()" class="mr-4">
-                <ArrowLeftIcon class="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 class="text-foreground text-2xl font-bold">Dashboard</h1>
-                <p class="text-muted-foreground text-sm">
-                  Welcome back! Here's what's happening with your voice acting career today.
-                </p>
-              </div>
-            </div>
-            <div class="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button variant="secondary" size="md" @click="$router.push('/notifications')">
-                <BellIcon class="h-5 w-5" />
-                <span
-                  v-if="unreadNotifications > 0"
-                  class="ml-2 rounded-full bg-red-500 px-2 py-1 text-xs text-white"
-                >
-                  {{ unreadNotifications }}
-                </span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppBar>
+        <template #title>Dashboard</template>
+        <template #subtitle>Welcome back! Here's what's happening with your voice acting career today.</template>
+        <template #actions>
+          <ThemeToggle />
+          <Button variant="secondary" size="md" @click="$router.push('/notifications')">
+            <BellIcon class="h-5 w-5" />
+            <span
+              v-if="unreadNotifications > 0"
+              class="ml-2 rounded-full bg-red-500 px-2 py-1 text-xs text-white"
+            >
+              {{ unreadNotifications }}
+            </span>
+          </Button>
+        </template>
+      </AppBar>
 
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <!-- Welcome Section -->
@@ -144,7 +131,7 @@
                   <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     Recent Projects
                   </h3>
-                  <Button variant="ghost" size="sm" @click="$router.push('/projects')">
+                  <Button variant="ghost" size="sm" @click="$router.push('/talent/projects')">
                     View All
                   </Button>
                 </div>
@@ -204,7 +191,7 @@
                   variant="outline"
                   size="sm"
                   class="w-full justify-start"
-                  @click="$router.push('/profile/edit')"
+                  @click="$router.push('/talent/profile/edit')"
                 >
                   <Icon name="upload" class="h-4 w-4" />
                   Upload Voice Sample
@@ -213,7 +200,7 @@
                   variant="outline"
                   size="sm"
                   class="w-full justify-start"
-                  @click="$router.push('/casting')"
+                  @click="$router.push('/talent/casting')"
                 >
                   <Icon name="search" class="h-4 w-4" />
                   Browse Casting Calls
@@ -222,7 +209,7 @@
                   variant="outline"
                   size="sm"
                   class="w-full justify-start"
-                  @click="$router.push('/profile/edit')"
+                  @click="$router.push('/talent/profile/edit')"
                 >
                   <Icon name="account-edit" class="h-4 w-4" />
                   Update Profile
@@ -280,6 +267,7 @@ import { useRouter } from 'vue-router'
 import type { VoiceActor, VoiceActorStats, Project, ProjectMessage } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
+import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
@@ -289,7 +277,6 @@ import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import BellIcon from '~icons/mdi/bell'
 import AccountIcon from '~icons/mdi/account'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
 
 const router = useRouter()
 
