@@ -141,7 +141,7 @@ const emit = defineEmits<{
 }>()
 
 // Composables
-const { saveDraft: saveDraftToStorage, autoSaveDraft, loadDraft } = useJob()
+const { saveDraft: saveDraftToStorage, autoSaveDraft, loadDraft, publishJob } = useJob()
 const { addToast: showToast } = useToast()
 
 // State
@@ -303,64 +303,36 @@ const publishJobHandler = async () => {
   isSubmitting.value = true
   
   try {
-    const newJob: JobPosting = {
-      id: `job-${Date.now()}`,
-      clientId: currentClient.value.id,
-      clientName: currentClient.value.companyName,
-      title: jobForm.title,
-      description: jobForm.description,
-      jobType: jobForm.jobType as any,
-      projectType: jobForm.projectType as any,
-      status: 'published',
-      priority: jobForm.priority as any,
-      budget: {
-        min: 0,
-        max: jobForm.budget.max,
-        currency: jobForm.budget.currency as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
-      },
-      deadline: jobForm.deadline,
-      estimatedDuration: jobForm.estimatedDuration,
-      requirements: {
-        languages: jobForm.requirements.language ? [jobForm.requirements.language] : [],
-        accents: jobForm.requirements.accent ? [jobForm.requirements.accent] : [],
-        voiceTypes: jobForm.requirements.voiceType ? [jobForm.requirements.voiceType] : [],
-        ageRange: jobForm.requirements.ageRange,
-        gender: jobForm.requirements.gender as any,
-        experience: 'beginner' as any,
-        specialInstructions: jobForm.requirements.specialInstructions,
-        quality: 'professional' as any
-      },
-      deliverables: [],
-      files: [],
-      isPublic: jobForm.isPublic,
-      applications: [],
-      selectedTalents: [],
-      totalApplications: 0,
-      viewCount: 0,
-      createdDate: new Date().toISOString(),
-      publishedDate: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    // First save as draft if not already saved
+    if (!currentDraftId.value) {
+      const draft = saveDraftToStorage(
+        jobForm as any,
+        currentClient.value.id,
+        currentClient.value.companyName
+      )
+      currentDraftId.value = draft.id
     }
     
-    console.log('Publishing job:', newJob)
+    // Publish the job using the composable
+    const publishedJob = publishJob(currentDraftId.value)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    showToast({
-      type: 'success',
-      title: 'Job Published',
-      message: 'Your job has been published successfully!'
-    })
-    
-    emit('complete', newJob)
-    closeModal()
+    if (publishedJob) {
+      showToast({
+        type: 'success',
+        title: 'Job Published!',
+        message: `"${jobForm.title}" has been published successfully.`
+      })
+      
+      emit('complete', publishedJob)
+      closeModal()
+    } else {
+      throw new Error('Failed to publish job')
+    }
   } catch (error) {
     console.error('Error publishing job:', error)
     showToast({
       type: 'error',
-      title: 'Publish Failed',
+      title: 'Publishing Failed',
       message: 'Failed to publish job. Please try again.'
     })
   } finally {

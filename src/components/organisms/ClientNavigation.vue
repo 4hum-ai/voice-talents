@@ -145,13 +145,6 @@ const navigationSections = computed(() => [
         icon: BriefcaseIcon,
         badge: stats.value.activeJobs,
         action: () => router.push('/client/jobs')
-      },
-      {
-        id: 'create-job',
-        title: 'Post New Job',
-        description: 'Create a new job posting',
-        icon: MegaphoneIcon,
-        action: () => router.push('/client/jobs/create')
       }
     ]
   },

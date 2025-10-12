@@ -193,7 +193,7 @@ import EditIcon from '~icons/mdi/pencil'
 import TrashIcon from '~icons/mdi/trash-can'
 
 // const router = useRouter() // Not needed with modal approach
-const { deleteDraft, getDraftsByClient, getPublishedJobsByClient } = useJob()
+const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, refreshJobs } = useJob()
 const { addToast: showToast } = useToast()
 
 // Get current client (in real app, this would come from auth)
@@ -291,6 +291,9 @@ const handleJobCreated = (job: any) => {
     message: `"${job.title}" has been published successfully!`
   })
   closeJobCreationModal()
+  
+  // Refresh the jobs list to show the updated status
+  refreshJobs()
 }
 
 const viewJob = (_jobId: string) => {

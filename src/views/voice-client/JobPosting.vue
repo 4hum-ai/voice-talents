@@ -391,13 +391,13 @@ import MegaphoneIcon from '~icons/mdi/megaphone'
 import EmailIcon from '~icons/mdi/email'
 import ClockIcon from '~icons/mdi/clock'
 import TargetIcon from '~icons/mdi/target'
-import { useJobDrafts } from '@/composables/useJobDrafts'
+import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import type { VoiceType } from '@/types/voice-actor'
 
 const router = useRouter()
 const route = useRoute()
-const { saveDraft, autoSaveDraft, loadDraft } = useJobDrafts()
+const { saveDraft, autoSaveDraft, loadDraft } = useJob()
 const { addToast: showToast } = useToast()
 
 // Form state

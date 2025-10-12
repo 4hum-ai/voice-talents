@@ -2,7 +2,7 @@ import { computed, reactive } from 'vue'
 import type { JobPosting } from '@/types/voice-client'
 
 // Job interface extending JobPosting with additional metadata
-export interface Job extends Omit<JobPosting, 'status' | 'publishedDate' | 'closedDate'> {
+export interface Job extends Omit<JobPosting, 'status' | 'closedDate'> {
   status: 'draft' | 'published'
   lastSaved: string
   autoSaved: boolean
@@ -269,6 +269,11 @@ export function useJob() {
     saveJobsToStorage()
   }
 
+  // Refresh jobs from localStorage (useful for cross-component updates)
+  const refreshJobs = (): void => {
+    initializeJobs()
+  }
+
   return {
     // State
     jobs,
@@ -293,6 +298,7 @@ export function useJob() {
     publishJob,
     deleteJob,
     deleteDraft,
-    clearAllJobs
+    clearAllJobs,
+    refreshJobs
   }
 }
