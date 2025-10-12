@@ -6,7 +6,7 @@
         <div class="flex h-16 items-center justify-between">
           <div class="flex items-center space-x-2">
             <Icon name="mdi:microphone" class="h-8 w-8 text-primary" />
-            <h1 class="text-xl font-bold text-foreground">VoiceAct</h1>
+            <h1 class="text-xl font-bold text-foreground">VoiceAct.AI</h1>
           </div>
           <div class="flex items-center space-x-4">
             <ThemeToggle />
@@ -23,10 +23,10 @@
       <!-- Hero Section -->
       <div class="text-center">
         <h2 class="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-          Welcome to VoiceAct
+          AI Native Voice Talent Platform
         </h2>
         <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-          The premier platform connecting voice talent with clients. Choose your role to get started.
+          Choose your role to get started.
         </p>
       </div>
 
@@ -39,22 +39,22 @@
               <Icon name="mdi:microphone" class="h-10 w-10 text-primary" />
             </div>
             <h3 class="mb-4 text-2xl font-bold text-foreground">
-              Voice Talent
+              I'm a Voice Talent
             </h3>
             <p class="mb-6 text-muted-foreground">
               Showcase your voice acting skills, find casting opportunities, and grow your career with professional clients.
             </p>
             <div class="space-y-3">
               <div class="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
+                <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
                 <span>Browse casting calls</span>
               </div>
               <div class="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
+                <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
                 <span>Manage your portfolio</span>
               </div>
               <div class="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
+                <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
                 <span>Track your projects</span>
               </div>
             </div>
@@ -64,8 +64,8 @@
               class="mt-6 w-full"
               @click="navigateToVoiceActor"
             >
-              Enter as Voice Talent
-              <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
+              Enter
+              <Icon name="mdi:arrow-right" class="ml-2 h-5 w-5" />
             </Button>
           </div>
         </Card>
@@ -77,22 +77,22 @@
               <Icon name="mdi:briefcase" class="h-10 w-10 text-green-600" />
             </div>
             <h3 class="mb-4 text-2xl font-bold text-foreground">
-              Client
+              I'm a Client
             </h3>
             <p class="mb-6 text-muted-foreground">
               Find the perfect voice talent for your projects, manage campaigns, and collaborate with professional voice actors.
             </p>
             <div class="space-y-3">
               <div class="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
+                <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
                 <span>Post job opportunities</span>
               </div>
               <div class="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
+                <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
                 <span>Browse talent profiles</span>
               </div>
               <div class="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="mdi:check-circle" class="h-4 w-4 text-green-500" />
+                <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
                 <span>Manage your projects</span>
               </div>
             </div>
@@ -102,8 +102,8 @@
               class="mt-6 w-full"
               @click="navigateToClient"
             >
-              Enter as Client
-              <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
+              Enter
+              <Icon name="mdi:arrow-right" class="ml-2 h-5 w-5" />
             </Button>
           </div>
         </Card>
@@ -114,7 +114,7 @@
     <footer class="mt-20 border-t border-border bg-background/80 backdrop-blur-sm">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div class="text-center text-sm text-muted-foreground">
-          © 2024 VoiceAct. All rights reserved.
+          © 2025 AI For Humanity Labs Inc . All rights reserved.
         </div>
       </div>
     </footer>
