@@ -35,6 +35,53 @@
 
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="max-w-7xl mx-auto">
+          <!-- Published Jobs Section -->
+          <div v-if="clientPublishedJobs.length > 0" class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-semibold text-foreground">Published Jobs</h2>
+              <span class="text-sm text-muted-foreground">{{ clientPublishedJobs.length }} job{{ clientPublishedJobs.length !== 1 ? 's' : '' }}</span>
+            </div>
+            
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div 
+                v-for="job in clientPublishedJobs" 
+                :key="job.id"
+                class="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex-1">
+                    <h3 class="font-medium text-foreground mb-1">
+                      {{ job.title || 'Untitled Job' }}
+                    </h3>
+                    <p class="text-sm text-muted-foreground line-clamp-2">
+                      {{ job.description || 'No description' }}
+                    </p>
+                  </div>
+                  <div class="flex items-center ml-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full" title="Published"></div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                  <span>{{ job.jobType.replace('_', ' ').toUpperCase() }}</span>
+                  <span>{{ formatDate(job.createdDate) }}</span>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    @click="viewJob(job.id)"
+                    class="flex-1"
+                  >
+                    <EditIcon class="h-3 w-3 mr-1" />
+                    View
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Drafts Section -->
           <div v-if="clientDrafts.length > 0" class="mb-8">
             <div class="flex items-center justify-between mb-4">
@@ -91,10 +138,10 @@
           </div>
 
           <!-- Empty State -->
-          <div v-if="clientDrafts.length === 0" class="text-center py-12">
+          <div v-if="clientDrafts.length === 0 && clientPublishedJobs.length === 0" class="text-center py-12">
             <BriefcaseIcon class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 class="text-lg font-medium text-foreground mb-2">
-              No Draft Jobs
+              No Jobs Yet
             </h3>
             <p class="text-muted-foreground mb-6">
               Start creating your first job posting or save a draft to continue later
@@ -136,7 +183,7 @@ import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
-import { useJobDrafts } from '@/composables/useJobDrafts'
+import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
@@ -146,15 +193,19 @@ import EditIcon from '~icons/mdi/pencil'
 import TrashIcon from '~icons/mdi/trash-can'
 
 // const router = useRouter() // Not needed with modal approach
-const { deleteDraft, getDraftsByClient } = useJobDrafts()
+const { deleteDraft, getDraftsByClient, getPublishedJobsByClient } = useJob()
 const { addToast: showToast } = useToast()
 
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])
 
-// Filter drafts for current client
+// Filter jobs for current client
 const clientDrafts = computed(() => {
   return getDraftsByClient(currentClient.value.id)
+})
+
+const clientPublishedJobs = computed(() => {
+  return getPublishedJobsByClient(currentClient.value.id)
 })
 
 // Modal state
@@ -240,5 +291,14 @@ const handleJobCreated = (job: any) => {
     message: `"${job.title}" has been published successfully!`
   })
   closeJobCreationModal()
+}
+
+const viewJob = (_jobId: string) => {
+  // In a real app, this would navigate to a job detail view
+  showToast({
+    type: 'info',
+    title: 'Job Details',
+    message: 'Job detail view would open here'
+  })
 }
 </script>

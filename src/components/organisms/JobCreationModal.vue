@@ -77,7 +77,7 @@
             <!-- Step 3: Requirements -->
             <RequirementsStep
               v-if="currentStep === 3"
-              v-model:requirements="jobForm.requirements"
+              v-model:requirements="jobForm.requirements as any"
               @next="nextStep"
               @previous="previousStep"
             />
@@ -85,10 +85,9 @@
             <!-- Step 4: Budget & Timeline -->
             <BudgetTimelineStep
               v-if="currentStep === 4"
-              v-model:budget="jobForm.budget"
+              v-model:budget="jobForm.budget as any"
               v-model:deadline="jobForm.deadline"
               v-model:estimated-duration="jobForm.estimatedDuration"
-              v-model:quality="jobForm.requirements.quality"
               @next="nextStep"
               @previous="previousStep"
             />
@@ -96,9 +95,9 @@
             <!-- Step 5: Review & Publish -->
             <ReviewStep
               v-if="currentStep === 5"
-              :job-form="jobForm"
+              :job-form="jobForm as any"
               :is-submitting="isSubmitting"
-              @publish="publishJob"
+                @publish="publishJobHandler"
               @previous="previousStep"
               @save-draft="saveDraft"
             />
@@ -111,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, onUnmounted } from 'vue'
-import { useJobDrafts } from '@/composables/useJobDrafts'
+import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import type { JobPosting } from '@/types/voice-client'
@@ -142,7 +141,7 @@ const emit = defineEmits<{
 }>()
 
 // Composables
-const { saveDraft: saveDraftToStorage, autoSaveDraft, loadDraft } = useJobDrafts()
+const { saveDraft: saveDraftToStorage, autoSaveDraft, loadDraft } = useJob()
 const { addToast: showToast } = useToast()
 
 // State
@@ -173,14 +172,12 @@ const jobForm = reactive({
   deadline: '',
   estimatedDuration: '',
   requirements: {
-    languages: [] as string[],
-    accents: [] as string[],
-    voiceTypes: [] as VoiceType[],
+    language: '',
+    accent: '',
+    voiceType: '' as VoiceType,
     ageRange: '',
     gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
-    experience: 'beginner' as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-    specialInstructions: '',
-    quality: 'professional' as 'standard' | 'professional' | 'broadcast'
+    specialInstructions: ''
   },
   isPublic: true,
   requirePortfolio: true,
@@ -191,8 +188,8 @@ const jobForm = reactive({
 const stepValidation = {
   1: () => !!jobForm.jobType,
   2: () => !!jobForm.title.trim() && !!jobForm.description.trim() && !!jobForm.projectType,
-  3: () => jobForm.requirements.voiceTypes.length > 0,
-  4: () => jobForm.budget.min > 0 && jobForm.budget.max >= jobForm.budget.min,
+  3: () => !!jobForm.requirements.voiceType && !!jobForm.requirements.language,
+  4: () => jobForm.budget.max > 0,
   5: () => true // Review step is always valid
 }
 
@@ -216,7 +213,7 @@ const saveDraft = async () => {
   
   try {
     const draft = saveDraftToStorage(
-      jobForm,
+      jobForm as any,
       currentClient.value.id,
       currentClient.value.companyName,
       currentDraftId.value || undefined
@@ -245,7 +242,7 @@ const saveDraft = async () => {
 const autoSaveHandler = () => {
   if (jobForm.title.trim() || jobForm.description.trim()) {
     const draft = autoSaveDraft(
-      jobForm,
+      jobForm as any,
       currentClient.value.id,
       currentClient.value.companyName,
       currentDraftId.value || undefined
@@ -281,18 +278,16 @@ const loadDraftData = (draftId: string) => {
     jobForm.description = draft.description
     jobForm.projectType = draft.projectType
     jobForm.priority = draft.priority
-    jobForm.budget = { ...draft.budget }
+    jobForm.budget = { min: 0, max: draft.budget.max, currency: draft.budget.currency }
     jobForm.deadline = draft.deadline
     jobForm.estimatedDuration = draft.estimatedDuration
     jobForm.requirements = {
-      languages: draft.requirements.languages || [],
-      accents: draft.requirements.accents || [],
-      voiceTypes: (draft.requirements.voiceTypes || []) as VoiceType[],
+      language: (draft.requirements as any).language || '',
+      accent: (draft.requirements as any).accent || '',
+      voiceType: (draft.requirements as any).voiceType || '',
       ageRange: draft.requirements.ageRange || '',
       gender: draft.requirements.gender || 'any',
-      experience: draft.requirements.experience || 'beginner',
-      specialInstructions: draft.requirements.specialInstructions || '',
-      quality: draft.requirements.quality || 'professional'
+      specialInstructions: draft.requirements.specialInstructions || ''
     }
     jobForm.isPublic = draft.isPublic
     
@@ -304,7 +299,7 @@ const loadDraftData = (draftId: string) => {
   }
 }
 
-const publishJob = async () => {
+const publishJobHandler = async () => {
   isSubmitting.value = true
   
   try {
@@ -319,21 +314,21 @@ const publishJob = async () => {
       status: 'published',
       priority: jobForm.priority as any,
       budget: {
-        min: jobForm.budget.min,
+        min: 0,
         max: jobForm.budget.max,
         currency: jobForm.budget.currency as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
       },
       deadline: jobForm.deadline,
       estimatedDuration: jobForm.estimatedDuration,
       requirements: {
-        languages: jobForm.requirements.languages,
-        accents: jobForm.requirements.accents,
-        voiceTypes: jobForm.requirements.voiceTypes as any,
+        languages: jobForm.requirements.language ? [jobForm.requirements.language] : [],
+        accents: jobForm.requirements.accent ? [jobForm.requirements.accent] : [],
+        voiceTypes: jobForm.requirements.voiceType ? [jobForm.requirements.voiceType] : [],
         ageRange: jobForm.requirements.ageRange,
         gender: jobForm.requirements.gender as any,
-        experience: jobForm.requirements.experience as any,
+        experience: 'beginner' as any,
         specialInstructions: jobForm.requirements.specialInstructions,
-        quality: jobForm.requirements.quality as any
+        quality: 'professional' as any
       },
       deliverables: [],
       files: [],
@@ -386,9 +381,9 @@ const loadClientDefaults = () => {
     jobForm.budget.max = client.preferences.defaultBudget.max
     jobForm.budget.currency = client.preferences.defaultBudget.currency
     
-    // Load default languages and voice types
-    jobForm.requirements.languages = [...client.preferences.preferredLanguages]
-    jobForm.requirements.voiceTypes = [...client.preferences.preferredVoiceTypes] as VoiceType[]
+    // Load default language and voice type (use first preference)
+    jobForm.requirements.language = client.preferences.preferredLanguages[0] || ''
+    jobForm.requirements.voiceType = client.preferences.preferredVoiceTypes[0] as VoiceType || ''
     
     // Load default preferences
     jobForm.requirePortfolio = true

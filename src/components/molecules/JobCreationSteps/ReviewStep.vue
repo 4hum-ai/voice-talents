@@ -191,7 +191,7 @@
 import { computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import type { JobPosting } from '@/types/voice-client'
+// import type { JobPosting } from '@/types/voice-client' // Not used in this component
 import type { VoiceType } from '@/types/voice-actor'
 
 interface Props {
