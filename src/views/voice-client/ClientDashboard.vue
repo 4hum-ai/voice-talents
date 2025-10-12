@@ -52,12 +52,6 @@
               icon="mdi:account-check" 
               color="purple" 
             />
-            <MetricCard 
-              title="Active Campaigns" 
-              :value="stats.activeCampaigns" 
-              icon="mdi:megaphone" 
-              color="orange" 
-            />
           </div>
 
           <!-- Quick Actions -->
@@ -116,39 +110,6 @@
                     <p class="text-xs text-muted-foreground mt-1">
                       {{ formatTimeAgo(activity.timestamp) }}
                     </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Campaign Performance -->
-            <div class="bg-card rounded-lg border border-border p-6">
-              <h3 class="text-lg font-semibold text-foreground mb-4">Campaign Performance</h3>
-              <div class="space-y-4">
-                <div 
-                  v-for="campaign in activeCampaigns" 
-                  :key="campaign.id"
-                  class="p-3 rounded-lg border border-border"
-                >
-                  <div class="flex items-center justify-between mb-2">
-                    <h4 class="text-sm font-medium text-foreground">
-                      {{ campaign.name }}
-                    </h4>
-                    <StatusBadge :status="getCampaignStatus(campaign.status)" />
-                  </div>
-                  <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span class="text-muted-foreground">Applications:</span>
-                      <span class="font-medium text-foreground ml-1">
-                        {{ campaign.metrics.totalApplications }}
-                      </span>
-                    </div>
-                    <div>
-                      <span class="text-muted-foreground">Response Rate:</span>
-                      <span class="font-medium text-foreground ml-1">
-                        {{ campaign.metrics.responseRate }}%
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>

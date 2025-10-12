@@ -90,21 +90,6 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'Job Details', requiresAuth: true, role: 'client' },
   },
   {
-    path: '/client/campaigns',
-    component: () => import('../views/voice-client/CampaignManagement.vue'),
-    meta: { title: 'Campaign Management', requiresAuth: true, role: 'client' },
-  },
-  {
-    path: '/client/campaigns/create',
-    component: () => import('../views/voice-client/CampaignCreate.vue'),
-    meta: { title: 'Create Campaign', requiresAuth: true, role: 'client' },
-  },
-  {
-    path: '/client/campaigns/:id',
-    component: () => import('../views/voice-client/CampaignDetail.vue'),
-    meta: { title: 'Campaign Details', requiresAuth: true, role: 'client' },
-  },
-  {
     path: '/client/talents',
     component: () => import('../views/voice-client/TalentManagement.vue'),
     meta: { title: 'Talent Management', requiresAuth: true, role: 'client' },

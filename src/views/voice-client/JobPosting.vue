@@ -23,10 +23,24 @@
               </div>
             </div>
             <div class="flex items-center space-x-4">
+              <!-- Draft Status Indicator -->
+              <div v-if="currentDraftId" class="flex items-center text-sm text-muted-foreground">
+                <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                Draft saved
+                <span v-if="lastAutoSave" class="ml-1">
+                  {{ new Date(lastAutoSave).toLocaleTimeString() }}
+                </span>
+              </div>
+              
               <ThemeToggle />
-              <Button variant="outline" size="sm" @click="saveDraft">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                @click="() => saveDraftHandler()"
+                :disabled="isSavingDraft"
+              >
                 <SaveIcon class="h-4 w-4 mr-2" />
-                Save Draft
+                {{ isSavingDraft ? 'Saving...' : 'Save Draft' }}
               </Button>
             </div>
           </div>
@@ -344,7 +358,7 @@
               <Button variant="outline" @click="$router.back()">
                 Cancel
               </Button>
-              <Button variant="outline" @click="saveDraft">
+              <Button variant="outline" @click="() => saveDraftHandler()">
                 <SaveIcon class="h-4 w-4 mr-2" />
                 Save Draft
               </Button>
@@ -361,8 +375,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import type { JobPosting } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
@@ -377,35 +391,45 @@ import MegaphoneIcon from '~icons/mdi/megaphone'
 import EmailIcon from '~icons/mdi/email'
 import ClockIcon from '~icons/mdi/clock'
 import TargetIcon from '~icons/mdi/target'
+import { useJobDrafts } from '@/composables/useJobDrafts'
+import { useToast } from '@/composables/useToast'
+import type { VoiceType } from '@/types/voice-actor'
 
 const router = useRouter()
+const route = useRoute()
+const { saveDraft, autoSaveDraft, loadDraft } = useJobDrafts()
+const { addToast: showToast } = useToast()
 
 // Form state
 const isSubmitting = ref(false)
+const isSavingDraft = ref(false)
 const currentClient = ref(mockClientData.voiceClients[0])
+const currentDraftId = ref<string | null>(null)
+const lastAutoSave = ref<Date | null>(null)
+const autoSaveInterval = ref<number | null>(null)
 
 const jobForm = reactive({
-  jobType: 'open_casting',
+  jobType: 'open_casting' as 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search',
   title: '',
   description: '',
-  projectType: '',
-  priority: 'medium',
+  projectType: 'commercial' as any,
+  priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
   budget: {
     min: 0,
     max: 0,
-    currency: 'USD'
+    currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
   },
   deadline: '',
   estimatedDuration: '',
   requirements: {
-    languages: [],
-    accents: [],
-    voiceTypes: [],
+    languages: [] as string[],
+    accents: [] as string[],
+    voiceTypes: [] as VoiceType[],
     ageRange: '',
-    gender: '',
-    experience: '',
+    gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
+    experience: 'beginner' as 'beginner' | 'intermediate' | 'advanced' | 'professional',
     specialInstructions: '',
-    quality: 'professional'
+    quality: 'professional' as 'standard' | 'professional' | 'broadcast'
   },
   isPublic: true,
   requirePortfolio: true,
@@ -535,11 +559,99 @@ const jobTypes = [
 ]
 
 // Methods
-const saveDraft = () => {
-  // In real app, save draft to API
-  console.log('Saving draft:', jobForm)
-  // Show success message
+const saveDraftHandler = async () => {
+  isSavingDraft.value = true
+  
+  try {
+    const draft = saveDraft(
+      jobForm,
+      currentClient.value.id,
+      currentClient.value.companyName,
+      currentDraftId.value || undefined
+    )
+    
+    currentDraftId.value = draft.id
+    lastAutoSave.value = new Date()
+    
+    showToast({
+      type: 'success',
+      title: 'Draft Saved',
+      message: 'Your job draft has been saved successfully.'
+    })
+  } catch (error) {
+    console.error('Error saving draft:', error)
+    showToast({
+      type: 'error',
+      title: 'Save Failed',
+      message: 'Failed to save draft. Please try again.'
+    })
+  } finally {
+    isSavingDraft.value = false
+  }
 }
+
+const autoSaveHandler = () => {
+  if (jobForm.title.trim() || jobForm.description.trim()) {
+    const draft = autoSaveDraft(
+      jobForm,
+      currentClient.value.id,
+      currentClient.value.companyName,
+      currentDraftId.value || undefined
+    )
+    
+    if (draft) {
+      currentDraftId.value = draft.id
+      lastAutoSave.value = new Date()
+    }
+  }
+}
+
+const startAutoSave = () => {
+  // Auto-save every 30 seconds
+  autoSaveInterval.value = setInterval(autoSaveHandler, 30000)
+}
+
+const stopAutoSave = () => {
+  if (autoSaveInterval.value) {
+    clearInterval(autoSaveInterval.value)
+    autoSaveInterval.value = null
+  }
+}
+
+const loadDraftData = (draftId: string) => {
+  const draft = loadDraft(draftId)
+  if (draft) {
+    currentDraftId.value = draft.id
+    
+    // Populate form with draft data
+    jobForm.jobType = draft.jobType
+    jobForm.title = draft.title
+    jobForm.description = draft.description
+    jobForm.projectType = draft.projectType
+    jobForm.priority = draft.priority
+    jobForm.budget = { ...draft.budget }
+    jobForm.deadline = draft.deadline
+    jobForm.estimatedDuration = draft.estimatedDuration
+    jobForm.requirements = {
+      languages: draft.requirements.languages || [],
+      accents: draft.requirements.accents || [],
+      voiceTypes: (draft.requirements.voiceTypes || []) as VoiceType[],
+      ageRange: draft.requirements.ageRange || '',
+      gender: draft.requirements.gender || 'any',
+      experience: draft.requirements.experience || 'beginner',
+      specialInstructions: draft.requirements.specialInstructions || '',
+      quality: draft.requirements.quality || 'professional'
+    }
+    jobForm.isPublic = draft.isPublic
+    
+    showToast({
+      type: 'info',
+      title: 'Draft Loaded',
+      message: `Loaded draft: ${draft.title}`
+    })
+  }
+}
+
 
 const loadClientDefaults = () => {
   const client = currentClient.value
@@ -550,14 +662,39 @@ const loadClientDefaults = () => {
     jobForm.budget.currency = client.preferences.defaultBudget.currency
     
     // Load default languages and voice types
-    jobForm.requirements.languages = [...client.preferences.preferredLanguages] as any[]
-    jobForm.requirements.voiceTypes = [...client.preferences.preferredVoiceTypes] as any[]
+    jobForm.requirements.languages = [...client.preferences.preferredLanguages]
+    jobForm.requirements.voiceTypes = [...client.preferences.preferredVoiceTypes] as VoiceType[]
     
     // Load default preferences
     jobForm.requirePortfolio = true // Default from settings
     jobForm.isPublic = client.isPublic
   }
 }
+
+// Lifecycle hooks
+onMounted(() => {
+  loadClientDefaults()
+  startAutoSave()
+  
+  // Check if we're editing a draft from route params
+  const draftId = route.query.draftId as string
+  if (draftId) {
+    loadDraftData(draftId)
+  }
+})
+
+onUnmounted(() => {
+  stopAutoSave()
+})
+
+// Watch for form changes to trigger auto-save
+watch(jobForm, () => {
+  // Debounce auto-save to avoid too frequent saves
+  if (autoSaveInterval.value) {
+    clearTimeout(autoSaveInterval.value)
+    autoSaveInterval.value = setTimeout(autoSaveHandler, 5000) // 5 second delay
+  }
+}, { deep: true })
 
 const submitJob = async () => {
   isSubmitting.value = true
