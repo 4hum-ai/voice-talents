@@ -361,9 +361,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { JobPosting } from '@/types/voice-client'
+import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import Button from '@/components/atoms/Button.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
@@ -549,8 +550,8 @@ const loadClientDefaults = () => {
     jobForm.budget.currency = client.preferences.defaultBudget.currency
     
     // Load default languages and voice types
-    jobForm.requirements.languages = [...client.preferences.preferredLanguages]
-    jobForm.requirements.voiceTypes = [...client.preferences.preferredVoiceTypes]
+    jobForm.requirements.languages = [...client.preferences.preferredLanguages] as any[]
+    jobForm.requirements.voiceTypes = [...client.preferences.preferredVoiceTypes] as any[]
     
     // Load default preferences
     jobForm.requirePortfolio = true // Default from settings
