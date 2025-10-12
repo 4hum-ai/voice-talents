@@ -217,6 +217,14 @@
       @close="closeJobCreationModal"
       @complete="handleJobCreated"
     />
+
+    <!-- Client Onboarding -->
+    <ClientOnboardingFlow
+      :show="showClientOnboarding"
+      @complete="completeClientOnboarding"
+      @skip="skipClientOnboarding"
+      @close="closeClientOnboarding"
+    />
   </div>
 </template>
 
@@ -237,7 +245,9 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
+import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
 import { useToast } from '@/composables/useToast'
+import { useOnboarding } from '@/composables/useOnboarding'
 import PlusIcon from '~icons/mdi/plus'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import MegaphoneIcon from '~icons/mdi/megaphone'
@@ -251,9 +261,12 @@ const jobPostings = ref<JobPosting[]>(mockClientData.jobPostings)
 const applications = ref<JobApplication[]>(mockClientData.jobApplications)
 const campaigns = ref<Campaign[]>(mockClientData.campaigns)
 
+// Onboarding logic
+const { shouldShowOnboarding, isTalentMode } = useOnboarding()
+const { addToast: showToast, success } = useToast()
+
 // Modal state
 const showJobCreationModal = ref(false)
-const { addToast: showToast } = useToast()
 
 // Computed
 const recentActivity = computed(() => stats.value.recentActivity.slice(0, 5))
@@ -271,6 +284,8 @@ const recentApplications = computed(() =>
 const activeCampaigns = computed(() =>
   campaigns.value.filter((campaign) => campaign.status === 'active').slice(0, 2),
 )
+
+const showClientOnboarding = computed(() => !isTalentMode.value && shouldShowOnboarding.value)
 
 // Methods
 const getCampaignStatus = (status: string) => {
@@ -365,6 +380,19 @@ const handleJobCreated = (job: any) => {
   setTimeout(() => {
     window.location.reload()
   }, 1000)
+}
+
+// Client onboarding methods
+const completeClientOnboarding = () => {
+  success('Welcome to VoiceAct! Your client profile is ready to go.')
+}
+
+const skipClientOnboarding = () => {
+  success('You can complete your profile later in settings.')
+}
+
+const closeClientOnboarding = () => {
+  // Onboarding will be hidden automatically by the computed property
 }
 
 onMounted(() => {

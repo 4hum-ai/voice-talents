@@ -258,6 +258,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Talent Onboarding -->
+    <OnboardingFlow
+      :show="showTalentOnboarding"
+      @complete="completeTalentOnboarding"
+      @skip="skipTalentOnboarding"
+      @close="closeTalentOnboarding"
+    />
   </div>
 </template>
 
@@ -266,6 +274,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { VoiceActor, VoiceActorStats, Project, ProjectMessage } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
+import { useOnboarding } from '@/composables/useOnboarding'
+import { useToast } from '@/composables/useToast'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
@@ -275,10 +285,15 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import OnboardingFlow from '@/components/organisms/OnboardingFlow.vue'
 import BellIcon from '~icons/mdi/bell'
 import AccountIcon from '~icons/mdi/account'
 
 const router = useRouter()
+
+// Onboarding logic
+const { shouldShowOnboarding, isTalentMode } = useOnboarding()
+const { success } = useToast()
 
 // Mock data
 const currentActor = ref<VoiceActor>(mockData.voiceActors[0])
@@ -287,6 +302,7 @@ const voiceActorStats = ref<VoiceActorStats>(mockData.voiceActorStats)
 // Computed properties
 const stats = computed(() => voiceActorStats.value)
 const unreadNotifications = computed(() => mockData.notifications.filter((n) => !n.isRead).length)
+const showTalentOnboarding = computed(() => isTalentMode.value && shouldShowOnboarding.value)
 
 const recentProjects = computed(() => mockData.projects.slice(0, 3))
 
@@ -364,6 +380,19 @@ const mapActivityStatus = (status: string) => {
     failed: 'error',
   }
   return statusMap[status] || 'pending'
+}
+
+// Onboarding methods
+const completeTalentOnboarding = () => {
+  success('Welcome to VoiceAct! Your talent profile is ready to go.')
+}
+
+const skipTalentOnboarding = () => {
+  success('You can complete your profile later in settings.')
+}
+
+const closeTalentOnboarding = () => {
+  // Onboarding will be hidden automatically by the computed property
 }
 
 onMounted(() => {
