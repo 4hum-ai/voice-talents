@@ -235,7 +235,6 @@ import type {
   ClientStats,
   JobPosting,
   JobApplication,
-  Campaign,
 } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
@@ -259,7 +258,6 @@ const currentClient = ref<VoiceClient>(mockClientData.voiceClients[0])
 const stats = ref<ClientStats>(mockClientData.clientStats)
 const jobPostings = ref<JobPosting[]>(mockClientData.jobPostings)
 const applications = ref<JobApplication[]>(mockClientData.jobApplications)
-const campaigns = ref<Campaign[]>(mockClientData.campaigns)
 
 // Onboarding logic
 const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
@@ -281,27 +279,10 @@ const recentApplications = computed(() =>
     .slice(0, 3),
 )
 
-const activeCampaigns = computed(() =>
-  campaigns.value.filter((campaign) => campaign.status === 'active').slice(0, 2),
-)
 
 const showClientOnboarding = computed(() => !isTalentMode.value && shouldShowOnboarding.value)
 
 // Methods
-const getCampaignStatus = (status: string) => {
-  switch (status) {
-    case 'active':
-      return 'active'
-    case 'paused':
-      return 'inactive'
-    case 'completed':
-      return 'completed'
-    case 'cancelled':
-      return 'rejected'
-    default:
-      return 'draft'
-  }
-}
 
 const getJobStatus = (status: string) => {
   switch (status) {
@@ -398,7 +379,7 @@ const closeClientOnboarding = () => {
 onMounted(() => {
   // Set user mode to client when accessing client dashboard
   setUserMode('client')
-  
+
   // In real app, fetch client data from API
   console.log('Client dashboard loaded')
 })

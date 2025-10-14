@@ -3,12 +3,7 @@
     <!-- Section Header -->
     <div v-if="title || description" class="mb-6">
       <div v-if="icon" class="mb-4 flex items-center space-x-3">
-        <div
-          :class="[
-            'flex h-10 w-10 items-center justify-center rounded-lg',
-            iconBgClass
-          ]"
-        >
+        <div :class="['flex h-10 w-10 items-center justify-center rounded-lg', iconBgClass]">
           <component :is="icon" :class="iconClass" />
         </div>
         <div>
@@ -36,7 +31,7 @@
     </div>
 
     <!-- Section Footer -->
-    <div v-if="$slots.footer" class="mt-6 border-t border-border pt-6">
+    <div v-if="$slots.footer" class="border-border mt-6 border-t pt-6">
       <slot name="footer" />
     </div>
   </div>
@@ -91,7 +86,7 @@ const contentClass = computed(() => {
     compact: 'space-y-4',
     spacious: 'space-y-8',
   }[props.variant]
-  
+
   const columnClass = {
     1: '',
     2: 'grid grid-cols-1 gap-6 md:grid-cols-2',

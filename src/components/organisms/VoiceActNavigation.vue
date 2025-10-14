@@ -55,7 +55,12 @@
 
         <!-- Settings & Logout -->
         <div class="flex space-x-2">
-          <Button variant="ghost" size="sm" class="flex-1" @click="$router.push('/talent/settings')">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="flex-1"
+            @click="$router.push('/talent/settings')"
+          >
             <CogIcon class="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm" class="flex-1" @click="handleLogout">

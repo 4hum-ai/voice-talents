@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'border-b border-border bg-card/90 backdrop-blur',
+      'border-border bg-card/90 border-b backdrop-blur',
       fixed ? 'fixed inset-x-0 top-0 z-40' : 'relative',
     ]"
   >
@@ -14,10 +14,10 @@
           <slot name="left" />
         </div>
         <div v-else class="min-w-0">
-          <div class="truncate text-base font-semibold text-foreground">
+          <div class="text-foreground truncate text-base font-semibold">
             <slot name="title" />
           </div>
-          <div class="truncate text-xs text-muted-foreground">
+          <div class="text-muted-foreground truncate text-xs">
             <slot name="subtitle" />
           </div>
         </div>

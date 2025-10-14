@@ -1,11 +1,5 @@
 <template>
-  <div
-    :class="[
-      'rounded-lg border border-border bg-card',
-      sizeClasses.padding,
-      customClass,
-    ]"
-  >
+  <div :class="['border-border bg-card rounded-lg border', sizeClasses.padding, customClass]">
     <!-- Header slot -->
     <slot
       name="header"
@@ -41,7 +35,7 @@
 
           <!-- Title slot -->
           <slot name="title" :title="title" :size-classes="sizeClasses">
-            <h3 :class="['font-medium text-foreground', sizeClasses.title]">
+            <h3 :class="['text-foreground font-medium', sizeClasses.title]">
               {{ title }}
             </h3>
           </slot>
@@ -86,7 +80,7 @@
         :size-classes="sizeClasses"
       >
         <div class="mb-1">
-          <span :class="['font-bold text-foreground', sizeClasses.value]">
+          <span :class="['text-foreground font-bold', sizeClasses.value]">
             {{ formattedValue }}
           </span>
         </div>

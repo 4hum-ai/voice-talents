@@ -1,18 +1,16 @@
 <template>
   <div v-if="open" class="fixed inset-0 z-50 grid place-items-center bg-black/40">
-    <div
-      class="w-full max-w-sm rounded-lg border border-border bg-card p-4 shadow-xl"
-    >
-      <h3 class="text-base font-semibold text-foreground">
+    <div class="border-border bg-card w-full max-w-sm rounded-lg border p-4 shadow-xl">
+      <h3 class="text-foreground text-base font-semibold">
         {{ title }}
       </h3>
-      <p class="mt-2 text-sm text-muted-foreground">
+      <p class="text-muted-foreground mt-2 text-sm">
         {{ message }}
       </p>
 
       <!-- Text confirmation input when required -->
       <div v-if="confirmationText" class="mt-4">
-        <label class="block text-sm font-medium text-foreground">
+        <label class="text-foreground block text-sm font-medium">
           Type
           <span class="font-mono font-semibold text-red-600 dark:text-red-400">{{
             confirmationText
@@ -22,7 +20,7 @@
         <input
           v-model="inputText"
           type="text"
-          class="mt-1 block w-full rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+          class="border-border bg-input text-foreground placeholder-muted-foreground mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
           :placeholder="`Type ${confirmationText} to confirm`"
           @keyup.enter="handleConfirm"
         />

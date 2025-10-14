@@ -79,7 +79,7 @@
 
           <!-- Casting Calls Grid/List -->
           <div v-if="filteredCastingSessions.length === 0" class="py-12 text-center">
-            <MegaphoneIcon class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <MegaphoneIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 class="text-foreground mb-2 text-lg font-medium">No casting calls found</h3>
             <p class="text-muted-foreground mb-6">
               {{
@@ -562,9 +562,6 @@ const experienceOptions = computed(() => [
 ])
 
 // Methods
-const toggleView = () => {
-  viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
-}
 
 const handleSearch = () => {
   // Search is handled by computed property

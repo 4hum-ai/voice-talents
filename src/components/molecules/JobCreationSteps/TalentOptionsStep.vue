@@ -221,8 +221,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
-import FormInput from '@/components/atoms/FormInput.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
 import Icon from '@/components/atoms/Icon.vue'
 
 interface TalentOptions {
@@ -268,18 +266,6 @@ const localAISettings = ref<AISettings>({ ...props.aiSettings })
 const localPremiumFeatures = ref<PremiumFeatures>({ ...props.premiumFeatures })
 
 // Options
-const voiceModelOptions = [
-  { value: 'natural_female', label: 'Natural Female' },
-  { value: 'natural_male', label: 'Natural Male' },
-  { value: 'youthful_female', label: 'Youthful Female' },
-  { value: 'mature_male', label: 'Mature Male' },
-]
-
-const speedOptions = [
-  { value: 'slow', label: 'Slow' },
-  { value: 'normal', label: 'Normal' },
-  { value: 'fast', label: 'Fast' },
-]
 
 // Mock talent list
 const mockTalentList = [

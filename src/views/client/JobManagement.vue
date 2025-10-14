@@ -400,7 +400,7 @@ const handleJobCreated = (job: any) => {
   refreshJobs()
 }
 
-const viewJob = (_jobId: string) => {
+const viewJob = () => {
   // In a real app, this would navigate to a job detail view
   showToast({
     type: 'info',

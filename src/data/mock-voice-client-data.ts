@@ -11,7 +11,6 @@ import type {
   JobApplication,
   CustomSample,
   ClientStats,
-  ClientActivityItem,
 } from '@/types/voice-client'
 
 // Mock Voice Clients

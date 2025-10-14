@@ -1,11 +1,11 @@
 <template>
-  <div class="flex items-center rounded-md border border-border">
+  <div class="border-border flex items-center rounded-md border">
     <button
       :class="[
         'flex items-center space-x-2 px-3 py-2 text-sm font-medium transition-colors',
         modelValue === 'list'
-          ? 'bg-card shadow-sm text-foreground'
-          : 'text-muted-foreground hover:text-foreground'
+          ? 'bg-card text-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground',
       ]"
       @click="updateValue('list')"
     >
@@ -16,8 +16,8 @@
       :class="[
         'flex items-center space-x-2 px-3 py-2 text-sm font-medium transition-colors',
         modelValue === 'grid'
-          ? 'bg-card shadow-sm text-foreground'
-          : 'text-muted-foreground hover:text-foreground'
+          ? 'bg-card text-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground',
       ]"
       @click="updateValue('grid')"
     >
@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: 'list' | 'grid']
-  'change': [value: 'list' | 'grid']
+  change: [value: 'list' | 'grid']
 }>()
 
 const updateValue = (value: 'list' | 'grid') => {

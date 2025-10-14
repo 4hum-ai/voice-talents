@@ -312,15 +312,6 @@ const hasPremiumFeatures = computed(() => {
   )
 })
 
-const hasAISettings = computed(() => {
-  return (
-    props.jobForm.aiSettings.voiceModel ||
-    props.jobForm.aiSettings.voiceStyle ||
-    props.jobForm.aiSettings.emotion ||
-    props.jobForm.aiSettings.speed ||
-    props.jobForm.aiSettings.pitch
-  )
-})
 
 const totalPremiumCost = computed(() => {
   let cost = 0
@@ -429,15 +420,6 @@ const getRevisionRoundsLabel = (rounds: string) => {
   return labels[rounds] || rounds
 }
 
-const getVoiceModelLabel = (model: string) => {
-  const labels: Record<string, string> = {
-    natural_female: 'Natural Female',
-    natural_male: 'Natural Male',
-    youthful_female: 'Youthful Female',
-    mature_male: 'Mature Male',
-  }
-  return labels[model] || model
-}
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)

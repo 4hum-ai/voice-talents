@@ -71,7 +71,7 @@
 
           <!-- Projects Grid/List -->
           <div v-if="filteredProjects.length === 0" class="py-12 text-center">
-            <FolderOpenIcon class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <FolderOpenIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 class="text-foreground mb-2 text-lg font-medium">No projects found</h3>
             <p class="text-muted-foreground mb-6">
               {{
@@ -365,9 +365,6 @@ import MagnifyIcon from '~icons/mdi/magnify'
 import FolderOpenIcon from '~icons/mdi/folder-open'
 import EyeIcon from '~icons/mdi/eye'
 import ClipboardTextIcon from '~icons/mdi/clipboard-text'
-import MessageIcon from '~icons/mdi/message'
-import ShareIcon from '~icons/mdi/share'
-import ArchiveIcon from '~icons/mdi/archive'
 
 const router = useRouter()
 
@@ -452,9 +449,6 @@ const priorityOptions = computed(() => [
 ])
 
 // Methods
-const toggleView = () => {
-  viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
-}
 
 const handleAdvancedSearch = (query: string, filters: any) => {
   searchQuery.value = query
@@ -518,7 +512,7 @@ const getAssignmentStatusVariant = (status: string) => {
   return variants[status] || 'secondary'
 }
 
-const getProjectActions = (project: Project) => [
+const getProjectActions = () => [
   {
     key: 'messages',
     label: 'View Messages',

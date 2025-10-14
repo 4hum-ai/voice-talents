@@ -43,8 +43,6 @@
                 required
               />
             </div>
-
-
           </div>
         </div>
 
@@ -267,7 +265,6 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const localTitle = ref(props.title)
-const localDescription = ref(props.description)
 const localProjectType = ref(props.projectType)
 const localRequirements = ref<Requirements>({ ...props.requirements })
 const localDeadline = ref(props.deadline)
@@ -327,62 +324,8 @@ const revisionRoundsOptions = [
   { value: 'unlimited', label: 'Unlimited' },
 ]
 
-// Project type descriptions
-const projectTypeDescriptions = {
-  commercial: {
-    label: 'Commercial Voice-Over',
-    description: 'TV, radio, or online advertisements for products or services',
-  },
-  audiobook_narrator: {
-    label: 'Audiobook Narration',
-    description: 'Narration of books, novels, or educational content',
-  },
-  character_voice: {
-    label: 'Character Voice',
-    description: 'Character voices for animation, games, or storytelling',
-  },
-  podcast: {
-    label: 'Podcast Voice',
-    description: 'Podcast intros, outros, or episode narration',
-  },
-  'e-learning': {
-    label: 'E-Learning Narration',
-    description: 'Educational content, training materials, or course narration',
-  },
-  animation: {
-    label: 'Animation Voice',
-    description: 'Character voices for animated films, series, or games',
-  },
-  video_game: {
-    label: 'Video Game Voice',
-    description: 'Character voices, narration, or in-game announcements',
-  },
-  presentation: {
-    label: 'Presentation Voice',
-    description: 'Corporate presentations, training videos, or explainer content',
-  },
-  announcer: {
-    label: 'Announcer Voice',
-    description: 'Event announcements, sports commentary, or public speaking',
-  },
-  phone_system: {
-    label: 'Phone System Voice',
-    description: 'IVR, hold music, or automated phone system messages',
-  },
-  app_voice: {
-    label: 'App Voice Interface',
-    description: 'Voice interface for mobile apps or digital assistants',
-  },
-  storyteller: {
-    label: 'Storytelling Voice',
-    description: 'Narrative storytelling, audiobooks, or creative content',
-  },
-}
 
 // Computed properties
-const selectedProjectType = computed(() => {
-  return projectTypeDescriptions[localProjectType.value as keyof typeof projectTypeDescriptions]
-})
 
 // Voice solution label helper
 const getVoiceSolutionLabel = () => {

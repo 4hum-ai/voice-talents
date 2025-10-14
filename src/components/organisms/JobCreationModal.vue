@@ -1,8 +1,8 @@
 <template>
-  <div v-if="open" class="fixed inset-0 z-50 pt-16 overflow-y-auto bg-background">
+  <div v-if="open" class="bg-background fixed inset-0 z-50 overflow-y-auto pt-16">
     <!-- Top Navigation Bar -->
     <div
-      class="absolute top-0 right-0 left-0 z-10 border-b border-border bg-card/95 backdrop-blur-sm"
+      class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
     >
       <div class="flex items-center justify-between px-6 py-4">
         <!-- Left: Previous Button -->
@@ -16,16 +16,16 @@
 
         <!-- Center: Progress -->
         <div class="flex items-center space-x-4">
-          <div class="text-sm text-muted-foreground">
+          <div class="text-muted-foreground text-sm">
             Step {{ currentStep }} of {{ totalSteps }}
           </div>
-          <div class="h-2 w-32 rounded-full bg-muted">
+          <div class="bg-muted h-2 w-32 rounded-full">
             <div
               class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
               :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
             />
           </div>
-          <div class="text-sm text-muted-foreground">
+          <div class="text-muted-foreground text-sm">
             {{ Math.round((currentStep / totalSteps) * 100) }}%
           </div>
         </div>
@@ -54,8 +54,8 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="max-w-7xl mx-auto">
-      <div class="mx-auto  py-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="mx-auto py-8">
         <!-- Step Content -->
         <Transition :name="transitionName" mode="out-in">
           <div :key="currentStep" class="min-h-[600px]">
@@ -531,7 +531,7 @@ const scrollLock = useScrollLock(document.documentElement) // or document.body
 watch(
   () => props.open,
   (isOpen) => {
-    scrollLock.value=isOpen;
+    scrollLock.value = isOpen
     if (isOpen) {
       // If opening for a new job (no draftId), reset the form
       if (!props.draftId) {

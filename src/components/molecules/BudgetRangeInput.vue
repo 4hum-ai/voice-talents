@@ -81,7 +81,7 @@
     </div>
 
     <!-- Error Message -->
-    <p v-if="errorMessage" class="text-red-600 text-sm dark:text-red-400">
+    <p v-if="errorMessage" class="text-sm text-red-600 dark:text-red-400">
       {{ errorMessage }}
     </p>
 
@@ -144,7 +144,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [value: BudgetRange]
-  'change': [value: BudgetRange]
+  change: [value: BudgetRange]
 }>()
 
 // Local state
@@ -157,18 +157,20 @@ const errorMessage = ref('')
 const currency = computed(() => localCurrency.value)
 
 const inputClasses = computed(() => {
-  const base = 'block w-full rounded-md border px-3 py-2 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors'
+  const base =
+    'block w-full rounded-md border px-3 py-2 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors'
   const error = errorMessage.value ? 'border-red-300 dark:border-red-600' : 'border-border'
   const disabled = props.disabled ? 'bg-muted text-muted-foreground' : 'bg-input text-foreground'
-  
+
   return [base, error, disabled].join(' ')
 })
 
 const selectClasses = computed(() => {
-  const base = 'block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors'
+  const base =
+    'block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors'
   const error = errorMessage.value ? 'border-red-300 dark:border-red-600' : 'border-border'
   const disabled = props.disabled ? 'bg-muted text-muted-foreground' : 'bg-input text-foreground'
-  
+
   return [base, error, disabled].join(' ')
 })
 
@@ -179,24 +181,24 @@ const updateValues = () => {
     max: localMax.value || 0,
     currency: localCurrency.value,
   }
-  
+
   emit('update:modelValue', newValue)
   emit('change', newValue)
 }
 
 const validateRange = () => {
   errorMessage.value = ''
-  
-  if (props.required && (!localMin.value && !localMax.value)) {
+
+  if (props.required && !localMin.value && !localMax.value) {
     errorMessage.value = 'Budget range is required'
     return
   }
-  
+
   if (localMin.value && localMax.value && localMin.value > localMax.value) {
     errorMessage.value = 'Minimum cannot be greater than maximum'
     return
   }
-  
+
   if (localMin.value < 0 || localMax.value < 0) {
     errorMessage.value = 'Budget values cannot be negative'
     return
@@ -206,12 +208,12 @@ const validateRange = () => {
 const formatBudgetRange = () => {
   const min = localMin.value ? formatCurrency(localMin.value) : 'Any'
   const max = localMax.value ? formatCurrency(localMax.value) : 'Any'
-  
+
   if (min === 'Any' && max === 'Any') return 'Any amount'
   if (min === 'Any') return `Up to ${max}`
   if (max === 'Any') return `From ${min}`
   if (localMin.value === localMax.value) return min
-  
+
   return `${min} - ${max}`
 }
 
@@ -224,7 +226,7 @@ const formatCurrency = (amount: number) => {
     AUD: 'A$',
     VND: '₫',
   }
-  
+
   const symbol = currencySymbols[localCurrency.value] || localCurrency.value
   return `${symbol}${amount.toLocaleString()}`
 }
@@ -239,6 +241,6 @@ watch(
       localCurrency.value = newValue.currency || 'USD'
     }
   },
-  { deep: true }
+  { deep: true },
 )
 </script>

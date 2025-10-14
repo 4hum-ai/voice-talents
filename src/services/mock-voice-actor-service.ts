@@ -275,14 +275,14 @@ export class MockVoiceActorService {
   }
 
   // Statistics
-  async getVoiceActorStats(actorId: string): Promise<VoiceActorStats> {
+  async getVoiceActorStats(_actorId: string): Promise<VoiceActorStats> {
     await delay()
     // In real app, this would calculate stats from actual data
     return mockData.voiceActorStats
   }
 
   // Activity Feed
-  async getRecentActivity(actorId: string, limit: number = 10): Promise<ActivityItem[]> {
+  async getRecentActivity(_actorId: string, limit: number = 10): Promise<ActivityItem[]> {
     await delay()
     return mockData.voiceActorStats.recentActivity.slice(0, limit)
   }
@@ -290,7 +290,7 @@ export class MockVoiceActorService {
   // File Upload Simulation
   async uploadFile(
     file: File,
-    type: 'sample' | 'recording' | 'reference',
+    _type: 'sample' | 'recording' | 'reference',
   ): Promise<{ url: string; id: string }> {
     await delay(2000) // Simulate upload time
 
@@ -302,7 +302,7 @@ export class MockVoiceActorService {
   }
 
   // Audio Processing Simulation
-  async processAudio(audioUrl: string): Promise<{ waveformUrl: string; duration: number }> {
+  async processAudio(_audioUrl: string): Promise<{ waveformUrl: string; duration: number }> {
     await delay(3000) // Simulate processing time
 
     return {

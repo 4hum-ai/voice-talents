@@ -13,7 +13,6 @@ import type {
   CastingProposal,
   CustomSample,
   VoiceActorStats,
-  ActivityItem,
 } from '@/types/voice-actor'
 
 // Mock Voice Actors

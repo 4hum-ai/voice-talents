@@ -18,8 +18,5 @@
 <script setup lang="ts">
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
-import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import ArrowLeftIcon from '~icons/mdi/arrow-left'
-import EmailIcon from '~icons/mdi/email'
 </script>

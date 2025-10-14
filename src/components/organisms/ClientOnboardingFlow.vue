@@ -1,8 +1,8 @@
 <template>
-  <div v-if="showOnboarding" class="fixed inset-0 z-50 overflow-hidden bg-background">
+  <div v-if="showOnboarding" class="bg-background fixed inset-0 z-50 overflow-hidden">
     <!-- Top Navigation Bar -->
     <div
-      class="absolute top-0 right-0 left-0 z-10 border-b border-border bg-card/95 backdrop-blur-sm"
+      class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
     >
       <div class="flex items-center justify-between px-6 py-4">
         <!-- Left: Previous Button -->
@@ -16,16 +16,16 @@
 
         <!-- Center: Progress -->
         <div class="flex items-center space-x-4">
-          <div class="text-sm text-muted-foreground">
+          <div class="text-muted-foreground text-sm">
             Step {{ currentStep }} of {{ totalSteps }}
           </div>
-          <div class="h-2 w-32 rounded-full bg-muted">
+          <div class="bg-muted h-2 w-32 rounded-full">
             <div
               class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
               :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
             />
           </div>
-          <div class="text-sm text-muted-foreground">
+          <div class="text-muted-foreground text-sm">
             {{ Math.round((currentStep / totalSteps) * 100) }}%
           </div>
         </div>
@@ -63,60 +63,52 @@
             >
               <Icon name="mdi:briefcase" class="h-10 w-10 text-white" />
             </div>
-            <h1 class="mb-4 text-3xl font-bold text-foreground">
-              Welcome to VoiceAct.AI
-            </h1>
-            <p class="mb-8 text-lg text-muted-foreground">
+            <h1 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceAct.AI</h1>
+            <p class="text-muted-foreground mb-8 text-lg">
               Let's set up your client account to start finding amazing voice talent
             </p>
           </div>
 
-          <div class="rounded-lg bg-card p-8 shadow-lg">
-            <h2 class="mb-6 text-xl font-semibold text-foreground">
-              Company Information
-            </h2>
+          <div class="bg-card rounded-lg p-8 shadow-lg">
+            <h2 class="text-foreground mb-6 text-xl font-semibold">Company Information</h2>
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
+                <label class="text-foreground mb-2 block text-sm font-medium">
                   Company Name *
                 </label>
                 <input
                   v-model="onboardingData.companyName"
                   type="text"
                   required
-                  class="w-full rounded-md border border-border bg-input px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                  class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   placeholder="Your Company Name"
                 />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
-                  Your Name *
-                </label>
+                <label class="text-foreground mb-2 block text-sm font-medium"> Your Name * </label>
                 <input
                   v-model="onboardingData.contactName"
                   type="text"
                   required
-                  class="w-full rounded-md border border-border bg-input px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                  class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   placeholder="Your Full Name"
                 />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
+                <label class="text-foreground mb-2 block text-sm font-medium">
                   Email Address *
                 </label>
                 <input
                   v-model="onboardingData.email"
                   type="email"
                   required
-                  class="w-full rounded-md border border-border bg-input px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                  class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                   placeholder="your@email.com"
                 />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
-                  Industry
-                </label>
+                <label class="text-foreground mb-2 block text-sm font-medium"> Industry </label>
                 <SelectInput
                   v-model="onboardingData.industry"
                   :options="industryOptions"
@@ -135,20 +127,18 @@
             >
               <Icon name="mdi:target" class="h-10 w-10 text-white" />
             </div>
-            <h1 class="mb-4 text-3xl font-bold text-foreground">
-              Set Your Preferences
-            </h1>
-            <p class="mb-8 text-lg text-muted-foreground">
+            <h1 class="text-foreground mb-4 text-3xl font-bold">Set Your Preferences</h1>
+            <p class="text-muted-foreground mb-8 text-lg">
               Tell us about your typical voice over needs
             </p>
           </div>
 
-          <div class="rounded-lg bg-card p-8 shadow-lg">
-            <h2 class="mb-6 text-xl font-semibold text-foreground">Job Defaults</h2>
+          <div class="bg-card rounded-lg p-8 shadow-lg">
+            <h2 class="text-foreground mb-6 text-xl font-semibold">Job Defaults</h2>
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
+                <label class="text-foreground mb-2 block text-sm font-medium">
                   Typical Budget Range
                 </label>
                 <div class="grid grid-cols-2 gap-3">
@@ -156,20 +146,20 @@
                     v-model.number="onboardingData.defaultBudget.min"
                     type="number"
                     min="0"
-                    class="w-full rounded-md border border-border bg-input px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                    class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                     placeholder="Min"
                   />
                   <input
                     v-model.number="onboardingData.defaultBudget.max"
                     type="number"
                     min="0"
-                    class="w-full rounded-md border border-border bg-input px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:outline-none"
+                    class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                     placeholder="Max"
                   />
                 </div>
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
+                <label class="text-foreground mb-2 block text-sm font-medium">
                   Preferred Currency
                 </label>
                 <SelectInput
@@ -179,7 +169,7 @@
                 />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
+                <label class="text-foreground mb-2 block text-sm font-medium">
                   Preferred Languages
                 </label>
                 <SelectInput
@@ -190,7 +180,7 @@
                 />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-foreground">
+                <label class="text-foreground mb-2 block text-sm font-medium">
                   Preferred Voice Types
                 </label>
                 <SelectInput
@@ -212,69 +202,55 @@
             >
               <Icon name="mdi:cog" class="h-10 w-10 text-white" />
             </div>
-            <h1 class="mb-4 text-3xl font-bold text-foreground">
-              Workflow Preferences
-            </h1>
-            <p class="mb-8 text-lg text-muted-foreground">
+            <h1 class="text-foreground mb-4 text-3xl font-bold">Workflow Preferences</h1>
+            <p class="text-muted-foreground mb-8 text-lg">
               How would you like to work with voice actors?
             </p>
           </div>
 
-          <div class="rounded-lg bg-card p-8 shadow-lg">
-            <h2 class="mb-6 text-xl font-semibold text-foreground">
-              Job Preferences
-            </h2>
+          <div class="bg-card rounded-lg p-8 shadow-lg">
+            <h2 class="text-foreground mb-6 text-xl font-semibold">Job Preferences</h2>
 
             <div class="space-y-6">
-              <div
-                class="flex items-center justify-between rounded-lg border border-border p-4"
-              >
+              <div class="border-border flex items-center justify-between rounded-lg border p-4">
                 <div>
-                  <h3 class="text-sm font-medium text-foreground">
-                    Auto-approve Applications
-                  </h3>
-                  <p class="text-sm text-muted-foreground">
+                  <h3 class="text-foreground text-sm font-medium">Auto-approve Applications</h3>
+                  <p class="text-muted-foreground text-sm">
                     Automatically approve applications that meet your criteria
                   </p>
                 </div>
                 <input
                   v-model="onboardingData.autoApprove"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                  class="border-border text-primary focus:ring-primary h-4 w-4 rounded"
                 />
               </div>
 
-              <div
-                class="flex items-center justify-between rounded-lg border border-border p-4"
-              >
+              <div class="border-border flex items-center justify-between rounded-lg border p-4">
                 <div>
-                  <h3 class="text-sm font-medium text-foreground">Require NDA</h3>
-                  <p class="text-sm text-muted-foreground">
+                  <h3 class="text-foreground text-sm font-medium">Require NDA</h3>
+                  <p class="text-muted-foreground text-sm">
                     Require voice actors to sign an NDA before starting work
                   </p>
                 </div>
                 <input
                   v-model="onboardingData.requireNDA"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                  class="border-border text-primary focus:ring-primary h-4 w-4 rounded"
                 />
               </div>
 
-              <div
-                class="flex items-center justify-between rounded-lg border border-border p-4"
-              >
+              <div class="border-border flex items-center justify-between rounded-lg border p-4">
                 <div>
-                  <h3 class="text-sm font-medium text-foreground">
-                    Require Portfolio
-                  </h3>
-                  <p class="text-sm text-muted-foreground">
+                  <h3 class="text-foreground text-sm font-medium">Require Portfolio</h3>
+                  <p class="text-muted-foreground text-sm">
                     Only allow voice actors with portfolios to apply
                   </p>
                 </div>
                 <input
                   v-model="onboardingData.requirePortfolio"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                  class="border-border text-primary focus:ring-primary h-4 w-4 rounded"
                 />
               </div>
             </div>
@@ -289,36 +265,36 @@
             >
               <Icon name="mdi:check-circle" class="h-10 w-10 text-white" />
             </div>
-            <h1 class="mb-4 text-3xl font-bold text-foreground">You're All Set!</h1>
-            <p class="mb-8 text-lg text-muted-foreground">
+            <h1 class="text-foreground mb-4 text-3xl font-bold">You're All Set!</h1>
+            <p class="text-muted-foreground mb-8 text-lg">
               Your client account is ready. Start posting jobs and finding amazing voice talent.
             </p>
           </div>
 
-          <div class="rounded-lg bg-card p-8 shadow-lg">
-            <h2 class="mb-6 text-xl font-semibold text-foreground">What's Next?</h2>
+          <div class="bg-card rounded-lg p-8 shadow-lg">
+            <h2 class="text-foreground mb-6 text-xl font-semibold">What's Next?</h2>
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
               <div class="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-600">
                 <Icon name="mdi:plus-circle" class="mx-auto mb-3 h-8 w-8 text-blue-600" />
-                <h3 class="mb-2 font-medium text-foreground">Post Your First Job</h3>
-                <p class="text-sm text-muted-foreground">
+                <h3 class="text-foreground mb-2 font-medium">Post Your First Job</h3>
+                <p class="text-muted-foreground text-sm">
                   Create a job posting to find voice actors
                 </p>
               </div>
 
               <div class="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-600">
                 <Icon name="mdi:account-group" class="mx-auto mb-3 h-8 w-8 text-green-600" />
-                <h3 class="mb-2 font-medium text-foreground">Browse Talent</h3>
-                <p class="text-sm text-muted-foreground">
+                <h3 class="text-foreground mb-2 font-medium">Browse Talent</h3>
+                <p class="text-muted-foreground text-sm">
                   Discover voice actors in our talent pool
                 </p>
               </div>
 
               <div class="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-600">
                 <Icon name="mdi:email" class="mx-auto mb-3 h-8 w-8 text-purple-600" />
-                <h3 class="mb-2 font-medium text-foreground">Send Invitations</h3>
-                <p class="text-sm text-muted-foreground">
+                <h3 class="text-foreground mb-2 font-medium">Send Invitations</h3>
+                <p class="text-muted-foreground text-sm">
                   Invite specific voice actors to your projects
                 </p>
               </div>
@@ -346,7 +322,6 @@ const {
   setOnboardingSteps,
   updateOnboardingStep,
   completeCurrentOnboarding,
-  startClientOnboarding,
 } = useOnboarding()
 
 // State

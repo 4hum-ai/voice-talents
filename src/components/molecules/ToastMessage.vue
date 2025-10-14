@@ -24,9 +24,7 @@
       ]"
     />
 
-    <div
-      :class="['flex-auto wrap-break-word', isDark.value ? 'text-zinc-50' : 'text-zinc-900']"
-    >
+    <div :class="['flex-auto wrap-break-word', isDark.value ? 'text-zinc-50' : 'text-zinc-900']">
       <h4 class="font-medium">
         {{ props.message.title }}
       </h4>

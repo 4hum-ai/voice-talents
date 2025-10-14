@@ -353,10 +353,6 @@ const totalCost = computed(() => {
   )
 })
 
-const suggestedBudget = computed(() => {
-  // Add 20% buffer to total cost for suggested budget
-  return Math.round(totalCost.value * 1.2)
-})
 
 // Helper functions
 const getJobTypeLabel = (type: string) => {
@@ -368,15 +364,6 @@ const getJobTypeLabel = (type: string) => {
   return labels[type] || type
 }
 
-const getVoiceModelLabel = (model: string) => {
-  const labels: Record<string, string> = {
-    natural_female: 'Natural Female',
-    natural_male: 'Natural Male',
-    youthful_female: 'Youthful Female',
-    mature_male: 'Mature Male',
-  }
-  return labels[model] || model
-}
 
 const getSelectionTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
@@ -392,15 +379,6 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString()
 }
 
-const hasAISettings = computed(() => {
-  return (
-    props.jobForm.aiSettings.voiceModel ||
-    props.jobForm.aiSettings.voiceStyle ||
-    props.jobForm.aiSettings.emotion ||
-    props.jobForm.aiSettings.speed ||
-    props.jobForm.aiSettings.pitch
-  )
-})
 
 const hasFiles = computed(() => {
   return (

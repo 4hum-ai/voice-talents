@@ -504,9 +504,6 @@ const locationOptions = computed(() => [
 ])
 
 // Methods
-const toggleView = () => {
-  viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
-}
 
 const handleSearch = () => {
   // Search is handled by computed property

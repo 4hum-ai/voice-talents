@@ -60,7 +60,7 @@
                           v-else
                           class="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700"
                         >
-                          <Icon name="mdi:account" class="h-8 w-8 text-muted-foreground" />
+                          <Icon name="mdi:account" class="text-muted-foreground h-8 w-8" />
                         </div>
                       </div>
                       <input
@@ -329,7 +329,7 @@
                       <div v-if="!voiceSamples[voiceType.value]">
                         <Icon
                           name="mdi:cloud-upload"
-                          class="mx-auto mb-4 h-12 w-12 text-muted-foreground"
+                          class="text-muted-foreground mx-auto mb-4 h-12 w-12"
                         />
                         <h5 class="text-foreground mb-2 text-lg font-medium">
                           Drop your {{ voiceType.label.toLowerCase() }} sample here
@@ -945,7 +945,7 @@ const saveProfile = () => {
     localStorage.setItem('voiceact-profile-data', JSON.stringify(profileUpdate))
     success('Profile updated successfully!')
     router.push('/')
-  } catch (err) {
+  } catch {
     error('Failed to save profile. Please try again.')
   }
 }

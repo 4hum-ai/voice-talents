@@ -270,7 +270,6 @@ import type {
   CastingSession,
   CastingProposal,
   VoiceSample,
-  CustomSample,
 } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import Button from '@/components/atoms/Button.vue'

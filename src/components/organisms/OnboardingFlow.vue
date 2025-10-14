@@ -1,8 +1,8 @@
 <template>
-  <div v-if="showOnboarding" class="fixed inset-0 z-50 overflow-hidden bg-background">
+  <div v-if="showOnboarding" class="bg-background fixed inset-0 z-50 overflow-hidden">
     <!-- Top Navigation Bar -->
     <div
-      class="absolute top-0 right-0 left-0 z-10 border-b border-border bg-card/95 backdrop-blur-sm"
+      class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
     >
       <div class="flex items-center justify-between px-6 py-4">
         <!-- Left: Previous Button -->
@@ -16,16 +16,16 @@
 
         <!-- Center: Progress -->
         <div class="flex items-center space-x-4">
-          <div class="text-sm text-muted-foreground">
+          <div class="text-muted-foreground text-sm">
             Step {{ currentStep }} of {{ totalSteps }}
           </div>
-          <div class="h-2 w-32 rounded-full bg-muted">
+          <div class="bg-muted h-2 w-32 rounded-full">
             <div
               class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
               :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
             />
           </div>
-          <div class="text-sm text-muted-foreground">
+          <div class="text-muted-foreground text-sm">
             {{ Math.round((currentStep / totalSteps) * 100) }}%
           </div>
         </div>
@@ -73,10 +73,8 @@
                   <Icon name="mdi:microphone" class="h-16 w-16 text-white" />
                 </div>
                 <div>
-                  <h3 class="mb-4 text-3xl font-bold text-foreground">
-                    Welcome to VoiceAct! 🎙️
-                  </h3>
-                  <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
+                  <h3 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceAct! 🎙️</h3>
+                  <p class="text-muted-foreground mx-auto max-w-2xl text-lg">
                     Let's get you set up for success! We'll help you create a professional profile
                     that showcases your voice acting talent.
                   </p>
@@ -88,10 +86,8 @@
                     >
                       <Icon name="mdi:account" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="mb-1 font-semibold text-foreground">Profile Setup</h4>
-                    <p class="text-sm text-muted-foreground">
-                      Create your professional profile
-                    </p>
+                    <h4 class="text-foreground mb-1 font-semibold">Profile Setup</h4>
+                    <p class="text-muted-foreground text-sm">Create your professional profile</p>
                   </div>
                   <div class="p-4 text-center">
                     <div
@@ -99,8 +95,8 @@
                     >
                       <Icon name="mdi:upload" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="mb-1 font-semibold text-foreground">Voice Samples</h4>
-                    <p class="text-sm text-muted-foreground">Upload your best work</p>
+                    <h4 class="text-foreground mb-1 font-semibold">Voice Samples</h4>
+                    <p class="text-muted-foreground text-sm">Upload your best work</p>
                   </div>
                   <div class="p-4 text-center">
                     <div
@@ -108,8 +104,8 @@
                     >
                       <Icon name="mdi:currency-usd" class="h-6 w-6 text-white" />
                     </div>
-                    <h4 class="mb-1 font-semibold text-foreground">Set Rates</h4>
-                    <p class="text-sm text-muted-foreground">Define your pricing</p>
+                    <h4 class="text-foreground mb-1 font-semibold">Set Rates</h4>
+                    <p class="text-muted-foreground text-sm">Define your pricing</p>
                   </div>
                 </div>
               </div>
@@ -122,7 +118,7 @@
                   >
                     <Icon name="mdi:account" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="mb-2 text-2xl font-semibold text-foreground">
+                  <h3 class="text-foreground mb-2 text-2xl font-semibold">
                     Let's Start with the Basics
                   </h3>
                   <p class="text-muted-foreground">
@@ -133,7 +129,7 @@
                 <div class="mx-auto max-w-2xl space-y-6">
                   <!-- Avatar Upload -->
                   <div class="text-center">
-                    <label class="mb-4 block text-sm font-medium text-foreground">
+                    <label class="text-foreground mb-4 block text-sm font-medium">
                       Profile Photo
                     </label>
                     <div class="relative inline-block">
@@ -146,11 +142,8 @@
                           alt="Profile"
                           class="h-full w-full object-cover"
                         />
-                        <div
-                          v-else
-                          class="flex h-full w-full items-center justify-center bg-muted"
-                        >
-                          <Icon name="mdi:account" class="h-8 w-8 text-muted-foreground" />
+                        <div v-else class="bg-muted flex h-full w-full items-center justify-center">
+                          <Icon name="mdi:account" class="text-muted-foreground h-8 w-8" />
                         </div>
                       </div>
                       <input
@@ -168,17 +161,14 @@
                         <Icon name="mdi:camera" class="h-4 w-4" />
                       </button>
                     </div>
-                    <p class="mt-2 text-xs text-gray-500 dark:text-muted-foreground">
+                    <p class="dark:text-muted-foreground mt-2 text-xs text-gray-500">
                       Click camera icon to upload
                     </p>
                   </div>
 
                   <!-- Display Name -->
                   <div>
-                    <label
-                      for="displayName"
-                      class="mb-2 block text-sm font-medium text-foreground"
-                    >
+                    <label for="displayName" class="text-foreground mb-2 block text-sm font-medium">
                       What should we call you? *
                     </label>
                     <input
@@ -187,16 +177,13 @@
                       type="text"
                       required
                       placeholder="Your professional name"
-                      class="w-full rounded-lg border border-border bg-input px-4 py-3 text-lg text-foreground placeholder-muted-foreground shadow-sm focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
+                      class="border-border bg-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-3 text-lg shadow-sm focus:ring-2 focus:outline-none"
                     />
                   </div>
 
                   <!-- Location -->
                   <div>
-                    <label
-                      for="location"
-                      class="mb-2 block text-sm font-medium text-foreground"
-                    >
+                    <label for="location" class="text-foreground mb-2 block text-sm font-medium">
                       Where are you based? *
                     </label>
                     <input
@@ -205,16 +192,13 @@
                       type="text"
                       required
                       placeholder="City, Country"
-                      class="w-full rounded-lg border border-border bg-input px-4 py-3 text-lg text-foreground placeholder-muted-foreground shadow-sm focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none"
+                      class="border-border bg-input text-foreground placeholder-muted-foreground focus:border-primary focus:ring-primary w-full rounded-lg border px-4 py-3 text-lg shadow-sm focus:ring-2 focus:outline-none"
                     />
                   </div>
 
                   <!-- Bio -->
                   <div>
-                    <label
-                      for="bio"
-                      class="mb-2 block text-sm font-medium text-foreground"
-                    >
+                    <label for="bio" class="text-foreground mb-2 block text-sm font-medium">
                       Tell us about yourself *
                     </label>
                     <textarea
@@ -225,7 +209,7 @@
                       placeholder="Share your voice acting experience, specialties, and what makes you unique..."
                       class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                     />
-                    <p class="mt-1 text-xs text-gray-500 dark:text-muted-foreground">
+                    <p class="dark:text-muted-foreground mt-1 text-xs text-gray-500">
                       {{ profileData.bio.length }}/500 characters
                     </p>
                   </div>
@@ -240,7 +224,7 @@
                   >
                     <Icon name="mdi:microphone" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="mb-2 text-2xl font-semibold text-foreground">
+                  <h3 class="text-foreground mb-2 text-2xl font-semibold">
                     What's Your Voice Type?
                   </h3>
                   <p class="text-muted-foreground">
@@ -274,7 +258,7 @@
                               class="h-6 w-6 text-white grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
                             />
                           </div>
-                          <h4 class="font-medium text-foreground">
+                          <h4 class="text-foreground font-medium">
                             {{ voiceType.label }}
                           </h4>
                         </div>
@@ -304,7 +288,7 @@
                   >
                     <Icon name="mdi:translate" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="mb-2 text-2xl font-semibold text-foreground">
+                  <h3 class="text-foreground mb-2 text-2xl font-semibold">
                     What Languages Do You Speak?
                   </h3>
                   <p class="text-muted-foreground">
@@ -338,7 +322,7 @@
                               class="h-4 w-6 grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
                             />
                           </div>
-                          <span class="text-sm font-medium text-foreground">{{
+                          <span class="text-foreground text-sm font-medium">{{
                             language.label
                           }}</span>
                         </div>
@@ -368,9 +352,7 @@
                   >
                     <Icon name="mdi:upload" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="mb-2 text-2xl font-semibold text-foreground">
-                    Upload Voice Samples
-                  </h3>
+                  <h3 class="text-foreground mb-2 text-2xl font-semibold">Upload Voice Samples</h3>
                   <p class="text-muted-foreground">
                     Upload samples for each voice type you selected. This showcases your range and
                     versatility!
@@ -392,10 +374,10 @@
                           <Icon name="mdi:microphone" class="h-5 w-5 text-white" />
                         </div>
                         <div>
-                          <h4 class="text-lg font-semibold text-foreground">
+                          <h4 class="text-foreground text-lg font-semibold">
                             {{ voiceType.label }}
                           </h4>
-                          <p class="text-sm text-muted-foreground">
+                          <p class="text-muted-foreground text-sm">
                             Upload a sample for {{ voiceType.label.toLowerCase() }}
                           </p>
                         </div>
@@ -432,14 +414,12 @@
                       <div v-if="!voiceSamples[voiceType.value]">
                         <Icon
                           name="mdi:cloud-upload"
-                          class="mx-auto mb-4 h-12 w-12 text-muted-foreground"
+                          class="text-muted-foreground mx-auto mb-4 h-12 w-12"
                         />
-                        <h5 class="mb-2 text-lg font-medium text-foreground">
+                        <h5 class="text-foreground mb-2 text-lg font-medium">
                           Drop your {{ voiceType.label.toLowerCase() }} sample here
                         </h5>
-                        <p class="mb-4 text-muted-foreground">
-                          or click to browse files
-                        </p>
+                        <p class="text-muted-foreground mb-4">or click to browse files</p>
                         <Button
                           variant="primary"
                           class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
@@ -457,10 +437,10 @@
                             <Icon name="mdi:music-note" class="h-8 w-8 text-purple-500" />
                           </div>
                           <div class="min-w-0 flex-1">
-                            <p class="truncate text-sm font-medium text-foreground">
+                            <p class="text-foreground truncate text-sm font-medium">
                               {{ voiceSamples[voiceType.value].name }}
                             </p>
-                            <p class="text-sm text-gray-500 dark:text-muted-foreground">
+                            <p class="dark:text-muted-foreground text-sm text-gray-500">
                               {{ formatFileSize(voiceSamples[voiceType.value].size) }}
                             </p>
                           </div>
@@ -485,7 +465,7 @@
                           <div>
                             <label
                               :for="`title-${voiceType.value}`"
-                              class="mb-2 block text-sm font-medium text-foreground"
+                              class="text-foreground mb-2 block text-sm font-medium"
                             >
                               Sample Title
                             </label>
@@ -501,7 +481,7 @@
                           <div>
                             <label
                               :for="`description-${voiceType.value}`"
-                              class="mb-2 block text-sm font-medium text-foreground"
+                              class="text-foreground mb-2 block text-sm font-medium"
                             >
                               Description
                             </label>
@@ -519,7 +499,7 @@
                   </div>
                 </div>
 
-                <div class="text-center text-sm text-gray-500 dark:text-muted-foreground">
+                <div class="dark:text-muted-foreground text-center text-sm text-gray-500">
                   <p>Supported formats: MP3, WAV, OGG, AAC</p>
                   <p>Maximum file size: 50MB per file</p>
                 </div>
@@ -533,7 +513,7 @@
                   >
                     <Icon name="mdi:currency-usd" class="h-8 w-8 text-white" />
                   </div>
-                  <h3 class="mb-2 text-2xl font-semibold text-foreground">
+                  <h3 class="text-foreground mb-2 text-2xl font-semibold">
                     Set Your Pricing & Rates
                   </h3>
                   <p class="text-muted-foreground">
@@ -545,14 +525,12 @@
                 <div class="space-y-8">
                   <!-- Rate Structure -->
                   <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
-                    <h4 class="mb-4 text-lg font-semibold text-foreground">
-                      Rate Structure
-                    </h4>
+                    <h4 class="text-foreground mb-4 text-lg font-semibold">Rate Structure</h4>
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <div>
                         <label
                           for="hourlyRate"
-                          class="mb-2 block text-sm font-medium text-foreground"
+                          class="text-foreground mb-2 block text-sm font-medium"
                         >
                           Hourly Rate (USD) *
                         </label>
@@ -560,7 +538,7 @@
                           <div
                             class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                           >
-                            <span class="text-sm text-gray-500 dark:text-muted-foreground">$</span>
+                            <span class="dark:text-muted-foreground text-sm text-gray-500">$</span>
                           </div>
                           <input
                             id="hourlyRate"
@@ -572,7 +550,7 @@
                             class="w-full rounded-lg border border-gray-300 bg-white py-3 pr-3 pl-8 text-lg text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                           />
                         </div>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-muted-foreground">
+                        <p class="dark:text-muted-foreground mt-1 text-xs text-gray-500">
                           Your standard hourly rate for voice work
                         </p>
                       </div>
@@ -580,7 +558,7 @@
                       <div>
                         <label
                           for="perWordRate"
-                          class="mb-2 block text-sm font-medium text-foreground"
+                          class="text-foreground mb-2 block text-sm font-medium"
                         >
                           Per Word Rate (USD)
                         </label>
@@ -588,7 +566,7 @@
                           <div
                             class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                           >
-                            <span class="text-sm text-gray-500 dark:text-muted-foreground">$</span>
+                            <span class="dark:text-muted-foreground text-sm text-gray-500">$</span>
                           </div>
                           <input
                             id="perWordRate"
@@ -600,7 +578,7 @@
                             class="w-full rounded-lg border border-gray-300 bg-white py-3 pr-3 pl-8 text-lg text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                           />
                         </div>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-muted-foreground">
+                        <p class="dark:text-muted-foreground mt-1 text-xs text-gray-500">
                           Rate per word for audiobooks, e-learning
                         </p>
                       </div>
@@ -609,15 +587,13 @@
 
                   <!-- Project Type Rates -->
                   <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
-                    <h4 class="mb-4 text-lg font-semibold text-foreground">
-                      Project Type Rates
-                    </h4>
+                    <h4 class="text-foreground mb-4 text-lg font-semibold">Project Type Rates</h4>
                     <div class="space-y-4">
                       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                           <label
                             for="commercialRate"
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                           >
                             Commercial (30 seconds)
                           </label>
@@ -625,7 +601,9 @@
                             <div
                               class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                             >
-                              <span class="text-sm text-gray-500 dark:text-muted-foreground">$</span>
+                              <span class="dark:text-muted-foreground text-sm text-gray-500"
+                                >$</span
+                              >
                             </div>
                             <input
                               id="commercialRate"
@@ -642,7 +620,7 @@
                         <div>
                           <label
                             for="audiobookRate"
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                           >
                             Audiobook (per finished hour)
                           </label>
@@ -650,7 +628,9 @@
                             <div
                               class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                             >
-                              <span class="text-sm text-gray-500 dark:text-muted-foreground">$</span>
+                              <span class="dark:text-muted-foreground text-sm text-gray-500"
+                                >$</span
+                              >
                             </div>
                             <input
                               id="audiobookRate"
@@ -667,7 +647,7 @@
                         <div>
                           <label
                             for="animationRate"
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                           >
                             Animation (per character)
                           </label>
@@ -675,7 +655,9 @@
                             <div
                               class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                             >
-                              <span class="text-sm text-gray-500 dark:text-muted-foreground">$</span>
+                              <span class="dark:text-muted-foreground text-sm text-gray-500"
+                                >$</span
+                              >
                             </div>
                             <input
                               id="animationRate"
@@ -692,7 +674,7 @@
                         <div>
                           <label
                             for="elearningRate"
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                           >
                             E-Learning (per hour)
                           </label>
@@ -700,7 +682,9 @@
                             <div
                               class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                             >
-                              <span class="text-sm text-gray-500 dark:text-muted-foreground">$</span>
+                              <span class="dark:text-muted-foreground text-sm text-gray-500"
+                                >$</span
+                              >
                             </div>
                             <input
                               id="elearningRate"
@@ -721,7 +705,7 @@
                   <div>
                     <label
                       for="pricingNotes"
-                      class="mb-2 block text-sm font-medium text-foreground"
+                      class="text-foreground mb-2 block text-sm font-medium"
                     >
                       Additional Pricing Notes
                     </label>
@@ -744,10 +728,8 @@
                   <Icon name="mdi:check" class="h-12 w-12 text-white" />
                 </div>
                 <div>
-                  <h3 class="mb-4 text-3xl font-bold text-foreground">
-                    Welcome to VoiceAct! 🎉
-                  </h3>
-                  <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
+                  <h3 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceAct! 🎉</h3>
+                  <p class="text-muted-foreground mx-auto max-w-2xl text-lg">
                     Your profile is complete and you're ready to start your voice acting journey.
                     Let's get you connected with amazing opportunities!
                   </p>
@@ -1034,7 +1016,7 @@ const completeOnboarding = async () => {
 
     success('Welcome to VoiceAct! Your profile is ready to go.')
     emit('complete')
-  } catch (err) {
+  } catch {
     error('Failed to complete onboarding. Please try again.')
   }
 }

@@ -186,7 +186,7 @@
           </div>
 
           <div v-else class="py-12 text-center">
-            <MegaphoneIcon class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <MegaphoneIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 class="text-foreground mb-2 text-lg font-medium">Proposal not found</h3>
             <p class="text-muted-foreground mb-6">
               The proposal you're looking for doesn't exist or has been removed.
@@ -203,7 +203,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { CastingSession, CastingProposal, VoiceSample } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'

@@ -476,11 +476,6 @@ Don't wait. The future is here, and it's waiting for you.`)
 // Recording state
 const isRecording = ref(false)
 const hasRecording = ref(false)
-const recordings = ref([
-  { name: 'Take 1 - Full Script', duration: '2:34', size: '3.2 MB' },
-  { name: 'Take 2 - Revised', duration: '2:28', size: '3.1 MB' },
-  { name: 'Take 3 - Final', duration: '2:31', size: '3.2 MB' },
-])
 
 // TTS state
 const isGeneratingTTS = ref(false)
@@ -547,13 +542,11 @@ const scriptSegments = ref([
 
 // Final audio
 const finalAudio = ref(null)
-const deliveryNotes = ref('')
 
 // Project progress
 const projectProgress = ref(65)
 
 // Audio input refs
-const audioInput = ref<HTMLInputElement>()
 const deliverableInput = ref<HTMLInputElement>()
 
 // Modal methods
@@ -655,27 +648,9 @@ const removeAudio = () => {
   success('Audio removed')
 }
 
-const deleteRecording = (index: number) => {
-  recordings.value.splice(index, 1)
-  success('Recording deleted')
-}
 
 // Upload methods
-const triggerAudioUpload = () => {
-  audioInput.value?.click()
-}
 
-const handleAudioUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
-  if (file) {
-    success(`Audio file uploaded: ${file.name}`)
-    finalAudio.value = {
-      name: file.name,
-      duration: '2:31',
-      size: '3.2 MB',
-    }
-  }
-}
 
 const triggerDeliverableUpload = () => {
   deliverableInput.value?.click()

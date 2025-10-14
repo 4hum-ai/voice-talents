@@ -17,10 +17,9 @@
           </Button>
         </template>
       </AppBar>
-      
+
       <div class="bg-card border-border border-b shadow-sm">
         <div class="px-4 sm:px-6 lg:px-8">
-
           <!-- Stepper Navigation -->
           <div class="border-border border-t py-4">
             <div class="flex items-center justify-between">

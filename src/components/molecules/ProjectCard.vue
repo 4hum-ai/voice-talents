@@ -169,7 +169,7 @@ const props = withDefaults(defineProps<Props>(), {
   currentActorId: 'va-001', // Mock current actor ID
 })
 
-const emit = defineEmits<{
+defineEmits<{
   click: [project: Project]
   view: [project: Project]
   assignment: [project: Project, assignment: ProjectAssignment]
@@ -193,7 +193,7 @@ const getProjectProgress = (project: Project) => {
   return Math.round((completed / assignments.length) * 100)
 }
 
-const getMyAssignmentStatus = (project: Project) => {
+const getMyAssignmentStatus = () => {
   const assignment = myAssignment.value
   return assignment?.status || 'not_assigned'
 }
@@ -269,7 +269,7 @@ const mapAssignmentStatus = (status: string) => {
   return statusMap[status] || 'inactive'
 }
 
-const getProjectActions = (project: Project) => [
+const getProjectActions = () => [
   {
     key: 'share',
     label: 'Share Project',
