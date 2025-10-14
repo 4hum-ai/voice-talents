@@ -7,21 +7,222 @@
     <div class="flex-1">
       <!-- Header -->
       <AppBar :show-back="true" @back="$router.back()">
-        <template #title>Job Details</template>
-        <template #subtitle>View and manage job posting details</template>
+        <template #title>{{ job?.title || 'Job Details' }}</template>
+        <template #subtitle>{{ job?.talentName || 'Voice Actor Project' }}</template>
         <template #actions>
           <ThemeToggle />
+          <Button variant="outline" size="sm" @click="requestRevision" :disabled="!canRequestRevision">
+            <EditIcon class="mr-2 h-4 w-4" />
+            Request Revision
+          </Button>
+          <Button variant="primary" size="sm" @click="approveWork" :disabled="!canApprove">
+            <CheckIcon class="mr-2 h-4 w-4" />
+            Approve Work
+          </Button>
         </template>
       </AppBar>
 
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
-          <div class="py-12 text-center">
+          <div v-if="job" class="space-y-8">
+            <!-- Job Overview -->
+            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+              <div class="mb-6 flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="mb-4 flex items-center space-x-3">
+                    <StatusBadge :status="getJobStatus(job.status)" />
+                    <StatusBadge
+                      :status="getProgressStatus(job.progress)"
+                      :variant="getProgressVariant(job.progress)"
+                      size="sm"
+                    >
+                      {{ job.progress }}% Complete
+                    </StatusBadge>
+                  </div>
+                  <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
+                  <p class="text-muted-foreground mb-4">{{ job.description }}</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+                <div>
+                  <h3 class="text-foreground mb-3 font-medium">Project Details</h3>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Type:</span>
+                      <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Deadline:</span>
+                      <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Budget:</span>
+                      <span class="text-foreground font-medium text-green-600">
+                        ${{ job.budget.toLocaleString() }}
+                      </span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Created:</span>
+                      <span class="text-foreground">{{ formatDate(job.createdAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-foreground mb-3 font-medium">Voice Requirements</h3>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Style:</span>
+                      <span class="text-foreground">{{ job.voiceStyle || 'Professional' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Pace:</span>
+                      <span class="text-foreground">{{ job.pace || 'Medium' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Tone:</span>
+                      <span class="text-foreground">{{ job.tone || 'Friendly' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Duration:</span>
+                      <span class="text-foreground">{{ job.duration || '2-3 minutes' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-foreground mb-3 font-medium">Talent Information</h3>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Assigned:</span>
+                      <span class="text-foreground">{{ job.talentName || 'Not assigned' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Experience:</span>
+                      <span class="text-foreground">{{ job.talentExperience || '5+ years' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Languages:</span>
+                      <span class="text-foreground">{{ job.talentLanguages || 'English' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Rating:</span>
+                      <span class="text-foreground">{{ job.talentRating || '4.8/5' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-foreground mb-3 font-medium">Progress</h3>
+                  <div class="space-y-3">
+                    <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                      <div
+                        class="h-3 rounded-full bg-blue-600 transition-all duration-300"
+                        :style="{ width: `${job.progress}%` }"
+                      ></div>
+                    </div>
+                    <div class="text-center text-sm">
+                      <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
+                    </div>
+                    <div class="text-center">
+                      <Button variant="outline" size="sm" @click="viewProgress" class="w-full">
+                        <EyeIcon class="mr-2 h-4 w-4" />
+                        View Progress
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Client Notes -->
+            <div v-if="job.clientNotes && job.clientNotes.length > 0" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+              <h3 class="text-foreground mb-4 text-lg font-semibold">Your Notes</h3>
+              <div class="space-y-3">
+                <div
+                  v-for="(note, index) in job.clientNotes"
+                  :key="index"
+                  class="flex items-start space-x-3"
+                >
+                  <LightbulbIcon class="mt-0.5 h-5 w-5 text-yellow-500" />
+                  <p class="text-muted-foreground">{{ note }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Talent Notes -->
+            <div v-if="job.talentNotes && job.talentNotes.length > 0" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+              <h3 class="text-foreground mb-4 text-lg font-semibold">Talent Notes</h3>
+              <div class="space-y-3">
+                <div
+                  v-for="(note, index) in job.talentNotes"
+                  :key="index"
+                  class="flex items-start space-x-3"
+                >
+                  <MessageIcon class="mt-0.5 h-5 w-5 text-blue-500" />
+                  <p class="text-muted-foreground">{{ note }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Deliverables -->
+            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+              <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
+              <div class="space-y-4">
+                <div v-if="finalAudio" class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <AudioIcon class="h-8 w-8 text-green-600" />
+                      <div>
+                        <h4 class="text-foreground font-medium">{{ finalAudio.name }}</h4>
+                        <p class="text-muted-foreground text-sm">{{ finalAudio.duration }} • {{ finalAudio.size }}</p>
+                        <p class="text-muted-foreground text-xs">Submitted {{ formatDate(finalAudio.submittedAt) }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <Button variant="outline" size="sm" @click="playFinalAudio">
+                        <PlayIcon class="mr-2 h-4 w-4" />
+                        Play
+                      </Button>
+                      <Button variant="outline" size="sm" @click="downloadFinalAudio">
+                        <DownloadIcon class="mr-2 h-4 w-4" />
+                        Download
+                      </Button>
+                      <Button variant="outline" size="sm" @click="requestRevision">
+                        <EditIcon class="mr-2 h-4 w-4" />
+                        Request Revision
+                      </Button>
+                      <Button variant="primary" size="sm" @click="approveWork">
+                        <CheckIcon class="mr-2 h-4 w-4" />
+                        Approve
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="text-center py-8">
+                  <ClockIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                  <h4 class="text-foreground mb-2 font-medium">Awaiting deliverables</h4>
+                  <p class="text-muted-foreground mb-4">The talent is working on your project. You'll be notified when work is submitted.</p>
+                  <Button variant="outline" @click="contactTalent">
+                    <MessageIcon class="mr-2 h-4 w-4" />
+                    Contact Talent
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="py-12 text-center">
             <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">Job Details</h3>
+            <h3 class="text-foreground mb-2 text-lg font-medium">Job not found</h3>
             <p class="text-muted-foreground mb-6">
-              This view will show detailed information about a specific job posting
+              The job you're looking for doesn't exist or you don't have access to it.
             </p>
+            <Button variant="primary" @click="$router.push('/client/jobs')">
+              <ArrowLeftIcon class="mr-2 h-4 w-4" />
+              Back to My Jobs
+            </Button>
           </div>
         </div>
       </div>
@@ -30,8 +231,157 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
+import Button from '@/components/atoms/Button.vue'
+import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import { useToast } from '@/composables/useToast'
+
+// Icons
+import EditIcon from '~icons/mdi/pencil'
+import CheckIcon from '~icons/mdi/check'
+import EyeIcon from '~icons/mdi/eye'
+import LightbulbIcon from '~icons/mdi/lightbulb-outline'
+import MessageIcon from '~icons/mdi/message-text'
+import AudioIcon from '~icons/mdi/audio'
+import PlayIcon from '~icons/mdi/play'
+import DownloadIcon from '~icons/mdi/download'
+import ClockIcon from '~icons/mdi/clock'
 import BriefcaseIcon from '~icons/mdi/briefcase'
+import ArrowLeftIcon from '~icons/mdi/arrow-left'
+
+const route = useRoute()
+const { success } = useToast()
+
+// Job data - in real app, this would come from API
+const job = ref({
+  id: route.params.id,
+  title: 'Product Commercial Voice Over',
+  clientName: 'Acme Studios',
+  projectType: 'commercial',
+  status: 'in_progress',
+  deadline: '2024-12-25',
+  budget: 1500,
+  progress: 65,
+  voiceStyle: 'Professional',
+  pace: 'Medium',
+  tone: 'Friendly',
+  duration: '2-3 minutes',
+  description: 'Professional voice over for product commercial',
+  createdAt: '2024-12-01',
+  talentName: 'Sarah Johnson',
+  talentExperience: '5+ years',
+  talentLanguages: 'English, Spanish',
+  talentRating: '4.8/5',
+  clientNotes: [
+    'Emphasize the word "innovative" when describing our product features.',
+    'Maintain consistent energy throughout the entire script.',
+    'Please deliver the final audio by December 20th for review.',
+  ],
+  talentNotes: [
+    'I have a few questions about the pronunciation of technical terms.',
+    'Would you like me to provide multiple takes for the key phrases?',
+  ],
+})
+
+// Final audio
+const finalAudio = ref<{name: string; duration: string; size: string; submittedAt: string} | null>({
+  name: 'final_commercial_v1.mp3',
+  duration: '2:45',
+  size: '4.2 MB',
+  submittedAt: '2024-12-15',
+})
+
+// Computed
+const canRequestRevision = computed(() => 
+  finalAudio.value && job.value.status !== 'completed'
+)
+
+const canApprove = computed(() => 
+  finalAudio.value && job.value.status !== 'completed'
+)
+
+// Methods
+const getJobStatus = (status: string) => {
+  switch (status) {
+    case 'draft':
+      return 'draft'
+    case 'in_progress':
+      return 'active'
+    case 'pending_review':
+      return 'pending'
+    case 'completed':
+      return 'completed'
+    default:
+      return 'draft'
+  }
+}
+
+const getProgressStatus = (progress: number) => {
+  if (progress === 100) return 'completed'
+  if (progress >= 75) return 'success'
+  if (progress >= 50) return 'active'
+  if (progress >= 25) return 'pending'
+  return 'draft'
+}
+
+const getProgressVariant = (progress: number) => {
+  if (progress === 100) return 'solid'
+  if (progress >= 75) return 'soft'
+  if (progress >= 50) return 'soft'
+  if (progress >= 25) return 'soft'
+  return 'soft'
+}
+
+const formatProjectType = (type: string) => {
+  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
+}
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+// Action methods
+const requestRevision = () => {
+  success('Revision request sent to talent')
+  // In real app, this would send notification to talent
+}
+
+const approveWork = () => {
+  success('Work approved! Payment will be processed.')
+  job.value.status = 'completed'
+  job.value.progress = 100
+  // In real app, this would trigger payment and completion workflow
+}
+
+const viewProgress = () => {
+  success('Opening detailed progress view')
+  // In real app, this would open a modal or navigate to progress page
+}
+
+const playFinalAudio = () => {
+  success('Playing final audio')
+  // In real app, this would use audio player component
+}
+
+const downloadFinalAudio = () => {
+  success('Downloading final audio')
+  // In real app, this would trigger file download
+}
+
+const contactTalent = () => {
+  success('Opening communication with talent')
+  // In real app, this would open messaging interface
+}
+
+onMounted(() => {
+  console.log('Client Job Detail loaded for job:', route.params.id)
+})
 </script>
