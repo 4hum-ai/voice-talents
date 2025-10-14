@@ -11,19 +11,10 @@
         <template #subtitle>Welcome back! Here's what's happening with your voice acting career today.</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="secondary" size="md" @click="$router.push('/notifications')">
-            <BellIcon class="h-5 w-5" />
-            <span
-              v-if="unreadNotifications > 0"
-              class="ml-2 rounded-full bg-red-500 px-2 py-1 text-xs text-white"
-            >
-              {{ unreadNotifications }}
-            </span>
-          </Button>
         </template>
       </AppBar>
 
-      <div class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="px-4 py-8 pt-16 sm:px-6 lg:px-8">
         <!-- Welcome Section -->
         <div class="mb-8">
           <h2 class="text-foreground mb-2 text-3xl font-bold">
@@ -272,7 +263,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { VoiceActor, VoiceActorStats, Project, ProjectMessage } from '@/types/voice-actor'
+import type { VoiceActor, VoiceActorStats, Project } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useToast } from '@/composables/useToast'
