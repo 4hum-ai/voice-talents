@@ -14,7 +14,7 @@
         </template>
       </AppBar>
 
-      <div class="px-4 py-8 pt-16 sm:px-6 lg:px-8">
+      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <!-- Welcome Section -->
         <div class="mb-8">
           <h2 class="text-foreground mb-2 text-3xl font-bold">

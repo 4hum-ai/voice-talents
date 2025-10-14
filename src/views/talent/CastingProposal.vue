@@ -20,7 +20,7 @@
         </template>
       </AppBar>
 
-      <div class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
           <div v-if="proposal && castingSession" class="space-y-8">
             <!-- Proposal Status -->
