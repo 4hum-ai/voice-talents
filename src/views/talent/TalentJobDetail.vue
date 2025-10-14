@@ -152,6 +152,78 @@
               </div>
             </div>
 
+            <!-- Project Files -->
+            <div v-if="job.projectFiles" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+              <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
+              <div class="space-y-4">
+                <!-- Script File -->
+                <div v-if="job.projectFiles.script" class="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+                  <div class="flex items-center space-x-3">
+                    <FileDocumentIcon class="h-8 w-8 text-blue-600" />
+                    <div>
+                      <h4 class="text-foreground font-medium">{{ job.projectFiles.script.name }}</h4>
+                      <p class="text-muted-foreground text-sm">{{ formatFileSize(job.projectFiles.script.size) }} • Script</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <Button variant="outline" size="sm" @click="downloadFile(job.projectFiles.script)">
+                      <DownloadIcon class="mr-2 h-4 w-4" />
+                      Download
+                    </Button>
+                    <Button variant="outline" size="sm" @click="viewFile(job.projectFiles.script)">
+                      <EyeIcon class="mr-2 h-4 w-4" />
+                      View
+                    </Button>
+                  </div>
+                </div>
+
+                <!-- Reference Audio -->
+                <div v-if="job.projectFiles.referenceAudio" class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                  <div class="flex items-center space-x-3">
+                    <AudioIcon class="h-8 w-8 text-green-600" />
+                    <div>
+                      <h4 class="text-foreground font-medium">{{ job.projectFiles.referenceAudio.name }}</h4>
+                      <p class="text-muted-foreground text-sm">{{ formatFileSize(job.projectFiles.referenceAudio.size) }} • Reference Audio</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <Button variant="outline" size="sm" @click="playReferenceAudio">
+                      <PlayIcon class="mr-2 h-4 w-4" />
+                      Play
+                    </Button>
+                    <Button variant="outline" size="sm" @click="downloadFile(job.projectFiles.referenceAudio)">
+                      <DownloadIcon class="mr-2 h-4 w-4" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+
+                <!-- Additional Files -->
+                <div v-if="job.projectFiles.additional && job.projectFiles.additional.length > 0" class="space-y-3">
+                  <h4 class="text-foreground font-medium">Additional Files</h4>
+                  <div
+                    v-for="(file, index) in job.projectFiles.additional"
+                    :key="index"
+                    class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800/50"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <AttachmentIcon class="h-6 w-6 text-gray-600" />
+                      <div>
+                        <h5 class="text-foreground text-sm font-medium">{{ file.name }}</h5>
+                        <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <Button variant="outline" size="sm" @click="downloadFile(file)">
+                        <DownloadIcon class="mr-2 h-4 w-4" />
+                        Download
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Deliverables -->
             <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
               <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
@@ -421,7 +493,8 @@ import {
   getProgressStatus, 
   getProgressVariant, 
   formatProjectType, 
-  formatDate 
+  formatDate,
+  formatFileSize
 } from '@/types/job-detail'
 
 // Icons
@@ -440,6 +513,9 @@ import DownloadIcon from '~icons/mdi/download'
 import UploadIcon from '~icons/mdi/upload'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
+import FileDocumentIcon from '~icons/mdi/file-document'
+import AttachmentIcon from '~icons/mdi/attachment'
+import EyeIcon from '~icons/mdi/eye'
 
 const route = useRoute()
 // const router = useRouter()
@@ -472,6 +548,30 @@ const loadJobData = () => {
         'Maintain consistent energy throughout the entire script.',
         'Please deliver the final audio by December 20th for review.',
       ],
+      projectFiles: {
+        script: {
+          name: 'commercial_script_v2.pdf',
+          size: 245760, // 240 KB
+          type: 'application/pdf',
+        },
+        referenceAudio: {
+          name: 'reference_voice_sample.mp3',
+          size: 2097152, // 2 MB
+          type: 'audio/mpeg',
+        },
+        additional: [
+          {
+            name: 'brand_guidelines.pdf',
+            size: 1048576, // 1 MB
+            type: 'application/pdf',
+          },
+          {
+            name: 'product_images.zip',
+            size: 5242880, // 5 MB
+            type: 'application/zip',
+          }
+        ]
+      },
       scriptSegments: [
         {
           text: 'Welcome to the future of innovation.',
@@ -573,6 +673,30 @@ const loadJobData = () => {
         'Maintain consistent energy throughout the entire script.',
         'Please deliver the final audio by December 20th for review.',
       ],
+      projectFiles: {
+        script: {
+          name: 'commercial_script_v2.pdf',
+          size: 245760, // 240 KB
+          type: 'application/pdf',
+        },
+        referenceAudio: {
+          name: 'reference_voice_sample.mp3',
+          size: 2097152, // 2 MB
+          type: 'audio/mpeg',
+        },
+        additional: [
+          {
+            name: 'brand_guidelines.pdf',
+            size: 1048576, // 1 MB
+            type: 'application/pdf',
+          },
+          {
+            name: 'product_images.zip',
+            size: 5242880, // 5 MB
+            type: 'application/zip',
+          }
+        ]
+      },
       scriptSegments: [
         {
           text: 'Welcome to the future of innovation.',
@@ -764,6 +888,22 @@ const playFinalAudio = () => {
 
 const downloadFinalAudio = () => {
   success('Downloading final audio')
+}
+
+// File methods
+const downloadFile = (file: any) => {
+  success(`Downloading ${file.name}`)
+  // In real app, this would trigger file download
+}
+
+const viewFile = (file: any) => {
+  success(`Opening ${file.name}`)
+  // In real app, this would open file viewer
+}
+
+const playReferenceAudio = () => {
+  success('Playing reference audio')
+  // In real app, this would use audio player component
 }
 
 // Submit methods

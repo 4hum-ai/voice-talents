@@ -5,6 +5,28 @@
 
 import type { JobPosting } from './voice-client'
 
+// Project files from job creation modal
+export interface ProjectFiles {
+  script?: {
+    name: string
+    size: number
+    type: string
+    url?: string
+  }
+  referenceAudio?: {
+    name: string
+    size: number
+    type: string
+    url?: string
+  }
+  additional?: Array<{
+    name: string
+    size: number
+    type: string
+    url?: string
+  }>
+}
+
 // Extended job interface for detail views
 export interface JobDetail extends JobPosting {
   // Progress tracking
@@ -16,6 +38,9 @@ export interface JobDetail extends JobPosting {
   tone?: string
   duration?: string
   recordingQuality?: string
+  
+  // Project files from job creation
+  projectFiles?: ProjectFiles
   
   // Client notes and requirements
   clientNotes?: string[]
@@ -126,4 +151,13 @@ export const formatDate = (dateString: string): string => {
     day: 'numeric',
     year: 'numeric',
   })
+}
+
+// Helper function to format file size
+export const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
