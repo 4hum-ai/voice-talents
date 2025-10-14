@@ -102,6 +102,7 @@ const activeItemId = computed(() => {
   const path = route.path
   if (path === '/talent/dashboard') return 'dashboard'
   if (path.startsWith('/talent/profile')) return 'profile'
+  if (path.startsWith('/talent/jobs')) return 'jobs'
   if (path.startsWith('/talent/projects')) return 'projects'
   if (path.startsWith('/talent/casting')) return 'casting'
   if (path.startsWith('/talent/settings')) return 'settings'
@@ -134,11 +135,18 @@ const navigationSections = computed(() => [
     title: 'Work',
     items: [
       {
+        id: 'jobs',
+        title: 'My Jobs',
+        description: 'Assigned voice acting jobs',
+        icon: BriefcaseIcon,
+        badge: stats.value.activeProjects,
+        action: () => router.push('/talent/jobs'),
+      },
+      {
         id: 'projects',
         title: 'My Projects',
         description: 'Track your work',
         icon: FolderOpenIcon,
-        badge: stats.value.activeProjects,
         action: () => router.push('/talent/projects'),
       },
       {

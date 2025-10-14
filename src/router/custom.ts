@@ -65,6 +65,18 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'View Proposal', requiresAuth: true },
   },
 
+  // Job Management (Assigned Jobs)
+  {
+    path: '/talent/jobs',
+    component: () => import('../views/talent/JobManagement.vue'),
+    meta: { title: 'My Jobs', requiresAuth: true },
+  },
+  {
+    path: '/talent/jobs/:id',
+    component: () => import('../views/talent/TalentJobDetail.vue'),
+    meta: { title: 'Job Details', requiresAuth: true },
+  },
+
   // Settings
   {
     path: '/talent/settings',
