@@ -30,7 +30,7 @@
               <div class="mb-6 flex items-start justify-between">
                 <div class="flex-1">
                   <div class="mb-4 flex items-center space-x-3">
-                    <StatusBadge :status="getJobStatus(job.status)" />
+                    <StatusBadge :status="getJobStatusDisplay(job.status)" />
                     <StatusBadge
                       :status="getProgressStatus(job.progress)"
                       :variant="getProgressVariant(job.progress)"
@@ -59,7 +59,7 @@
                     <div class="flex justify-between">
                       <span class="text-muted-foreground">Budget:</span>
                       <span class="text-foreground font-medium text-green-600">
-                        ${{ job.budget.toLocaleString() }}
+                        ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
                       </span>
                     </div>
                     <div class="flex justify-between">
@@ -170,14 +170,14 @@
             <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
               <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
               <div class="space-y-4">
-                <div v-if="finalAudio" class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                <div v-if="job.finalAudio" class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                       <AudioIcon class="h-8 w-8 text-green-600" />
                       <div>
-                        <h4 class="text-foreground font-medium">{{ finalAudio.name }}</h4>
-                        <p class="text-muted-foreground text-sm">{{ finalAudio.duration }} • {{ finalAudio.size }}</p>
-                        <p class="text-muted-foreground text-xs">Submitted {{ formatDate(finalAudio.submittedAt) }}</p>
+                        <h4 class="text-foreground font-medium">{{ job.finalAudio.name }}</h4>
+                        <p class="text-muted-foreground text-sm">{{ job.finalAudio.duration }} • {{ job.finalAudio.size }}</p>
+                        <p class="text-muted-foreground text-xs">Submitted {{ formatDate(job.finalAudio.submittedAt) }}</p>
                       </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -239,6 +239,15 @@ import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
+import { useJob } from '@/composables/useJob'
+import type { JobDetail } from '@/types/job-detail'
+import { 
+  getJobStatusDisplay, 
+  getProgressStatus, 
+  getProgressVariant, 
+  formatProjectType, 
+  formatDate 
+} from '@/types/job-detail'
 
 // Icons
 import EditIcon from '~icons/mdi/pencil'
@@ -255,98 +264,116 @@ import ArrowLeftIcon from '~icons/mdi/arrow-left'
 
 const route = useRoute()
 const { success } = useToast()
+const { getJob } = useJob()
 
-// Job data - in real app, this would come from API
-const job = ref({
-  id: route.params.id,
-  title: 'Product Commercial Voice Over',
-  clientName: 'Acme Studios',
-  projectType: 'commercial',
-  status: 'in_progress',
-  deadline: '2024-12-25',
-  budget: 1500,
-  progress: 65,
-  voiceStyle: 'Professional',
-  pace: 'Medium',
-  tone: 'Friendly',
-  duration: '2-3 minutes',
-  description: 'Professional voice over for product commercial',
-  createdAt: '2024-12-01',
-  talentName: 'Sarah Johnson',
-  talentExperience: '5+ years',
-  talentLanguages: 'English, Spanish',
-  talentRating: '4.8/5',
-  clientNotes: [
-    'Emphasize the word "innovative" when describing our product features.',
-    'Maintain consistent energy throughout the entire script.',
-    'Please deliver the final audio by December 20th for review.',
-  ],
-  talentNotes: [
-    'I have a few questions about the pronunciation of technical terms.',
-    'Would you like me to provide multiple takes for the key phrases?',
-  ],
-})
+// Job data - load from useJob composable or create mock data
+const job = ref<JobDetail | null>(null)
 
-// Final audio
-const finalAudio = ref<{name: string; duration: string; size: string; submittedAt: string} | null>({
-  name: 'final_commercial_v1.mp3',
-  duration: '2:45',
-  size: '4.2 MB',
-  submittedAt: '2024-12-15',
-})
-
-// Computed
-const canRequestRevision = computed(() => 
-  finalAudio.value && job.value.status !== 'completed'
-)
-
-const canApprove = computed(() => 
-  finalAudio.value && job.value.status !== 'completed'
-)
-
-// Methods
-const getJobStatus = (status: string) => {
-  switch (status) {
-    case 'draft':
-      return 'draft'
-    case 'in_progress':
-      return 'active'
-    case 'pending_review':
-      return 'pending'
-    case 'completed':
-      return 'completed'
-    default:
-      return 'draft'
+// Load job data
+const loadJobData = () => {
+  const jobId = route.params.id as string
+  const jobData = getJob(jobId)
+  
+  if (jobData) {
+    // Transform Job to JobDetail
+    job.value = {
+      ...jobData,
+      progress: 65, // This would come from actual progress tracking
+      voiceStyle: 'Professional',
+      pace: 'Medium', 
+      tone: 'Friendly',
+      duration: '2-3 minutes',
+      recordingQuality: 'Professional',
+      talentName: 'Sarah Johnson',
+      talentExperience: '5+ years',
+      talentLanguages: 'English, Spanish',
+      talentRating: '4.8/5',
+      clientNotes: [
+        'Emphasize the word "innovative" when describing our product features.',
+        'Maintain consistent energy throughout the entire script.',
+        'Please deliver the final audio by December 20th for review.',
+      ],
+      talentNotes: [
+        'I have a few questions about the pronunciation of technical terms.',
+        'Would you like me to provide multiple takes for the key phrases?',
+      ],
+      finalAudio: {
+        name: 'final_commercial_v1.mp3',
+        duration: '2:45',
+        size: '4.2 MB',
+        submittedAt: '2024-12-15',
+      }
+    }
+  } else {
+    // Mock data for development
+    job.value = {
+      id: jobId,
+      clientId: 'client-1',
+      clientName: 'Acme Studios',
+      title: 'Product Commercial Voice Over',
+      description: 'Professional voice over for product commercial',
+      jobType: 'open_casting',
+      projectType: 'commercial',
+      status: 'active',
+      priority: 'medium',
+      budget: { min: 1000, max: 2000, currency: 'USD' },
+      deadline: '2024-12-25',
+      estimatedDuration: '2-3 weeks',
+      requirements: {
+        languages: ['English'],
+        voiceTypes: ['commercial'],
+        gender: 'any',
+        experience: 'professional',
+        specialInstructions: 'Professional voice over for product commercial',
+        quality: 'professional'
+      },
+      deliverables: [],
+      files: [],
+      isPublic: true,
+      applications: [],
+      selectedTalents: [],
+      totalApplications: 0,
+      viewCount: 0,
+      createdDate: '2024-12-01',
+      createdAt: '2024-12-01',
+      updatedAt: '2024-12-15',
+      progress: 65,
+      voiceStyle: 'Professional',
+      pace: 'Medium',
+      tone: 'Friendly', 
+      duration: '2-3 minutes',
+      recordingQuality: 'Professional',
+      talentName: 'Sarah Johnson',
+      talentExperience: '5+ years',
+      talentLanguages: 'English, Spanish',
+      talentRating: '4.8/5',
+      clientNotes: [
+        'Emphasize the word "innovative" when describing our product features.',
+        'Maintain consistent energy throughout the entire script.',
+        'Please deliver the final audio by December 20th for review.',
+      ],
+      talentNotes: [
+        'I have a few questions about the pronunciation of technical terms.',
+        'Would you like me to provide multiple takes for the key phrases?',
+      ],
+      finalAudio: {
+        name: 'final_commercial_v1.mp3',
+        duration: '2:45',
+        size: '4.2 MB',
+        submittedAt: '2024-12-15',
+      }
+    }
   }
 }
 
-const getProgressStatus = (progress: number) => {
-  if (progress === 100) return 'completed'
-  if (progress >= 75) return 'success'
-  if (progress >= 50) return 'active'
-  if (progress >= 25) return 'pending'
-  return 'draft'
-}
+// Computed
+const canRequestRevision = computed(() => 
+  job.value?.finalAudio && job.value.status !== 'completed'
+)
 
-const getProgressVariant = (progress: number) => {
-  if (progress === 100) return 'solid'
-  if (progress >= 75) return 'soft'
-  if (progress >= 50) return 'soft'
-  if (progress >= 25) return 'soft'
-  return 'soft'
-}
-
-const formatProjectType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
+const canApprove = computed(() => 
+  job.value?.finalAudio && job.value.status !== 'completed'
+)
 
 // Action methods
 const requestRevision = () => {
@@ -356,8 +383,10 @@ const requestRevision = () => {
 
 const approveWork = () => {
   success('Work approved! Payment will be processed.')
-  job.value.status = 'completed'
-  job.value.progress = 100
+  if (job.value) {
+    job.value.status = 'completed'
+    job.value.progress = 100
+  }
   // In real app, this would trigger payment and completion workflow
 }
 
@@ -383,5 +412,6 @@ const contactTalent = () => {
 
 onMounted(() => {
   console.log('Client Job Detail loaded for job:', route.params.id)
+  loadJobData()
 })
 </script>

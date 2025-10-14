@@ -30,7 +30,7 @@
               <div class="mb-6 flex items-start justify-between">
                 <div class="flex-1">
                   <div class="mb-4 flex items-center space-x-3">
-                    <StatusBadge :status="getJobStatus(job.status)" />
+                    <StatusBadge :status="getJobStatusDisplay(job.status)" />
                     <StatusBadge
                       :status="getProgressStatus(job.progress)"
                       :variant="getProgressVariant(job.progress)"
@@ -63,7 +63,7 @@
                     <div class="flex justify-between">
                       <span class="text-muted-foreground">Budget:</span>
                       <span class="text-foreground font-medium text-green-600">
-                        ${{ job.budget.toLocaleString() }}
+                        ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
                       </span>
                     </div>
                   </div>
@@ -136,71 +136,6 @@
               </div>
             </div>
 
-            <!-- Script Preview -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <div class="mb-4 flex items-center justify-between">
-                <h3 class="text-foreground text-lg font-semibold">Script & Transcript</h3>
-                <div class="flex items-center space-x-2">
-                  <Button variant="outline" size="sm" @click="generateTTS" :disabled="isGeneratingTTS">
-                    <RobotIcon class="mr-2 h-4 w-4" />
-                    {{ isGeneratingTTS ? 'Generating...' : 'Generate TTS' }}
-                  </Button>
-                  <Button variant="outline" size="sm" @click="openAudioStudio">
-                    <MicrophoneIcon class="mr-2 h-4 w-4" />
-                    Open Audio Studio
-                  </Button>
-                </div>
-              </div>
-
-              <div class="max-h-64 space-y-3 overflow-y-auto">
-                <div
-                  v-for="(segment, index) in scriptSegments"
-                  :key="index"
-                  class="rounded-lg border border-gray-200 p-3 dark:border-gray-600"
-                  :class="{
-                    'border-blue-300 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/20':
-                      segment.isSelected,
-                  }"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                      <div class="mb-2 flex items-center space-x-2">
-                        <span class="text-muted-foreground rounded bg-gray-100 px-2 py-1 font-mono text-xs dark:bg-gray-700">
-                          {{ segment.startTime }}
-                        </span>
-                        <span class="text-muted-foreground text-xs">{{ segment.duration }}</span>
-                        <span
-                          v-if="segment.hasRecording"
-                          class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
-                        >
-                          Recorded
-                        </span>
-                        <span
-                          v-else-if="segment.hasTTS"
-                          class="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                        >
-                          TTS
-                        </span>
-                      </div>
-                      <p class="text-foreground text-sm leading-relaxed">{{ segment.text }}</p>
-                    </div>
-                    <div class="ml-3 flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        @click="playSegment(index)"
-                        :disabled="!segment.hasAudio"
-                      >
-                        <PlayIcon class="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" @click="recordSegment(index)">
-                        <MicrophoneIcon class="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <!-- Client Notes -->
             <div v-if="job.clientNotes" class="bg-card border-border rounded-lg border p-6 shadow-sm">
@@ -221,13 +156,13 @@
             <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
               <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
               <div class="space-y-4">
-                <div v-if="finalAudio" class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                <div v-if="job.finalAudio" class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                       <AudioIcon class="h-8 w-8 text-green-600" />
                       <div>
-                        <h4 class="text-foreground font-medium">{{ finalAudio.name }}</h4>
-                        <p class="text-muted-foreground text-sm">{{ finalAudio.duration }} • {{ finalAudio.size }}</p>
+                        <h4 class="text-foreground font-medium">{{ job.finalAudio.name }}</h4>
+                        <p class="text-muted-foreground text-sm">{{ job.finalAudio.duration }} • {{ job.finalAudio.size }}</p>
                       </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -471,7 +406,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 // import Card from '@/components/atoms/Card.vue'
@@ -479,6 +414,15 @@ import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
+import { useJob } from '@/composables/useJob'
+import type { JobDetail } from '@/types/job-detail'
+import { 
+  getJobStatusDisplay, 
+  getProgressStatus, 
+  getProgressVariant, 
+  formatProjectType, 
+  formatDate 
+} from '@/types/job-detail'
 
 // Icons
 import MicrophoneIcon from '~icons/mdi/microphone'
@@ -500,41 +444,194 @@ import ArrowLeftIcon from '~icons/mdi/arrow-left'
 const route = useRoute()
 // const router = useRouter()
 const { success, error } = useToast()
+const { getJob } = useJob()
 
 // Modal states
 const showAudioStudio = ref(false)
 
-// Job data - in real app, this would come from API
-const job = ref({
-  id: route.params.id,
-  title: 'Product Commercial Voice Over',
-  clientName: 'Acme Studios',
-  projectType: 'commercial',
-  status: 'in_progress',
-  deadline: '2024-12-25',
-  budget: 1500,
-  progress: 65,
-  voiceStyle: 'Professional',
-  pace: 'Medium',
-  tone: 'Friendly',
-  duration: '2-3 minutes',
-  recordingQuality: 'Professional',
-  description: 'Professional voice over for product commercial',
-  clientNotes: [
-    'Emphasize the word "innovative" when describing our product features.',
-    'Maintain consistent energy throughout the entire script.',
-    'Please deliver the final audio by December 20th for review.',
-  ],
-})
+// Job data - load from useJob composable or create mock data
+const job = ref<JobDetail | null>(null)
 
-// Script content - commented out as it's not used in template
-// const scriptContent = ref(`Welcome to the future of innovation. Our revolutionary product combines cutting-edge technology with elegant design to bring you an experience like never before.
-
-// With features that adapt to your lifestyle and performance that exceeds expectations, this isn't just a product – it's a game-changer.
-
-// Join thousands of satisfied customers who have already discovered the difference. Order now and transform the way you work, play, and live.
-
-// Don't wait. The future is here, and it's waiting for you.`)
+// Load job data
+const loadJobData = () => {
+  const jobId = route.params.id as string
+  const jobData = getJob(jobId)
+  
+  if (jobData) {
+    // Transform Job to JobDetail
+    job.value = {
+      ...jobData,
+      progress: 65, // This would come from actual progress tracking
+      voiceStyle: 'Professional',
+      pace: 'Medium', 
+      tone: 'Friendly',
+      duration: '2-3 minutes',
+      recordingQuality: 'Professional',
+      clientNotes: [
+        'Emphasize the word "innovative" when describing our product features.',
+        'Maintain consistent energy throughout the entire script.',
+        'Please deliver the final audio by December 20th for review.',
+      ],
+      scriptSegments: [
+        {
+          text: 'Welcome to the future of innovation.',
+          startTime: '00:00',
+          duration: '3s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: 'Our revolutionary product combines cutting-edge technology with elegant design to bring you an experience like never before.',
+          startTime: '00:03',
+          duration: '9s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: "With features that adapt to your lifestyle and performance that exceeds expectations, this isn't just a product – it's a game-changer.",
+          startTime: '00:12',
+          duration: '8s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: 'Join thousands of satisfied customers who have already discovered the difference.',
+          startTime: '00:20',
+          duration: '6s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: 'Order now and transform the way you work, play, and live.',
+          startTime: '00:26',
+          duration: '5s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: "Don't wait. The future is here, and it's waiting for you.",
+          startTime: '00:31',
+          duration: '4s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+      ]
+    }
+  } else {
+    // Mock data for development
+    job.value = {
+      id: jobId,
+      clientId: 'client-1',
+      clientName: 'Acme Studios',
+      title: 'Product Commercial Voice Over',
+      description: 'Professional voice over for product commercial',
+      jobType: 'open_casting',
+      projectType: 'commercial',
+      status: 'active',
+      priority: 'medium',
+      budget: { min: 1000, max: 2000, currency: 'USD' },
+      deadline: '2024-12-25',
+      estimatedDuration: '2-3 weeks',
+      requirements: {
+        languages: ['English'],
+        voiceTypes: ['commercial'],
+        gender: 'any',
+        experience: 'professional',
+        specialInstructions: 'Professional voice over for product commercial',
+        quality: 'professional'
+      },
+      deliverables: [],
+      files: [],
+      isPublic: true,
+      applications: [],
+      selectedTalents: [],
+      totalApplications: 0,
+      viewCount: 0,
+      createdDate: '2024-12-01',
+      createdAt: '2024-12-01',
+      updatedAt: '2024-12-15',
+      progress: 65,
+      voiceStyle: 'Professional',
+      pace: 'Medium',
+      tone: 'Friendly', 
+      duration: '2-3 minutes',
+      recordingQuality: 'Professional',
+      clientNotes: [
+        'Emphasize the word "innovative" when describing our product features.',
+        'Maintain consistent energy throughout the entire script.',
+        'Please deliver the final audio by December 20th for review.',
+      ],
+      scriptSegments: [
+        {
+          text: 'Welcome to the future of innovation.',
+          startTime: '00:00',
+          duration: '3s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: 'Our revolutionary product combines cutting-edge technology with elegant design to bring you an experience like never before.',
+          startTime: '00:03',
+          duration: '9s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: "With features that adapt to your lifestyle and performance that exceeds expectations, this isn't just a product – it's a game-changer.",
+          startTime: '00:12',
+          duration: '8s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: 'Join thousands of satisfied customers who have already discovered the difference.',
+          startTime: '00:20',
+          duration: '6s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: 'Order now and transform the way you work, play, and live.',
+          startTime: '00:26',
+          duration: '5s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+        {
+          text: "Don't wait. The future is here, and it's waiting for you.",
+          startTime: '00:31',
+          duration: '4s',
+          hasTTS: false,
+          hasRecording: false,
+          hasAudio: false,
+          isSelected: false,
+        },
+      ]
+    }
+  }
+}
 
 // Recording state
 const isRecording = ref(false)
@@ -545,66 +642,8 @@ const isGeneratingTTS = ref(false)
 const hasTTS = ref(false)
 const selectedSegmentIndex = ref<number | null>(null)
 
-// Script segments
-const scriptSegments = ref([
-  {
-    text: 'Welcome to the future of innovation.',
-    startTime: '00:00',
-    duration: '3s',
-    hasTTS: false,
-    hasRecording: false,
-    hasAudio: false,
-    isSelected: false,
-  },
-  {
-    text: 'Our revolutionary product combines cutting-edge technology with elegant design to bring you an experience like never before.',
-    startTime: '00:03',
-    duration: '9s',
-    hasTTS: false,
-    hasRecording: false,
-    hasAudio: false,
-    isSelected: false,
-  },
-  {
-    text: "With features that adapt to your lifestyle and performance that exceeds expectations, this isn't just a product – it's a game-changer.",
-    startTime: '00:12',
-    duration: '8s',
-    hasTTS: false,
-    hasRecording: false,
-    hasAudio: false,
-    isSelected: false,
-  },
-  {
-    text: 'Join thousands of satisfied customers who have already discovered the difference.',
-    startTime: '00:20',
-    duration: '6s',
-    hasTTS: false,
-    hasRecording: false,
-    hasAudio: false,
-    isSelected: false,
-  },
-  {
-    text: 'Order now and transform the way you work, play, and live.',
-    startTime: '00:26',
-    duration: '5s',
-    hasTTS: false,
-    hasRecording: false,
-    hasAudio: false,
-    isSelected: false,
-  },
-  {
-    text: "Don't wait. The future is here, and it's waiting for you.",
-    startTime: '00:31',
-    duration: '4s',
-    hasTTS: false,
-    hasRecording: false,
-    hasAudio: false,
-    isSelected: false,
-  },
-])
-
-// Final audio
-const finalAudio = ref<{name: string; duration: string; size: string} | null>(null)
+// Computed script segments
+const scriptSegments = computed(() => job.value?.scriptSegments || [])
 
 // Computed
 const recordedSegmentsCount = computed(() => 
@@ -616,52 +655,8 @@ const ttsSegmentsCount = computed(() =>
 )
 
 const canSubmit = computed(() => 
-  recordedSegmentsCount.value > 0 || finalAudio.value
+  recordedSegmentsCount.value > 0 || job.value?.finalAudio
 )
-
-// Methods
-const getJobStatus = (status: string) => {
-  switch (status) {
-    case 'draft':
-      return 'draft'
-    case 'in_progress':
-      return 'active'
-    case 'pending_review':
-      return 'pending'
-    case 'completed':
-      return 'completed'
-    default:
-      return 'draft'
-  }
-}
-
-const getProgressStatus = (progress: number) => {
-  if (progress === 100) return 'completed'
-  if (progress >= 75) return 'success'
-  if (progress >= 50) return 'active'
-  if (progress >= 25) return 'pending'
-  return 'draft'
-}
-
-const getProgressVariant = (progress: number) => {
-  if (progress === 100) return 'solid'
-  if (progress >= 75) return 'soft'
-  if (progress >= 50) return 'soft'
-  if (progress >= 25) return 'soft'
-  return 'soft'
-}
-
-const formatProjectType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
 
 // Modal methods
 const openAudioStudio = () => {
@@ -783,6 +778,7 @@ const submitWork = () => {
 
 onMounted(() => {
   console.log('Talent Job Detail loaded for job:', route.params.id)
+  loadJobData()
 })
 </script>
 
