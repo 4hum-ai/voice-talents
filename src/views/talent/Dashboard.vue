@@ -292,7 +292,7 @@ import AccountIcon from '~icons/mdi/account'
 const router = useRouter()
 
 // Onboarding logic
-const { shouldShowOnboarding, isTalentMode } = useOnboarding()
+const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
 const { success } = useToast()
 
 // Mock data
@@ -396,7 +396,10 @@ const closeTalentOnboarding = () => {
 }
 
 onMounted(() => {
+  // Set user mode to talent when accessing talent dashboard
+  setUserMode('talent')
+  
   // Initialize dashboard data
-  console.log('Dashboard mounted')
+  console.log('Talent dashboard mounted')
 })
 </script>

@@ -262,7 +262,7 @@ const applications = ref<JobApplication[]>(mockClientData.jobApplications)
 const campaigns = ref<Campaign[]>(mockClientData.campaigns)
 
 // Onboarding logic
-const { shouldShowOnboarding, isTalentMode } = useOnboarding()
+const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
 const { addToast: showToast, success } = useToast()
 
 // Modal state
@@ -396,6 +396,9 @@ const closeClientOnboarding = () => {
 }
 
 onMounted(() => {
+  // Set user mode to client when accessing client dashboard
+  setUserMode('client')
+  
   // In real app, fetch client data from API
   console.log('Client dashboard loaded')
 })
