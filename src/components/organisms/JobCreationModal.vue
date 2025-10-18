@@ -162,7 +162,7 @@ const autoSaveInterval = ref<number | null>(null)
 const currentClient = ref(mockClientData.voiceClients[0])
 
 // Voice type selection (outside of steps)
-const selectedVoiceType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | null>(null)
+const selectedVoiceType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | undefined>(undefined)
 
 // Job form data - Dynamic based on voice type
 const jobForm = reactive({
@@ -466,7 +466,7 @@ const resetForm = () => {
 
   // Reset step and voice type
   currentStep.value = 1
-  selectedVoiceType.value = null
+  selectedVoiceType.value = undefined
   currentDraftId.value = null
 
   // Load client defaults for new job
