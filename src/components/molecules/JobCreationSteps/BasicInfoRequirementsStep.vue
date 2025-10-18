@@ -42,6 +42,61 @@
                 placeholder="Select project type"
                 required
               />
+              
+              <!-- Project Type Information -->
+              <div v-if="selectedProjectConfig" class="mt-4 p-4 bg-muted rounded-lg">
+                <h4 class="text-foreground mb-3 font-medium">{{ selectedProjectConfig.label }}</h4>
+                <p class="text-muted-foreground mb-3 text-sm">{{ selectedProjectConfig.description }}</p>
+                
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <!-- Pricing Info -->
+                  <div>
+                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Pricing</h5>
+                    <p class="text-muted-foreground text-sm">
+                      {{ selectedProjectConfig.pricing.model.replace('_', ' ') }} • 
+                      ${{ selectedProjectConfig.pricing.baseRate }}{{ selectedProjectConfig.pricing.model === 'per_project' ? '' : '/' + selectedProjectConfig.pricing.model.replace('per_', '') }}
+                    </p>
+                  </div>
+                  
+                  <!-- Delivery Info -->
+                  <div>
+                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Timeline</h5>
+                    <p class="text-muted-foreground text-sm">{{ selectedProjectConfig.delivery.timeline }}</p>
+                  </div>
+                  
+                  <!-- Quality -->
+                  <div>
+                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Quality</h5>
+                    <p class="text-muted-foreground text-sm capitalize">{{ selectedProjectConfig.delivery.quality }}</p>
+                  </div>
+                  
+                  <!-- Revisions -->
+                  <div>
+                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Revisions</h5>
+                    <p class="text-muted-foreground text-sm">{{ selectedProjectConfig.delivery.revisionRounds }} rounds included</p>
+                  </div>
+                </div>
+                
+                <!-- Use Cases -->
+                <div class="mt-3">
+                  <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Common Use Cases</h5>
+                  <div class="flex flex-wrap gap-1">
+                    <span 
+                      v-for="useCase in selectedProjectConfig.useCases.slice(0, 3)" 
+                      :key="useCase"
+                      class="bg-primary/10 text-primary px-2 py-1 rounded text-xs"
+                    >
+                      {{ useCase }}
+                    </span>
+                    <span 
+                      v-if="selectedProjectConfig.useCases.length > 3"
+                      class="text-muted-foreground px-2 py-1 text-xs"
+                    >
+                      +{{ selectedProjectConfig.useCases.length - 3 }} more
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -223,6 +278,7 @@ import SelectInput from '@/components/atoms/SelectInput.vue'
 import FileUpload from '@/components/atoms/FileUpload.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import type { VoiceType } from '@/types/voice-actor'
+import { useJobType } from '@/composables/useJobType'
 
 interface Requirements {
   language: string
@@ -270,37 +326,21 @@ const localRequirements = ref<Requirements>({ ...props.requirements })
 const localDeadline = ref(props.deadline)
 const localFiles = ref<ProjectFiles>({ ...props.files })
 
-// Combined Project/Voice Type Options
-const combinedProjectTypeOptions = [
-  { value: 'commercial', label: 'Commercial Voice-Over' },
-  { value: 'audiobook_narrator', label: 'Audiobook Narration' },
-  { value: 'character_voice', label: 'Character Voice' },
-  { value: 'podcast', label: 'Podcast Voice' },
-  { value: 'e-learning', label: 'E-Learning Narration' },
-  { value: 'animation', label: 'Animation Voice' },
-  { value: 'video_game', label: 'Video Game Voice' },
-  { value: 'presentation', label: 'Presentation Voice' },
-  { value: 'announcer', label: 'Announcer Voice' },
-  { value: 'phone_system', label: 'Phone System Voice' },
-  { value: 'app_voice', label: 'App Voice Interface' },
-  { value: 'storyteller', label: 'Storytelling Voice' },
-  // Movie & Film Voice-Over Options
-  { value: 'movie_dubbing', label: 'Movie Dubbing' },
-  { value: 'film_narration', label: 'Film Narration' },
-  { value: 'movie_trailer', label: 'Movie Trailer Voice' },
-  { value: 'documentary_voice', label: 'Documentary Voice-Over' },
-  { value: 'film_character_dubbing', label: 'Film Character Dubbing' },
-  { value: 'movie_promotional', label: 'Movie Promotional Voice' },
-  { value: 'film_commentary', label: 'Film Commentary Voice' },
-  { value: 'movie_teaser', label: 'Movie Teaser Voice' },
-  { value: 'film_voice_match', label: 'Film Voice Matching' },
-  { value: 'movie_redub', label: 'Movie Re-dubbing' },
-  { value: 'film_loop_group', label: 'Film Loop Group Voice' },
-  { value: 'movie_adr', label: 'Movie ADR (Automated Dialogue Replacement)' },
-  { value: 'film_voice_direction', label: 'Film Voice Direction' },
-  { value: 'movie_voice_casting', label: 'Movie Voice Casting' },
-  { value: 'film_voice_sync', label: 'Film Voice Synchronization' },
-]
+// Use job type configuration composable
+const { getAllConfigs, getConfig } = useJobType()
+
+// Generate project type options from composable
+const combinedProjectTypeOptions = computed(() => {
+  return getAllConfigs.value.map(config => ({
+    value: config.id,
+    label: config.label
+  }))
+})
+
+// Get selected project configuration
+const selectedProjectConfig = computed(() => {
+  return localProjectType.value ? getConfig(localProjectType.value) : null
+})
 
 const languageOptions = [
   { value: 'english', label: 'English' },
