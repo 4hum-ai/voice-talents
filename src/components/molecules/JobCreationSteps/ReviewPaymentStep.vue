@@ -172,44 +172,92 @@
           </div>
         </div>
 
-        <!-- Payment Method -->
+        <!-- Bank Transfer Payment -->
         <div class="bg-card border-border rounded-lg border p-6">
-          <h3 class="text-foreground mb-4 text-lg font-semibold">Payment Method</h3>
-
-          <div class="space-y-3">
-            <label
-              class="border-border hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg border p-3 transition-colors"
-            >
-              <input
-                v-model="paymentMethod"
-                type="radio"
-                value="direct"
-                class="text-primary focus:ring-primary border-border h-4 w-4"
-              />
-              <div>
-                <span class="text-foreground block text-sm font-medium">Direct Payment</span>
-                <span class="text-muted-foreground block text-xs"
-                  >Pay talent directly upon completion</span
-                >
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Bank Transfer Payment</h3>
+          
+          <div class="space-y-4">
+            <!-- QR Code -->
+            <div class="flex justify-center">
+              <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                <div class="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div class="text-center">
+                    <Icon name="mdi:qrcode" class="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                    <p class="text-sm text-gray-500">QR Code</p>
+                    <p class="text-xs text-gray-400">Scan to pay</p>
+                  </div>
+                </div>
               </div>
-            </label>
+            </div>
 
-            <label
-              class="border-border hover:bg-muted/50 flex cursor-pointer items-center space-x-3 rounded-lg border p-3 transition-colors"
-            >
-              <input
-                v-model="paymentMethod"
-                type="radio"
-                value="escrow"
-                class="text-primary focus:ring-primary border-border h-4 w-4"
-              />
-              <div>
-                <span class="text-foreground block text-sm font-medium">Escrow Payment</span>
-                <span class="text-muted-foreground block text-xs"
-                  >Secure payments held until project completion</span
-                >
+            <!-- Bank Information -->
+            <div class="space-y-3">
+              <div class="bg-muted/30 rounded-lg p-4">
+                <h4 class="text-foreground mb-3 text-sm font-semibold">Bank Transfer Details</h4>
+                
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground text-sm">Bank Number:</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-mono text-sm font-medium">1234-5678-9012-3456</span>
+                      <button 
+                        @click="copyToClipboard('1234-5678-9012-3456')"
+                        class="text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <Icon name="mdi:content-copy" class="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground text-sm">Account Holder:</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium text-sm">VoiceAct Platform</span>
+                      <button 
+                        @click="copyToClipboard('VoiceAct Platform')"
+                        class="text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <Icon name="mdi:content-copy" class="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground text-sm">Description:</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="font-mono text-sm font-medium">{{ jobId }}</span>
+                      <button 
+                        @click="copyToClipboard(jobId)"
+                        class="text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <Icon name="mdi:content-copy" class="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground text-sm">Amount:</span>
+                    <span class="font-semibold text-primary">${{ totalCost }}</span>
+                  </div>
+                </div>
               </div>
-            </label>
+
+              <!-- Payment Instructions -->
+              <div class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div class="flex items-start space-x-2">
+                  <Icon name="mdi:information" class="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div class="text-sm">
+                    <p class="text-blue-800 dark:text-blue-200 font-medium mb-1">Payment Instructions:</p>
+                    <ul class="text-blue-700 dark:text-blue-300 space-y-1 text-xs">
+                      <li>• Use the exact amount: <strong>${{ totalCost }}</strong></li>
+                      <li>• Include the job ID in the description: <strong>{{ jobId }}</strong></li>
+                      <li>• Payment will be verified within 24 hours</li>
+                      <li>• Your job will be published after payment confirmation</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -223,8 +271,8 @@
             class="w-full"
           >
             <Icon v-if="isSubmitting" name="mdi:loading" class="mr-2 h-4 w-4 animate-spin" />
-            <Icon v-else name="mdi:rocket-launch" class="mr-2 h-4 w-4" />
-            {{ isSubmitting ? 'Publishing...' : `Publish Job - $${totalCost}` }}
+            <Icon v-else name="mdi:bank-transfer" class="mr-2 h-4 w-4" />
+            {{ isSubmitting ? 'Processing...' : `Complete Bank Transfer - $${totalCost}` }}
           </Button>
 
           <Button variant="outline" size="lg" @click="emit('save-draft')" class="w-full">
@@ -246,9 +294,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import { useToast } from '@/composables/useToast'
 
 interface JobForm {
   voiceType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
@@ -304,7 +353,24 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const paymentMethod = ref<'direct' | 'escrow'>('escrow')
+const { success, error } = useToast()
+
+// Generate a unique job ID for payment reference
+const jobId = computed(() => {
+  const timestamp = Date.now().toString(36)
+  const random = Math.random().toString(36).substring(2, 8)
+  return `VA-${timestamp}-${random}`.toUpperCase()
+})
+
+// Copy to clipboard functionality
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    success('Text copied to clipboard', 'Copied!')
+  } catch (err) {
+    error('Could not copy to clipboard', 'Copy Failed')
+  }
+}
 
 // Pricing calculations
 const platformFee = computed(() => {
