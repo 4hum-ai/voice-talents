@@ -97,13 +97,13 @@
               </label>
               <SelectInput
                 id="deliveryFormat"
-                v-model="localRequirements.deliveryFormat"
+                v-model="deliveryFormat"
                 :options="deliveryFormatOptions"
-                placeholder="Select format"
+                placeholder="MP3 (44.1kHz) - ElevenLabs Default"
                 disabled
               />
               <p class="text-muted-foreground mt-1 text-xs">
-                Currently supporting ElevenLabs MP3 format only
+                Using ElevenLabs MP3 format (44.1kHz) - Single format support
               </p>
             </div>
 
@@ -279,7 +279,7 @@ const localDeadline = ref(props.deadline)
 const localFiles = ref<ProjectFiles>({ ...props.files })
 
 // Use job type configuration composable
-const { getAllConfigs, getConfig } = useJobType()
+const { getAllConfigs } = useJobType()
 
 // Generate project type options from composable
 const combinedProjectTypeOptions = computed(() => {
@@ -289,9 +289,12 @@ const combinedProjectTypeOptions = computed(() => {
   }))
 })
 
-// Get selected project configuration
-const selectedProjectConfig = computed(() => {
-  return localProjectType.value ? getConfig(localProjectType.value) : null
+// Ensure delivery format is always set to default
+const deliveryFormat = computed({
+  get: () => localRequirements.value.deliveryFormat || 'mp3_44khz',
+  set: (value) => {
+    localRequirements.value.deliveryFormat = value
+  }
 })
 
 const languageOptions = [
