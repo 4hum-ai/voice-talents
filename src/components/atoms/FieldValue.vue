@@ -88,14 +88,14 @@
   <div v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">
     <div v-if="Array.isArray(value) && value.length > 0">
       <!-- Check if all items are objects with similar structure -->
-      <div v-if="isArrayOfObjects(value)" class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <div v-if="isArrayOfObjects(value)" class="w-full">
+        <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th
                 v-for="key in getObjectKeys(value)"
                 :key="key"
-                class="px-3 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
+                class="px-3 py-2 text-left text-xs font-medium tracking-wider break-words whitespace-normal text-gray-500 uppercase dark:text-gray-400"
               >
                 {{ formatKey(key) }}
               </th>
@@ -107,8 +107,15 @@
               :key="index"
               class="hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              <td v-for="key in getObjectKeys(value)" :key="key" class="px-3 py-2 text-sm">
-                <span v-if="item[key] !== null && item[key] !== undefined">
+              <td
+                v-for="key in getObjectKeys(value)"
+                :key="key"
+                class="px-3 py-2 text-sm break-words"
+              >
+                <span
+                  v-if="item[key] !== null && item[key] !== undefined"
+                  class="whitespace-normal"
+                >
                   {{ formatTableValue(item[key]) }}
                 </span>
                 <span v-else class="text-gray-400">-</span>
@@ -555,8 +562,8 @@ const getObjectKeys = (arr: unknown[]): string[] => {
 const formatTableValue = (value: unknown): string => {
   if (value === null || value === undefined) return '-'
   if (typeof value === 'string') {
-    // Truncate long strings
-    return value.length > 100 ? `${value.substring(0, 97)}...` : value
+    // Don't truncate strings in table - let CSS handle overflow
+    return value
   }
   if (typeof value === 'number') return value.toString()
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
