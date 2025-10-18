@@ -72,7 +72,7 @@
 
         <!-- Talent Selection List -->
         <div v-if="localTalentOptions.pickOwn" class="mt-4">
-          <h4 class="text-md text-foreground mb-4 font-medium">Available Talent</h4>
+          <h4 class="text-md text-foreground mb-4 font-medium">Available Talents</h4>
           <div class="grid max-h-96 grid-cols-1 gap-4 overflow-y-auto md:grid-cols-2">
             <div
               v-for="talent in mockTalentList"
@@ -100,7 +100,7 @@
                     <p class="text-muted-foreground text-sm">{{ talent.specialty }}</p>
                     <div class="mt-1 flex items-center space-x-2">
                       <div class="flex items-center space-x-1">
-                        <Icon name="mdi:star" class="h-3 w-3 text-yellow-500" />
+                        <IconMdiStar class="h-4 w-4 text-yellow-500" />
                         <span class="text-muted-foreground text-xs">{{ talent.rating }}</span>
                       </div>
                       <span class="text-muted-foreground text-xs">•</span>
@@ -207,12 +207,12 @@
 
     <div class="mt-8 flex justify-between">
       <Button variant="outline" size="lg" @click="emit('previous')">
-        <Icon name="mdi:arrow-left" class="mr-2 h-4 w-4" />
+        <IconMdiArrowLeft class="mr-2 h-4 w-4" />
         Previous
       </Button>
       <Button variant="primary" size="lg" @click="emit('next')">
         Continue
-        <Icon name="mdi:arrow-right" class="ml-2 h-4 w-4" />
+        <IconMdiArrowRight class="ml-2 h-4 w-4" />
       </Button>
     </div>
   </div>
@@ -221,7 +221,9 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
+import IconMdiStar from '~icons/mdi/star'
+import IconMdiArrowLeft from '~icons/mdi/arrow-left'
+import IconMdiArrowRight from '~icons/mdi/arrow-right'
 
 interface TalentOptions {
   isPublic: boolean

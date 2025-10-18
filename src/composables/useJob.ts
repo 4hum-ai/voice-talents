@@ -2,8 +2,8 @@ import { computed, reactive } from 'vue'
 import type { JobPosting } from '@/types/voice-client'
 
 // Job interface extending JobPosting with additional metadata
-export interface Job extends Omit<JobPosting, 'status' | 'closedDate'> {
-  status: 'draft' | 'published'
+export interface Job extends Omit<JobPosting, 'status'> {
+  status: 'draft' | 'published' | 'completed'
   lastSaved: string
   autoSaved: boolean
   version: number
@@ -35,11 +35,101 @@ const initializeJobs = () => {
     if (stored) {
       const parsed = JSON.parse(stored)
       state.jobs = Array.isArray(parsed) ? parsed : []
+    } else {
+      // Initialize with some mock completed jobs if no stored data
+      initializeMockJobs()
     }
   } catch (error) {
     console.error('Error loading jobs from localStorage:', error)
     state.error = 'Failed to load jobs'
   }
+}
+
+// Initialize mock completed jobs for demonstration
+const initializeMockJobs = () => {
+  const mockCompletedJobs: Job[] = [
+    {
+      id: 'job-completed-001',
+      clientId: 'client-001',
+      clientName: 'TechFlow Inc.',
+      title: 'Mobile App Commercial Series',
+      description: 'Series of 3 commercials for mobile app launch. Completed successfully with high-quality deliverables.',
+      jobType: 'open_casting',
+      projectType: 'commercial',
+      status: 'completed',
+      priority: 'high',
+      budget: { min: 3000, max: 5000, currency: 'USD' },
+      deadline: '2024-01-15T17:00:00Z',
+      startDate: '2024-01-01T09:00:00Z',
+      estimatedDuration: '2 weeks',
+      requirements: {
+        languages: ['English'],
+        accents: ['American'],
+        voiceTypes: ['commercial'],
+        ageRange: '25-35',
+        gender: 'any',
+        experience: 'professional',
+        specialInstructions: 'Energetic, modern tone for tech audience',
+        quality: 'professional',
+      },
+      deliverables: [],
+      files: [],
+      isPublic: true,
+      applications: [],
+      selectedTalents: ['va-001'],
+      totalApplications: 5,
+      viewCount: 45,
+      createdDate: '2023-12-20T10:00:00Z',
+      publishedDate: '2023-12-20T10:00:00Z',
+      closedDate: '2024-01-15T17:00:00Z',
+      createdAt: '2023-12-20T10:00:00Z',
+      updatedAt: '2024-01-15T17:00:00Z',
+      lastSaved: '2024-01-15T17:00:00Z',
+      autoSaved: false,
+      version: 1,
+    },
+    {
+      id: 'job-completed-002',
+      clientId: 'client-002',
+      clientName: 'EduTech Solutions',
+      title: 'Corporate Training Module',
+      description: 'Voice-over for corporate training module on digital marketing best practices.',
+      jobType: 'targeted_search',
+      projectType: 'e-learning',
+      status: 'completed',
+      priority: 'medium',
+      budget: { min: 2500, max: 4000, currency: 'USD' },
+      deadline: '2024-01-10T17:00:00Z',
+      startDate: '2023-12-25T09:00:00Z',
+      estimatedDuration: '3 weeks',
+      requirements: {
+        languages: ['English'],
+        accents: ['American'],
+        voiceTypes: ['narrator'],
+        experience: 'advanced',
+        specialInstructions: 'Clear, engaging delivery for corporate audience',
+        quality: 'professional',
+      },
+      deliverables: [],
+      files: [],
+      isPublic: true,
+      applications: [],
+      selectedTalents: ['va-003'],
+      totalApplications: 3,
+      viewCount: 28,
+      createdDate: '2023-12-15T10:00:00Z',
+      publishedDate: '2023-12-15T10:00:00Z',
+      closedDate: '2024-01-10T17:00:00Z',
+      createdAt: '2023-12-15T10:00:00Z',
+      updatedAt: '2024-01-10T17:00:00Z',
+      lastSaved: '2024-01-10T17:00:00Z',
+      autoSaved: false,
+      version: 1,
+    },
+  ]
+  
+  state.jobs = mockCompletedJobs
+  saveJobsToStorage()
 }
 
 // Save jobs to localStorage
@@ -98,6 +188,11 @@ export function useJob() {
   // Get published jobs by client
   const getPublishedJobsByClient = (clientId: string): Job[] => {
     return state.jobs.filter((job) => job.clientId === clientId && job.status === 'published')
+  }
+
+  // Get completed jobs by client
+  const getCompletedJobsByClient = (clientId: string): Job[] => {
+    return state.jobs.filter((job) => job.clientId === clientId && job.status === 'completed')
   }
 
   // Create new job from form data
@@ -260,6 +355,28 @@ export function useJob() {
     return null
   }
 
+  // Complete job (convert published to completed)
+  const completeJob = (jobId: string): Job | null => {
+    const jobIndex = state.jobs.findIndex((job) => job.id === jobId)
+    if (jobIndex !== -1) {
+      const now = new Date().toISOString()
+      const updatedJob: Job = {
+        ...state.jobs[jobIndex],
+        status: 'completed',
+        closedDate: now,
+        lastSaved: now,
+        updatedAt: now,
+        version: state.jobs[jobIndex].version + 1,
+      }
+
+      state.jobs[jobIndex] = updatedJob
+      state.currentJob = updatedJob
+      saveJobsToStorage()
+      return updatedJob
+    }
+    return null
+  }
+
   // Delete job/draft
   const deleteJob = (id: string): boolean => {
     const index = state.jobs.findIndex((job) => job.id === id)
@@ -308,11 +425,13 @@ export function useJob() {
     getJobsByClient,
     getDraftsByClient,
     getPublishedJobsByClient,
+    getCompletedJobsByClient,
     createJob,
     saveDraft,
     autoSaveDraft,
     loadDraft,
     publishJob,
+    completeJob,
     deleteJob,
     deleteDraft,
     clearAllJobs,

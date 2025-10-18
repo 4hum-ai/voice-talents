@@ -1,10 +1,6 @@
-# 🎙️ VoiceAct.AI - AI Native Voice Talent Platform
+# 🎙️ VoiceTalents.AI - AI Native Voice Talent Platform
 
-VoiceAct.AI is a modern AI native voice talent platform that connects professional voice actors with clients seeking high-quality voice talent for their projects. Whether you're a voice talent looking to showcase your skills or a client searching for the perfect voice, our platform provides the tools and marketplace you need.
-
-## 🌟 Platform Overview
-
-VoiceAct.AI serves as a comprehensive marketplace and management platform for voice acting professionals and their clients. Our AI-native approach streamlines the casting process, portfolio management, and project collaboration.
+VoiceTalents.AI is a modern AI native voice talent platform that connects professional voice talents with clients seeking high-quality talents for their projects. Whether you're a voice talent looking to showcase your skills or a client searching for the perfect voice, our platform provides the tools and marketplace you need.
 
 ## 👥 For Voice Talents
 

@@ -55,19 +55,6 @@
               <span class="text-muted-foreground">Revisions:</span>
               <span class="font-medium">{{ jobForm.requirements.revisionRounds }}</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Talent Selection -->
-        <div class="bg-card border-border rounded-lg border p-6">
-          <h3 class="text-foreground mb-4 text-lg font-semibold">Talent Selection</h3>
-          <div class="space-y-3">
-            <div class="flex justify-between">
-              <span class="text-muted-foreground">Method:</span>
-              <span class="font-medium">{{
-                getSelectionTypeLabel(jobForm.talentOptions.selectionType)
-              }}</span>
-            </div>
             <div
               v-if="jobForm.talentOptions.selectedTalents.length > 0"
               class="flex justify-between"
@@ -80,31 +67,29 @@
           </div>
         </div>
 
+
         <!-- Files -->
         <div v-if="hasFiles" class="bg-card border-border rounded-lg border p-6">
           <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
           <div class="space-y-2">
             <div v-if="jobForm.files.script" class="flex items-center space-x-2">
-              <Icon name="mdi:file-document" class="text-muted-foreground h-4 w-4" />
+              <IconMdiFileDocument class="h-4 w-4" />
               <span class="text-sm">{{ jobForm.files.script.name }}</span>
             </div>
             <div v-if="jobForm.files.referenceAudio" class="flex items-center space-x-2">
-              <Icon name="mdi:file-music" class="text-muted-foreground h-4 w-4" />
+              <IconMdiFileMusic class="h-4 w-4" />
               <span class="text-sm">{{ jobForm.files.referenceAudio.name }}</span>
             </div>
             <div
               v-if="jobForm.files.additional && jobForm.files.additional.length > 0"
               class="flex items-center space-x-2"
             >
-              <Icon name="mdi:file-multiple" class="text-muted-foreground h-4 w-4" />
+              <IconMdiFileMultiple class="h-4 w-4" />
               <span class="text-sm">{{ jobForm.files.additional.length }} additional files</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Right Column: Payment & Pricing -->
-      <div class="space-y-6">
         <!-- Pricing Breakdown -->
         <div class="bg-card border-border rounded-lg border p-6">
           <h3 class="text-foreground mb-4 text-lg font-semibold">Pricing Breakdown</h3>
@@ -170,7 +155,12 @@
               </div>
             </div>
           </div>
-        </div>
+        </div>        
+      </div>
+
+      <!-- Right Column: Payment & Pricing -->
+      <div class="space-y-6">
+
 
         <!-- Bank Transfer Payment -->
         <div class="bg-card border-border rounded-lg border p-6">
@@ -192,9 +182,7 @@
 
             <!-- Bank Information -->
             <div class="space-y-3">
-              <div class="bg-muted/30 rounded-lg p-4">
-                <h4 class="text-foreground mb-3 text-sm font-semibold">Bank Transfer Details</h4>
-                
+              <div class="bg-muted/30 rounded-lg p-4">                
                 <div class="space-y-2">
                   <div class="flex justify-between items-center">
                     <span class="text-muted-foreground text-sm">Bank Number:</span>
@@ -204,7 +192,7 @@
                         @click="copyToClipboard('1234-5678-9012-3456')"
                         class="text-primary hover:text-primary/80 transition-colors"
                       >
-                        <Icon name="mdi:content-copy" class="h-4 w-4" />
+                        <IconMdiContentCopy class="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -217,7 +205,7 @@
                         @click="copyToClipboard('VoiceAct Platform')"
                         class="text-primary hover:text-primary/80 transition-colors"
                       >
-                        <Icon name="mdi:content-copy" class="h-4 w-4" />
+                        <IconMdiContentCopy class="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -230,7 +218,7 @@
                         @click="copyToClipboard(jobId)"
                         class="text-primary hover:text-primary/80 transition-colors"
                       >
-                        <Icon name="mdi:content-copy" class="h-4 w-4" />
+                        <IconMdiContentCopy class="h-4 w-4" />
                       </button>
                     </div>
                   </div>
@@ -245,11 +233,10 @@
               <!-- Payment Instructions -->
               <div class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div class="flex items-start space-x-2">
-                  <Icon name="mdi:information" class="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <IconMdiInformation class="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                   <div class="text-sm">
                     <p class="text-blue-800 dark:text-blue-200 font-medium mb-1">Payment Instructions:</p>
                     <ul class="text-blue-700 dark:text-blue-300 space-y-1 text-xs">
-                      <li>• Use the exact amount: <strong>${{ totalCost }}</strong></li>
                       <li>• Include the job ID in the description: <strong>{{ jobId }}</strong></li>
                       <li>• Payment will be verified within 24 hours</li>
                       <li>• Your job will be published after payment confirmation</li>
@@ -296,8 +283,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
 import { useToast } from '@/composables/useToast'
+import IconMdiContentCopy from '~icons/mdi/content-copy'
+import IconMdiFileDocument from '~icons/mdi/file-document'
+import IconMdiFileMusic from '~icons/mdi/file-music'
+import IconMdiFileMultiple from '~icons/mdi/file-multiple'
+import IconMdiInformation from '~icons/mdi/information'
 
 interface JobForm {
   voiceType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'

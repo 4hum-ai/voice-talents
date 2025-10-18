@@ -65,6 +65,11 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/talent/TalentJobDetail.vue'),
     meta: { title: 'Job Details', requiresAuth: true },
   },
+  {
+    path: '/talent/jobs/:id/studio',
+    component: () => import('../views/talent/TalentAudioStudio.vue'),
+    meta: { title: 'Audio Studio', requiresAuth: true },
+  },
 
   // Settings
   {

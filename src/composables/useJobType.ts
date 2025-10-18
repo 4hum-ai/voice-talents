@@ -199,84 +199,6 @@ export function useJobType() {
       useCases: ['Character replacement', 'Voice matching', 'Character consistency', 'Actor substitution']
     },
 
-    movie_trailer: {
-      id: 'movie_trailer',
-      label: 'Movie Trailer Voice',
-      category: 'entertainment',
-      pricing: {
-        model: 'per_project',
-        baseRate: 800,
-        currency: 'USD',
-        minimumAmount: 500,
-        volumeDiscount: false,
-        rushFee: 2.0
-      },
-      delivery: {
-        formats: ['mp3_44khz'],
-        quality: 'broadcast',
-        timeline: '2-5 days',
-        revisionRounds: 2,
-        specialRequirements: ['dramatic_delivery', 'timing_precision', 'emotion_impact']
-      },
-      studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
-        environment: 'professional_studio',
-        direction: 'client_directed',
-        postProduction: true,
-        mixing: false
-      },
-      files: {
-        required: [
-          {
-            id: 'trailer_script',
-            label: 'Trailer Script',
-            description: 'The movie trailer script or narration text',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          },
-          {
-            id: 'video_reference',
-            label: 'Video Reference',
-            description: 'Trailer video for timing and visual reference',
-            acceptedFormats: ['.mp4', '.mov', '.avi'],
-            maxSize: 200
-          },
-          {
-            id: 'timing_cues',
-            label: 'Timing Cues',
-            description: 'Specific timing and synchronization cues',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ],
-        optional: [
-          {
-            id: 'music_reference',
-            label: 'Music Reference',
-            description: 'Background music or audio reference',
-            acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          },
-          {
-            id: 'style_guide',
-            label: 'Style Guide',
-            description: 'Trailer style and tone guidelines',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          },
-          {
-            id: 'director_notes',
-            label: 'Director Notes',
-            description: 'Specific direction and notes from the director',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ]
-      },
-      description: 'Voice-over work for movie trailers and promotional content',
-      useCases: ['Theatrical trailers', 'TV spots', 'Online promotion', 'Film festivals']
-    },
-
     // Educational & Corporate
     e_learning: {
       id: 'e_learning',
@@ -428,149 +350,6 @@ export function useJobType() {
       useCases: ['Podcast intros', 'Episode narration', 'Advertisements', 'Sponsor reads']
     },
 
-    // Animation & Gaming
-    animation: {
-      id: 'animation',
-      label: 'Animation Voice',
-      category: 'entertainment',
-      pricing: {
-        model: 'per_character',
-        baseRate: 400,
-        currency: 'USD',
-        minimumAmount: 600,
-        volumeDiscount: true,
-        rushFee: 1.5
-      },
-      delivery: {
-        formats: ['mp3_44khz'],
-        quality: 'professional',
-        timeline: '1-2 weeks',
-        revisionRounds: 3,
-        specialRequirements: ['character_voice', 'emotion_range', 'timing_precision']
-      },
-      studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
-        environment: 'professional_studio',
-        direction: 'studio_directed',
-        postProduction: true,
-        mixing: false
-      },
-      files: {
-        required: [
-          {
-            id: 'character_script',
-            label: 'Character Script',
-            description: 'Script containing the character\'s dialogue and lines',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          },
-          {
-            id: 'character_design',
-            label: 'Character Design',
-            description: 'Visual character design and reference materials',
-            acceptedFormats: ['.pdf', '.jpg', '.png', '.mp4', '.mov'],
-            maxSize: 50
-          },
-          {
-            id: 'voice_direction',
-            label: 'Voice Direction',
-            description: 'Instructions for character voice and delivery style',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ],
-        optional: [
-          {
-            id: 'animation_reference',
-            label: 'Animation Reference',
-            description: 'Animation footage or reference materials',
-            acceptedFormats: ['.mp4', '.mov', '.avi', '.jpg', '.png'],
-            maxSize: 100
-          },
-          {
-            id: 'character_backstory',
-            label: 'Character Backstory',
-            description: 'Background information about the character',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ]
-      },
-      description: 'Character voice work for animated films, TV shows, and web series',
-      useCases: ['Animated films', 'TV cartoons', 'Web series', 'Character voices']
-    },
-
-    video_game: {
-      id: 'video_game',
-      label: 'Video Game Voice',
-      category: 'entertainment',
-      pricing: {
-        model: 'per_character',
-        baseRate: 350,
-        currency: 'USD',
-        minimumAmount: 500,
-        volumeDiscount: true,
-        rushFee: 1.4
-      },
-      delivery: {
-        formats: ['mp3_44khz'],
-        quality: 'professional',
-        timeline: '1-3 weeks',
-        revisionRounds: 2,
-        specialRequirements: ['character_consistency', 'emotion_range', 'combat_sounds']
-      },
-      studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment', 'motion_capture'],
-        environment: 'professional_studio',
-        direction: 'studio_directed',
-        postProduction: true,
-        mixing: true
-      },
-      files: {
-        required: [
-          {
-            id: 'character_script',
-            label: 'Character Script',
-            description: 'Script containing the character\'s dialogue and game lines',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 15
-          },
-          {
-            id: 'game_context',
-            label: 'Game Context',
-            description: 'Game world, story, and character context information',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          },
-          {
-            id: 'voice_direction',
-            label: 'Voice Direction',
-            description: 'Instructions for character voice and delivery style',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ],
-        optional: [
-          {
-            id: 'character_concept',
-            label: 'Character Concept',
-            description: 'Character design and concept art',
-            acceptedFormats: ['.pdf', '.jpg', '.png', '.mp4', '.mov'],
-            maxSize: 50
-          },
-          {
-            id: 'gameplay_footage',
-            label: 'Gameplay Footage',
-            description: 'Gameplay footage for context and timing reference',
-            acceptedFormats: ['.mp4', '.mov', '.avi'],
-            maxSize: 200
-          }
-        ]
-      },
-      description: 'Voice acting for video game characters, including dialogue, combat sounds, and interactive elements',
-      useCases: ['Character dialogue', 'Combat sounds', 'Interactive responses', 'Cutscenes']
-    },
-
     audiobook_narrator: {
       id: 'audiobook_narrator',
       label: 'Audiobook Narration',
@@ -672,10 +451,10 @@ export function useJobType() {
       files: {
         required: [
           {
-            id: 'transcript',
-            label: 'Transcript/Captions',
-            description: 'Script or transcript in VTT, SRT, or text format',
-            acceptedFormats: ['.vtt', '.srt', '.txt', '.pdf', '.doc', '.docx'],
+            id: 'subtitles',
+            label: 'Captions/Subtitles',
+            description: 'Captions/Subtitles in VTT or SRT format',
+            acceptedFormats: ['.vtt', '.srt'],
             maxSize: 10
           },
           {
@@ -684,35 +463,14 @@ export function useJobType() {
             description: 'The movie file in MP4 format for reference and timing',
             acceptedFormats: ['.mp4'],
             maxSize: 500
-          },
+          }
+        ],
+        optional: [
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Sample audio for voice style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          }
-        ],
-        optional: [
-          {
-            id: 'music_reference',
-            label: 'Music Reference',
-            description: 'Background music or audio reference',
-            acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          },
-          {
-            id: 'style_guide',
-            label: 'Style Guide',
-            description: 'Narration style and tone guidelines',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          },
-          {
-            id: 'director_notes',
-            label: 'Director Notes',
-            description: 'Specific direction and notes from the director',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
             maxSize: 5
           }
         ]
@@ -878,70 +636,6 @@ export function useJobType() {
       useCases: ['Animation characters', 'Game characters', 'Interactive media', 'Character development']
     },
 
-    announcer: {
-      id: 'announcer',
-      label: 'Announcer Voice',
-      category: 'commercial',
-      pricing: {
-        model: 'per_project',
-        baseRate: 300,
-        currency: 'USD',
-        minimumAmount: 200,
-        volumeDiscount: true,
-        rushFee: 1.3
-      },
-      delivery: {
-        formats: ['mp3_44khz'],
-        quality: 'professional',
-        timeline: '2-3 days',
-        revisionRounds: 1,
-        specialRequirements: ['authoritative_delivery', 'clear_pronunciation', 'broadcast_ready']
-      },
-      studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment'],
-        environment: 'professional_studio',
-        direction: 'client_directed',
-        postProduction: true,
-        mixing: false
-      },
-      files: {
-        required: [
-          {
-            id: 'announcement_script',
-            label: 'Announcement Script',
-            description: 'The script or text to be announced',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ],
-        optional: [
-          {
-            id: 'brand_guidelines',
-            label: 'Brand Guidelines',
-            description: 'Brand voice and style guidelines',
-            acceptedFormats: ['.pdf', '.doc', '.docx'],
-            maxSize: 5
-          },
-          {
-            id: 'reference_audio',
-            label: 'Reference Audio',
-            description: 'Sample audio for style and tone reference',
-            acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          },
-          {
-            id: 'style_guide',
-            label: 'Style Guide',
-            description: 'Announcement style and tone guidelines',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ]
-      },
-      description: 'Professional announcement voice work for events, broadcasts, and public communications',
-      useCases: ['Event announcements', 'Broadcast intros', 'Public announcements', 'Corporate communications']
-    },
-
     phone_system: {
       id: 'phone_system',
       label: 'Phone System Voice',
@@ -1018,77 +712,6 @@ export function useJobType() {
       },
       description: 'Voice work for phone systems, IVR menus, and automated phone services',
       useCases: ['IVR systems', 'Phone menus', 'Automated messages', 'Customer service lines']
-    },
-
-    app_voice: {
-      id: 'app_voice',
-      label: 'App Voice Interface',
-      category: 'corporate',
-      pricing: {
-        model: 'per_project',
-        baseRate: 500,
-        currency: 'USD',
-        minimumAmount: 400,
-        volumeDiscount: true,
-        rushFee: 1.4
-      },
-      delivery: {
-        formats: ['mp3_44khz'],
-        quality: 'professional',
-        timeline: '1-2 weeks',
-        revisionRounds: 2,
-        specialRequirements: ['friendly_tone', 'clear_pronunciation', 'consistent_delivery']
-      },
-      studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment'],
-        environment: 'professional_studio',
-        direction: 'client_directed',
-        postProduction: true,
-        mixing: false
-      },
-      files: {
-        required: [
-          {
-            id: 'app_script',
-            label: 'App Script',
-            description: 'Voice interface script and dialogue',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          },
-          {
-            id: 'interface_guidelines',
-            label: 'Interface Guidelines',
-            description: 'App interface and user experience guidelines',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          }
-        ],
-        optional: [
-          {
-            id: 'brand_guidelines',
-            label: 'Brand Guidelines',
-            description: 'App brand voice and style guidelines',
-            acceptedFormats: ['.pdf', '.doc', '.docx'],
-            maxSize: 5
-          },
-          {
-            id: 'user_flow',
-            label: 'User Flow',
-            description: 'User interaction flow and experience maps',
-            acceptedFormats: ['.pdf', '.jpg', '.png', '.doc', '.docx'],
-            maxSize: 10
-          },
-          {
-            id: 'reference_audio',
-            label: 'Reference Audio',
-            description: 'Sample audio for style and tone reference',
-            acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          }
-        ]
-      },
-      description: 'Voice interface work for mobile apps, smart devices, and digital assistants',
-      useCases: ['Mobile apps', 'Smart devices', 'Digital assistants', 'Voice interfaces']
     },
 
     // Generic "Other" job type

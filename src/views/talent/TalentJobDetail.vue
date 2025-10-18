@@ -11,7 +11,7 @@
         <template #subtitle>{{ job?.clientName || 'Client Project' }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="outline" size="sm" @click="openAudioStudio">
+          <Button variant="outline" size="sm" @click="goToAudioStudio">
             <MicrophoneIcon class="mr-2 h-4 w-4" />
             Audio Studio
           </Button>
@@ -126,7 +126,7 @@
                       <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
                     </div>
                     <div class="text-center">
-                      <Button variant="primary" size="sm" @click="openAudioStudio" class="w-full">
+                      <Button variant="primary" size="sm" @click="goToAudioStudio" class="w-full">
                         <MicrophoneIcon class="mr-2 h-4 w-4" />
                         Continue Recording
                       </Button>
@@ -253,7 +253,7 @@
                   <UploadIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <h4 class="text-foreground mb-2 font-medium">No deliverables uploaded yet</h4>
                   <p class="text-muted-foreground mb-4">Complete your recording and upload the final audio file</p>
-                  <Button variant="outline" @click="openAudioStudio">
+                  <Button variant="outline" @click="goToAudioStudio">
                     <MicrophoneIcon class="mr-2 h-4 w-4" />
                     Start Recording
                   </Button>

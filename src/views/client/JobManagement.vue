@@ -20,119 +20,62 @@
 
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
-          <!-- Published Jobs Section -->
-          <div v-if="clientPublishedJobs.length > 0" class="mb-8">
+          <!-- Live Jobs Section -->
+          <div v-if="clientLiveJobs.length > 0" class="mb-8">
             <div class="mb-4 flex items-center justify-between">
-              <h2 class="text-foreground text-lg font-semibold">Published Jobs</h2>
+              <h2 class="text-foreground text-lg font-semibold">Live Jobs</h2>
               <span class="text-muted-foreground text-sm"
-                >{{ clientPublishedJobs.length }} job{{
-                  clientPublishedJobs.length !== 1 ? 's' : ''
-                }}</span
+                >{{ clientLiveJobs.length }} job{{ clientLiveJobs.length !== 1 ? 's' : '' }}</span
               >
             </div>
 
-            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
-                v-for="job in clientPublishedJobs"
+                v-for="job in clientLiveJobs"
                 :key="job.id"
-                class="bg-card border-border hover:border-primary/20 group rounded-lg border p-6 transition-all duration-200 hover:shadow-lg"
+                class="bg-card border-border hover:border-green-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
               >
-                <!-- Header with status indicator -->
-                <div class="mb-4 flex items-start justify-between">
-                  <div class="flex-1">
-                    <div class="mb-2 flex items-center space-x-2">
-                      <h3
-                        class="text-foreground group-hover:text-primary text-lg font-semibold transition-colors"
-                      >
-                        {{ job.title || 'Untitled Job' }}
-                      </h3>
-                      <div class="flex items-center space-x-1">
-                        <div
-                          class="h-2 w-2 animate-pulse rounded-full bg-green-500"
-                          title="Published"
-                        ></div>
-                        <span class="text-xs font-medium text-green-600 dark:text-green-400"
-                          >LIVE</span
-                        >
-                      </div>
-                    </div>
-                    <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-                      {{ job.description || 'No description provided' }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Job details - simplified -->
-                <div class="mb-4 space-y-3">
-                  <!-- Key metrics row -->
-                  <div class="flex items-center justify-between text-sm">
-                    <div class="flex items-center space-x-4">
-                      <span class="text-muted-foreground">{{ formatJobType(job.jobType) }}</span>
-                      <span class="text-foreground font-medium">{{
-                        formatBudget(job.budget)
-                      }}</span>
-                    </div>
-                    <div class="text-muted-foreground flex items-center space-x-4">
-                      <span>{{ formatDeadline(job.deadline) }}</span>
-                      <span>{{ job.totalApplications || 0 }} applications</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Requirements summary - simplified -->
-                <div v-if="job.requirements" class="mb-4">
-                  <div class="flex flex-wrap gap-2">
-                    <span
-                      v-if="job.requirements.voiceTypes?.length"
-                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
-                    >
-                      {{ job.requirements.voiceTypes[0] }}
-                    </span>
-                    <span
-                      v-if="job.requirements.languages?.length"
-                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
-                    >
-                      {{ job.requirements.languages[0] }}
-                    </span>
-                    <span
-                      v-if="job.requirements.gender && job.requirements.gender !== 'any'"
-                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
-                    >
-                      {{ job.requirements.gender }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Footer with actions and timestamp - simplified -->
-                <div class="border-border flex items-center justify-between border-t pt-4">
-                  <div class="text-muted-foreground text-xs">
-                    Published {{ formatDate(job.publishedDate || job.createdDate) }}
-                  </div>
-
+                <!-- Status Badge -->
+                <div class="mb-3 flex items-center justify-between">
                   <div class="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      @click="viewJob(job.id)"
-                      class="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                    >
-                      View Details
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      @click="editJob(job.id)"
-                      class="opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      <EditIcon class="h-4 w-4" />
-                    </Button>
+                    <div class="h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
+                    <span class="text-xs font-medium text-green-600 dark:text-green-400">LIVE</span>
+                  </div>
+                  <span class="text-xs text-muted-foreground">{{ job.totalApplications || 0 }} applications</span>
+                </div>
+
+                <!-- Job Title -->
+                <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
+                  {{ job.title || 'Untitled Job' }}
+                </h3>
+
+                <!-- Key Info -->
+                <div class="mb-3 space-y-1 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground">Budget:</span>
+                    <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground">Deadline:</span>
+                    <span class="text-foreground">{{ formatDeadline(job.deadline) }}</span>
                   </div>
                 </div>
+
+                <!-- Action Button -->
+                <Button
+                  variant="outline"
+                  size="sm"
+                  @click="viewLiveJob(job.id)"
+                  class="w-full group-hover:bg-green-50 group-hover:border-green-200 group-hover:text-green-700 dark:group-hover:bg-green-950 dark:group-hover:border-green-800 dark:group-hover:text-green-300"
+                >
+                  <EyeIcon class="mr-2 h-4 w-4" />
+                  View & Approve
+                </Button>
               </div>
             </div>
           </div>
 
-          <!-- Drafts Section -->
+          <!-- Draft Jobs Section -->
           <div v-if="clientDrafts.length > 0" class="mb-8">
             <div class="mb-4 flex items-center justify-between">
               <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
@@ -141,107 +84,120 @@
               >
             </div>
 
-            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
                 v-for="draft in clientDrafts"
                 :key="draft.id"
-                class="bg-card border-border group rounded-lg border p-6 transition-all duration-200 hover:border-orange-500/20 hover:shadow-lg"
+                class="bg-card border-border hover:border-orange-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
               >
-                <!-- Header with draft status -->
-                <div class="mb-4 flex items-start justify-between">
-                  <div class="flex-1">
-                    <div class="mb-2 flex items-center space-x-2">
-                      <h3
-                        class="text-foreground text-lg font-semibold transition-colors group-hover:text-orange-500"
-                      >
-                        {{ draft.title || 'Untitled Job' }}
-                      </h3>
-                      <div class="flex items-center space-x-1">
-                        <div class="h-2 w-2 rounded-full bg-orange-500" title="Draft"></div>
-                        <span class="text-xs font-medium text-orange-600 dark:text-orange-400"
-                          >DRAFT</span
-                        >
-                      </div>
-                    </div>
-                    <p class="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-                      {{ draft.description || 'No description provided' }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Job details - simplified -->
-                <div class="mb-4 space-y-3">
-                  <!-- Key metrics row -->
-                  <div class="flex items-center justify-between text-sm">
-                    <div class="flex items-center space-x-4">
-                      <span class="text-muted-foreground">{{ formatJobType(draft.jobType) }}</span>
-                      <span class="text-foreground font-medium">{{
-                        formatBudget(draft.budget)
-                      }}</span>
-                    </div>
-                    <div class="text-muted-foreground flex items-center space-x-4">
-                      <span>{{ formatDeadline(draft.deadline) }}</span>
-                      <span>v{{ draft.version || 1 }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Requirements summary - simplified -->
-                <div v-if="draft.requirements" class="mb-4">
-                  <div class="flex flex-wrap gap-2">
-                    <span
-                      v-if="draft.requirements.voiceTypes?.length"
-                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
-                    >
-                      {{ draft.requirements.voiceTypes[0] }}
-                    </span>
-                    <span
-                      v-if="draft.requirements.languages?.length"
-                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
-                    >
-                      {{ draft.requirements.languages[0] }}
-                    </span>
-                    <span
-                      v-if="draft.requirements.gender && draft.requirements.gender !== 'any'"
-                      class="bg-muted text-muted-foreground inline-flex items-center rounded px-2 py-1 text-xs"
-                    >
-                      {{ draft.requirements.gender }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Footer with actions and timestamp - simplified -->
-                <div class="border-border flex items-center justify-between border-t pt-4">
-                  <div class="text-muted-foreground text-xs">
-                    {{ formatDate(draft.lastSaved) }}
-                  </div>
-
+                <!-- Status Badge -->
+                <div class="mb-3 flex items-center justify-between">
                   <div class="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      @click="editDraft(draft.id)"
-                      class="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                    >
-                      Continue Editing
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      @click="confirmDiscardDraft(draft)"
-                      class="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
-                    >
-                      <TrashIcon class="h-4 w-4" />
-                    </Button>
+                    <div class="h-2 w-2 rounded-full bg-orange-500"></div>
+                    <span class="text-xs font-medium text-orange-600 dark:text-orange-400">DRAFT</span>
+                  </div>
+                  <span class="text-xs text-muted-foreground">v{{ draft.version || 1 }}</span>
+                </div>
+
+                <!-- Job Title -->
+                <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
+                  {{ draft.title || 'Untitled Job' }}
+                </h3>
+
+                <!-- Key Info -->
+                <div class="mb-3 space-y-1 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground">Budget:</span>
+                    <span class="text-foreground font-medium">{{ formatBudget(draft.budget) }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground">Last saved:</span>
+                    <span class="text-foreground">{{ formatDate(draft.lastSaved) }}</span>
                   </div>
                 </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    @click="editDraft(draft.id)"
+                    class="flex-1 group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 dark:group-hover:bg-orange-950 dark:group-hover:border-orange-800 dark:group-hover:text-orange-300"
+                  >
+                    <EditIcon class="mr-2 h-4 w-4" />
+                    Continue
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    @click="confirmDiscardDraft(draft)"
+                    class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <TrashIcon class="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Completed Jobs Section -->
+          <div v-if="clientCompletedJobs.length > 0" class="mb-8">
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-foreground text-lg font-semibold">Completed Jobs</h2>
+              <span class="text-muted-foreground text-sm"
+                >{{ clientCompletedJobs.length }} job{{ clientCompletedJobs.length !== 1 ? 's' : '' }}</span
+              >
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div
+                v-for="job in clientCompletedJobs"
+                :key="job.id"
+                class="bg-card border-border hover:border-blue-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+              >
+                <!-- Status Badge -->
+                <div class="mb-3 flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                    <span class="text-xs font-medium text-blue-600 dark:text-blue-400">COMPLETED</span>
+                  </div>
+                  <span class="text-xs text-muted-foreground">{{ formatDate(job.closedDate || job.updatedAt) }}</span>
+                </div>
+
+                <!-- Job Title -->
+                <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
+                  {{ job.title || 'Untitled Job' }}
+                </h3>
+
+                <!-- Key Info -->
+                <div class="mb-3 space-y-1 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground">Budget:</span>
+                    <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground">Talent:</span>
+                    <span class="text-foreground">{{ job.selectedTalents?.length || 0 }} selected</span>
+                  </div>
+                </div>
+
+                <!-- Action Button -->
+                <Button
+                  variant="outline"
+                  size="sm"
+                  @click="downloadDelivery(job.id)"
+                  class="w-full group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-700 dark:group-hover:bg-blue-950 dark:group-hover:border-blue-800 dark:group-hover:text-blue-300"
+                >
+                  <DownloadIcon class="mr-2 h-4 w-4" />
+                  Download Delivery
+                </Button>
               </div>
             </div>
           </div>
 
           <!-- Empty State -->
           <div
-            v-if="clientDrafts.length === 0 && clientPublishedJobs.length === 0"
+            v-if="clientDrafts.length === 0 && clientLiveJobs.length === 0 && clientCompletedJobs.length === 0"
             class="py-12 text-center"
           >
             <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
@@ -294,9 +250,11 @@ import PlusIcon from '~icons/mdi/plus'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import EditIcon from '~icons/mdi/pencil'
 import TrashIcon from '~icons/mdi/trash-can'
+import EyeIcon from '~icons/mdi/eye'
+import DownloadIcon from '~icons/mdi/download'
 
 // const router = useRouter() // Not needed with modal approach
-const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, refreshJobs } = useJob()
+const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, getCompletedJobsByClient, refreshJobs } = useJob()
 const { addToast: showToast } = useToast()
 
 // Get current client (in real app, this would come from auth)
@@ -307,8 +265,12 @@ const clientDrafts = computed(() => {
   return getDraftsByClient(currentClient.value.id)
 })
 
-const clientPublishedJobs = computed(() => {
+const clientLiveJobs = computed(() => {
   return getPublishedJobsByClient(currentClient.value.id)
+})
+
+const clientCompletedJobs = computed(() => {
+  return getCompletedJobsByClient(currentClient.value.id)
 })
 
 // Modal state
@@ -400,19 +362,24 @@ const handleJobCreated = (job: any) => {
   refreshJobs()
 }
 
-const viewJob = () => {
-  // In a real app, this would navigate to a job detail view
+// View live job for approval
+const viewLiveJob = (jobId: string) => {
+  // In a real app, this would navigate to job applications view
   showToast({
     type: 'info',
-    title: 'Job Details',
-    message: 'Job detail view would open here',
+    title: 'View Applications',
+    message: 'Job applications view would open here for talent approval',
   })
 }
 
-const editJob = (jobId: string) => {
-  // Convert published job back to draft for editing
-  selectedDraftId.value = jobId
-  showJobCreationModal.value = true
+// Download delivery for completed jobs
+const downloadDelivery = (jobId: string) => {
+  // In a real app, this would trigger download of completed deliverables
+  showToast({
+    type: 'success',
+    title: 'Download Started',
+    message: 'Downloading completed job deliverables...',
+  })
 }
 
 // Formatting functions

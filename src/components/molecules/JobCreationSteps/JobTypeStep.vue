@@ -36,7 +36,7 @@
             v-if="localJobType === type.value"
             class="bg-primary absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full z-10"
           >
-            <Icon name="mdi:check" class="h-4 w-4 text-white" />
+            <Icon name="mdi:check" class="h-5 w-5 text-white" />
           </div>
 
           <!-- Icon Container -->
