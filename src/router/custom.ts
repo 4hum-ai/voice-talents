@@ -31,17 +31,6 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'My Profile', requiresAuth: true },
   },
 
-  // Project Management
-  {
-    path: '/talent/projects',
-    component: () => import('../views/talent/ProjectsView.vue'),
-    meta: { title: 'My Projects', requiresAuth: true },
-  },
-  {
-    path: '/talent/projects/:id',
-    component: () => import('../views/talent/ProjectDetail.vue'),
-    meta: { title: 'Audio Studio', requiresAuth: true },
-  },
 
   // Casting & Opportunities
   {

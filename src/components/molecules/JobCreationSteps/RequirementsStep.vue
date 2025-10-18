@@ -227,7 +227,7 @@ interface Props {
   requirements: Requirements
   deadline: string
   files: ProjectFiles
-  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {

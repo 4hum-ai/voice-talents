@@ -3,7 +3,7 @@
     <div class="mb-8 text-center">
       <h1 class="text-foreground mb-4 text-3xl font-bold">Step 2: Basic Information</h1>
       <p class="text-muted-foreground text-lg">
-        Tell us about your {{ getVoiceSolutionLabel() }} project
+        Tell us about your {{ getVoiceTypeLabel() }} project
       </p>
     </div>
 
@@ -92,7 +92,7 @@ interface Props {
   title: string
   description: string
   projectType: string
-  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {
@@ -221,9 +221,9 @@ const handlePrevious = () => {
   emit('previous')
 }
 
-// Voice solution label helper
-const getVoiceSolutionLabel = () => {
-  switch (props.voiceSolution) {
+// Voice type label helper
+const getVoiceTypeLabel = () => {
+  switch (props.voiceType) {
     case 'talent_only':
       return 'talent-based voice acting'
     case 'ai_synthesis':

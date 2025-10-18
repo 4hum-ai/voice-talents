@@ -5,7 +5,7 @@
       <h1
         class="text-foreground from-foreground to-foreground/80 mb-4 bg-gradient-to-r bg-clip-text text-4xl font-bold"
       >
-        Step 1: Choose Your Voice Solution
+        Step 1: Choose Your Voice Approach
       </h1>
       <p class="text-muted-foreground mx-auto max-w-2xl text-xl leading-relaxed">
         Select the perfect approach for your voice content creation needs
@@ -24,7 +24,7 @@
         />
         <label
           :for="type.value"
-          class="relative flex h-full cursor-pointer flex-col rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          class="relative flex h-full cursor-pointer flex-col rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl overflow-visible"
           :class="
             localJobType === type.value
               ? 'border-primary from-primary/10 via-primary/5 shadow-primary/20 bg-gradient-to-br to-transparent shadow-xl'
@@ -34,24 +34,22 @@
           <!-- Selection Indicator -->
           <div
             v-if="localJobType === type.value"
-            class="bg-primary absolute -top-3 -right-3 flex h-6 w-6 items-center justify-center rounded-full"
+            class="bg-primary absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full z-10"
           >
             <Icon name="mdi:check" class="h-4 w-4 text-white" />
           </div>
 
-          <!-- Icon and Badge -->
-          <div class="mb-6 flex items-start justify-between">
-            <div class="relative">
-              <div
-                class="flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300"
-                :class="
-                  localJobType === type.value
-                    ? 'from-primary to-primary/80 shadow-primary/30 bg-gradient-to-br text-white shadow-lg'
-                    : 'from-muted to-muted/80 text-muted-foreground group-hover:from-primary/20 group-hover:to-primary/10 group-hover:text-primary bg-gradient-to-br'
-                "
-              >
-                <component :is="type.icon" class="h-8 w-8" />
-              </div>
+          <!-- Icon Container -->
+          <div class="mb-6">
+            <div
+              class="flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300"
+              :class="
+                localJobType === type.value
+                  ? 'from-primary to-primary/80 shadow-primary/30 bg-gradient-to-br text-white shadow-lg'
+                  : 'from-muted to-muted/80 text-muted-foreground group-hover:from-primary/20 group-hover:to-primary/10 group-hover:text-primary bg-gradient-to-br'
+              "
+            >
+              <component :is="type.icon" class="h-8 w-8" />
             </div>
           </div>
 
@@ -59,22 +57,6 @@
           <div class="mb-6">
             <h3 class="text-foreground mb-3 text-2xl font-bold">{{ type.label }}</h3>
             <p class="text-muted-foreground leading-relaxed">{{ type.description }}</p>
-          </div>
-
-          <!-- Features -->
-          <div class="mb-6 flex-1 space-y-3">
-            <div
-              v-for="feature in type.features"
-              :key="feature"
-              class="flex items-center space-x-3"
-            >
-              <div
-                class="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500"
-              >
-                <Icon name="mdi:check" class="h-3 w-3 text-white" />
-              </div>
-              <span class="text-muted-foreground text-sm">{{ feature }}</span>
-            </div>
           </div>
 
           <!-- Pricing -->
@@ -134,7 +116,7 @@ const emit = defineEmits<Emits>()
 
 const localJobType = ref(props.jobType || 'hybrid_approach')
 
-// Voice Solution Types with enhanced descriptions and features
+// Voice Approach Types with enhanced descriptions and features
 const jobTypes = [
   {
     value: 'talent_only',
@@ -142,24 +124,14 @@ const jobTypes = [
     description:
       'Work directly with skilled voice actors for authentic, personalized performances that bring your content to life',
     icon: AccountIcon,
-    features: [
-      '100% authentic human voice',
-      'Direct collaboration with talent',
-      'Complete creative control & customization',
-    ],
     pricing: '$15/hr',
   },
   {
     value: 'hybrid_approach',
-    label: 'Hybrid Solution',
+    label: 'Hybrid Approach',
     description:
       'Combine AI efficiency with human expertise for the perfect balance of speed, quality, and cost-effectiveness',
     icon: AccountGroupIcon,
-    features: [
-      'AI foundation + talent refinement',
-      'Faster delivery than traditional',
-      'Optimal quality-to-cost ratio',
-    ],
     pricing: '$10/hr',
   },
   {
@@ -168,11 +140,6 @@ const jobTypes = [
     description:
       'Leverage cutting-edge AI technology powered by licensed talent voices, ensuring creators are fairly compensated',
     icon: RobotIcon,
-    features: [
-      'Licensed from real voice talent',
-      'Talent receives ongoing compensation',
-      'Instant generation & 24/7 availability',
-    ],
     pricing: '$5/hr',
   },
 ]

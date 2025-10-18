@@ -3,7 +3,7 @@
     <div class="mb-8 text-center">
       <h1 class="text-foreground mb-4 text-3xl font-bold">Step 3: Talent Selection</h1>
       <p class="text-muted-foreground text-lg">
-        Choose how you want to select {{ getVoiceSolutionLabel() }} talent
+        Choose how you want to select {{ getVoiceTypeLabel() }} talent
       </p>
     </div>
 
@@ -174,7 +174,7 @@
 
           <!-- Auto Prompts -->
           <label
-            v-if="voiceSolution === 'ai_synthesis' || voiceSolution === 'hybrid_approach'"
+            v-if="voiceType === 'ai_synthesis' || voiceType === 'hybrid_approach'"
             class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-4 transition-colors"
           >
             <input
@@ -247,7 +247,7 @@ interface Props {
   talentOptions: TalentOptions
   aiSettings: AISettings
   premiumFeatures: PremiumFeatures
-  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {
@@ -341,9 +341,9 @@ const mockTalentList = [
   },
 ]
 
-// Voice solution label helper
-const getVoiceSolutionLabel = () => {
-  switch (props.voiceSolution) {
+// Voice type label helper
+const getVoiceTypeLabel = () => {
+  switch (props.voiceType) {
     case 'talent_only':
       return 'voice acting'
     case 'ai_synthesis':

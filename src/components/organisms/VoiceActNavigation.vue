@@ -143,13 +143,6 @@ const navigationSections = computed(() => [
         action: () => router.push('/talent/jobs'),
       },
       {
-        id: 'projects',
-        title: 'My Projects',
-        description: 'Track your work',
-        icon: FolderOpenIcon,
-        action: () => router.push('/talent/projects'),
-      },
-      {
         id: 'casting',
         title: 'Casting Calls',
         description: 'Find new projects',

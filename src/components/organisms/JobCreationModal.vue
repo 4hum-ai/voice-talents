@@ -59,15 +59,15 @@
         <!-- Step Content -->
         <Transition :name="transitionName" mode="out-in">
           <div :key="currentStep" class="min-h-[600px]">
-            <!-- Step 1: Voice Solution Selection -->
+            <!-- Step 1: Voice Type Selection -->
             <JobTypeStep
               v-if="currentStep === 1"
-              :job-type="jobForm.voiceSolution"
-              @update:job-type="selectVoiceSolution"
-              @next="handleVoiceSolutionNext"
+              :job-type="jobForm.voiceType"
+              @update:job-type="selectVoiceType"
+              @next="handleVoiceTypeNext"
             />
 
-            <!-- Step 2: Basic Information & Requirements (All Solutions) -->
+            <!-- Step 2: Basic Information & Requirements (All Types) -->
             <BasicInfoRequirementsStep
               v-if="currentStep === 2"
               v-model:title="jobForm.title"
@@ -76,27 +76,27 @@
               v-model:requirements="jobForm.requirements as any"
               v-model:deadline="jobForm.deadline"
               v-model:files="jobForm.files"
-              :voice-solution="selectedVoiceSolution"
+              :voice-type="selectedVoiceType"
               @next="nextStep"
               @previous="previousStep"
             />
 
-            <!-- Step 3: Talent Options (All Solutions) -->
+            <!-- Step 3: Talent Options (All Types) -->
             <TalentOptionsStep
               v-if="currentStep === 3"
               v-model:talent-options="jobForm.talentOptions"
               v-model:ai-settings="jobForm.aiSettings"
               v-model:premium-features="jobForm.premiumFeatures"
-              :voice-solution="selectedVoiceSolution"
+              :voice-type="selectedVoiceType"
               @next="nextStep"
               @previous="previousStep"
             />
 
-            <!-- Step 4: Review & Payment (All Solutions) -->
+            <!-- Step 4: Review & Payment (All Types) -->
             <ReviewPaymentStep
               v-if="currentStep === 4"
               :job-form="jobForm as any"
-              :voice-solution="selectedVoiceSolution"
+              :voice-type="selectedVoiceType"
               @publish="publishJobHandler"
               @previous="previousStep"
               @save-draft="saveDraft"
@@ -147,7 +147,7 @@ const { addToast: showToast } = useToast()
 
 // State
 const currentStep = ref(1)
-// 4 steps total: Voice Solution + Basic Info & Requirements + Talent Options + Review
+// 4 steps total: Voice Type + Basic Info & Requirements + Talent Options + Review
 const totalSteps = computed(() => {
   return 4
 })
@@ -161,12 +161,12 @@ const autoSaveInterval = ref<number | null>(null)
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])
 
-// Voice solution selection (outside of steps)
-const selectedVoiceSolution = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | null>(null)
+// Voice type selection (outside of steps)
+const selectedVoiceType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | null>(null)
 
-// Job form data - Dynamic based on voice solution
+// Job form data - Dynamic based on voice type
 const jobForm = reactive({
-  voiceSolution: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
+  voiceType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
   title: '',
   description: '',
   projectType: 'commercial' as any,
@@ -219,7 +219,7 @@ const jobForm = reactive({
 // Step validation for all 4 steps
 const stepValidation = computed(() => {
   return {
-    1: () => !!selectedVoiceSolution.value, // Voice solution selection
+    1: () => !!selectedVoiceType.value, // Voice type selection
     2: () =>
       !!jobForm.title.trim() &&
       !!jobForm.projectType &&
@@ -231,16 +231,16 @@ const stepValidation = computed(() => {
 })
 
 // Methods
-const selectVoiceSolution = (solution: 'talent_only' | 'ai_synthesis' | 'hybrid_approach') => {
-  selectedVoiceSolution.value = solution
-  jobForm.voiceSolution = solution
+const selectVoiceType = (type: 'talent_only' | 'ai_synthesis' | 'hybrid_approach') => {
+  selectedVoiceType.value = type
+  jobForm.voiceType = type
   // Don't change currentStep - let user navigate manually
 }
 
-const handleVoiceSolutionNext = () => {
+const handleVoiceTypeNext = () => {
   // This method is called when user clicks "Continue" in JobTypeStep
   // Move to step 2 (Basic Information)
-  if (selectedVoiceSolution.value) {
+  if (selectedVoiceType.value) {
     currentStep.value = 2
   }
 }
@@ -327,8 +327,8 @@ const loadDraftData = (draftId: string) => {
     currentDraftId.value = draft.id
 
     // Populate form with draft data
-    jobForm.voiceSolution = (draft.jobType as any) || 'talent_only'
-    selectedVoiceSolution.value = jobForm.voiceSolution
+    jobForm.voiceType = (draft.jobType as any) || 'talent_only'
+    selectedVoiceType.value = jobForm.voiceType
     jobForm.title = draft.title
     jobForm.description = draft.description
     jobForm.projectType = draft.projectType
@@ -418,7 +418,7 @@ const publishJobHandler = async () => {
 const resetForm = () => {
   // Reset form to initial state
   Object.assign(jobForm, {
-    voiceSolution: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
+    voiceType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
     title: '',
     description: '',
     projectType: 'commercial' as any,
@@ -464,9 +464,9 @@ const resetForm = () => {
     requirePortfolio: true,
   })
 
-  // Reset step and voice solution
+  // Reset step and voice type
   currentStep.value = 1
-  selectedVoiceSolution.value = null
+  selectedVoiceType.value = null
   currentDraftId.value = null
 
   // Load client defaults for new job

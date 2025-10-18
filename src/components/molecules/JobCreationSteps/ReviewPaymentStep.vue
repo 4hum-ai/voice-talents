@@ -18,7 +18,7 @@
             </div>
             <div class="flex justify-between">
               <span class="text-muted-foreground">Type:</span>
-              <span class="font-medium">{{ getJobTypeLabel(jobForm.voiceSolution) }}</span>
+              <span class="font-medium">{{ getJobTypeLabel(jobForm.voiceType) }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-muted-foreground">Project Type:</span>
@@ -118,7 +118,7 @@
 
             <!-- TTS Fees (for AI options) -->
             <div
-              v-if="voiceSolution === 'ai_synthesis' || voiceSolution === 'hybrid_approach'"
+              v-if="voiceType === 'ai_synthesis' || voiceType === 'hybrid_approach'"
               class="flex justify-between"
             >
               <span class="text-muted-foreground">TTS Processing:</span>
@@ -127,7 +127,7 @@
 
             <!-- Professional Actor Fees (for talent options) -->
             <div
-              v-if="voiceSolution === 'talent_only' || voiceSolution === 'hybrid_approach'"
+              v-if="voiceType === 'talent_only' || voiceType === 'hybrid_approach'"
               class="flex justify-between"
             >
               <span class="text-muted-foreground">Professional Actor:</span>
@@ -251,7 +251,7 @@ import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 
 interface JobForm {
-  voiceSolution: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
   title: string
   description: string
   projectType: string
@@ -291,7 +291,7 @@ interface JobForm {
 
 interface Props {
   jobForm: JobForm
-  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
   isSubmitting: boolean
 }
 
@@ -308,7 +308,7 @@ const paymentMethod = ref<'direct' | 'escrow'>('escrow')
 
 // Pricing calculations
 const platformFee = computed(() => {
-  switch (props.voiceSolution) {
+  switch (props.voiceType) {
     case 'talent_only':
       return 50
     case 'ai_synthesis':
@@ -321,14 +321,14 @@ const platformFee = computed(() => {
 })
 
 const ttsFees = computed(() => {
-  if (props.voiceSolution === 'ai_synthesis' || props.voiceSolution === 'hybrid_approach') {
+  if (props.voiceType === 'ai_synthesis' || props.voiceType === 'hybrid_approach') {
     return 15 // Base TTS processing fee
   }
   return 0
 })
 
 const actorFees = computed(() => {
-  if (props.voiceSolution === 'talent_only' || props.voiceSolution === 'hybrid_approach') {
+  if (props.voiceType === 'talent_only' || props.voiceType === 'hybrid_approach') {
     return 100 // Base professional actor fee
   }
   return 0

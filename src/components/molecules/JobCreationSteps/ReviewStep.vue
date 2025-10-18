@@ -16,7 +16,7 @@
             <div class="space-y-1 text-sm">
               <div class="flex justify-between">
                 <span class="text-muted-foreground">Type:</span>
-                <span class="font-medium">{{ getJobTypeLabel(jobForm.voiceSolution) }}</span>
+                <span class="font-medium">{{ getJobTypeLabel(jobForm.voiceType) }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-muted-foreground">Project:</span>
@@ -234,7 +234,7 @@ import type { VoiceType } from '@/types/voice-actor'
 
 interface Props {
   jobForm: {
-    voiceSolution: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+    voiceType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
     title: string
     description: string
     projectType: string
@@ -274,7 +274,7 @@ interface Props {
     isPublic: boolean
     requirePortfolio: boolean
   }
-  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
   isSubmitting: boolean
 }
 

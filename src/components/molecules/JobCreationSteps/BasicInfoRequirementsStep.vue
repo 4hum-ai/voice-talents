@@ -5,7 +5,7 @@
         Step 2: Project Details & Requirements
       </h1>
       <p class="text-muted-foreground text-lg">
-        Define your {{ getVoiceSolutionLabel() }} project requirements
+        Define your {{ getVoiceTypeLabel() }} project requirements
       </p>
     </div>
 
@@ -247,7 +247,7 @@ interface Props {
   requirements: Requirements
   deadline: string
   files: ProjectFiles
-  voiceSolution?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {
@@ -327,9 +327,9 @@ const revisionRoundsOptions = [
 
 // Computed properties
 
-// Voice solution label helper
-const getVoiceSolutionLabel = () => {
-  switch (props.voiceSolution) {
+// Voice type label helper
+const getVoiceTypeLabel = () => {
+  switch (props.voiceType) {
     case 'talent_only':
       return 'talent-based voice acting'
     case 'ai_synthesis':
