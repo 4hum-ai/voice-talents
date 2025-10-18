@@ -80,52 +80,16 @@ export function useJobType() {
       useCases: ['TV commercials', 'Radio ads', 'Online advertising', 'Social media content', 'Product demos']
     },
 
-    // Movie & Film Categories
-    movie_dubbing: {
-      id: 'movie_dubbing',
-      label: 'Movie Dubbing',
-      category: 'entertainment',
-      pricing: {
-        model: 'per_hour',
-        baseRate: 800,
-        currency: 'USD',
-        minimumAmount: 1200,
-        volumeDiscount: true,
-        rushFee: 2.0
-      },
-      delivery: {
-        formats: ['wav_48khz', 'wav_96khz'],
-        quality: 'broadcast',
-        timeline: '2-4 weeks',
-        revisionRounds: 3,
-        specialRequirements: ['lip_sync', 'emotion_matching', 'character_consistency']
-      },
-      studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor', 'sync_equipment'],
-        environment: 'professional_studio',
-        direction: 'studio_directed',
-        postProduction: true,
-        mixing: true
-      },
-      files: {
-        required: ['script', 'video_reference', 'timing_sheets', 'character_notes'],
-        optional: ['original_audio', 'director_notes', 'emotion_guide'],
-        maxSize: 500,
-        acceptedFormats: ['.pdf', '.doc', '.mp4', '.mov', '.wav', '.aaf']
-      },
-      description: 'Complete film dubbing from one language to another with full production pipeline',
-      useCases: ['Foreign film localization', 'International distribution', 'Streaming platforms', 'Theatrical release']
-    },
-
+    // Film & Entertainment Categories
     film_character_dubbing: {
       id: 'film_character_dubbing',
       label: 'Film Character Dubbing',
       category: 'entertainment',
       pricing: {
         model: 'per_character',
-        baseRate: 300,
+        baseRate: 250,
         currency: 'USD',
-        minimumAmount: 500,
+        minimumAmount: 400,
         volumeDiscount: false,
         rushFee: 1.8
       },
@@ -134,10 +98,10 @@ export function useJobType() {
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
-        specialRequirements: ['character_consistency', 'voice_matching']
+        specialRequirements: ['character_consistency', 'voice_matching', 'lip_sync']
       },
       studio: {
-        equipment: ['professional_microphone', 'acoustic_treatment', 'character_reference'],
+        equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
         environment: 'professional_studio',
         direction: 'studio_directed',
         postProduction: true,
@@ -145,11 +109,11 @@ export function useJobType() {
       },
       files: {
         required: ['character_script', 'character_reference', 'voice_direction'],
-        optional: ['original_actor_sample', 'character_backstory'],
+        optional: ['original_actor_sample', 'character_backstory', 'timing_sheets'],
         maxSize: 100,
-        acceptedFormats: ['.pdf', '.doc', '.mp3', '.wav']
+        acceptedFormats: ['.pdf', '.doc', '.mp3', '.wav', '.mp4']
       },
-      description: 'Character-specific voice work for film dubbing projects',
+      description: 'Character voice work for film dubbing projects - individual character roles',
       useCases: ['Character replacement', 'Voice matching', 'Character consistency', 'Actor substitution']
     },
 
@@ -159,17 +123,17 @@ export function useJobType() {
       category: 'entertainment',
       pricing: {
         model: 'per_project',
-        baseRate: 1200,
+        baseRate: 800,
         currency: 'USD',
-        minimumAmount: 800,
+        minimumAmount: 500,
         volumeDiscount: false,
-        rushFee: 2.5
+        rushFee: 2.0
       },
       delivery: {
         formats: ['wav_48khz', 'wav_96khz'],
         quality: 'broadcast',
-        timeline: '1-3 days',
-        revisionRounds: 1,
+        timeline: '2-5 days',
+        revisionRounds: 2,
         specialRequirements: ['dramatic_delivery', 'timing_precision', 'emotion_impact']
       },
       studio: {
@@ -177,15 +141,15 @@ export function useJobType() {
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: true
+        mixing: false
       },
       files: {
         required: ['trailer_script', 'video_reference', 'timing_cues'],
-        optional: ['music_reference', 'style_guide'],
+        optional: ['music_reference', 'style_guide', 'director_notes'],
         maxSize: 200,
         acceptedFormats: ['.pdf', '.doc', '.mp4', '.mov', '.wav']
       },
-      description: 'High-impact voice-over for movie trailers and promotional content',
+      description: 'Voice-over work for movie trailers and promotional content',
       useCases: ['Theatrical trailers', 'TV spots', 'Online promotion', 'Film festivals']
     },
 
@@ -372,22 +336,22 @@ export function useJobType() {
       useCases: ['Fiction books', 'Non-fiction', 'Educational content', 'Children\'s books']
     },
 
-    // Additional movie types
+    // Film narration for individual talent
     film_narration: {
       id: 'film_narration',
       label: 'Film Narration',
       category: 'entertainment',
       pricing: {
         model: 'per_minute',
-        baseRate: 100,
+        baseRate: 80,
         currency: 'USD',
-        minimumAmount: 300,
+        minimumAmount: 200,
         volumeDiscount: true,
-        rushFee: 1.6
+        rushFee: 1.5
       },
       delivery: {
         formats: ['wav_48khz', 'wav_96khz'],
-        quality: 'broadcast',
+        quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
         specialRequirements: ['dramatic_delivery', 'timing_precision', 'emotion_matching']
@@ -397,15 +361,15 @@ export function useJobType() {
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: true
+        mixing: false
       },
       files: {
         required: ['narration_script', 'video_reference'],
-        optional: ['music_reference', 'style_guide'],
+        optional: ['music_reference', 'style_guide', 'director_notes'],
         maxSize: 200,
         acceptedFormats: ['.pdf', '.doc', '.mp4', '.mov', '.wav']
       },
-      description: 'Narrative voice-over for films, documentaries, and cinematic content',
+      description: 'Narrative voice-over work for films, documentaries, and cinematic content',
       useCases: ['Documentary narration', 'Film narration', 'Cinematic storytelling', 'Historical content']
     },
 
@@ -415,9 +379,9 @@ export function useJobType() {
       category: 'educational',
       pricing: {
         model: 'per_minute',
-        baseRate: 80,
+        baseRate: 60,
         currency: 'USD',
-        minimumAmount: 250,
+        minimumAmount: 200,
         volumeDiscount: true,
         rushFee: 1.4
       },
@@ -433,7 +397,7 @@ export function useJobType() {
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: true
+        mixing: false
       },
       files: {
         required: ['documentary_script', 'fact_checking_notes'],
@@ -443,6 +407,151 @@ export function useJobType() {
       },
       description: 'Educational and informative voice-over for documentary films and educational content',
       useCases: ['Educational documentaries', 'Nature films', 'Historical content', 'Scientific explanations']
+    },
+
+    // Additional individual talent job types
+    character_voice: {
+      id: 'character_voice',
+      label: 'Character Voice',
+      category: 'entertainment',
+      pricing: {
+        model: 'per_character',
+        baseRate: 200,
+        currency: 'USD',
+        minimumAmount: 300,
+        volumeDiscount: true,
+        rushFee: 1.5
+      },
+      delivery: {
+        formats: ['wav_48khz'],
+        quality: 'professional',
+        timeline: '1-2 weeks',
+        revisionRounds: 3,
+        specialRequirements: ['character_development', 'voice_acting', 'emotion_range']
+      },
+      studio: {
+        equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
+        environment: 'professional_studio',
+        direction: 'studio_directed',
+        postProduction: true,
+        mixing: false
+      },
+      files: {
+        required: ['character_script', 'character_design', 'voice_direction'],
+        optional: ['character_backstory', 'reference_audio', 'style_guide'],
+        maxSize: 100,
+        acceptedFormats: ['.pdf', '.doc', '.mp3', '.wav', '.mp4']
+      },
+      description: 'Character voice work for various media including animation, games, and interactive content',
+      useCases: ['Animation characters', 'Game characters', 'Interactive media', 'Character development']
+    },
+
+    announcer: {
+      id: 'announcer',
+      label: 'Announcer Voice',
+      category: 'commercial',
+      pricing: {
+        model: 'per_project',
+        baseRate: 300,
+        currency: 'USD',
+        minimumAmount: 200,
+        volumeDiscount: true,
+        rushFee: 1.3
+      },
+      delivery: {
+        formats: ['wav_48khz'],
+        quality: 'professional',
+        timeline: '2-3 days',
+        revisionRounds: 1,
+        specialRequirements: ['authoritative_delivery', 'clear_pronunciation', 'broadcast_ready']
+      },
+      studio: {
+        equipment: ['professional_microphone', 'acoustic_treatment'],
+        environment: 'professional_studio',
+        direction: 'client_directed',
+        postProduction: true,
+        mixing: false
+      },
+      files: {
+        required: ['announcement_script'],
+        optional: ['brand_guidelines', 'reference_audio', 'style_guide'],
+        maxSize: 50,
+        acceptedFormats: ['.pdf', '.doc', '.mp3', '.wav']
+      },
+      description: 'Professional announcement voice work for events, broadcasts, and public communications',
+      useCases: ['Event announcements', 'Broadcast intros', 'Public announcements', 'Corporate communications']
+    },
+
+    phone_system: {
+      id: 'phone_system',
+      label: 'Phone System Voice',
+      category: 'corporate',
+      pricing: {
+        model: 'per_project',
+        baseRate: 400,
+        currency: 'USD',
+        minimumAmount: 300,
+        volumeDiscount: true,
+        rushFee: 1.2
+      },
+      delivery: {
+        formats: ['wav_48khz'],
+        quality: 'professional',
+        timeline: '3-5 days',
+        revisionRounds: 2,
+        specialRequirements: ['clear_pronunciation', 'consistent_tone', 'professional_delivery']
+      },
+      studio: {
+        equipment: ['professional_microphone', 'acoustic_treatment'],
+        environment: 'professional_studio',
+        direction: 'client_directed',
+        postProduction: true,
+        mixing: false
+      },
+      files: {
+        required: ['phone_script', 'menu_structure'],
+        optional: ['brand_guidelines', 'pronunciation_guide', 'reference_audio'],
+        maxSize: 25,
+        acceptedFormats: ['.pdf', '.doc', '.txt', '.mp3']
+      },
+      description: 'Voice work for phone systems, IVR menus, and automated phone services',
+      useCases: ['IVR systems', 'Phone menus', 'Automated messages', 'Customer service lines']
+    },
+
+    app_voice: {
+      id: 'app_voice',
+      label: 'App Voice Interface',
+      category: 'corporate',
+      pricing: {
+        model: 'per_project',
+        baseRate: 500,
+        currency: 'USD',
+        minimumAmount: 400,
+        volumeDiscount: true,
+        rushFee: 1.4
+      },
+      delivery: {
+        formats: ['wav_48khz'],
+        quality: 'professional',
+        timeline: '1-2 weeks',
+        revisionRounds: 2,
+        specialRequirements: ['friendly_tone', 'clear_pronunciation', 'consistent_delivery']
+      },
+      studio: {
+        equipment: ['professional_microphone', 'acoustic_treatment'],
+        environment: 'professional_studio',
+        direction: 'client_directed',
+        postProduction: true,
+        mixing: false
+      },
+      files: {
+        required: ['app_script', 'interface_guidelines'],
+        optional: ['brand_guidelines', 'user_flow', 'reference_audio'],
+        maxSize: 50,
+        acceptedFormats: ['.pdf', '.doc', '.txt', '.mp3']
+      },
+      description: 'Voice interface work for mobile apps, smart devices, and digital assistants',
+      useCases: ['Mobile apps', 'Smart devices', 'Digital assistants', 'Voice interfaces']
     }
   }
 
