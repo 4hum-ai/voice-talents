@@ -42,61 +42,6 @@
                 placeholder="Select project type"
                 required
               />
-              
-              <!-- Project Type Information -->
-              <div v-if="selectedProjectConfig" class="mt-4 p-4 bg-muted rounded-lg">
-                <h4 class="text-foreground mb-3 font-medium">{{ selectedProjectConfig.label }}</h4>
-                <p class="text-muted-foreground mb-3 text-sm">{{ selectedProjectConfig.description }}</p>
-                
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <!-- Pricing Info -->
-                  <div>
-                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Pricing</h5>
-                    <p class="text-muted-foreground text-sm">
-                      {{ selectedProjectConfig.pricing.model.replace('_', ' ') }} • 
-                      ${{ selectedProjectConfig.pricing.baseRate }}{{ selectedProjectConfig.pricing.model === 'per_project' ? '' : '/' + selectedProjectConfig.pricing.model.replace('per_', '') }}
-                    </p>
-                  </div>
-                  
-                  <!-- Delivery Info -->
-                  <div>
-                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Timeline</h5>
-                    <p class="text-muted-foreground text-sm">{{ selectedProjectConfig.delivery.timeline }}</p>
-                  </div>
-                  
-                  <!-- Quality -->
-                  <div>
-                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Quality</h5>
-                    <p class="text-muted-foreground text-sm capitalize">{{ selectedProjectConfig.delivery.quality }}</p>
-                  </div>
-                  
-                  <!-- Revisions -->
-                  <div>
-                    <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Revisions</h5>
-                    <p class="text-muted-foreground text-sm">{{ selectedProjectConfig.delivery.revisionRounds }} rounds included</p>
-                  </div>
-                </div>
-                
-                <!-- Use Cases -->
-                <div class="mt-3">
-                  <h5 class="text-foreground mb-1 text-xs font-medium uppercase tracking-wide">Common Use Cases</h5>
-                  <div class="flex flex-wrap gap-1">
-                    <span 
-                      v-for="useCase in selectedProjectConfig.useCases.slice(0, 3)" 
-                      :key="useCase"
-                      class="bg-primary/10 text-primary px-2 py-1 rounded text-xs"
-                    >
-                      {{ useCase }}
-                    </span>
-                    <span 
-                      v-if="selectedProjectConfig.useCases.length > 3"
-                      class="text-muted-foreground px-2 py-1 text-xs"
-                    >
-                      +{{ selectedProjectConfig.useCases.length - 3 }} more
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -155,7 +100,11 @@
                 v-model="localRequirements.deliveryFormat"
                 :options="deliveryFormatOptions"
                 placeholder="Select format"
+                disabled
               />
+              <p class="text-muted-foreground mt-1 text-xs">
+                Currently supporting ElevenLabs MP3 format only
+              </p>
             </div>
 
             <!-- Revision Rounds -->
@@ -322,7 +271,10 @@ const emit = defineEmits<Emits>()
 
 const localTitle = ref(props.title)
 const localProjectType = ref(props.projectType)
-const localRequirements = ref<Requirements>({ ...props.requirements })
+const localRequirements = ref<Requirements>({ 
+  ...props.requirements,
+  deliveryFormat: props.requirements.deliveryFormat || 'mp3_44khz' // Default to ElevenLabs MP3
+})
 const localDeadline = ref(props.deadline)
 const localFiles = ref<ProjectFiles>({ ...props.files })
 
@@ -355,11 +307,12 @@ const genderOptions = [
 ]
 
 const deliveryFormatOptions = [
-  { value: 'mp3_44khz', label: 'MP3 (44.1kHz)' },
-  { value: 'wav_48khz', label: 'WAV (48kHz)' },
-  { value: 'wav_96khz', label: 'WAV (96kHz)' },
-  { value: 'aiff', label: 'AIFF' },
-  { value: 'flac', label: 'FLAC' },
+  { value: 'mp3_44khz', label: 'MP3 (44.1kHz) - ElevenLabs Default' },
+  { value: 'wav_44khz', label: 'WAV (44.1kHz, 16-bit)' },
+  { value: 'pcm_s16le', label: 'PCM S16LE (16kHz-44.1kHz)' },
+  { value: 'opus_48khz', label: 'Opus (48kHz)' },
+  { value: 'ulaw_8khz', label: 'μ-law (8kHz) - Telephony' },
+  { value: 'alaw_8khz', label: 'A-law (8kHz) - Telephony' },
 ]
 
 // Delivery timeline removed - using project deadline instead

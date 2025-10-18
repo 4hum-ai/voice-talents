@@ -57,7 +57,7 @@ export function useJobType() {
         rushFee: 1.5
       },
       delivery: {
-        formats: ['mp3_44khz', 'wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '3-5 business days',
         revisionRounds: 2,
@@ -94,7 +94,7 @@ export function useJobType() {
         rushFee: 1.8
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
@@ -130,7 +130,7 @@ export function useJobType() {
         rushFee: 2.0
       },
       delivery: {
-        formats: ['wav_48khz', 'wav_96khz'],
+        formats: ['mp3_44khz'],
         quality: 'broadcast',
         timeline: '2-5 days',
         revisionRounds: 2,
@@ -167,7 +167,7 @@ export function useJobType() {
         rushFee: 1.3
       },
       delivery: {
-        formats: ['mp3_44khz', 'wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '5-7 business days',
         revisionRounds: 2,
@@ -204,7 +204,7 @@ export function useJobType() {
         rushFee: 1.2
       },
       delivery: {
-        formats: ['mp3_44khz', 'wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '2-3 business days',
         revisionRounds: 1,
@@ -241,7 +241,7 @@ export function useJobType() {
         rushFee: 1.5
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 3,
@@ -277,7 +277,7 @@ export function useJobType() {
         rushFee: 1.4
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-3 weeks',
         revisionRounds: 2,
@@ -313,7 +313,7 @@ export function useJobType() {
         rushFee: 1.3
       },
       delivery: {
-        formats: ['mp3_44khz', 'wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '2-4 weeks',
         revisionRounds: 1,
@@ -350,7 +350,7 @@ export function useJobType() {
         rushFee: 1.5
       },
       delivery: {
-        formats: ['wav_48khz', 'wav_96khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
@@ -386,7 +386,7 @@ export function useJobType() {
         rushFee: 1.4
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
@@ -423,7 +423,7 @@ export function useJobType() {
         rushFee: 1.5
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 3,
@@ -459,7 +459,7 @@ export function useJobType() {
         rushFee: 1.3
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '2-3 days',
         revisionRounds: 1,
@@ -495,7 +495,7 @@ export function useJobType() {
         rushFee: 1.2
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '3-5 days',
         revisionRounds: 2,
@@ -531,7 +531,7 @@ export function useJobType() {
         rushFee: 1.4
       },
       delivery: {
-        formats: ['wav_48khz'],
+        formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
