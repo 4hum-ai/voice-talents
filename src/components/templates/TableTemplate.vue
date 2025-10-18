@@ -160,8 +160,9 @@
                       'inline-flex items-center rounded px-2 py-0.5 text-xs font-medium',
                       badgeClass(item[column.key]),
                     ]"
+                    :title="getBadgeTooltip(item[column.key], column)"
                   >
-                    {{ item[column.key] }}
+                    {{ getBadgeDisplayValue(item[column.key], column) }}
                   </span>
                 </div>
                 <div
@@ -482,6 +483,85 @@ const countryName = (raw: unknown): string => {
   const val = String(raw).trim()
   const c = getCountryByCode(val)
   return c?.name || val
+}
+
+const getBadgeDisplayValue = (value: unknown, column: ColumnConfig): string => {
+  if (value === null || value === undefined) return '-'
+
+  // If badgeCount is true, show count instead of full content
+  if (column.badgeCount) {
+    if (Array.isArray(value)) {
+      return String(value.length)
+    }
+    if (typeof value === 'object' && value !== null) {
+      return String(Object.keys(value).length)
+    }
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value)
+        if (Array.isArray(parsed)) {
+          return String(parsed.length)
+        }
+        if (typeof parsed === 'object' && parsed !== null) {
+          return String(Object.keys(parsed).length)
+        }
+      } catch {
+        // If not valid JSON, return the string length if it's reasonable
+        return value.length > 20 ? `${value.length} chars` : String(value)
+      }
+    }
+  }
+
+  // Default behavior: show the value as string
+  let str: string
+  if (Array.isArray(value)) {
+    str = value
+      .map((item) =>
+        typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item),
+      )
+      .join(', ')
+  } else if (typeof value === 'object' && value !== null) {
+    try {
+      str = JSON.stringify(value)
+    } catch {
+      str = String(value)
+    }
+  } else {
+    str = String(value)
+  }
+  return str.length > 50 ? `${str.substring(0, 47)}...` : str
+}
+
+const getBadgeTooltip = (value: unknown, column: ColumnConfig): string => {
+  if (value === null || value === undefined) return ''
+
+  // If badgeCount is true, show full content in tooltip
+  if (column.badgeCount) {
+    if (Array.isArray(value)) {
+      return `Items: ${value.length}\n${JSON.stringify(value, null, 2)}`
+    }
+    if (typeof value === 'object' && value !== null) {
+      return `Items: ${Object.keys(value).length}\n${JSON.stringify(value, null, 2)}`
+    }
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value)
+        if (Array.isArray(parsed)) {
+          return `Items: ${parsed.length}\n${JSON.stringify(parsed, null, 2)}`
+        }
+        if (typeof parsed === 'object' && parsed !== null) {
+          return `Items: ${Object.keys(parsed).length}\n${JSON.stringify(parsed, null, 2)}`
+        }
+      } catch {
+        // If not valid JSON, show the full string
+        return String(value)
+      }
+    }
+  }
+
+  // For regular badges, show full content if truncated
+  const str = String(value)
+  return str.length > 50 ? str : ''
 }
 
 // Initialize sort from route

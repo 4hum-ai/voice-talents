@@ -85,20 +85,33 @@
       ⧉
     </button>
   </span>
-  <span v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">
-    <pre
-      v-if="Array.isArray(value) && value.length > 0 && typeof value[0] === 'object'"
-      class="max-h-40 overflow-y-auto rounded border bg-gray-50 p-2 text-xs whitespace-pre-wrap dark:bg-gray-800"
-      >{{ formattedArrayValue }}</pre
-    >
-    <span v-else>{{ Array.isArray(value) ? value.join(', ') : textValue }}</span>
-  </span>
-  <span v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">
-    <pre
-      class="max-h-40 overflow-y-auto rounded border bg-gray-50 p-2 text-xs whitespace-pre-wrap dark:bg-gray-800"
-      >{{ objectValue }}</pre
-    >
-  </span>
+  <div v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">
+    <div v-if="Array.isArray(value)" class="space-y-2">
+      <div v-for="(item, index) in value" :key="index" class="border-l-2 border-gray-200 pl-3">
+        <div v-if="typeof item === 'object' && item !== null" class="space-y-1">
+          <div v-for="(val, key) in item" :key="key" class="flex flex-col">
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400"
+              >{{ formatKey(String(key)) }}:</span
+            >
+            <span class="text-sm">{{ formatObjectValue(val) }}</span>
+          </div>
+        </div>
+        <span v-else>{{ item }}</span>
+      </div>
+    </div>
+    <span v-else>{{ textValue }}</span>
+  </div>
+  <div v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">
+    <div v-if="typeof value === 'object' && value !== null" class="space-y-1">
+      <div v-for="(val, key) in value" :key="key" class="flex flex-col">
+        <span class="text-xs font-medium text-gray-500 dark:text-gray-400"
+          >{{ formatKey(String(key)) }}:</span
+        >
+        <span class="text-sm">{{ formatObjectValue(val) }}</span>
+      </div>
+    </div>
+    <span v-else>{{ objectValue }}</span>
+  </div>
   <span v-else-if="displayKind === 'image'" class="inline-flex items-center">
     <Image
       :src="String(value)"
@@ -309,6 +322,25 @@ const imageClasses = computed(() => {
 const textValue = computed(() => {
   const v = props.value
   if (v === null || v === undefined || v === '') return '-'
+
+  // Handle arrays specially to avoid [object Object]
+  if (Array.isArray(v)) {
+    return v
+      .map((item) =>
+        typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item),
+      )
+      .join(', ')
+  }
+
+  // Handle objects specially
+  if (typeof v === 'object' && v !== null) {
+    try {
+      return JSON.stringify(v)
+    } catch {
+      return String(v)
+    }
+  }
+
   return String(v)
 })
 
@@ -419,20 +451,40 @@ const country = computed(() => {
 
 const objectValue = computed(() => {
   try {
-    return JSON.stringify(props.value, null, 2)
+    return JSON.stringify(props.value)
   } catch {
     return String(props.value)
   }
 })
 
-const formattedArrayValue = computed(() => {
-  if (!Array.isArray(props.value)) return ''
-  try {
-    return JSON.stringify(props.value, null, 2)
-  } catch {
-    return String(props.value)
+// Helper function to format object keys
+const formatKey = (key: string): string => {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, (s) => s.toUpperCase())
+}
+
+// Helper function to format object values
+const formatObjectValue = (value: unknown): string => {
+  if (value === null || value === undefined) return '-'
+  if (typeof value === 'string') return value
+  if (typeof value === 'number') return value.toString()
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => (typeof item === 'object' ? JSON.stringify(item) : String(item)))
+      .join(', ')
   }
-})
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value, null, 2)
+    } catch {
+      return String(value)
+    }
+  }
+  return String(value)
+}
 
 // NEW: Percentage value computation
 const percentageValue = computed(() => {
