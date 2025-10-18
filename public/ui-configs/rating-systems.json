@@ -6,6 +6,17 @@
     "list": {
       "columns": [
         {
+          "key": "id",
+          "label": "ID",
+          "type": "text",
+          "sortable": true,
+          "filterable": true,
+          "searchable": true,
+          "width": "20%",
+          "titleField": "id",
+          "hidden": true
+        },
+        {
           "key": "name",
           "label": "Name",
           "type": "text",
@@ -17,30 +28,27 @@
         },
         {
           "key": "levels",
-          "label": "Rating Levels",
-          "type": "badge",
+          "label": "Levels",
+          "type": "text",
           "width": "15%",
-          "badgeKey": "title",
-          "badgeCount": true,
-          "align": "center"
+          "align": "center",
+          "formatter": "badge"
         },
         {
           "key": "guidelines",
           "label": "Guidelines",
-          "type": "badge",
+          "type": "text",
           "width": "15%",
-          "badgeKey": "name",
-          "badgeCount": true,
-          "align": "center"
+          "align": "center",
+          "formatter": "badge"
         },
         {
           "key": "references",
           "label": "References",
-          "type": "badge",
+          "type": "text",
           "width": "10%",
-          "badgeKey": "title",
-          "badgeCount": true,
-          "align": "center"
+          "align": "center",
+          "formatter": "badge"
         },
         {
           "key": "createdAt",
@@ -68,11 +76,19 @@
       "defaultFilters": [
         {
           "field": "name",
-          "type": "text",
-          "label": "Name"
+          "type": "select",
+          "label": "Name",
+          "options": [
+            { "value": "MPAA", "label": "MPAA" },
+            { "value": "BBFC", "label": "BBFC" },
+            { "value": "CERO", "label": "CERO" },
+            { "value": "PEGI", "label": "PEGI" },
+            { "value": "ESRB", "label": "ESRB" },
+            { "value": "USK", "label": "USK" }
+          ]
         }
       ],
-      "searchableFields": ["name", "description"],
+      "searchableFields": ["name"],
       "pageSize": 20,
       "actions": [
         {
@@ -117,8 +133,7 @@
         { "value": "CERO", "label": "CERO", "color": "#10b981" },
         { "value": "PEGI", "label": "PEGI", "color": "#f59e0b" }
       ],
-      "cardTitleField": "name",
-      "cardDescriptionField": "description"
+      "cardTitleField": "name"
     }
   },
   "detailView": {
@@ -126,8 +141,7 @@
       {
         "title": "Basic Information",
         "fields": [
-          { "key": "name", "label": "Rating System Name", "type": "text" },
-          { "key": "description", "label": "Description", "type": "text" },
+          { "key": "name", "label": "Name", "type": "text" },
           {
             "key": "createdAt",
             "label": "Created",
@@ -178,11 +192,13 @@
             "label": "Rating Levels",
             "type": "array",
             "itemType": "object",
+            "formatter": "badge",
             "fields": [
               {
                 "key": "key",
                 "label": "Key",
-                "type": "text"
+                "type": "text",
+                "formatter": "badge"
               },
               {
                 "key": "title",
@@ -211,11 +227,13 @@
             "label": "Content Guidelines",
             "type": "array",
             "itemType": "object",
+            "formatter": "badge",
             "fields": [
               {
                 "key": "group",
                 "label": "Group",
-                "type": "text"
+                "type": "text",
+                "formatter": "badge"
               },
               {
                 "key": "name",
@@ -232,11 +250,13 @@
                 "label": "Keywords",
                 "type": "array",
                 "itemType": "object",
+                "formatter": "badge",
                 "fields": [
                   {
                     "key": "key",
                     "label": "Key",
-                    "type": "text"
+                    "type": "text",
+                    "formatter": "badge"
                   },
                   {
                     "key": "label",
@@ -255,16 +275,10 @@
     "fields": [
       {
         "key": "name",
-        "label": "Rating System Name",
+        "label": "Name",
         "type": "text",
         "required": true,
         "placeholder": "Enter rating system name (e.g., MPAA, BBFC, CERO)"
-      },
-      {
-        "key": "description",
-        "label": "Description",
-        "type": "textarea",
-        "placeholder": "Enter description of this rating system"
       },
       {
         "key": "references",
