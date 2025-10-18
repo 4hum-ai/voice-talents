@@ -85,12 +85,20 @@
       ⧉
     </button>
   </span>
-  <span v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">{{
-    Array.isArray(value) ? value.join(', ') : textValue
-  }}</span>
-  <span v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">{{
-    objectValue
-  }}</span>
+  <span v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">
+    <pre
+      v-if="Array.isArray(value) && value.length > 0 && typeof value[0] === 'object'"
+      class="max-h-40 overflow-y-auto rounded border bg-gray-50 p-2 text-xs whitespace-pre-wrap dark:bg-gray-800"
+      >{{ formattedArrayValue }}</pre
+    >
+    <span v-else>{{ Array.isArray(value) ? value.join(', ') : textValue }}</span>
+  </span>
+  <span v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">
+    <pre
+      class="max-h-40 overflow-y-auto rounded border bg-gray-50 p-2 text-xs whitespace-pre-wrap dark:bg-gray-800"
+      >{{ objectValue }}</pre
+    >
+  </span>
   <span v-else-if="displayKind === 'image'" class="inline-flex items-center">
     <Image
       :src="String(value)"
@@ -411,7 +419,16 @@ const country = computed(() => {
 
 const objectValue = computed(() => {
   try {
-    return JSON.stringify(props.value)
+    return JSON.stringify(props.value, null, 2)
+  } catch {
+    return String(props.value)
+  }
+})
+
+const formattedArrayValue = computed(() => {
+  if (!Array.isArray(props.value)) return ''
+  try {
+    return JSON.stringify(props.value, null, 2)
   } catch {
     return String(props.value)
   }
