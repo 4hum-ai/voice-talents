@@ -284,6 +284,22 @@ const combinedProjectTypeOptions = [
   { value: 'phone_system', label: 'Phone System Voice' },
   { value: 'app_voice', label: 'App Voice Interface' },
   { value: 'storyteller', label: 'Storytelling Voice' },
+  // Movie & Film Voice-Over Options
+  { value: 'movie_dubbing', label: 'Movie Dubbing' },
+  { value: 'film_narration', label: 'Film Narration' },
+  { value: 'movie_trailer', label: 'Movie Trailer Voice' },
+  { value: 'documentary_voice', label: 'Documentary Voice-Over' },
+  { value: 'film_character_dubbing', label: 'Film Character Dubbing' },
+  { value: 'movie_promotional', label: 'Movie Promotional Voice' },
+  { value: 'film_commentary', label: 'Film Commentary Voice' },
+  { value: 'movie_teaser', label: 'Movie Teaser Voice' },
+  { value: 'film_voice_match', label: 'Film Voice Matching' },
+  { value: 'movie_redub', label: 'Movie Re-dubbing' },
+  { value: 'film_loop_group', label: 'Film Loop Group Voice' },
+  { value: 'movie_adr', label: 'Movie ADR (Automated Dialogue Replacement)' },
+  { value: 'film_voice_direction', label: 'Film Voice Direction' },
+  { value: 'movie_voice_casting', label: 'Movie Voice Casting' },
+  { value: 'film_voice_sync', label: 'Film Voice Synchronization' },
 ]
 
 const languageOptions = [
