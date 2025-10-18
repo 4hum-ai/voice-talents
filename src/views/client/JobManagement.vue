@@ -363,7 +363,7 @@ const handleJobCreated = (job: any) => {
 }
 
 // View live job for approval
-const viewLiveJob = (jobId: string) => {
+const viewLiveJob = (_jobId: string) => {
   // In a real app, this would navigate to job applications view
   showToast({
     type: 'info',
@@ -373,7 +373,7 @@ const viewLiveJob = (jobId: string) => {
 }
 
 // Download delivery for completed jobs
-const downloadDelivery = (jobId: string) => {
+const downloadDelivery = (_jobId: string) => {
   // In a real app, this would trigger download of completed deliverables
   showToast({
     type: 'success',
@@ -383,8 +383,8 @@ const downloadDelivery = (jobId: string) => {
 }
 
 // Formatting functions
-const formatJobType = (jobType: string) => {
-  return jobType.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+const formatJobType = (_jobType: string) => {
+  return _jobType.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 const formatBudget = (budget: any) => {

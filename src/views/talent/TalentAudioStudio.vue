@@ -1,7 +1,5 @@
 <template>
   <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <VoiceActNavigation />
 
     <!-- Main Content -->
     <div class="flex-1">
@@ -11,10 +9,6 @@
         <template #subtitle>{{ job?.title || 'Recording Session' }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="outline" size="sm" @click="goToJobDetail">
-            <EyeIcon class="mr-2 h-4 w-4" />
-            View Job Details
-          </Button>
           <Button variant="primary" size="sm" @click="submitWork" :disabled="!canSubmit">
             <SendIcon class="mr-2 h-4 w-4" />
             Submit Work
@@ -23,7 +17,7 @@
       </AppBar>
 
       <!-- Studio Content -->
-      <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+      <div class="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
         <!-- Left Side - Transcript -->
         <div class="w-1/2 overflow-y-auto border-r border-border p-6">
           <div class="mb-4 flex items-center justify-between">
@@ -223,8 +217,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
+import { useRoute } from 'vue-router'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
@@ -241,10 +234,8 @@ import TargetIcon from '~icons/mdi/target'
 import StopIcon from '~icons/mdi/stop'
 import ScissorsIcon from '~icons/mdi/scissors-cutting'
 import DeleteIcon from '~icons/mdi/delete'
-import EyeIcon from '~icons/mdi/eye'
 
 const route = useRoute()
-const router = useRouter()
 const { success, error } = useToast()
 const { getJob } = useJob()
 
@@ -505,10 +496,6 @@ const canSubmit = computed(() =>
   recordedSegmentsCount.value > 0 || job.value?.finalAudio
 )
 
-// Navigation methods
-const goToJobDetail = () => {
-  router.push(`/talent/jobs/${route.params.id}`)
-}
 
 // TTS methods
 const generateTTS = async () => {
