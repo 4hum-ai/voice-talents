@@ -99,12 +99,9 @@
                 id="deliveryFormat"
                 v-model="deliveryFormat"
                 :options="deliveryFormatOptions"
-                placeholder="MP3 (44.1kHz) - ElevenLabs Default"
+                :placeholder="deliveryFormatOptions[0].label"
                 disabled
               />
-              <p class="text-muted-foreground mt-1 text-xs">
-                Using ElevenLabs MP3 format (44.1kHz) - Single format support
-              </p>
             </div>
 
             <!-- Revision Rounds -->
@@ -145,62 +142,76 @@
         <div class="bg-card border-border sticky top-6 rounded-lg border p-6">
           <h3 class="text-foreground mb-6 text-lg font-semibold">Project Files</h3>
 
-          <div class="space-y-4">
-            <!-- Script Upload -->
-            <div>
-              <label class="text-foreground mb-2 block text-sm font-medium">
-                Script/Transcript
-              </label>
-              <FileUpload
-                v-model="localFiles.script"
-                accept=".pdf,.doc,.docx,.txt"
-                :max-size="10"
-                @upload="
-                  (file: File | File[]) => handleScriptUpload(Array.isArray(file) ? file[0] : file)
-                "
-              />
-              <p class="text-muted-foreground mt-2 text-xs">
-                Upload your script or transcript. Max 10MB.
-              </p>
+          <!-- Project Type Selection Notice -->
+          <div v-if="!localProjectType" class="mb-6 rounded-lg bg-muted/50 p-4">
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <Icon name="mdi:information" class="h-5 w-5" />
+              <span class="text-sm">Select a project type to see specific file requirements</span>
+            </div>
+          </div>
+
+          <!-- Dynamic File Requirements based on Project Type -->
+          <div v-else class="space-y-6">
+            <!-- Required Files Section -->
+            <div v-if="currentProjectConfig?.files.required.length">
+              <h4 class="text-foreground mb-4 text-sm font-semibold">
+                Required Files
+                <span class="text-muted-foreground text-xs font-normal">({{ currentProjectConfig.files.required.length }})</span>
+              </h4>
+              <div class="space-y-4">
+                <div v-for="fileReq in currentProjectConfig.files.required" :key="fileReq.id">
+                  <label class="text-foreground mb-2 block text-sm font-medium">
+                    {{ fileReq.label }}
+                    <span class="text-destructive">*</span>
+                  </label>
+                  <FileUpload
+                    :key="`required-${fileReq.id}`"
+                    v-model="localFiles[fileReq.id]"
+                    :accept="fileReq.acceptedFormats.join(',')"
+                    :max-size="fileReq.maxSize"
+                    :multiple="fileReq.multiple || false"
+                    @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
+                  />
+                  <p class="text-muted-foreground mt-2 text-xs">
+                    {{ fileReq.description }} Max {{ fileReq.maxSize }}MB.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <!-- Reference Audio -->
-            <div>
-              <label class="text-foreground mb-2 block text-sm font-medium">
-                Reference Audio
-              </label>
-              <FileUpload
-                v-model="localFiles.referenceAudio"
-                accept=".mp3,.wav,.m4a"
-                :max-size="25"
-                @upload="
-                  (file: File | File[]) =>
-                    handleReferenceUpload(Array.isArray(file) ? file[0] : file)
-                "
-              />
-              <p class="text-muted-foreground mt-2 text-xs">
-                Upload reference audio for voice matching. Max 25MB.
-              </p>
+            <!-- Optional Files Section -->
+            <div v-if="currentProjectConfig?.files.optional.length">
+              <h4 class="text-foreground mb-4 text-sm font-semibold">
+                Optional Files
+                <span class="text-muted-foreground text-xs font-normal">({{ currentProjectConfig.files.optional.length }})</span>
+              </h4>
+              <div class="space-y-4">
+                <div v-for="fileReq in currentProjectConfig.files.optional" :key="fileReq.id">
+                  <label class="text-foreground mb-2 block text-sm font-medium">
+                    {{ fileReq.label }}
+                    <span class="text-muted-foreground text-xs">(Optional)</span>
+                  </label>
+                  <FileUpload
+                    :key="`optional-${fileReq.id}`"
+                    v-model="localFiles[fileReq.id]"
+                    :accept="fileReq.acceptedFormats.join(',')"
+                    :max-size="fileReq.maxSize"
+                    :multiple="fileReq.multiple || false"
+                    @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
+                  />
+                  <p class="text-muted-foreground mt-2 text-xs">
+                    {{ fileReq.description }} Max {{ fileReq.maxSize }}MB.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <!-- Additional Files -->
-            <div>
-              <label class="text-foreground mb-2 block text-sm font-medium">
-                Additional Files
-              </label>
-              <FileUpload
-                v-model="localFiles.additional"
-                accept=".pdf,.doc,.docx,.txt,.srt,.vtt,.jpg,.png,.mp4"
-                :max-size="50"
-                :multiple="true"
-                @upload="
-                  (file: File | File[]) =>
-                    handleAdditionalUpload(Array.isArray(file) ? file : [file])
-                "
-              />
-              <p class="text-muted-foreground mt-2 text-xs">
-                Upload subtitles, images, or videos. Max 50MB total.
-              </p>
+            <!-- No Files Required -->
+            <div v-if="!currentProjectConfig?.files.required.length && !currentProjectConfig?.files.optional.length" class="rounded-lg bg-muted/50 p-4">
+              <div class="flex items-center gap-2 text-muted-foreground">
+                <Icon name="mdi:file-check" class="h-5 w-5" />
+                <span class="text-sm">No specific files required for this project type</span>
+              </div>
             </div>
           </div>
         </div>
@@ -240,9 +251,7 @@ interface Requirements {
 }
 
 interface ProjectFiles {
-  script?: File
-  referenceAudio?: File
-  additional?: File[]
+  [key: string]: File | File[] | undefined
 }
 
 interface Props {
@@ -279,7 +288,7 @@ const localDeadline = ref(props.deadline)
 const localFiles = ref<ProjectFiles>({ ...props.files })
 
 // Use job type configuration composable
-const { getAllConfigs } = useJobType()
+const { getAllConfigs, getConfig } = useJobType()
 
 // Generate project type options from composable
 const combinedProjectTypeOptions = computed(() => {
@@ -287,6 +296,12 @@ const combinedProjectTypeOptions = computed(() => {
     value: config.id,
     label: config.label
   }))
+})
+
+// Get current project configuration based on selected project type
+const currentProjectConfig = computed(() => {
+  if (!localProjectType.value) return null
+  return getConfig(localProjectType.value)
 })
 
 // Ensure delivery format is always set to default
@@ -310,7 +325,7 @@ const genderOptions = [
 ]
 
 const deliveryFormatOptions = [
-  { value: 'mp3_44khz', label: 'MP3 (44.1kHz) - ElevenLabs Default' },
+  { value: 'mp3_44khz', label: 'MP3 (44.1kHz)' },
   { value: 'wav_44khz', label: 'WAV (44.1kHz, 16-bit)' },
   { value: 'pcm_s16le', label: 'PCM S16LE (16kHz-44.1kHz)' },
   { value: 'opus_48khz', label: 'Opus (48kHz)' },
@@ -355,19 +370,13 @@ const isStepValid = computed(() => {
   )
 })
 
-// File upload handlers
-const handleScriptUpload = (file: File) => {
-  localFiles.value.script = file
-  emit('update:files', localFiles.value)
-}
-
-const handleReferenceUpload = (file: File) => {
-  localFiles.value.referenceAudio = file
-  emit('update:files', localFiles.value)
-}
-
-const handleAdditionalUpload = (files: File[]) => {
-  localFiles.value.additional = files
+// Dynamic file upload handler
+const handleFileUpload = (fileId: string, file: File | File[]) => {
+  if (Array.isArray(file)) {
+    localFiles.value[fileId] = file
+  } else {
+    localFiles.value[fileId] = file
+  }
   emit('update:files', localFiles.value)
 }
 
@@ -391,4 +400,13 @@ watch(
   },
   { deep: true },
 )
+
+// Watch for project type changes and clear files to avoid conflicts
+watch(localProjectType, (newType, oldType) => {
+  if (newType !== oldType) {
+    // Clear all files when project type changes
+    localFiles.value = {}
+    emit('update:files', localFiles.value)
+  }
+})
 </script>
