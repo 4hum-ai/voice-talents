@@ -1,6 +1,4 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import 'tailwindcss';
 
 /* Schedule X Calendar default theme */
 @import '@schedule-x/theme-default/dist/index.css';
