@@ -40,6 +40,13 @@
           {{ isDark ? 'DARK' : 'LIGHT' }}
         </div>
 
+        <!-- Simple dark mode test -->
+        <div
+          class="absolute top-16 left-6 rounded bg-gray-100 p-2 text-black dark:bg-gray-800 dark:text-white"
+        >
+          Test Dark Mode
+        </div>
+
         <!-- Brand section -->
         <div class="mb-8 text-center sm:mb-10">
           <!-- Enhanced typography -->
