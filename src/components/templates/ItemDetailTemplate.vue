@@ -691,12 +691,7 @@ const fetchRelatedItems = async (
 type ActionMenuItem = { key: string; label: string; description?: string }
 const actionMenuItems = computed<ActionMenuItem[]>(() => {
   const items: ActionMenuItem[] = []
-  if (props.item)
-    items.push({
-      key: 'copy-json',
-      label: 'Copy as JSON',
-      description: 'Copy item data as JSON to clipboard',
-    })
+  if (props.item) items.push({ key: 'copy-json', label: 'Copy as JSON' })
   if (props.enableDelete) items.push({ key: 'delete', label: 'Delete' })
   return items
 })
