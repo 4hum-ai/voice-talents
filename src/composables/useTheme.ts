@@ -26,8 +26,19 @@ export function useTheme() {
   function applyTheme(next?: ThemeMode) {
     const current = next ?? mode.value
     const isDarkMode = current === 'dark'
+
+    // Apply to documentElement (html) for Tailwind dark mode
     document.documentElement.classList.toggle('dark', isDarkMode)
+
+    // Also apply to body for additional styling
     document.body.classList.toggle('dark', isDarkMode)
+
+    // Debug logging
+    console.log('🎨 Theme applied:', {
+      current,
+      isDarkMode,
+      htmlClasses: document.documentElement.className,
+    })
   }
 
   function setTheme(next: ThemeMode) {

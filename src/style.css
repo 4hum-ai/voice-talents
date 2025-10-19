@@ -146,26 +146,26 @@
 /* Base styles */
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
   }
 
   body {
     @apply bg-gray-50 text-gray-900 dark:bg-black dark:text-white;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
   }
 
   * {
-    @apply border-gray-800;
+    @apply border-gray-200 dark:border-gray-800;
   }
 
-  /* Netflix-style focus styles */
+  /* Focus styles */
   *:focus {
-    @apply ring-2 ring-red-600 ring-offset-2 ring-offset-black outline-none;
+    @apply ring-primary-500 ring-2 ring-offset-2 ring-offset-gray-50 outline-none dark:ring-offset-black;
   }
 
   /* Custom selection */
   ::selection {
-    @apply bg-red-600 text-white;
+    @apply bg-primary-600 text-white;
   }
 }
 
@@ -404,20 +404,6 @@
 }
 
 /* Custom admin dashboard styles */
-@layer base {
-  html {
-    font-family: 'Inter Variable', system-ui, sans-serif;
-  }
-
-  body {
-    background-color: #f9fafb;
-    color: #111827;
-  }
-  .dark body {
-    background-color: #000000;
-    color: #ffffff;
-  }
-}
 
 @layer components {
   /* Admin-specific component styles */
