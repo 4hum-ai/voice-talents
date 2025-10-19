@@ -33,17 +33,17 @@
           <ThemeToggle />
         </div>
 
-        <!-- Brand section with icon -->
-        <div class="mb-6 text-center sm:mb-8">
+        <!-- Brand section -->
+        <div class="mb-8 text-center sm:mb-10">
           <!-- Enhanced typography -->
           <h1
             id="auth-title"
-            class="mb-2 text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100"
+            class="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl dark:text-gray-100"
           >
             Welcome back
           </h1>
           <p
-            class="px-2 text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400"
+            class="px-2 text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400"
             aria-describedby="auth-title"
           >
             Sign in to access your workspace and manage your content
@@ -89,11 +89,18 @@
               role="alert"
               aria-live="polite"
             >
-              <Icon
-                name="mdi:alert-circle"
+              <svg
                 class="h-5 w-5 flex-shrink-0 text-red-500"
                 aria-hidden="true"
-              />
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"
+                />
+              </svg>
               <p class="text-sm text-red-700 dark:text-red-400">
                 {{ error }}
               </p>
@@ -123,7 +130,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
 
 const router = useRouter()
 const route = useRoute()
