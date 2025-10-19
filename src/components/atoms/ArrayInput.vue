@@ -7,33 +7,32 @@
       </label>
 
       <!-- Input mode toggle -->
-      <div class="flex items-center space-x-2">
-        <span class="text-xs text-gray-500 dark:text-gray-400">Mode:</span>
+      <div class="flex items-center space-x-1">
         <button
           type="button"
-          class="flex items-center space-x-1 rounded-md px-2 py-1 text-xs font-medium transition-colors"
+          class="flex h-7 w-7 items-center justify-center rounded-md text-sm transition-colors"
           :class="
             inputMode === 'structured'
-              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+              : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300'
           "
+          title="Form mode"
           @click="inputMode = 'structured'"
         >
-          <span>📋</span>
-          <span>Form</span>
+          📋
         </button>
         <button
           type="button"
-          class="flex items-center space-x-1 rounded-md px-2 py-1 text-xs font-medium transition-colors"
+          class="flex h-7 w-7 items-center justify-center rounded-md text-sm transition-colors"
           :class="
             inputMode === 'json'
-              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+              : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300'
           "
+          title="JSON mode"
           @click="inputMode = 'json'"
         >
-          <span>[ ]</span>
-          <span>JSON</span>
+          [ ]
         </button>
       </div>
     </div>
