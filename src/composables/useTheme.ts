@@ -27,24 +27,16 @@ export function useTheme() {
     const current = next ?? mode.value
     const isDarkMode = current === 'dark'
 
-    // Force remove and add classes to ensure proper application
-    document.documentElement.classList.remove('light', 'dark')
-    document.body.classList.remove('light', 'dark')
-
-    // Apply to documentElement (html) for Tailwind dark mode
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark')
-      document.body.classList.add('dark')
-    } else {
-      document.documentElement.classList.add('light')
-      document.body.classList.add('light')
-    }
+    // For Tailwind v4, we only need to toggle the 'dark' class
+    // Light mode is the default (no class needed)
+    document.documentElement.classList.toggle('dark', isDarkMode)
+    document.body.classList.toggle('dark', isDarkMode)
 
     // Force a style recalculation
     document.documentElement.style.colorScheme = isDarkMode ? 'dark' : 'light'
 
     // Debug logging
-    console.log('🎨 Theme applied:', {
+    console.log('🎨 Theme applied (v4):', {
       current,
       isDarkMode,
       htmlClasses: document.documentElement.className,

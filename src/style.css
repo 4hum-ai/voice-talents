@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Tailwind CSS v4 Dark Mode Configuration */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Tailwind CSS v4 Custom Theme Configuration */
 @theme {
   --color-primary-50: #fef2f2;
@@ -47,8 +50,7 @@
   }
 
   /* Default light mode styles */
-  html,
-  html.light {
+  html {
     color-scheme: light;
   }
 

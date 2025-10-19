@@ -35,7 +35,8 @@
 
         <!-- Debug theme indicator -->
         <div
-          class="absolute top-6 left-6 rounded-lg bg-red-500 px-2 py-1 text-xs text-white dark:bg-green-500"
+          class="absolute top-6 left-6 rounded-lg px-2 py-1 text-xs text-white"
+          :style="{ backgroundColor: isDark ? 'green' : 'red' }"
         >
           {{ isDark ? 'DARK' : 'LIGHT' }}
         </div>
@@ -45,6 +46,21 @@
           class="absolute top-16 left-6 rounded bg-gray-100 p-2 text-black dark:bg-gray-800 dark:text-white"
         >
           Test Dark Mode
+        </div>
+
+        <!-- Additional test elements -->
+        <div class="absolute top-28 left-6 space-y-1 text-xs">
+          <div class="bg-white p-1 text-black dark:bg-black dark:text-white">
+            BG Test: {{ isDark ? 'DARK' : 'LIGHT' }}
+          </div>
+          <div class="border border-gray-300 p-1 dark:border-gray-700">Border Test</div>
+          <div class="text-gray-600 dark:text-gray-300">Text Test</div>
+          <button
+            @click="manualToggle"
+            class="mt-1 rounded bg-blue-500 px-2 py-1 text-xs text-white"
+          >
+            Manual Toggle
+          </button>
         </div>
 
         <!-- Brand section -->
@@ -175,6 +191,21 @@ watch(
 
 const isLoading = ref(false)
 const error = ref('')
+
+// Manual toggle for testing
+const manualToggle = () => {
+  console.log('🔧 Manual toggle clicked!')
+  const html = document.documentElement
+  const currentClasses = html.className
+
+  console.log('Current HTML classes:', currentClasses)
+
+  // For Tailwind v4, just toggle the 'dark' class
+  html.classList.toggle('dark')
+
+  console.log('New HTML classes:', html.className)
+  console.log('Dark mode active:', html.classList.contains('dark'))
+}
 
 const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
   try {
