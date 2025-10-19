@@ -2,18 +2,23 @@
   <div class="relative flex min-h-screen items-center justify-center px-4 py-8 sm:py-12">
     <!-- Enhanced background with multiple gradients -->
     <div class="absolute inset-0 overflow-hidden">
+      <!-- Light mode background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-black dark:via-gray-900 dark:to-black"
+      />
+
       <!-- Primary gradient orb -->
       <div
-        class="from-primary-500/20 via-primary-400/10 absolute top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-br to-transparent blur-3xl"
+        class="from-primary-500/30 via-primary-400/20 dark:from-primary-500/20 dark:via-primary-400/10 absolute top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-br to-transparent blur-3xl"
       />
       <!-- Secondary gradient orb -->
       <div
-        class="absolute right-1/4 bottom-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-tl from-blue-500/15 via-purple-400/10 to-transparent blur-2xl"
+        class="absolute right-1/4 bottom-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-tl from-blue-500/25 via-purple-400/15 to-transparent blur-2xl dark:from-blue-500/15 dark:via-purple-400/10"
         style="animation-delay: 1s"
       />
       <!-- Subtle grid pattern -->
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] bg-[size:50px_50px]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,.02)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] bg-[size:50px_50px] dark:bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)]"
       />
     </div>
 
@@ -21,7 +26,7 @@
     <div class="animate-slide-up relative w-full max-w-md">
       <!-- Card container with enhanced styling -->
       <div
-        class="hover:shadow-3xl relative rounded-3xl border border-gray-200/50 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 sm:p-8 dark:border-gray-700/50 dark:bg-gray-900/80"
+        class="hover:shadow-3xl relative rounded-3xl border border-gray-300/60 bg-white/95 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 sm:p-8 dark:border-gray-700/50 dark:bg-gray-900/80"
       >
         <!-- Theme toggle with better positioning -->
         <div class="absolute top-6 right-6">
@@ -30,15 +35,6 @@
 
         <!-- Brand section with icon -->
         <div class="mb-6 text-center sm:mb-8">
-          <!-- Brand icon/logo placeholder -->
-          <div
-            class="from-primary-500 to-primary-600 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg sm:h-16 sm:w-16"
-            role="img"
-            aria-label="Application logo"
-          >
-            <Icon name="mdi:shield-account" class="h-7 w-7 text-white sm:h-8 sm:w-8" />
-          </div>
-
           <!-- Enhanced typography -->
           <h1
             id="auth-title"
@@ -115,7 +111,7 @@
 
       <!-- Subtle bottom glow effect -->
       <div
-        class="from-primary-500/10 absolute -bottom-8 left-1/2 h-24 w-3/4 -translate-x-1/2 rounded-full bg-gradient-to-t to-transparent blur-2xl"
+        class="from-primary-500/20 dark:from-primary-500/10 absolute -bottom-8 left-1/2 h-24 w-3/4 -translate-x-1/2 rounded-full bg-gradient-to-t to-transparent blur-2xl"
       />
     </div>
   </div>
