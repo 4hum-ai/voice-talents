@@ -310,19 +310,21 @@ const formattedJson = computed(() => {
 })
 
 const displayKind = computed(() => {
-  if (props.formatter) {
-    if (props.formatter === 'number') return 'number'
-    return props.formatter
-  }
-
   // Handle ref type - it displays as text but with reference behavior
   if (props.type === 'ref') {
     return 'text'
   }
 
   // If type is explicitly set, use it (except for 'url' which needs detection)
+  // Type takes precedence over formatter for structural data types
   if (props.type && props.type !== 'url') {
     return props.type
+  }
+
+  // Formatter only applies when no explicit type is set
+  if (props.formatter) {
+    if (props.formatter === 'number') return 'number'
+    return props.formatter
   }
 
   // Heuristics for email/phone based on key/name and value shape
