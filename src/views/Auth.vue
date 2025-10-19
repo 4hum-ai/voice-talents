@@ -32,7 +32,7 @@
 
       <Button
         variant="primary"
-        size="xl"
+        size="lg"
         icon="mdi:google"
         :loading="isLoading"
         full-width
