@@ -33,36 +33,6 @@
           <ThemeToggle />
         </div>
 
-        <!-- Debug theme indicator -->
-        <div
-          class="absolute top-6 left-6 rounded-lg px-2 py-1 text-xs text-white"
-          :style="{ backgroundColor: isDark ? 'green' : 'red' }"
-        >
-          {{ isDark ? 'DARK' : 'LIGHT' }}
-        </div>
-
-        <!-- Simple dark mode test -->
-        <div
-          class="absolute top-16 left-6 rounded bg-gray-100 p-2 text-black dark:bg-gray-800 dark:text-white"
-        >
-          Test Dark Mode
-        </div>
-
-        <!-- Additional test elements -->
-        <div class="absolute top-28 left-6 space-y-1 text-xs">
-          <div class="bg-white p-1 text-black dark:bg-black dark:text-white">
-            BG Test: {{ isDark ? 'DARK' : 'LIGHT' }}
-          </div>
-          <div class="border border-gray-300 p-1 dark:border-gray-700">Border Test</div>
-          <div class="text-gray-600 dark:text-gray-300">Text Test</div>
-          <button
-            @click="manualToggle"
-            class="mt-1 rounded bg-blue-500 px-2 py-1 text-xs text-white"
-          >
-            Manual Toggle
-          </button>
-        </div>
-
         <!-- Brand section -->
         <div class="mb-8 text-center sm:mb-10">
           <!-- Enhanced typography -->
@@ -162,10 +132,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useTheme } from '@/composables/useTheme'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
 
@@ -173,55 +142,18 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-// Debug theme state
-const { isDark, mode } = useTheme()
-
-// Watch for theme changes
-watch(
-  [isDark, mode],
-  ([dark, themeMode]) => {
-    console.log('🔍 Auth view theme state:', {
-      dark,
-      themeMode,
-      htmlClass: document.documentElement.className,
-    })
-  },
-  { immediate: true },
-)
-
 const isLoading = ref(false)
 const error = ref('')
-
-// Manual toggle for testing
-const manualToggle = () => {
-  console.log('🔧 Manual toggle clicked!')
-  const html = document.documentElement
-  const currentClasses = html.className
-
-  console.log('Current HTML classes:', currentClasses)
-
-  // For Tailwind v4, just toggle the 'dark' class
-  html.classList.toggle('dark')
-
-  console.log('New HTML classes:', html.className)
-  console.log('Dark mode active:', html.classList.contains('dark'))
-}
 
 const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
   try {
     isLoading.value = true
     error.value = ''
-    console.log('🚀 Starting login with provider:', provider)
-    const result = await authStore.loginWithProvider(provider)
-    console.log('✅ Login result:', result)
-    console.log('👤 Auth store user:', authStore.user)
-    console.log('🔐 Is authenticated:', authStore.isAuthenticated)
+    await authStore.loginWithProvider(provider)
 
     const redirectPath = (route.query.redirect as string) || '/'
-    console.log('🔄 Redirecting to:', redirectPath)
     router.push(redirectPath)
   } catch (err) {
-    console.error('❌ Login error:', err)
     error.value = err instanceof Error ? err.message : 'Login failed'
   } finally {
     isLoading.value = false
@@ -230,22 +162,18 @@ const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'app
 
 onMounted(async () => {
   try {
-    console.log('🔐 Auth view: Initializing auth store...')
     await authStore.initialize()
 
     if (authStore.isAuthenticated) {
-      console.log('🔐 Auth view: User is authenticated, redirecting...')
       const redirectPath = (route.query.redirect as string) || '/'
       router.push(redirectPath)
     } else {
-      console.log('🔐 Auth view: User not authenticated, showing login form')
       // If not authenticated and no redirect parameter, add default redirect
       if (!route.query.redirect) {
         router.replace({ path: '/auth', query: { redirect: '/' } })
       }
     }
   } catch (err) {
-    console.error('🔐 Auth view: Initialization failed:', err)
     // Show the auth initialization error to the user
     error.value = err instanceof Error ? err.message : 'Authentication system initialization failed'
   }
