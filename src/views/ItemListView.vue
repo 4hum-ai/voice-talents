@@ -746,6 +746,8 @@ function onPerPageChange(perPage: number) {
 }
 
 function onAction(action: string, payload?: unknown) {
+  console.log('📋 ItemListView onAction called:', { action, payload })
+
   if (action === 'create') {
     api
       .create(resource.value, payload)
@@ -757,6 +759,7 @@ function onAction(action: string, payload?: unknown) {
     const id = String(
       (payload as { id?: unknown; _id?: unknown }).id ?? (payload as { _id?: unknown })._id,
     )
+    console.log('🔍 Navigating to item detail:', { resource: resource.value, id })
     if (id) router.push({ path: `/${resource.value}/${id}` })
   }
 }

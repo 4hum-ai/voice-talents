@@ -90,12 +90,18 @@ const getKanbanItems = (columnValue: string) =>
   items.value.filter((item) => item[props.config.groupByField] === columnValue)
 
 const handleItemClick = (item: unknown) => {
+  const itemId = (item as DataItem)?.id
+  console.log('🖱️ Card clicked:', { itemId, draggingItemId: draggingItemId.value })
+
   // Don't handle click if we're currently dragging
-  if (draggingItemId.value) return
+  if (draggingItemId.value) {
+    console.log('❌ Click blocked: currently dragging')
+    return
+  }
 
   // Check if this item has active drag detection (movement in progress)
-  const itemId = (item as DataItem)?.id
   if (itemId && clickDetection[itemId]?.hasMoved) {
+    console.log('❌ Click blocked: item has moved (drag detected)')
     // Clean up the detection state since drag is complete
     delete clickDetection[itemId]
     return
@@ -103,9 +109,11 @@ const handleItemClick = (item: unknown) => {
 
   // Clean up any stale click detection for this item
   if (itemId && clickDetection[itemId]) {
+    console.log('🧹 Cleaning up stale click detection for item:', itemId)
     delete clickDetection[itemId]
   }
 
+  console.log('✅ Emitting item-click event for item:', itemId)
   emit('item-click', item)
 }
 
@@ -148,6 +156,7 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
       preventDefault: false, // Allow click events initially
       pointerTypes: ['mouse', 'touch', 'pen'],
       onStart: (position) => {
+        console.log('🎯 Drag onStart for item:', id)
         // Initialize click detection
         clickDetection[id] = {
           startTime: Date.now(),
@@ -191,9 +200,11 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
       onEnd: () => {
         const detection = clickDetection[id]
         const duration = Date.now() - (detection?.startTime || 0)
+        console.log('🏁 Drag onEnd for item:', id, { duration, hasMoved: detection?.hasMoved })
 
         // Check if this was a click (short duration, minimal movement)
         if (detection && !detection.hasMoved && duration < CLICK_TIME_THRESHOLD) {
+          console.log('👆 Detected as click, cleaning up and allowing click handler')
           // This was a click, let the click handler deal with it
           // Clean up immediately to prevent interference
           delete clickDetection[id]
@@ -204,10 +215,12 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
 
         // This was a drag operation
         if (detection?.hasMoved) {
+          console.log('🚚 Detected as drag, handling drop')
           handleDropFromDraggable(id)
         }
 
         // Always clean up detection state
+        console.log('🧹 Cleaning up drag state for item:', id)
         delete clickDetection[id]
         baseDragStyleRefs[id] = undefined
         draggingItemId.value = null
