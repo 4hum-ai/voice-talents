@@ -150,8 +150,8 @@
         :title="isRawView ? 'Switch to formatted view' : 'Switch to raw JSON view'"
         @click="toggleObjectView"
       >
-        <span v-if="isRawView" class="font-mono">📋</span>
-        <span v-else class="font-mono">{ }</span>
+        <IconFormatListBulleted v-if="isRawView" class="h-3 w-3" />
+        <IconCodeBraces v-else class="h-3 w-3" />
       </button>
 
       <!-- Formatted view (key-value pairs) -->
@@ -248,6 +248,8 @@ import ProgressIndicator from '@/components/molecules/ProgressIndicator.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
 import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
 import { getCountryByAny } from '@/utils/countries'
+import IconFormatListBulleted from '~icons/mdi/format-list-bulleted'
+import IconCodeBraces from '~icons/mdi/code-braces'
 
 interface Props {
   value: unknown
