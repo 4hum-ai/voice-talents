@@ -229,21 +229,22 @@ const mediaKind = (value: string | null | undefined): MediaKind => {
   const lower = raw.toLowerCase()
 
   // Handle MIME-like content type strings
+  console.log('lower', lower)
+  if (lower.startsWith('application/vnd.apple.mpegurl')) return 'video'
   if (lower.startsWith('image/')) return 'image'
   if (lower.startsWith('video/')) return 'video'
   if (lower.startsWith('audio/')) return 'audio'
 
-  // Handle HLS streams specifically (m3u8 files)
-  if (lower.includes('.m3u8') || lower.includes('.m3u')) return 'video'
-
-  // Handle format strings directly (e.g., "m3u8", "mp4", "mp3")
-  if (lower === 'm3u8' || lower === 'm3u') return 'video'
+  console.log('videoExts', videoExts)
+  console.log('audioExts', audioExts)
+  console.log('imageExts', imageExts)
   if (videoExts.has(lower)) return 'video'
   if (audioExts.has(lower)) return 'audio'
   if (imageExts.has(lower)) return 'image'
 
   // Handle explicit format or URLs by extension
   const ext = getFileExtension(lower)
+  console.log('ext', ext)
   if (imageExts.has(ext)) return 'image'
   if (videoExts.has(ext)) return 'video'
   if (audioExts.has(ext)) return 'audio'
