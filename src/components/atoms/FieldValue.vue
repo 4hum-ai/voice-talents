@@ -142,13 +142,37 @@
     <span v-else>{{ textValue }}</span>
   </div>
   <div v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">
-    <div v-if="typeof value === 'object' && value !== null" class="space-y-1">
-      <div v-for="(val, key) in value" :key="key" class="flex flex-col">
-        <span class="text-xs font-medium text-gray-500 dark:text-gray-400"
-          >{{ formatKey(String(key)) }}:</span
-        >
-        <span class="text-sm">{{ formatObjectValue(val) }}</span>
-      </div>
+    <div v-if="typeof value === 'object' && value !== null" class="relative">
+      <!-- Toggle button -->
+      <button
+        type="button"
+        class="absolute -top-1 right-0 z-10 rounded p-1 text-xs text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+        :title="isRawView ? 'Switch to formatted view' : 'Switch to raw JSON view'"
+        @click="toggleObjectView"
+      >
+        <span v-if="isRawView" class="font-mono">📋</span>
+        <span v-else class="font-mono">{ }</span>
+      </button>
+
+      <!-- Formatted view (key-value pairs) -->
+      <Transition name="object-view" mode="out-in">
+        <div v-if="!isRawView" key="formatted" class="space-y-1 pr-8">
+          <div v-for="(val, key) in value" :key="key" class="flex flex-col">
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400"
+              >{{ formatKey(String(key)) }}:</span
+            >
+            <span class="text-sm">{{ formatObjectValue(val) }}</span>
+          </div>
+        </div>
+
+        <!-- Raw JSON view -->
+        <div v-else key="raw" class="pr-8">
+          <pre
+            class="rounded bg-gray-50 p-2 font-mono text-xs break-words whitespace-pre-wrap text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+            >{{ formattedJson }}</pre
+          >
+        </div>
+      </Transition>
     </div>
     <span v-else>{{ objectValue }}</span>
   </div>
@@ -217,7 +241,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import Image from '@/components/molecules/Image.vue'
 import LanguageDisplay from './LanguageDisplay.vue'
 import ProgressIndicator from '@/components/molecules/ProgressIndicator.vue'
@@ -266,6 +290,22 @@ const props = withDefaults(defineProps<Props>(), {})
 const emit = defineEmits<{
   'reference-click': [referenceType: string, referenceId: string]
 }>()
+
+// Object view toggle state
+const isRawView = ref(false)
+
+const toggleObjectView = () => {
+  isRawView.value = !isRawView.value
+}
+
+// Formatted JSON for raw view
+const formattedJson = computed(() => {
+  try {
+    return JSON.stringify(props.value, null, 2)
+  } catch {
+    return String(props.value)
+  }
+})
 
 const displayKind = computed(() => {
   if (props.formatter) {
@@ -651,3 +691,16 @@ const referenceClasses = computed(() => {
   return ''
 })
 </script>
+
+<style scoped>
+/* Object view transition */
+.object-view-enter-active,
+.object-view-leave-active {
+  transition: opacity 0.15s ease-in-out;
+}
+
+.object-view-enter-from,
+.object-view-leave-to {
+  opacity: 0;
+}
+</style>
