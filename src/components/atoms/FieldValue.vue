@@ -85,11 +85,11 @@
       ⧉
     </button>
   </span>
-  <div v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">
-    <div v-if="Array.isArray(value) && value.length > 0">
+  <div v-else-if="displayKind === 'array'" class="w-full text-sm text-gray-900 dark:text-gray-100">
+    <div v-if="Array.isArray(value) && value.length > 0" class="w-full">
       <!-- Check if all items are objects with similar structure -->
-      <div v-if="isArrayOfObjects(value)" class="w-full">
-        <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
+      <div v-if="isArrayOfObjects(value)" class="w-full overflow-x-auto">
+        <table class="w-full min-w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th
