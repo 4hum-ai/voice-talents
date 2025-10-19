@@ -141,7 +141,10 @@
     </div>
     <span v-else>{{ textValue }}</span>
   </div>
-  <div v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">
+  <div
+    v-else-if="displayKind === 'object'"
+    class="col-span-full text-sm text-gray-900 dark:text-gray-100"
+  >
     <div v-if="typeof value === 'object' && value !== null" class="relative">
       <!-- Toggle button -->
       <button

@@ -133,7 +133,14 @@
                 </h3>
               </div>
               <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
-                <div v-for="field in section.fields || []" :key="field.key" class="flex flex-col">
+                <div
+                  v-for="field in section.fields || []"
+                  :key="field.key"
+                  :class="[
+                    'flex flex-col',
+                    field.type === 'array' || field.type === 'object' ? 'md:col-span-2' : '',
+                  ]"
+                >
                   <span class="text-xs text-gray-500 dark:text-gray-400">{{
                     field.label || formatKey(String(field.key))
                   }}</span>
