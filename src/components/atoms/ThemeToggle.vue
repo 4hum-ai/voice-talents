@@ -1,7 +1,7 @@
 <template>
   <button
     @click="toggleTheme"
-    class="text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-2 transition-colors"
+    class="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
     :aria-label="`Switch to ${isDark ? 'light' : 'dark'} mode`"
   >
     <!-- Sun icon for light mode -->

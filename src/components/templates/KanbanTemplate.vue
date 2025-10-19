@@ -89,7 +89,16 @@ const getKanbanCount = (columnValue: string) =>
 const getKanbanItems = (columnValue: string) =>
   items.value.filter((item) => item[props.config.groupByField] === columnValue)
 
-const handleItemClick = (item: unknown) => emit('item-click', item)
+const handleItemClick = (item: unknown) => {
+  // Don't handle click if we're currently dragging
+  if (draggingItemId.value) return
+
+  // Check if this item has active drag detection (movement in progress)
+  const itemId = (item as DataItem)?.id
+  if (itemId && clickDetection[itemId]?.hasMoved) return
+
+  emit('item-click', item)
+}
 
 // Drag and drop functionality
 const columnRefs = reactive<Record<string, HTMLElement | null>>({})
@@ -105,6 +114,21 @@ const draggingItemId = ref<string | null>(null)
 const lastPointer = ref<{ x: number; y: number } | null>(null)
 const dragMeta = reactive<Record<string, { width: number; height: number }>>({})
 
+// Click vs Drag detection
+const clickDetection = reactive<
+  Record<
+    string,
+    {
+      startTime: number
+      startX: number
+      startY: number
+      hasMoved: boolean
+    }
+  >
+>({})
+const CLICK_TIME_THRESHOLD = 200 // milliseconds
+const CLICK_MOVEMENT_THRESHOLD = 5 // pixels
+
 const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
   if (!id) return
   if (!cardElRefs[id]) cardElRefs[id] = { el: null }
@@ -112,9 +136,17 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
   if (el && !draggableMap.has(id)) {
     const targetRef = ref<HTMLElement | null>(el)
     const instance = useDraggable(targetRef, {
-      preventDefault: true,
+      preventDefault: false, // Allow click events initially
       pointerTypes: ['mouse', 'touch', 'pen'],
-      onStart: () => {
+      onStart: (position) => {
+        // Initialize click detection
+        clickDetection[id] = {
+          startTime: Date.now(),
+          startX: position.x,
+          startY: position.y,
+          hasMoved: false,
+        }
+
         const rect = el.getBoundingClientRect()
         dragMeta[id] = { width: rect.width, height: rect.height }
         baseDragStyleRefs[id] = {
@@ -124,9 +156,22 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
           width: `${rect.width}px`,
           pointerEvents: 'none',
         } as CSSProperties
-        draggingItemId.value = id
       },
-      onMove: (_evPos, ev: PointerEvent | MouseEvent | TouchEvent) => {
+      onMove: (position, ev: PointerEvent | MouseEvent | TouchEvent) => {
+        const detection = clickDetection[id]
+        if (detection && !detection.hasMoved) {
+          const deltaX = position.x - detection.startX
+          const deltaY = position.y - detection.startY
+          const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+          if (distance > CLICK_MOVEMENT_THRESHOLD) {
+            detection.hasMoved = true
+            draggingItemId.value = id
+            // Now prevent default behavior for actual drag
+            if (ev.preventDefault) ev.preventDefault()
+          }
+        }
+
         if ('clientX' in ev && 'clientY' in ev) {
           lastPointer.value = {
             x: (ev as PointerEvent).clientX,
@@ -135,7 +180,24 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
         }
       },
       onEnd: () => {
-        handleDropFromDraggable(id)
+        const detection = clickDetection[id]
+        const duration = Date.now() - (detection?.startTime || 0)
+
+        // Check if this was a click (short duration, minimal movement)
+        if (detection && !detection.hasMoved && duration < CLICK_TIME_THRESHOLD) {
+          // This was a click, let the click handler deal with it
+          delete clickDetection[id]
+          baseDragStyleRefs[id] = undefined
+          draggingItemId.value = null
+          return
+        }
+
+        // This was a drag operation
+        if (detection?.hasMoved) {
+          handleDropFromDraggable(id)
+        }
+
+        delete clickDetection[id]
         baseDragStyleRefs[id] = undefined
       },
     })
