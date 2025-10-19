@@ -1,49 +1,122 @@
 <template>
-  <div class="relative mx-auto flex max-w-[32rem] flex-col justify-center px-4 py-12">
-    <div
-      class="bg-primary-500/10 pointer-events-none absolute inset-x-0 top-6 mx-auto h-32 w-32 rounded-full blur-3xl"
-    />
+  <div class="relative flex min-h-screen items-center justify-center px-4 py-8 sm:py-12">
+    <!-- Enhanced background with multiple gradients -->
+    <div class="absolute inset-0 overflow-hidden">
+      <!-- Primary gradient orb -->
+      <div
+        class="from-primary-500/20 via-primary-400/10 absolute top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-gradient-to-br to-transparent blur-3xl"
+      />
+      <!-- Secondary gradient orb -->
+      <div
+        class="absolute right-1/4 bottom-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-tl from-blue-500/15 via-purple-400/10 to-transparent blur-2xl"
+        style="animation-delay: 1s"
+      />
+      <!-- Subtle grid pattern -->
+      <div
+        class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] bg-[size:50px_50px]"
+      />
+    </div>
 
-    <div
-      class="relative rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur dark:border-gray-800 dark:bg-gray-900/60"
-    >
-      <div class="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      <div class="mb-6 flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white shadow"
-        >
-          <span aria-hidden="true">🎬</span>
-        </div>
-        <div>
-          <h1 class="text-xl leading-6 font-semibold text-gray-900 dark:text-gray-100">
-            Sign in to Admin
-          </h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Access your workspace and tools</p>
-        </div>
-      </div>
-
-      <div class="mb-6">
-        <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-          Sign in with your Google account to access the admin panel
-        </p>
-      </div>
-
-      <Button
-        variant="primary"
-        size="lg"
-        icon="mdi:google"
-        :loading="isLoading"
-        full-width
-        @click="handleProvider('google')"
+    <!-- Main auth card -->
+    <div class="animate-slide-up relative w-full max-w-md">
+      <!-- Card container with enhanced styling -->
+      <div
+        class="hover:shadow-3xl relative rounded-3xl border border-gray-200/50 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 sm:p-8 dark:border-gray-700/50 dark:bg-gray-900/80"
       >
-        Continue with Google
-      </Button>
+        <!-- Theme toggle with better positioning -->
+        <div class="absolute top-6 right-6">
+          <ThemeToggle />
+        </div>
 
-      <p v-if="error" class="mt-4 text-center text-sm text-red-600 dark:text-red-400">
-        {{ error }}
-      </p>
+        <!-- Brand section with icon -->
+        <div class="mb-6 text-center sm:mb-8">
+          <!-- Brand icon/logo placeholder -->
+          <div
+            class="from-primary-500 to-primary-600 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg sm:h-16 sm:w-16"
+            role="img"
+            aria-label="Application logo"
+          >
+            <Icon name="mdi:shield-account" class="h-7 w-7 text-white sm:h-8 sm:w-8" />
+          </div>
+
+          <!-- Enhanced typography -->
+          <h1
+            id="auth-title"
+            class="mb-2 text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-100"
+          >
+            Welcome back
+          </h1>
+          <p
+            class="px-2 text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400"
+            aria-describedby="auth-title"
+          >
+            Sign in to access your workspace and manage your content
+          </p>
+        </div>
+
+        <!-- Auth form section -->
+        <div class="space-y-4">
+          <!-- Enhanced Google sign-in button -->
+          <Button
+            variant="primary"
+            size="xl"
+            icon="mdi:google"
+            :loading="isLoading"
+            full-width
+            custom-class="group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] focus:ring-4 focus:ring-primary-500/20"
+            :aria-label="isLoading ? 'Signing in with Google, please wait' : 'Sign in with Google'"
+            :aria-describedby="error ? 'auth-error' : undefined"
+            @click="handleProvider('google')"
+          >
+            <span class="relative z-10">
+              {{ isLoading ? 'Signing in...' : 'Continue with Google' }}
+            </span>
+            <!-- Subtle hover effect -->
+            <div
+              class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+            />
+          </Button>
+
+          <!-- Enhanced error display -->
+          <Transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 transform translate-y-2 scale-95"
+            enter-to-class="opacity-100 transform translate-y-0 scale-100"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="opacity-100 transform translate-y-0 scale-100"
+            leave-to-class="opacity-0 transform translate-y-2 scale-95"
+          >
+            <div
+              v-if="error"
+              id="auth-error"
+              class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/30 dark:bg-red-900/20"
+              role="alert"
+              aria-live="polite"
+            >
+              <Icon
+                name="mdi:alert-circle"
+                class="h-5 w-5 flex-shrink-0 text-red-500"
+                aria-hidden="true"
+              />
+              <p class="text-sm text-red-700 dark:text-red-400">
+                {{ error }}
+              </p>
+            </div>
+          </Transition>
+        </div>
+
+        <!-- Footer section -->
+        <div class="mt-6 border-t border-gray-200/50 pt-4 sm:mt-8 sm:pt-6 dark:border-gray-700/50">
+          <p class="px-2 text-center text-xs text-gray-500 dark:text-gray-400">
+            By signing in, you agree to our terms of service and privacy policy
+          </p>
+        </div>
+      </div>
+
+      <!-- Subtle bottom glow effect -->
+      <div
+        class="from-primary-500/10 absolute -bottom-8 left-1/2 h-24 w-3/4 -translate-x-1/2 rounded-full bg-gradient-to-t to-transparent blur-2xl"
+      />
     </div>
   </div>
 </template>
@@ -54,6 +127,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
+import Icon from '@/components/atoms/Icon.vue'
 
 const router = useRouter()
 const route = useRoute()
