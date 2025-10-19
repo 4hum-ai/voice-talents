@@ -511,8 +511,25 @@ const getBadgeDisplayValue = (value: unknown): string => {
 const getBadgeTooltip = (value: unknown): string => {
   if (value === null || value === undefined) return ''
 
+  // Use same formatting logic as getBadgeDisplayValue for consistency
+  let str: string
+  if (Array.isArray(value)) {
+    str = value
+      .map((item) =>
+        typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item),
+      )
+      .join(', ')
+  } else if (typeof value === 'object' && value !== null) {
+    try {
+      str = JSON.stringify(value)
+    } catch {
+      str = String(value)
+    }
+  } else {
+    str = String(value)
+  }
+
   // For regular badges, show full content if truncated
-  const str = String(value)
   return str.length > 50 ? str : ''
 }
 
