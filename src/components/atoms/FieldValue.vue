@@ -612,7 +612,27 @@ const formatTableValue = (value: unknown): string => {
   if (typeof value === 'number') return value.toString()
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
   if (Array.isArray(value)) {
-    return value.length > 0 ? `${value.length} items` : 'Empty'
+    if (value.length === 0) return 'Empty'
+
+    // For arrays of objects, try to extract meaningful display values
+    if (value.every((item) => typeof item === 'object' && item !== null)) {
+      return value
+        .map((item) => {
+          const obj = item as Record<string, unknown>
+          // Look for common display fields in order of preference
+          const displayValue = obj.label || obj.name || obj.title || obj.key || obj.value
+          return displayValue ? String(displayValue) : 'Object'
+        })
+        .join(', ')
+    }
+
+    // For arrays of primitives, join them
+    if (value.every((item) => typeof item !== 'object')) {
+      return value.map((item) => String(item)).join(', ')
+    }
+
+    // Fallback for mixed arrays
+    return `${value.length} items`
   }
   if (typeof value === 'object') {
     return 'Object'
