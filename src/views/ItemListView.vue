@@ -147,6 +147,7 @@
         :ui-config="uiConfig"
         :loading="loading"
         @item-click="(item: unknown) => onAction('view', item)"
+        @filters-change="onFiltersChange"
       />
       <div v-else class="p-6 text-sm text-gray-600 dark:text-gray-300">
         Selected view not available for this resource.
