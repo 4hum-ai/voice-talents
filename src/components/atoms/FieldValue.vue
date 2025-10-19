@@ -85,12 +85,73 @@
       ⧉
     </button>
   </span>
-  <span v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">{{
-    Array.isArray(value) ? value.join(', ') : textValue
-  }}</span>
-  <span v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">{{
-    objectValue
-  }}</span>
+  <div v-else-if="displayKind === 'array'" class="text-sm text-gray-900 dark:text-gray-100">
+    <div v-if="Array.isArray(value) && value.length > 0">
+      <!-- Check if all items are objects with similar structure -->
+      <div v-if="isArrayOfObjects(value)" class="w-full">
+        <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th
+                v-for="key in getObjectKeys(value)"
+                :key="key"
+                class="px-3 py-2 text-left text-xs font-medium tracking-wider break-words whitespace-normal text-gray-500 uppercase dark:text-gray-400"
+              >
+                {{ formatKey(key) }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+            <tr
+              v-for="(item, index) in value"
+              :key="index"
+              class="hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <td
+                v-for="key in getObjectKeys(value)"
+                :key="key"
+                class="px-3 py-2 text-sm break-words"
+              >
+                <span
+                  v-if="item[key] !== null && item[key] !== undefined"
+                  class="whitespace-normal"
+                >
+                  {{ formatTableValue(item[key]) }}
+                </span>
+                <span v-else class="text-gray-400">-</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Fallback for mixed arrays or simple arrays -->
+      <div v-else class="space-y-2">
+        <div v-for="(item, index) in value" :key="index" class="border-l-2 border-gray-200 pl-3">
+          <div v-if="typeof item === 'object' && item !== null" class="space-y-1">
+            <div v-for="(val, key) in item" :key="key" class="flex flex-col">
+              <span class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                >{{ formatKey(String(key)) }}:</span
+              >
+              <span class="text-sm">{{ formatObjectValue(val) }}</span>
+            </div>
+          </div>
+          <span v-else>{{ item }}</span>
+        </div>
+      </div>
+    </div>
+    <span v-else>{{ textValue }}</span>
+  </div>
+  <div v-else-if="displayKind === 'object'" class="text-sm text-gray-900 dark:text-gray-100">
+    <div v-if="typeof value === 'object' && value !== null" class="space-y-1">
+      <div v-for="(val, key) in value" :key="key" class="flex flex-col">
+        <span class="text-xs font-medium text-gray-500 dark:text-gray-400"
+          >{{ formatKey(String(key)) }}:</span
+        >
+        <span class="text-sm">{{ formatObjectValue(val) }}</span>
+      </div>
+    </div>
+    <span v-else>{{ objectValue }}</span>
+  </div>
   <span v-else-if="displayKind === 'image'" class="inline-flex items-center">
     <Image
       :src="String(value)"
@@ -301,6 +362,25 @@ const imageClasses = computed(() => {
 const textValue = computed(() => {
   const v = props.value
   if (v === null || v === undefined || v === '') return '-'
+
+  // Handle arrays specially to avoid [object Object]
+  if (Array.isArray(v)) {
+    return v
+      .map((item) =>
+        typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item),
+      )
+      .join(', ')
+  }
+
+  // Handle objects specially
+  if (typeof v === 'object' && v !== null) {
+    try {
+      return JSON.stringify(v)
+    } catch {
+      return String(v)
+    }
+  }
+
   return String(v)
 })
 
@@ -416,6 +496,85 @@ const objectValue = computed(() => {
     return String(props.value)
   }
 })
+
+// Helper function to format object keys
+const formatKey = (key: string): string => {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/^./, (s) => s.toUpperCase())
+}
+
+// Helper function to format object values
+const formatObjectValue = (value: unknown): string => {
+  if (value === null || value === undefined) return '-'
+  if (typeof value === 'string') return value
+  if (typeof value === 'number') return value.toString()
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => (typeof item === 'object' ? JSON.stringify(item) : String(item)))
+      .join(', ')
+  }
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value, null, 2)
+    } catch {
+      return String(value)
+    }
+  }
+  return String(value)
+}
+
+// Helper function to check if array contains objects with similar structure
+const isArrayOfObjects = (arr: unknown[]): boolean => {
+  if (arr.length === 0) return false
+
+  // Check if all items are objects
+  const allObjects = arr.every((item) => typeof item === 'object' && item !== null)
+  if (!allObjects) return false
+
+  // Check if objects have similar keys (at least 50% overlap)
+  const firstKeys = Object.keys(arr[0] as Record<string, unknown>)
+  if (firstKeys.length === 0) return false
+
+  const similarStructure = arr.every((item) => {
+    const itemKeys = Object.keys(item as Record<string, unknown>)
+    const overlap = firstKeys.filter((key) => itemKeys.includes(key)).length
+    return overlap >= Math.ceil(firstKeys.length * 0.5)
+  })
+
+  return similarStructure
+}
+
+// Helper function to get all unique keys from array of objects
+const getObjectKeys = (arr: unknown[]): string[] => {
+  const allKeys = new Set<string>()
+  arr.forEach((item) => {
+    if (typeof item === 'object' && item !== null) {
+      Object.keys(item as Record<string, unknown>).forEach((key) => allKeys.add(key))
+    }
+  })
+  return Array.from(allKeys)
+}
+
+// Helper function to format values for table display
+const formatTableValue = (value: unknown): string => {
+  if (value === null || value === undefined) return '-'
+  if (typeof value === 'string') {
+    // Don't truncate strings in table - let CSS handle overflow
+    return value
+  }
+  if (typeof value === 'number') return value.toString()
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
+  if (Array.isArray(value)) {
+    return value.length > 0 ? `${value.length} items` : 'Empty'
+  }
+  if (typeof value === 'object') {
+    return 'Object'
+  }
+  return String(value)
+}
 
 // NEW: Percentage value computation
 const percentageValue = computed(() => {
