@@ -95,7 +95,16 @@ const handleItemClick = (item: unknown) => {
 
   // Check if this item has active drag detection (movement in progress)
   const itemId = (item as DataItem)?.id
-  if (itemId && clickDetection[itemId]?.hasMoved) return
+  if (itemId && clickDetection[itemId]?.hasMoved) {
+    // Clean up the detection state since drag is complete
+    delete clickDetection[itemId]
+    return
+  }
+
+  // Clean up any stale click detection for this item
+  if (itemId && clickDetection[itemId]) {
+    delete clickDetection[itemId]
+  }
 
   emit('item-click', item)
 }
@@ -186,6 +195,7 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
         // Check if this was a click (short duration, minimal movement)
         if (detection && !detection.hasMoved && duration < CLICK_TIME_THRESHOLD) {
           // This was a click, let the click handler deal with it
+          // Clean up immediately to prevent interference
           delete clickDetection[id]
           baseDragStyleRefs[id] = undefined
           draggingItemId.value = null
@@ -197,8 +207,10 @@ const setCardRef = (id: string | undefined, el: HTMLElement | null) => {
           handleDropFromDraggable(id)
         }
 
+        // Always clean up detection state
         delete clickDetection[id]
         baseDragStyleRefs[id] = undefined
+        draggingItemId.value = null
       },
     })
     draggableMap.set(id, instance)
