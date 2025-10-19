@@ -27,17 +27,29 @@ export function useTheme() {
     const current = next ?? mode.value
     const isDarkMode = current === 'dark'
 
-    // Apply to documentElement (html) for Tailwind dark mode
-    document.documentElement.classList.toggle('dark', isDarkMode)
+    // Force remove and add classes to ensure proper application
+    document.documentElement.classList.remove('light', 'dark')
+    document.body.classList.remove('light', 'dark')
 
-    // Also apply to body for additional styling
-    document.body.classList.toggle('dark', isDarkMode)
+    // Apply to documentElement (html) for Tailwind dark mode
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark')
+      document.body.classList.add('dark')
+    } else {
+      document.documentElement.classList.add('light')
+      document.body.classList.add('light')
+    }
+
+    // Force a style recalculation
+    document.documentElement.style.colorScheme = isDarkMode ? 'dark' : 'light'
 
     // Debug logging
     console.log('🎨 Theme applied:', {
       current,
       isDarkMode,
       htmlClasses: document.documentElement.className,
+      bodyClasses: document.body.className,
+      colorScheme: document.documentElement.style.colorScheme,
     })
   }
 
@@ -69,5 +81,6 @@ export function useTheme() {
     setTheme,
     toggleTheme,
     initialize,
+    applyTheme,
   }
 }

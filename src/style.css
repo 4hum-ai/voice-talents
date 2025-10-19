@@ -46,9 +46,23 @@
     font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
   }
 
+  /* Default light mode styles */
+  html,
+  html.light {
+    color-scheme: light;
+  }
+
+  /* Dark mode styles */
+  html.dark {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-gray-50 text-gray-900 dark:bg-black dark:text-white;
     font-family: 'Inter Variable', 'Inter', system-ui, sans-serif;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 
   * {

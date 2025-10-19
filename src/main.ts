@@ -21,9 +21,11 @@ initTheme()
 
 // Force theme application after a short delay to ensure DOM is ready
 setTimeout(() => {
-  const { initialize: initThemeAgain } = useTheme()
+  const { initialize: initThemeAgain, applyTheme, mode } = useTheme()
   initThemeAgain()
-  console.log('🔄 Theme re-initialized after DOM ready')
+  // Force apply the current theme mode
+  applyTheme(mode.value)
+  console.log('🔄 Theme re-initialized after DOM ready, current mode:', mode.value)
 }, 100)
 app.mount('#app')
 
