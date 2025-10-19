@@ -97,7 +97,7 @@
             leave-to-class="opacity-0 transform translate-y-2 scale-95"
           >
             <div
-              v-if="error"
+              v-if="error || authStore.error"
               id="auth-error"
               class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/30 dark:bg-red-900/20"
               role="alert"
@@ -115,9 +115,16 @@
                   clip-rule="evenodd"
                 />
               </svg>
-              <p class="text-sm text-red-700 dark:text-red-400">
-                {{ error }}
-              </p>
+              <div class="text-sm text-red-700 dark:text-red-400">
+                <p v-if="error">{{ error }}</p>
+                <p v-else-if="authStore.error">{{ authStore.error }}</p>
+                <p
+                  v-if="authStore.error && authStore.error.includes('Google Identity Services')"
+                  class="mt-2 text-xs"
+                >
+                  You can still try logging in - the system will attempt to reconnect.
+                </p>
+              </div>
             </div>
           </Transition>
         </div>
@@ -191,15 +198,25 @@ const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'app
 }
 
 onMounted(async () => {
-  await authStore.initialize()
-  if (authStore.isAuthenticated) {
-    const redirectPath = (route.query.redirect as string) || '/'
-    router.push(redirectPath)
-  } else {
-    // If not authenticated and no redirect parameter, add default redirect
-    if (!route.query.redirect) {
-      router.replace({ path: '/auth', query: { redirect: '/' } })
+  try {
+    console.log('🔐 Auth view: Initializing auth store...')
+    await authStore.initialize()
+
+    if (authStore.isAuthenticated) {
+      console.log('🔐 Auth view: User is authenticated, redirecting...')
+      const redirectPath = (route.query.redirect as string) || '/'
+      router.push(redirectPath)
+    } else {
+      console.log('🔐 Auth view: User not authenticated, showing login form')
+      // If not authenticated and no redirect parameter, add default redirect
+      if (!route.query.redirect) {
+        router.replace({ path: '/auth', query: { redirect: '/' } })
+      }
     }
+  } catch (err) {
+    console.error('🔐 Auth view: Initialization failed:', err)
+    // Show the auth initialization error to the user
+    error.value = err instanceof Error ? err.message : 'Authentication system initialization failed'
   }
 })
 </script>
