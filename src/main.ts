@@ -18,6 +18,13 @@ const authStore = useAuthStore()
 // Initialize theme before mounting to prevent FOUC
 const { initialize: initTheme } = useTheme()
 initTheme()
+
+// Force theme application after a short delay to ensure DOM is ready
+setTimeout(() => {
+  const { initialize: initThemeAgain } = useTheme()
+  initThemeAgain()
+  console.log('🔄 Theme re-initialized after DOM ready')
+}, 100)
 app.mount('#app')
 
 authStore.initialize().then(() => {

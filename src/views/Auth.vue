@@ -33,6 +33,13 @@
           <ThemeToggle />
         </div>
 
+        <!-- Debug theme indicator -->
+        <div
+          class="absolute top-6 left-6 rounded-lg bg-red-500 px-2 py-1 text-xs text-white dark:bg-green-500"
+        >
+          {{ isDark ? 'DARK' : 'LIGHT' }}
+        </div>
+
         <!-- Brand section -->
         <div class="mb-8 text-center sm:mb-10">
           <!-- Enhanced typography -->
@@ -125,15 +132,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useTheme } from '@/composables/useTheme'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+
+// Debug theme state
+const { isDark, mode } = useTheme()
+
+// Watch for theme changes
+watch(
+  [isDark, mode],
+  ([dark, themeMode]) => {
+    console.log('🔍 Auth view theme state:', {
+      dark,
+      themeMode,
+      htmlClass: document.documentElement.className,
+    })
+  },
+  { immediate: true },
+)
 
 const isLoading = ref(false)
 const error = ref('')
