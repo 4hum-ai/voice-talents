@@ -11,7 +11,9 @@
         <template #subtitle>Welcome back, {{ currentClient?.contactName }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal">Create Job</Button>
+          <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal"
+            >Create Job</Button
+          >
         </template>
       </AppBar>
 
@@ -50,19 +52,22 @@
                   class="w-full justify-start"
                   icon="mdi:briefcase"
                   @click="openJobCreationModal"
-                >Post New Job</Button>
+                  >Post New Job</Button
+                >
                 <Button
                   variant="outline"
                   class="w-full justify-start"
                   icon="mdi:megaphone"
                   @click="$router.push('/client/campaigns/create')"
-                >Create Campaign</Button>
+                  >Create Campaign</Button
+                >
                 <Button
                   variant="outline"
                   class="w-full justify-start"
                   icon="mdi:account-group"
                   @click="$router.push('/client/talents')"
-                >Talents</Button>
+                  >Talents</Button
+                >
               </div>
             </div>
 
@@ -221,11 +226,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type {
-  ClientStats,
-  JobPosting,
-  JobApplication,
-} from '@/types/voice-client'
+import type { ClientStats, JobPosting, JobApplication } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
@@ -269,12 +270,10 @@ const activeJobs = computed(() =>
   jobPostings.value.filter((job) => job.status === 'active').slice(0, 3),
 )
 
-const recentApplications = computed(() =>
-  applications.value
-    .sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime())
-    .slice(0, 3),
-)
-
+const recentApplications = computed(() => {
+  const sorted = [...applications.value].sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime())
+  return sorted.slice(0, 3)
+})
 
 const showClientOnboarding = computed(() => !isTalentMode.value && shouldShowOnboarding.value)
 
@@ -345,7 +344,7 @@ const closeJobCreationModal = () => {
   showJobCreationModal.value = false
 }
 
-const handleJobCreated = (job: any) => {
+const handleJobCreated = (job: Record<string, unknown>) => {
   showToast({
     type: 'success',
     title: 'Job Published',

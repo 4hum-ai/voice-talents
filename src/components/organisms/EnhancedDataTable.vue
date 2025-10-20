@@ -263,11 +263,11 @@ interface Column {
   label: string
   sortable?: boolean
   className?: string
-  formatter?: (value: any) => string
+  formatter?: (value: unknown) => string
 }
 
 interface Props {
-  data: any[]
+  data: Record<string, unknown>[]
   columns: Column[]
   title?: string
   loading?: boolean
@@ -293,18 +293,18 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   sort: [key: string, direction: 'asc' | 'desc']
-  select: [items: any[]]
-  edit: [item: any]
-  delete: [item: any]
+  select: [items: Record<string, unknown>[]]
+  edit: [item: Record<string, unknown>]
+  delete: [item: Record<string, unknown>]
   refresh: []
-  bulkAction: [action: string, items: any[]]
+  bulkAction: [action: string, items: Record<string, unknown>[]]
 }>()
 
 // State
 const currentPage = ref(1)
 const sortKey = ref('')
 const sortDirection = ref<'asc' | 'desc'>('asc')
-const selectedItems = ref<any[]>([])
+const selectedItems = ref<Record<string, unknown>[]>([])
 const viewMode = ref<'table' | 'grid'>('table')
 
 // Computed
@@ -351,15 +351,15 @@ const visiblePages = computed(() => {
 })
 
 // Methods
-const getItemKey = (item: any, index: number) => {
+const getItemKey = (item: Record<string, unknown>, index: number) => {
   return item[props.keyField] || index
 }
 
-const getNestedValue = (obj: any, path: string) => {
-  return path.split('.').reduce((current, key) => current?.[key], obj)
+const getNestedValue = (obj: Record<string, unknown>, path: string) => {
+  return path.split('.').reduce((current, key) => (current as Record<string, unknown>)?.[key], obj)
 }
 
-const formatCellValue = (value: any, column: Column) => {
+const formatCellValue = (value: unknown, column: Column) => {
   if (column.formatter) {
     return column.formatter(value)
   }
@@ -396,7 +396,7 @@ const toggleSelectAll = () => {
   emit('select', selectedItems.value)
 }
 
-const toggleSelect = (item: any) => {
+const toggleSelect = (item: Record<string, unknown>) => {
   const index = selectedItems.value.findIndex(
     (selected) => getItemKey(selected, 0) === getItemKey(item, 0),
   )
@@ -410,7 +410,7 @@ const toggleSelect = (item: any) => {
   emit('select', selectedItems.value)
 }
 
-const isSelected = (item: any) => {
+const isSelected = (item: Record<string, unknown>) => {
   return selectedItems.value.some((selected) => getItemKey(selected, 0) === getItemKey(item, 0))
 }
 
@@ -420,11 +420,11 @@ const goToPage = (page: number) => {
   }
 }
 
-const editItem = (item: any) => {
+const editItem = (item: Record<string, unknown>) => {
   emit('edit', item)
 }
 
-const deleteItem = (item: any) => {
+const deleteItem = (item: Record<string, unknown>) => {
   emit('delete', item)
 }
 

@@ -312,7 +312,6 @@ const hasPremiumFeatures = computed(() => {
   )
 })
 
-
 const totalPremiumCost = computed(() => {
   let cost = 0
   if (props.jobForm.premiumFeatures.expressMatching) cost += 15
@@ -419,7 +418,6 @@ const getRevisionRoundsLabel = (rounds: string) => {
   }
   return labels[rounds] || rounds
 }
-
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)

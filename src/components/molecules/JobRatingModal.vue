@@ -4,7 +4,9 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-background border-border max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-lg border shadow-lg flex flex-col">
+    <div
+      class="bg-background border-border flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border shadow-lg"
+    >
       <!-- Header -->
       <div class="border-border flex items-center justify-between border-b p-6">
         <div>
@@ -19,12 +21,7 @@
         <div class="space-y-6">
           <!-- Talent Info -->
           <div class="flex items-center space-x-4">
-            <Avatar
-              :src="talentAvatar"
-              :alt="talentName"
-              :seed="talentName"
-              size="lg"
-            />
+            <Avatar :src="talentAvatar" :alt="talentName" :seed="talentName" size="lg" />
             <div>
               <h3 class="text-foreground text-lg font-semibold">{{ talentName }}</h3>
               <p class="text-muted-foreground text-sm">{{ talentLocation }}</p>
@@ -46,8 +43,8 @@
                     :class="[
                       'h-8 w-8',
                       star <= rating
-                        ? 'text-yellow-500 fill-current'
-                        : 'text-gray-300 hover:text-yellow-400'
+                        ? 'fill-current text-yellow-500'
+                        : 'text-gray-300 hover:text-yellow-400',
                     ]"
                   />
                 </button>
@@ -80,8 +77,8 @@
                       :class="[
                         'h-6 w-6',
                         star <= (detailedRatings[criteria.key] || 0)
-                          ? 'text-yellow-500 fill-current'
-                          : 'text-gray-300 hover:text-yellow-400'
+                          ? 'fill-current text-yellow-500'
+                          : 'text-gray-300 hover:text-yellow-400',
                       ]"
                     />
                   </button>
@@ -105,7 +102,7 @@
           <div class="space-y-4">
             <h4 class="text-foreground font-medium">Would you recommend this talent?</h4>
             <div class="flex space-x-4">
-              <label class="flex items-center space-x-2 cursor-pointer">
+              <label class="flex cursor-pointer items-center space-x-2">
                 <input
                   v-model="recommendation"
                   type="radio"
@@ -114,7 +111,7 @@
                 />
                 <span class="text-foreground">Yes, I would recommend</span>
               </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
+              <label class="flex cursor-pointer items-center space-x-2">
                 <input
                   v-model="recommendation"
                   type="radio"
@@ -129,7 +126,7 @@
           <!-- Project Summary -->
           <div class="space-y-4">
             <h4 class="text-foreground font-medium">Project Summary</h4>
-            <div class="bg-muted/50 rounded-lg p-4 space-y-2">
+            <div class="bg-muted/50 space-y-2 rounded-lg p-4">
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">Project Type:</span>
                 <span class="text-foreground">{{ projectType }}</span>
@@ -157,15 +154,14 @@
           This review will be visible to the talent and may be used for future recommendations.
         </div>
         <div class="flex space-x-3">
-          <Button variant="outline" @click="$emit('close')">
-            Cancel
-          </Button>
+          <Button variant="outline" @click="$emit('close')"> Cancel </Button>
           <Button
             variant="primary"
             :disabled="rating === 0 || !recommendation"
             icon="mdi:star"
             @click="submitRating"
-          >Submit Review</Button>
+            >Submit Review</Button
+          >
         </div>
       </div>
     </div>
@@ -189,14 +185,14 @@ interface Props {
   talentId: string
   talentName: string
   projectType: string
-  budget: any
+  budget: { min: number; max: number; currency: string }
   timeline: string
   completedDate: string
 }
 
 interface Emits {
   (e: 'close'): void
-  (e: 'submit', rating: any): void
+  (e: 'submit', rating: { overall: number; communication: number; quality: number; timeliness: number; comment: string }): void
 }
 
 const props = defineProps<Props>()
@@ -215,38 +211,38 @@ const ratingCriteria = [
   {
     key: 'quality',
     label: 'Audio Quality',
-    description: 'Professional recording quality and clarity'
+    description: 'Professional recording quality and clarity',
   },
   {
     key: 'delivery',
     label: 'Delivery & Timing',
-    description: 'Met deadlines and delivery expectations'
+    description: 'Met deadlines and delivery expectations',
   },
   {
     key: 'communication',
     label: 'Communication',
-    description: 'Clear, responsive, and professional communication'
+    description: 'Clear, responsive, and professional communication',
   },
   {
     key: 'creativity',
     label: 'Creativity & Interpretation',
-    description: 'Brought creativity and understood project vision'
+    description: 'Brought creativity and understood project vision',
   },
   {
     key: 'collaboration',
     label: 'Collaboration',
-    description: 'Easy to work with and open to feedback'
-  }
+    description: 'Easy to work with and open to feedback',
+  },
 ]
 
 // Computed
 const talentAvatar = computed(() => {
-  const talent = mockVoiceActors.find(va => va.id === props.talentId)
+  const talent = mockVoiceActors.find((va) => va.id === props.talentId)
   return talent?.avatarUrl || ''
 })
 
 const talentLocation = computed(() => {
-  const talent = mockVoiceActors.find(va => va.id === props.talentId)
+  const talent = mockVoiceActors.find((va) => va.id === props.talentId)
   return talent?.location || 'Location not specified'
 })
 
@@ -259,11 +255,11 @@ const submitRating = () => {
     recommendation: recommendation.value,
     talentId: props.talentId,
     jobTitle: props.jobTitle,
-    submittedAt: new Date().toISOString()
+    submittedAt: new Date().toISOString(),
   }
 
   emit('submit', ratingData)
-  
+
   showToast({
     type: 'success',
     title: 'Review Submitted',
@@ -278,7 +274,7 @@ const submitRating = () => {
 }
 
 // Helper functions
-const formatBudget = (budget: any) => {
+const formatBudget = (budget: { max: number; currency: string }) => {
   if (!budget || !budget.max) return 'Not specified'
   const symbols: Record<string, string> = {
     USD: '$',

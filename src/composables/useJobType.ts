@@ -37,14 +37,14 @@ export interface ProjectTypeConfig {
       label: string
       description: string
       acceptedFormats: string[]
-    maxSize: number // in MB
+      maxSize: number // in MB
       multiple?: boolean
     }>
     optional: Array<{
       id: string
       label: string
       description: string
-    acceptedFormats: string[]
+      acceptedFormats: string[]
       maxSize: number // in MB
       multiple?: boolean
     }>
@@ -66,21 +66,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 200,
         volumeDiscount: true,
-        rushFee: 1.5
+        rushFee: 1.5,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '3-5 business days',
         revisionRounds: 2,
-        specialRequirements: ['broadcast_ready', 'multiple_versions']
+        specialRequirements: ['broadcast_ready', 'multiple_versions'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment', 'audio_interface'],
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: true
+        mixing: true,
       },
       files: {
         required: [
@@ -89,15 +89,15 @@ export function useJobType() {
             label: 'Script',
             description: 'The commercial script or copy to be read',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Sample audio for voice matching or style reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          }
+            maxSize: 25,
+          },
         ],
         optional: [
           {
@@ -105,19 +105,26 @@ export function useJobType() {
             label: 'Brand Guidelines',
             description: 'Brand voice and style guidelines',
             acceptedFormats: ['.pdf', '.doc', '.docx'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'target_demographic',
             label: 'Target Demographic Info',
             description: 'Information about the target audience',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ]
+            maxSize: 5,
+          },
+        ],
       },
-      description: 'Professional commercial voice-over for advertising, marketing, and promotional content',
-      useCases: ['TV commercials', 'Radio ads', 'Online advertising', 'Social media content', 'Product demos']
+      description:
+        'Professional commercial voice-over for advertising, marketing, and promotional content',
+      useCases: [
+        'TV commercials',
+        'Radio ads',
+        'Online advertising',
+        'Social media content',
+        'Product demos',
+      ],
     },
 
     // Film & Entertainment Categories
@@ -131,45 +138,45 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 400,
         volumeDiscount: false,
-        rushFee: 1.8
+        rushFee: 1.8,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
-        specialRequirements: ['character_consistency', 'voice_matching', 'lip_sync']
+        specialRequirements: ['character_consistency', 'voice_matching', 'lip_sync'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
         environment: 'professional_studio',
         direction: 'studio_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
           {
             id: 'character_script',
             label: 'Character Script',
-            description: 'Script containing the character\'s dialogue lines',
+            description: "Script containing the character's dialogue lines",
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'character_reference',
             label: 'Character Reference',
             description: 'Visual reference or description of the character',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.jpg', '.png', '.mp4'],
-            maxSize: 50
+            maxSize: 50,
           },
           {
             id: 'voice_direction',
             label: 'Voice Direction',
             description: 'Instructions for character voice and delivery style',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
+            maxSize: 5,
+          },
         ],
         optional: [
           {
@@ -177,26 +184,31 @@ export function useJobType() {
             label: 'Original Actor Sample',
             description: 'Audio sample of the original actor for voice matching',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'character_backstory',
             label: 'Character Backstory',
             description: 'Background information about the character',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'timing_sheets',
             label: 'Timing Sheets',
             description: 'Synchronization timing information',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ]
+            maxSize: 5,
+          },
+        ],
       },
       description: 'Character voice work for film dubbing projects - individual character roles',
-      useCases: ['Character replacement', 'Voice matching', 'Character consistency', 'Actor substitution']
+      useCases: [
+        'Character replacement',
+        'Voice matching',
+        'Character consistency',
+        'Actor substitution',
+      ],
     },
 
     // Educational & Corporate
@@ -210,21 +222,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 200,
         volumeDiscount: true,
-        rushFee: 1.3
+        rushFee: 1.3,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '5-7 business days',
         revisionRounds: 2,
-        specialRequirements: ['clear_pronunciation', 'consistent_pacing', 'educational_tone']
+        specialRequirements: ['clear_pronunciation', 'consistent_pacing', 'educational_tone'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment'],
         environment: 'professional_studio',
         direction: 'self_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
@@ -233,15 +245,15 @@ export function useJobType() {
             label: 'E-Learning Script',
             description: 'The educational content script to be narrated',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'learning_objectives',
             label: 'Learning Objectives',
             description: 'Educational goals and learning outcomes',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
+            maxSize: 5,
+          },
         ],
         optional: [
           {
@@ -249,33 +261,34 @@ export function useJobType() {
             label: 'Glossary',
             description: 'Technical terms and definitions',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'pronunciation_guide',
             label: 'Pronunciation Guide',
             description: 'Guide for technical terms and proper pronunciation',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'visual_slides',
             label: 'Visual Slides',
             description: 'Presentation slides or visual materials',
             acceptedFormats: ['.pdf', '.ppt', '.pptx', '.jpg', '.png'],
-            maxSize: 50
+            maxSize: 50,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Sample audio for style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          }
-        ]
+            maxSize: 25,
+          },
+        ],
       },
-      description: 'Educational narration for online courses, training materials, and learning content',
-      useCases: ['Online courses', 'Corporate training', 'Educational videos', 'Tutorials']
+      description:
+        'Educational narration for online courses, training materials, and learning content',
+      useCases: ['Online courses', 'Corporate training', 'Educational videos', 'Tutorials'],
     },
 
     // Media & Broadcasting
@@ -289,21 +302,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 150,
         volumeDiscount: true,
-        rushFee: 1.2
+        rushFee: 1.2,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '2-3 business days',
         revisionRounds: 1,
-        specialRequirements: ['conversational_tone', 'natural_delivery']
+        specialRequirements: ['conversational_tone', 'natural_delivery'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment'],
         environment: 'professional_studio',
         direction: 'self_directed',
         postProduction: true,
-        mixing: true
+        mixing: true,
       },
       files: {
         required: [
@@ -312,8 +325,8 @@ export function useJobType() {
             label: 'Podcast Script',
             description: 'The podcast episode script or outline',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          }
+            maxSize: 10,
+          },
         ],
         optional: [
           {
@@ -321,33 +334,33 @@ export function useJobType() {
             label: 'Show Notes',
             description: 'Additional notes and information for the episode',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'brand_guidelines',
             label: 'Brand Guidelines',
             description: 'Podcast brand voice and style guidelines',
             acceptedFormats: ['.pdf', '.doc', '.docx'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Previous episodes or style reference audio',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'intro_outro',
             label: 'Intro/Outro Scripts',
             description: 'Podcast intro and outro scripts',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 2
-          }
-        ]
+            maxSize: 2,
+          },
+        ],
       },
       description: 'Voice work for podcasts, including intros, outros, and episode content',
-      useCases: ['Podcast intros', 'Episode narration', 'Advertisements', 'Sponsor reads']
+      useCases: ['Podcast intros', 'Episode narration', 'Advertisements', 'Sponsor reads'],
     },
 
     audiobook_narrator: {
@@ -360,21 +373,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 500,
         volumeDiscount: true,
-        rushFee: 1.3
+        rushFee: 1.3,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '2-4 weeks',
         revisionRounds: 1,
-        specialRequirements: ['consistent_pacing', 'character_voices', 'pronunciation_accuracy']
+        specialRequirements: ['consistent_pacing', 'character_voices', 'pronunciation_accuracy'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment', 'comfortable_setup'],
         environment: 'professional_studio',
         direction: 'self_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
@@ -383,15 +396,15 @@ export function useJobType() {
             label: 'Book Manuscript',
             description: 'Complete book text in digital format',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 50
+            maxSize: 50,
           },
           {
             id: 'pronunciation_guide',
             label: 'Pronunciation Guide',
             description: 'Guide for proper pronunciation of names, places, and terms',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
+            maxSize: 5,
+          },
         ],
         optional: [
           {
@@ -399,26 +412,26 @@ export function useJobType() {
             label: 'Character Notes',
             description: 'Character descriptions and voice guidelines',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'author_guidelines',
             label: 'Author Guidelines',
             description: 'Specific instructions from the author',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Sample audio for style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
-          }
-        ]
+            maxSize: 25,
+          },
+        ],
       },
       description: 'Professional audiobook narration with character voices and consistent pacing',
-      useCases: ['Fiction books', 'Non-fiction', 'Educational content', 'Children\'s books']
+      useCases: ['Fiction books', 'Non-fiction', 'Educational content', "Children's books"],
     },
 
     // Film narration for individual talent
@@ -432,21 +445,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 200,
         volumeDiscount: true,
-        rushFee: 1.5
+        rushFee: 1.5,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
-        specialRequirements: ['dramatic_delivery', 'timing_precision', 'emotion_matching']
+        specialRequirements: ['dramatic_delivery', 'timing_precision', 'emotion_matching'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
@@ -455,15 +468,15 @@ export function useJobType() {
             label: 'Captions/Subtitles',
             description: 'Captions/Subtitles in VTT or SRT format',
             acceptedFormats: ['.vtt', '.srt'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'movie_file',
             label: 'Movie File',
             description: 'The movie file in MP4 format for reference and timing',
             acceptedFormats: ['.mp4'],
-            maxSize: 500
-          }
+            maxSize: 500,
+          },
         ],
         optional: [
           {
@@ -471,12 +484,17 @@ export function useJobType() {
             label: 'Reference Audio',
             description: 'Sample audio for voice style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 5
-          }
-        ]
+            maxSize: 5,
+          },
+        ],
       },
       description: 'Narrative voice-over work for films, documentaries, and cinematic content',
-      useCases: ['Documentary narration', 'Film narration', 'Cinematic storytelling', 'Historical content']
+      useCases: [
+        'Documentary narration',
+        'Film narration',
+        'Cinematic storytelling',
+        'Historical content',
+      ],
     },
 
     documentary_voice: {
@@ -489,21 +507,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 200,
         volumeDiscount: true,
-        rushFee: 1.4
+        rushFee: 1.4,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 2,
-        specialRequirements: ['authoritative_tone', 'clear_pronunciation', 'educational_delivery']
+        specialRequirements: ['authoritative_tone', 'clear_pronunciation', 'educational_delivery'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment'],
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
@@ -512,15 +530,15 @@ export function useJobType() {
             label: 'Documentary Script',
             description: 'Complete documentary narration script',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'fact_checking_notes',
             label: 'Fact-Checking Notes',
             description: 'Verified facts and information for accuracy',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
-          }
+            maxSize: 10,
+          },
         ],
         optional: [
           {
@@ -528,33 +546,39 @@ export function useJobType() {
             label: 'Visual Reference',
             description: 'Documentary footage or visual materials',
             acceptedFormats: ['.mp4', '.mov', '.avi', '.jpg', '.png'],
-            maxSize: 200
+            maxSize: 200,
           },
           {
             id: 'expert_interviews',
             label: 'Expert Interviews',
             description: 'Audio or transcripts of expert interviews',
             acceptedFormats: ['.mp3', '.wav', '.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 100
+            maxSize: 100,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Sample audio for style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'research_materials',
             label: 'Research Materials',
             description: 'Additional research and background information',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 50
-          }
-        ]
+            maxSize: 50,
+          },
+        ],
       },
-      description: 'Educational and informative voice-over for documentary films and educational content',
-      useCases: ['Educational documentaries', 'Nature films', 'Historical content', 'Scientific explanations']
+      description:
+        'Educational and informative voice-over for documentary films and educational content',
+      useCases: [
+        'Educational documentaries',
+        'Nature films',
+        'Historical content',
+        'Scientific explanations',
+      ],
     },
 
     // Additional individual talent job types
@@ -568,45 +592,45 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 300,
         volumeDiscount: true,
-        rushFee: 1.5
+        rushFee: 1.5,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '1-2 weeks',
         revisionRounds: 3,
-        specialRequirements: ['character_development', 'voice_acting', 'emotion_range']
+        specialRequirements: ['character_development', 'voice_acting', 'emotion_range'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment', 'video_monitor'],
         environment: 'professional_studio',
         direction: 'studio_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
           {
             id: 'character_script',
             label: 'Character Script',
-            description: 'Script containing the character\'s dialogue and lines',
+            description: "Script containing the character's dialogue and lines",
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'character_design',
             label: 'Character Design',
             description: 'Visual character design and reference materials',
             acceptedFormats: ['.pdf', '.jpg', '.png', '.mp4', '.mov'],
-            maxSize: 50
+            maxSize: 50,
           },
           {
             id: 'voice_direction',
             label: 'Voice Direction',
             description: 'Instructions for character voice and delivery style',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
+            maxSize: 5,
+          },
         ],
         optional: [
           {
@@ -614,26 +638,32 @@ export function useJobType() {
             label: 'Character Backstory',
             description: 'Background information about the character',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Sample audio for voice style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'style_guide',
             label: 'Style Guide',
             description: 'Character voice style and tone guidelines',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
-        ]
+            maxSize: 5,
+          },
+        ],
       },
-      description: 'Character voice work for various media including animation, games, and interactive content',
-      useCases: ['Animation characters', 'Game characters', 'Interactive media', 'Character development']
+      description:
+        'Character voice work for various media including animation, games, and interactive content',
+      useCases: [
+        'Animation characters',
+        'Game characters',
+        'Interactive media',
+        'Character development',
+      ],
     },
 
     phone_system: {
@@ -646,21 +676,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 300,
         volumeDiscount: true,
-        rushFee: 1.2
+        rushFee: 1.2,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '3-5 days',
         revisionRounds: 2,
-        specialRequirements: ['clear_pronunciation', 'consistent_tone', 'professional_delivery']
+        specialRequirements: ['clear_pronunciation', 'consistent_tone', 'professional_delivery'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment'],
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
@@ -669,15 +699,15 @@ export function useJobType() {
             label: 'Phone System Script',
             description: 'Complete script for all phone system messages',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'menu_structure',
             label: 'Menu Structure',
             description: 'IVR menu flow and structure documentation',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
-          }
+            maxSize: 5,
+          },
         ],
         optional: [
           {
@@ -685,33 +715,33 @@ export function useJobType() {
             label: 'Brand Guidelines',
             description: 'Company voice and tone guidelines',
             acceptedFormats: ['.pdf', '.doc', '.docx'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'pronunciation_guide',
             label: 'Pronunciation Guide',
             description: 'Guide for company names, products, and technical terms',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 5
+            maxSize: 5,
           },
           {
             id: 'reference_audio',
             label: 'Reference Audio',
             description: 'Existing phone system audio for style reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'call_flows',
             label: 'Call Flow Diagrams',
             description: 'Visual diagrams of call routing and menu flows',
             acceptedFormats: ['.pdf', '.jpg', '.png', '.doc', '.docx'],
-            maxSize: 10
-          }
-        ]
+            maxSize: 10,
+          },
+        ],
       },
       description: 'Voice work for phone systems, IVR menus, and automated phone services',
-      useCases: ['IVR systems', 'Phone menus', 'Automated messages', 'Customer service lines']
+      useCases: ['IVR systems', 'Phone menus', 'Automated messages', 'Customer service lines'],
     },
 
     // Generic "Other" job type
@@ -725,21 +755,21 @@ export function useJobType() {
         currency: 'USD',
         minimumAmount: 200,
         volumeDiscount: true,
-        rushFee: 1.3
+        rushFee: 1.3,
       },
       delivery: {
         formats: ['mp3_44khz'],
         quality: 'professional',
         timeline: '3-5 business days',
         revisionRounds: 2,
-        specialRequirements: ['custom_requirements']
+        specialRequirements: ['custom_requirements'],
       },
       studio: {
         equipment: ['professional_microphone', 'acoustic_treatment'],
         environment: 'professional_studio',
         direction: 'client_directed',
         postProduction: true,
-        mixing: false
+        mixing: false,
       },
       files: {
         required: [
@@ -748,8 +778,8 @@ export function useJobType() {
             label: 'Script/Content',
             description: 'The content or script to be voiced',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 25
-          }
+            maxSize: 25,
+          },
         ],
         optional: [
           {
@@ -757,27 +787,42 @@ export function useJobType() {
             label: 'Reference Audio',
             description: 'Sample audio for style and tone reference',
             acceptedFormats: ['.mp3', '.wav', '.m4a'],
-            maxSize: 25
+            maxSize: 25,
           },
           {
             id: 'project_guidelines',
             label: 'Project Guidelines',
             description: 'Specific requirements and guidelines for the project',
             acceptedFormats: ['.pdf', '.doc', '.docx', '.txt'],
-            maxSize: 10
+            maxSize: 10,
           },
           {
             id: 'additional_materials',
             label: 'Additional Materials',
             description: 'Any other relevant materials for the project',
-            acceptedFormats: ['.pdf', '.doc', '.docx', '.txt', '.mp3', '.wav', '.mp4', '.jpg', '.png'],
-            maxSize: 100
-          }
-        ]
+            acceptedFormats: [
+              '.pdf',
+              '.doc',
+              '.docx',
+              '.txt',
+              '.mp3',
+              '.wav',
+              '.mp4',
+              '.jpg',
+              '.png',
+            ],
+            maxSize: 100,
+          },
+        ],
       },
       description: 'Custom voice work for various projects and applications',
-      useCases: ['Custom projects', 'Specialized applications', 'Unique requirements', 'Experimental work']
-    }
+      useCases: [
+        'Custom projects',
+        'Specialized applications',
+        'Unique requirements',
+        'Experimental work',
+      ],
+    },
   }
 
   // Computed properties for easy access
@@ -786,7 +831,7 @@ export function useJobType() {
   }
 
   const getConfigsByCategory = (category: string): ProjectTypeConfig[] => {
-    return Object.values(projectTypeConfigs).filter(config => config.category === category)
+    return Object.values(projectTypeConfigs).filter((config) => config.category === category)
   }
 
   const getAllConfigs = computed(() => Object.values(projectTypeConfigs))
@@ -815,7 +860,7 @@ export function useJobType() {
   const calculateEstimatedCost = (
     projectType: string,
     quantity: number,
-    isRush: boolean = false
+    isRush: boolean = false,
   ): number => {
     const config = getConfig(projectType)
     if (!config) return 0
@@ -838,7 +883,7 @@ export function useJobType() {
     // Data
     projectTypeConfigs,
     getAllConfigs,
-    
+
     // Getters
     getConfig,
     getConfigsByCategory,
@@ -846,8 +891,8 @@ export function useJobType() {
     getDeliveryInfo,
     getStudioInfo,
     getFileRequirements,
-    
+
     // Utilities
-    calculateEstimatedCost
+    calculateEstimatedCost,
   }
 }

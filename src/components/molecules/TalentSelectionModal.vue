@@ -4,7 +4,9 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-background border-border max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg border shadow-lg">
+    <div
+      class="bg-background border-border max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg border shadow-lg"
+    >
       <!-- Header -->
       <div class="border-border flex items-center justify-between border-b p-6">
         <div>
@@ -19,12 +21,19 @@
         <div v-if="applications.length === 0" class="py-12 text-center">
           <UserIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
           <h3 class="text-foreground mb-2 text-lg font-medium">No Applications Yet</h3>
-          <p class="text-muted-foreground">Applications will appear here as talents submit their proposals.</p>
+          <p class="text-muted-foreground">
+            Applications will appear here as talents submit their proposals.
+          </p>
         </div>
 
         <div v-else class="space-y-4">
           <div class="mb-4 flex items-center justify-between">
-            <span class="text-muted-foreground text-sm">{{ applications.length }} application{{ applications.length !== 1 ? 's' : '' }} received</span>
+            <span class="text-muted-foreground text-sm"
+              >{{ applications.length }} application{{
+                applications.length !== 1 ? 's' : ''
+              }}
+              received</span
+            >
             <div class="flex items-center space-x-2">
               <span class="text-muted-foreground text-sm">Sort by:</span>
               <SelectInput
@@ -45,7 +54,7 @@
               :class="{ 'border-primary bg-primary/5': selectedApplication?.id === application.id }"
             >
               <!-- Selection Indicator -->
-              <div class="absolute right-4 top-4">
+              <div class="absolute top-4 right-4">
                 <div
                   v-if="selectedApplication?.id === application.id"
                   class="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full"
@@ -71,21 +80,29 @@
                 />
                 <div class="flex-1">
                   <div class="flex items-center space-x-2">
-                    <h3 class="text-foreground text-lg font-semibold">{{ application.voiceActorName }}</h3>
+                    <h3 class="text-foreground text-lg font-semibold">
+                      {{ application.voiceActorName }}
+                    </h3>
                     <StatusBadge
                       :status="application.status"
                       :variant="getStatusVariant(application.status)"
                     />
                   </div>
-                  <p class="text-muted-foreground text-sm">{{ getTalentLocation(application.voiceActorId) }}</p>
+                  <p class="text-muted-foreground text-sm">
+                    {{ getTalentLocation(application.voiceActorId) }}
+                  </p>
                   <div class="mt-2 flex items-center space-x-4 text-sm">
                     <div class="flex items-center space-x-1">
                       <StarIcon class="h-4 w-4 text-yellow-500" />
-                      <span class="text-foreground font-medium">{{ getTalentRating(application.voiceActorId) }}</span>
+                      <span class="text-foreground font-medium">{{
+                        getTalentRating(application.voiceActorId)
+                      }}</span>
                     </div>
                     <div class="flex items-center space-x-1">
                       <BriefcaseIcon class="h-4 w-4 text-blue-500" />
-                      <span class="text-foreground">{{ getTalentExperience(application.voiceActorId) }}</span>
+                      <span class="text-foreground">{{
+                        getTalentExperience(application.voiceActorId)
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -94,31 +111,45 @@
               <!-- Proposal Details -->
               <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div class="bg-muted/50 rounded-lg p-3">
-                  <div class="text-muted-foreground text-xs font-medium uppercase tracking-wide">Proposed Rate</div>
+                  <div class="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                    Proposed Rate
+                  </div>
                   <div class="text-foreground mt-1 text-lg font-semibold">
                     {{ formatCurrency(application.proposedRate, application.proposedCurrency) }}
                   </div>
                 </div>
                 <div class="bg-muted/50 rounded-lg p-3">
-                  <div class="text-muted-foreground text-xs font-medium uppercase tracking-wide">Timeline</div>
-                  <div class="text-foreground mt-1 font-medium">{{ application.proposedTimeline }}</div>
+                  <div class="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                    Timeline
+                  </div>
+                  <div class="text-foreground mt-1 font-medium">
+                    {{ application.proposedTimeline }}
+                  </div>
                 </div>
                 <div class="bg-muted/50 rounded-lg p-3">
-                  <div class="text-muted-foreground text-xs font-medium uppercase tracking-wide">Estimated Hours</div>
-                  <div class="text-foreground mt-1 font-medium">{{ application.estimatedHours }}h</div>
+                  <div class="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                    Estimated Hours
+                  </div>
+                  <div class="text-foreground mt-1 font-medium">
+                    {{ application.estimatedHours }}h
+                  </div>
                 </div>
               </div>
 
               <!-- Cover Letter -->
               <div class="mb-4">
                 <h4 class="text-foreground mb-2 font-medium">Cover Letter</h4>
-                <p class="text-muted-foreground text-sm leading-relaxed">{{ application.coverLetter }}</p>
+                <p class="text-muted-foreground text-sm leading-relaxed">
+                  {{ application.coverLetter }}
+                </p>
               </div>
 
               <!-- Experience -->
               <div class="mb-4">
                 <h4 class="text-foreground mb-2 font-medium">Relevant Experience</h4>
-                <p class="text-muted-foreground text-sm leading-relaxed">{{ application.relevantExperience }}</p>
+                <p class="text-muted-foreground text-sm leading-relaxed">
+                  {{ application.relevantExperience }}
+                </p>
               </div>
 
               <!-- Custom Samples -->
@@ -134,7 +165,9 @@
                       <div class="text-foreground font-medium">{{ sample.title }}</div>
                       <div class="text-muted-foreground text-sm">{{ sample.description }}</div>
                     </div>
-                    <Button variant="outline" size="sm" icon="mdi:play" @click="playSample(sample)">Play</Button>
+                    <Button variant="outline" size="sm" icon="mdi:play" @click="playSample(sample)"
+                      >Play</Button
+                    >
                   </div>
                 </div>
               </div>
@@ -150,14 +183,21 @@
                     size="sm"
                     icon="mdi:account"
                     @click="viewTalentProfile(application.voiceActorId)"
-                  >View Profile</Button>
+                    >View Profile</Button
+                  >
                   <Button
                     variant="outline"
                     size="sm"
                     :icon="selectedApplication?.id === application.id ? 'mdi:check' : 'mdi:check'"
                     @click="selectApplication(application)"
-                    :class="{ 'bg-primary text-primary-foreground': selectedApplication?.id === application.id }"
-                  >{{ selectedApplication?.id === application.id ? 'Selected' : 'Select' }}</Button>
+                    :class="{
+                      'bg-primary text-primary-foreground':
+                        selectedApplication?.id === application.id,
+                    }"
+                    >{{
+                      selectedApplication?.id === application.id ? 'Selected' : 'Select'
+                    }}</Button
+                  >
                 </div>
               </div>
             </div>
@@ -169,20 +209,22 @@
       <div class="border-border flex items-center justify-between border-t p-6">
         <div class="text-muted-foreground text-sm">
           <span v-if="selectedApplication">
-            Selected: <span class="text-foreground font-medium">{{ selectedApplication.voiceActorName }}</span>
+            Selected:
+            <span class="text-foreground font-medium">{{
+              selectedApplication.voiceActorName
+            }}</span>
           </span>
           <span v-else>No talent selected</span>
         </div>
         <div class="flex space-x-3">
-          <Button variant="outline" @click="$emit('close')">
-            Cancel
-          </Button>
+          <Button variant="outline" @click="$emit('close')"> Cancel </Button>
           <Button
             variant="primary"
             :disabled="!selectedApplication"
             icon="mdi:check"
             @click="approveTalent"
-          >Approve & Award Contract</Button>
+            >Approve & Award Contract</Button
+          >
         </div>
       </div>
     </div>
@@ -237,7 +279,7 @@ const sortOptions = [
 // Computed
 const sortedApplications = computed(() => {
   const apps = [...props.applications]
-  
+
   switch (sortBy.value) {
     case 'proposedRate':
       return apps.sort((a, b) => a.proposedRate - b.proposedRate)
@@ -257,7 +299,9 @@ const sortedApplications = computed(() => {
       })
     case 'appliedDate':
     default:
-      return apps.sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime())
+      return apps.sort(
+        (a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime(),
+      )
   }
 })
 
@@ -268,7 +312,7 @@ const selectApplication = (application: JobApplication) => {
 
 const approveTalent = () => {
   if (!selectedApplication.value) return
-  
+
   emit('approve', selectedApplication.value)
   showToast({
     type: 'success',
@@ -277,7 +321,7 @@ const approveTalent = () => {
   })
 }
 
-const viewTalentProfile = (talentId: string) => {
+const viewTalentProfile = () => {
   // In a real app, this would navigate to talent profile
   showToast({
     type: 'info',
@@ -286,7 +330,7 @@ const viewTalentProfile = (talentId: string) => {
   })
 }
 
-const playSample = (sample: any) => {
+const playSample = (sample: { title: string }) => {
   // In a real app, this would play the audio sample
   showToast({
     type: 'info',
@@ -297,32 +341,37 @@ const playSample = (sample: any) => {
 
 // Helper functions
 const getTalentAvatar = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.avatarUrl || ''
 }
 
 const getTalentLocation = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.location || 'Location not specified'
 }
 
 const getTalentRating = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.averageRating || 0
 }
 
 const getTalentExperience = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.experience || 'Unknown'
 }
 
 const getStatusVariant = (status: string) => {
   switch (status) {
-    case 'selected': return 'success'
-    case 'shortlisted': return 'warning'
-    case 'under_review': return 'info'
-    case 'rejected': return 'destructive'
-    default: return 'secondary'
+    case 'selected':
+      return 'success'
+    case 'shortlisted':
+      return 'warning'
+    case 'under_review':
+      return 'info'
+    case 'rejected':
+      return 'destructive'
+    default:
+      return 'secondary'
   }
 }
 

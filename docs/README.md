@@ -1,6 +1,6 @@
 # Documentation Index
 
-Welcome to the Movie Dubie Studio documentation. This directory contains comprehensive guides and references for developers working on this project.
+This directory contains comprehensive guides and references for developers working on this project.
 
 ## 📚 **Available Documentation**
 

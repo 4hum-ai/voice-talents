@@ -22,7 +22,7 @@ const initializeApplications = async () => {
     const { jobs } = useJob()
     const all: Application[] = []
     for (const job of jobs.value) {
-      const apps = (job as any).applications as Application[] | undefined
+      const apps = (job as Record<string, unknown>).applications as Application[] | undefined
       if (Array.isArray(apps)) {
         for (const app of apps) {
           all.push(app)
@@ -55,11 +55,15 @@ export function useJobApplication() {
   }
 
   type SortKey = 'cost' | 'rating' | 'timeline' | 'date'
-  const sortApplications = (apps: Application[], by: SortKey, order: 'asc' | 'desc'): Application[] => {
+  const sortApplications = (
+    apps: Application[],
+    by: SortKey,
+    order: 'asc' | 'desc',
+  ): Application[] => {
     const copy = [...apps]
     copy.sort((a, b) => {
-      let av: any
-      let bv: any
+      let av: unknown
+      let bv: unknown
       switch (by) {
         case 'cost':
           av = a.proposedCost
@@ -80,7 +84,7 @@ export function useJobApplication() {
           bv = new Date(b.appliedDate).getTime()
           break
       }
-      return order === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1)
+      return order === 'asc' ? (av > bv ? 1 : -1) : av < bv ? 1 : -1
     })
     return copy
   }
@@ -111,5 +115,3 @@ export function useJobApplication() {
     selectTalent,
   }
 }
-
-

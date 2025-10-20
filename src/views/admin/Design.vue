@@ -303,19 +303,21 @@
                         >
                           <Tab id="tab1" label="Overview">
                             <div class="p-4">
-                              <h3 class="text-lg font-semibold mb-2">Overview Tab</h3>
+                              <h3 class="mb-2 text-lg font-semibold">Overview Tab</h3>
                               <p class="text-gray-600">This is the overview tab content.</p>
                             </div>
                           </Tab>
                           <Tab id="tab2" label="Details" :badge="5">
                             <div class="p-4">
-                              <h3 class="text-lg font-semibold mb-2">Details Tab</h3>
-                              <p class="text-gray-600">This is the details tab content with a badge.</p>
+                              <h3 class="mb-2 text-lg font-semibold">Details Tab</h3>
+                              <p class="text-gray-600">
+                                This is the details tab content with a badge.
+                              </p>
                             </div>
                           </Tab>
                           <Tab id="tab3" label="Settings">
                             <div class="p-4">
-                              <h3 class="text-lg font-semibold mb-2">Settings Tab</h3>
+                              <h3 class="mb-2 text-lg font-semibold">Settings Tab</h3>
                               <p class="text-gray-600">This is the settings tab content.</p>
                             </div>
                           </Tab>

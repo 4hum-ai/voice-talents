@@ -68,7 +68,10 @@
           <!-- Jobs List -->
           <div v-if="filteredJobs.length > 0" class="space-y-4">
             <!-- Grid View -->
-            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              v-if="viewMode === 'grid'"
+              class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
               <Card
                 v-for="job in filteredJobs"
                 :key="job.id"
@@ -138,28 +141,30 @@
             <div v-else class="bg-card border-border rounded-lg border shadow-sm">
               <div class="overflow-x-auto">
                 <table class="w-full">
-                  <thead class="border-border border-b bg-muted/50">
+                  <thead class="border-border bg-muted/50 border-b">
                     <tr>
-                      <th class="text-left p-4 font-medium">Job</th>
-                      <th class="text-left p-4 font-medium">Client</th>
-                      <th class="text-left p-4 font-medium">Status</th>
-                      <th class="text-left p-4 font-medium">Deadline</th>
-                      <th class="text-left p-4 font-medium">Budget</th>
-                      <th class="text-left p-4 font-medium">Progress</th>
-                      <th class="text-right p-4 font-medium">Actions</th>
+                      <th class="p-4 text-left font-medium">Job</th>
+                      <th class="p-4 text-left font-medium">Client</th>
+                      <th class="p-4 text-left font-medium">Status</th>
+                      <th class="p-4 text-left font-medium">Deadline</th>
+                      <th class="p-4 text-left font-medium">Budget</th>
+                      <th class="p-4 text-left font-medium">Progress</th>
+                      <th class="p-4 text-right font-medium">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr
                       v-for="job in filteredJobs"
                       :key="job.id"
-                      class="border-border border-b hover:bg-muted/25 cursor-pointer"
+                      class="border-border hover:bg-muted/25 cursor-pointer border-b"
                       @click="$router.push(`/talent/jobs/${job.id}`)"
                     >
                       <td class="p-4">
                         <div>
                           <h4 class="text-foreground font-medium">{{ job.title }}</h4>
-                          <p class="text-muted-foreground text-sm">{{ formatProjectType(job.projectType) }}</p>
+                          <p class="text-muted-foreground text-sm">
+                            {{ formatProjectType(job.projectType) }}
+                          </p>
                         </div>
                       </td>
                       <td class="p-4">
@@ -202,15 +207,25 @@
             <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
             <h3 class="text-foreground mb-2 text-lg font-medium">No jobs found</h3>
             <p class="text-muted-foreground mb-6">
-              {{ searchQuery || statusFilter !== 'all' 
-                ? 'Try adjusting your search or filters' 
-                : 'You don\'t have any assigned jobs yet. Check out casting opportunities!' }}
+              {{
+                searchQuery || statusFilter !== 'all'
+                  ? 'Try adjusting your search or filters'
+                  : "You don't have any assigned jobs yet. Check out casting opportunities!"
+              }}
             </p>
             <div class="flex justify-center space-x-4">
-              <Button v-if="searchQuery || statusFilter !== 'all'" variant="outline" @click="clearFilters">
+              <Button
+                v-if="searchQuery || statusFilter !== 'all'"
+                variant="outline"
+                @click="clearFilters"
+              >
                 Clear Filters
               </Button>
-              <Button variant="primary" icon="mdi:megaphone" @click="$router.push('/talent/casting')">
+              <Button
+                variant="primary"
+                icon="mdi:megaphone"
+                @click="$router.push('/talent/casting')"
+              >
                 Browse Casting Calls
               </Button>
             </div>
@@ -314,7 +329,7 @@ const filteredJobs = computed(() => {
         job.title.toLowerCase().includes(query) ||
         job.clientName.toLowerCase().includes(query) ||
         job.description.toLowerCase().includes(query) ||
-        job.tags.some((tag) => tag.toLowerCase().includes(query))
+        job.tags.some((tag) => tag.toLowerCase().includes(query)),
     )
   }
 
@@ -326,22 +341,20 @@ const filteredJobs = computed(() => {
   return filtered
 })
 
-const activeJobsCount = computed(() => 
-  jobs.value.filter((job) => ['draft', 'in_progress'].includes(job.status)).length
+const activeJobsCount = computed(
+  () => jobs.value.filter((job) => ['draft', 'in_progress'].includes(job.status)).length,
 )
 
-const pendingReviewCount = computed(() => 
-  jobs.value.filter((job) => job.status === 'pending_review').length
+const pendingReviewCount = computed(
+  () => jobs.value.filter((job) => job.status === 'pending_review').length,
 )
 
-const completedJobsCount = computed(() => 
-  jobs.value.filter((job) => job.status === 'completed').length
+const completedJobsCount = computed(
+  () => jobs.value.filter((job) => job.status === 'completed').length,
 )
 
-const totalEarnings = computed(() => 
-  jobs.value
-    .filter((job) => job.status === 'completed')
-    .reduce((sum, job) => sum + job.budget, 0)
+const totalEarnings = computed(() =>
+  jobs.value.filter((job) => job.status === 'completed').reduce((sum, job) => sum + job.budget, 0),
 )
 
 // Methods

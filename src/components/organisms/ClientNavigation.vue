@@ -33,7 +33,8 @@
             class="w-full justify-start"
             icon="mdi:account"
             @click="switchToVoiceActor"
-          >Switch to Voice Actor</Button>
+            >Switch to Voice Actor</Button
+          >
         </div>
       </div>
     </template>
@@ -65,7 +66,13 @@
             icon="mdi:cog"
             @click="$router.push('/client/settings')"
           />
-          <Button variant="ghost" size="sm" class="flex-1" icon="mdi:logout" @click="handleLogout" />
+          <Button
+            variant="ghost"
+            size="sm"
+            class="flex-1"
+            icon="mdi:logout"
+            @click="handleLogout"
+          />
         </div>
       </div>
     </template>
@@ -85,8 +92,6 @@ import Avatar from '@/components/atoms/Avatar.vue'
 import HomeIcon from '~icons/mdi/home'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import AccountGroupIcon from '~icons/mdi/account-group'
-// Icons removed; using Button icon prop instead
-import UserIcon from '~icons/mdi/account'
 
 const router = useRouter()
 const route = useRoute()

@@ -18,348 +18,355 @@
               <!-- Account Settings Tab -->
               <Tab id="account" label="Account">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500"
-                  >
-                    <Icon name="mdi:account-cog" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Account Settings</h2>
-                  <p class="text-muted-foreground">
-                    Manage your account information and security settings.
-                  </p>
-                </div>
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
+                      <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500"
+                      >
+                        <Icon name="mdi:account-cog" class="h-8 w-8 text-white" />
+                      </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Account Settings</h2>
+                      <p class="text-muted-foreground">
+                        Manage your account information and security settings.
+                      </p>
+                    </div>
 
-                <div class="mx-auto max-w-2xl space-y-6">
-                  <div>
-                    <label for="email" class="text-foreground mb-2 block text-sm font-medium">
-                      Email Address
-                    </label>
-                    <input
-                      id="email"
-                      v-model="accountSettings.email"
-                      type="email"
-                      required
-                      placeholder="your.email@example.com"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
+                    <div class="mx-auto max-w-2xl space-y-6">
+                      <div>
+                        <label for="email" class="text-foreground mb-2 block text-sm font-medium">
+                          Email Address
+                        </label>
+                        <input
+                          id="email"
+                          v-model="accountSettings.email"
+                          type="email"
+                          required
+                          placeholder="your.email@example.com"
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
 
-                  <div>
-                    <label
-                      for="currentPassword"
-                      class="text-foreground mb-2 block text-sm font-medium"
-                    >
-                      Current Password
-                    </label>
-                    <input
-                      id="currentPassword"
-                      v-model="accountSettings.currentPassword"
-                      type="password"
-                      placeholder="Enter current password"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
+                      <div>
+                        <label
+                          for="currentPassword"
+                          class="text-foreground mb-2 block text-sm font-medium"
+                        >
+                          Current Password
+                        </label>
+                        <input
+                          id="currentPassword"
+                          v-model="accountSettings.currentPassword"
+                          type="password"
+                          placeholder="Enter current password"
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
 
-                  <div>
-                    <label for="newPassword" class="text-foreground mb-2 block text-sm font-medium">
-                      New Password
-                    </label>
-                    <input
-                      id="newPassword"
-                      v-model="accountSettings.newPassword"
-                      type="password"
-                      placeholder="Enter new password"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
+                      <div>
+                        <label
+                          for="newPassword"
+                          class="text-foreground mb-2 block text-sm font-medium"
+                        >
+                          New Password
+                        </label>
+                        <input
+                          id="newPassword"
+                          v-model="accountSettings.newPassword"
+                          type="password"
+                          placeholder="Enter new password"
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
 
-                  <div>
-                    <label
-                      for="confirmPassword"
-                      class="text-foreground mb-2 block text-sm font-medium"
-                    >
-                      Confirm New Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      v-model="accountSettings.confirmPassword"
-                      type="password"
-                      placeholder="Confirm new password"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
+                      <div>
+                        <label
+                          for="confirmPassword"
+                          class="text-foreground mb-2 block text-sm font-medium"
+                        >
+                          Confirm New Password
+                        </label>
+                        <input
+                          id="confirmPassword"
+                          v-model="accountSettings.confirmPassword"
+                          type="password"
+                          placeholder="Confirm new password"
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
 
-                  <div class="flex justify-end">
-                    <Button variant="primary" @click="updateAccount" class="onboarding-button">
-                      Update Account
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+                      <div class="flex justify-end">
+                        <Button variant="primary" @click="updateAccount" class="onboarding-button">
+                          Update Account
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Notification Preferences Tab -->
               <Tab id="notifications" label="Notifications">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-teal-500"
-                  >
-                    <Icon name="mdi:bell" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">
-                    Notification Preferences
-                  </h2>
-                  <p class="text-muted-foreground">
-                    Choose how you want to be notified about new opportunities and updates.
-                  </p>
-                </div>
-
-                <div class="mx-auto max-w-2xl space-y-6">
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">New Project Notifications</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Get notified when new projects match your profile
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
+                      <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-teal-500"
+                      >
+                        <Icon name="mdi:bell" class="h-8 w-8 text-white" />
+                      </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">
+                        Notification Preferences
+                      </h2>
+                      <p class="text-muted-foreground">
+                        Choose how you want to be notified about new opportunities and updates.
                       </p>
                     </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="notificationSettings.newProjects"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
 
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">Message Notifications</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Get notified when clients send you messages
-                      </p>
+                    <div class="mx-auto max-w-2xl space-y-6">
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">
+                            New Project Notifications
+                          </h3>
+                          <p class="text-muted-foreground text-sm">
+                            Get notified when new projects match your profile
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="notificationSettings.newProjects"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">Message Notifications</h3>
+                          <p class="text-muted-foreground text-sm">
+                            Get notified when clients send you messages
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="notificationSettings.messages"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">Payment Notifications</h3>
+                          <p class="text-muted-foreground text-sm">
+                            Get notified about payments and invoices
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="notificationSettings.payments"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">Marketing Updates</h3>
+                          <p class="text-muted-foreground text-sm">
+                            Receive tips, industry news, and platform updates
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="notificationSettings.marketing"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div class="flex justify-end">
+                        <Button
+                          variant="primary"
+                          @click="updateNotifications"
+                          class="onboarding-button"
+                        >
+                          Save Preferences
+                        </Button>
+                      </div>
                     </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="notificationSettings.messages"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
-
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">Payment Notifications</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Get notified about payments and invoices
-                      </p>
-                    </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="notificationSettings.payments"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
-
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">Marketing Updates</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Receive tips, industry news, and platform updates
-                      </p>
-                    </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="notificationSettings.marketing"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
-
-                  <div class="flex justify-end">
-                    <Button
-                      variant="primary"
-                      @click="updateNotifications"
-                      class="onboarding-button"
-                    >
-                      Save Preferences
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Privacy Settings Tab -->
               <Tab id="privacy" label="Privacy">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
-                  >
-                    <Icon name="mdi:shield-account" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Privacy Settings</h2>
-                  <p class="text-muted-foreground">
-                    Control who can see your profile and contact information.
-                  </p>
-                </div>
-
-                <div class="mx-auto max-w-2xl space-y-6">
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">Public Profile</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Make your profile visible to clients and casting directors
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
+                      <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
+                      >
+                        <Icon name="mdi:shield-account" class="h-8 w-8 text-white" />
+                      </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Privacy Settings</h2>
+                      <p class="text-muted-foreground">
+                        Control who can see your profile and contact information.
                       </p>
                     </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="privacySettings.isPublic"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
 
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">Show Contact Information</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Display your email and phone number on your profile
-                      </p>
+                    <div class="mx-auto max-w-2xl space-y-6">
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">Public Profile</h3>
+                          <p class="text-muted-foreground text-sm">
+                            Make your profile visible to clients and casting directors
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="privacySettings.isPublic"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">
+                            Show Contact Information
+                          </h3>
+                          <p class="text-muted-foreground text-sm">
+                            Display your email and phone number on your profile
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="privacySettings.showContact"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                      >
+                        <div>
+                          <h3 class="text-foreground text-sm font-medium">Show Earnings</h3>
+                          <p class="text-muted-foreground text-sm">
+                            Display your earnings statistics on your profile
+                          </p>
+                        </div>
+                        <label class="relative inline-flex cursor-pointer items-center">
+                          <input
+                            v-model="privacySettings.showEarnings"
+                            type="checkbox"
+                            class="peer sr-only"
+                          />
+                          <div
+                            class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
+                          ></div>
+                        </label>
+                      </div>
+
+                      <div class="flex justify-end">
+                        <Button variant="primary" @click="updatePrivacy" class="onboarding-button">
+                          Save Privacy Settings
+                        </Button>
+                      </div>
                     </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="privacySettings.showContact"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
-
-                  <div
-                    class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                  >
-                    <div>
-                      <h3 class="text-foreground text-sm font-medium">Show Earnings</h3>
-                      <p class="text-muted-foreground text-sm">
-                        Display your earnings statistics on your profile
-                      </p>
-                    </div>
-                    <label class="relative inline-flex cursor-pointer items-center">
-                      <input
-                        v-model="privacySettings.showEarnings"
-                        type="checkbox"
-                        class="peer sr-only"
-                      />
-                      <div
-                        class="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"
-                      ></div>
-                    </label>
-                  </div>
-
-                  <div class="flex justify-end">
-                    <Button variant="primary" @click="updatePrivacy" class="onboarding-button">
-                      Save Privacy Settings
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Data & Export Tab -->
               <Tab id="data" label="Data & Export">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
-                  >
-                    <Icon name="mdi:database" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Data & Export</h2>
-                  <p class="text-muted-foreground">
-                    Manage your data and export your profile information.
-                  </p>
-                </div>
-
-                <div class="mx-auto max-w-2xl space-y-6">
-                  <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <h3 class="text-foreground text-sm font-medium">Export Profile Data</h3>
-                        <p class="text-muted-foreground text-sm">
-                          Download a copy of your profile and voice samples
-                        </p>
-                      </div>
-                      <Button variant="outline" @click="exportData" class="onboarding-button">
-                        <Icon name="mdi:download" class="mr-2 h-4 w-4" />
-                        Export
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <h3 class="text-foreground text-sm font-medium">Delete Account</h3>
-                        <p class="text-muted-foreground text-sm">
-                          Permanently delete your account and all data
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        @click="deleteAccount"
-                        class="border-red-300 text-red-600 hover:border-red-400 hover:text-red-700"
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
+                      <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
                       >
-                        <Icon name="mdi:delete" class="mr-2 h-4 w-4" />
-                        Delete
-                      </Button>
+                        <Icon name="mdi:database" class="h-8 w-8 text-white" />
+                      </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Data & Export</h2>
+                      <p class="text-muted-foreground">
+                        Manage your data and export your profile information.
+                      </p>
                     </div>
-                  </div>
-                </div>
-              </Card>
+
+                    <div class="mx-auto max-w-2xl space-y-6">
+                      <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
+                        <div class="flex items-center justify-between">
+                          <div>
+                            <h3 class="text-foreground text-sm font-medium">Export Profile Data</h3>
+                            <p class="text-muted-foreground text-sm">
+                              Download a copy of your profile and voice samples
+                            </p>
+                          </div>
+                          <Button variant="outline" @click="exportData" class="onboarding-button">
+                            <Icon name="mdi:download" class="mr-2 h-4 w-4" />
+                            Export
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-600">
+                        <div class="flex items-center justify-between">
+                          <div>
+                            <h3 class="text-foreground text-sm font-medium">Delete Account</h3>
+                            <p class="text-muted-foreground text-sm">
+                              Permanently delete your account and all data
+                            </p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            @click="deleteAccount"
+                            class="border-red-300 text-red-600 hover:border-red-400 hover:text-red-700"
+                          >
+                            <Icon name="mdi:delete" class="mr-2 h-4 w-4" />
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               </Tab>
             </TabNavigation>

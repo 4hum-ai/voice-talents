@@ -275,14 +275,14 @@ export class MockVoiceActorService {
   }
 
   // Statistics
-  async getVoiceActorStats(_actorId: string): Promise<VoiceActorStats> {
+  async getVoiceActorStats(): Promise<VoiceActorStats> {
     await delay()
     // In real app, this would calculate stats from actual data
     return mockData.voiceActorStats
   }
 
   // Activity Feed
-  async getRecentActivity(_actorId: string, limit: number = 10): Promise<ActivityItem[]> {
+  async getRecentActivity(limit: number = 10): Promise<ActivityItem[]> {
     await delay()
     return mockData.voiceActorStats.recentActivity.slice(0, limit)
   }
@@ -290,7 +290,6 @@ export class MockVoiceActorService {
   // File Upload Simulation
   async uploadFile(
     file: File,
-    _type: 'sample' | 'recording' | 'reference',
   ): Promise<{ url: string; id: string }> {
     await delay(2000) // Simulate upload time
 
@@ -302,7 +301,7 @@ export class MockVoiceActorService {
   }
 
   // Audio Processing Simulation
-  async processAudio(_audioUrl: string): Promise<{ waveformUrl: string; duration: number }> {
+  async processAudio(): Promise<{ waveformUrl: string; duration: number }> {
     await delay(3000) // Simulate processing time
 
     return {
@@ -312,7 +311,7 @@ export class MockVoiceActorService {
   }
 
   // Search and Discovery
-  async searchSamples(query: string, filters: any = {}): Promise<VoiceSample[]> {
+  async searchSamples(query: string, filters: Record<string, unknown> = {}): Promise<VoiceSample[]> {
     await delay()
     let results = [...mockData.voiceSamples]
 
@@ -370,7 +369,7 @@ export class MockVoiceActorService {
   }
 
   // Real-time Updates Simulation
-  subscribeToUpdates(callback: (update: any) => void): () => void {
+  subscribeToUpdates(callback: (update: Record<string, unknown>) => void): () => void {
     // Simulate real-time updates
     const interval = setInterval(() => {
       // Randomly send updates

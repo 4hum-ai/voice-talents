@@ -1,7 +1,7 @@
 <template>
   <div class="bg-card border-border rounded-lg border p-6">
     <h3 class="text-foreground mb-4 text-lg font-semibold">Project Pricing</h3>
-    
+
     <div v-if="projectConfig" class="space-y-4">
       <!-- Project Type Info -->
       <div class="flex items-center justify-between">
@@ -10,7 +10,7 @@
           <p class="text-muted-foreground text-sm">{{ projectConfig.description }}</p>
         </div>
         <div class="text-right">
-          <span class="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
+          <span class="bg-primary/10 text-primary rounded px-2 py-1 text-xs font-medium">
             {{ projectConfig.category }}
           </span>
         </div>
@@ -58,7 +58,9 @@
               class="border-border focus:ring-primary w-full rounded border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
             >
               <option :value="false">Standard</option>
-              <option :value="true">Rush (+{{ Math.round((projectConfig.pricing.rushFee || 1) * 100 - 100) }}%)</option>
+              <option :value="true">
+                Rush (+{{ Math.round((projectConfig.pricing.rushFee || 1) * 100 - 100) }}%)
+              </option>
             </select>
           </div>
           <div>
@@ -93,7 +95,7 @@
             <span
               v-for="equipment in projectConfig.studio.equipment"
               :key="equipment"
-              class="bg-primary/10 text-primary px-2 py-1 rounded text-xs"
+              class="bg-primary/10 text-primary rounded px-2 py-1 text-xs"
             >
               {{ equipment.replace('_', ' ') }}
             </span>
@@ -102,7 +104,7 @@
       </div>
     </div>
 
-    <div v-else class="text-center py-8">
+    <div v-else class="py-8 text-center">
       <p class="text-muted-foreground">Select a project type to see pricing details</p>
     </div>
   </div>
@@ -136,7 +138,7 @@ const estimatedCost = computed(() => {
 
 // Helper functions
 const formatPricingModel = (model: string) => {
-  return model.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+  return model.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 const getPricingSuffix = (model: string) => {
@@ -146,7 +148,7 @@ const getPricingSuffix = (model: string) => {
     per_character: '/character',
     per_scene: '/scene',
     per_project: '',
-    per_word: '/word'
+    per_word: '/word',
   }
   return suffixes[model] || ''
 }
@@ -158,7 +160,7 @@ const getQuantityPlaceholder = (model: string) => {
     per_character: 'Characters',
     per_scene: 'Scenes',
     per_project: 'Projects',
-    per_word: 'Words'
+    per_word: 'Words',
   }
   return placeholders[model] || 'Quantity'
 }

@@ -209,7 +209,12 @@
                       icon="mdi:eye"
                       @click="$router.push(`/client/talents/${talent.id}`)"
                     />
-                    <Button variant="ghost" size="sm" icon="mdi:folder-open" @click="viewPortfolio(talent)" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon="mdi:folder-open"
+                      @click="viewPortfolio(talent)"
+                    />
                   </div>
                   <Button
                     variant="primary"
@@ -437,7 +442,7 @@ const filteredTalents = computed(() => {
 
   if (selectedVoiceType.value) {
     filtered = filtered.filter((talent) =>
-      talent.voiceTypes.includes(selectedVoiceType.value as any),
+      talent.voiceTypes.includes(selectedVoiceType.value as string),
     )
   }
 

@@ -12,9 +12,7 @@
 
     <div class="bg-card border-border rounded-lg border p-8">
       <div class="space-y-6">
-        <div
-          class="border-border flex items-center justify-between rounded-lg border p-4"
-        >
+        <div class="border-border flex items-center justify-between rounded-lg border p-4">
           <div>
             <h3 class="text-foreground text-sm font-medium">Auto-approve Applications</h3>
             <p class="text-muted-foreground text-sm">
@@ -29,9 +27,7 @@
           />
         </div>
 
-        <div
-          class="border-border flex items-center justify-between rounded-lg border p-4"
-        >
+        <div class="border-border flex items-center justify-between rounded-lg border p-4">
           <div>
             <h3 class="text-foreground text-sm font-medium">Require NDA</h3>
             <p class="text-muted-foreground text-sm">
@@ -46,9 +42,7 @@
           />
         </div>
 
-        <div
-          class="border-border flex items-center justify-between rounded-lg border p-4"
-        >
+        <div class="border-border flex items-center justify-between rounded-lg border p-4">
           <div>
             <h3 class="text-foreground text-sm font-medium">Require Portfolio</h3>
             <p class="text-muted-foreground text-sm">
@@ -107,7 +101,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showPublicProfile: true
+  showPublicProfile: true,
 })
 
 const emit = defineEmits<Emits>()

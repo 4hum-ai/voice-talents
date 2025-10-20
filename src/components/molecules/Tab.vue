@@ -8,10 +8,10 @@
 import { computed, inject, onMounted, onUnmounted, type Component } from 'vue'
 
 interface TabNavigationContext {
-  activeTab: any
-  registerTab: (tab: any) => void
+  activeTab: string
+  registerTab: (tab: { id: string; label: string; icon?: Component }) => void
   unregisterTab: (tabId: string) => void
-  updateTab: (tabId: string, updates: any) => void
+  updateTab: (tabId: string, updates: { label?: string; icon?: Component }) => void
 }
 
 interface Props {

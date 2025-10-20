@@ -63,7 +63,6 @@
             @validation-change="updateStepValidation(1, $event)"
             @update:modelValue="handleAccountDataUpdate"
           />
-
         </div>
 
         <!-- Step 2: Workflow Preferences -->
@@ -130,10 +129,7 @@ import { useRouter } from 'vue-router'
 import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import {
-  AccountInformation,
-  JobPreferences
-} from '@/components/molecules/ClientSettings'
+import { AccountInformation, JobPreferences } from '@/components/molecules/ClientSettings'
 
 const router = useRouter()
 const {
@@ -165,7 +161,6 @@ const accountData = reactive({
   description: '',
 })
 
-
 const jobPreferencesData = reactive({
   autoApprove: false,
   requireNDA: false,
@@ -192,10 +187,10 @@ const updateStepValidation = (step: number, isValid: boolean) => {
   console.log('canProceedToNext will be:', stepValidation[currentStep.value] ?? false)
 }
 
-const handleAccountDataUpdate = (newData: any) => {
+const handleAccountDataUpdate = (newData: Record<string, unknown>) => {
   console.log('handleAccountDataUpdate called with:', newData)
   // Update each field individually to ensure reactivity
-  Object.keys(newData).forEach(key => {
+  Object.keys(newData).forEach((key) => {
     accountData[key as keyof typeof accountData] = newData[key]
   })
   console.log('Updated accountData:', accountData)
@@ -204,7 +199,12 @@ const handleAccountDataUpdate = (newData: any) => {
 // Computed
 const canProceedToNext = computed(() => {
   const result = stepValidation[currentStep.value] ?? false
-  console.log(`canProceedToNext for step ${currentStep.value}:`, result, 'stepValidation:', stepValidation)
+  console.log(
+    `canProceedToNext for step ${currentStep.value}:`,
+    result,
+    'stepValidation:',
+    stepValidation,
+  )
   return result
 })
 

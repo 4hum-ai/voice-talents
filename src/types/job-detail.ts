@@ -31,29 +31,29 @@ export interface ProjectFiles {
 export interface JobDetail extends JobPosting {
   // Progress tracking
   progress: number
-  
+
   // Voice requirements (from job creation modal)
   voiceStyle?: string
   pace?: string
   tone?: string
   duration?: string
   recordingQuality?: string
-  
+
   // Project files from job creation
   projectFiles?: ProjectFiles
-  
+
   // Client notes and requirements
   clientNotes?: string[]
-  
+
   // Talent information (when assigned)
   talentName?: string
   talentExperience?: string
   talentLanguages?: string
   talentRating?: string
-  
+
   // Talent notes and communication
   talentNotes?: string[]
-  
+
   // Deliverables and submissions
   finalAudio?: {
     name: string
@@ -62,10 +62,10 @@ export interface JobDetail extends JobPosting {
     submittedAt: string
     url?: string
   }
-  
+
   // Script segments (for talent view)
   scriptSegments?: ScriptSegment[]
-  
+
   // Additional metadata
   createdAt: string
   updatedAt: string
@@ -83,25 +83,13 @@ export interface ScriptSegment {
 }
 
 // Job status mapping for UI components
-export type JobStatusDisplay = 
-  | 'draft'
-  | 'active' 
-  | 'pending'
-  | 'completed'
-  | 'cancelled'
+export type JobStatusDisplay = 'draft' | 'active' | 'pending' | 'completed' | 'cancelled'
 
 // Progress status for progress indicators
-export type ProgressStatus = 
-  | 'draft'
-  | 'pending'
-  | 'active'
-  | 'success'
-  | 'completed'
+export type ProgressStatus = 'draft' | 'pending' | 'active' | 'success' | 'completed'
 
 // Progress variant for styling
-export type ProgressVariant = 
-  | 'soft'
-  | 'solid'
+export type ProgressVariant = 'soft' | 'solid'
 
 // Helper function to map job status to display status
 export const getJobStatusDisplay = (status: string): JobStatusDisplay => {

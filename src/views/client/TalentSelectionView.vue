@@ -9,7 +9,9 @@
           <div class="text-muted-foreground text-sm">
             {{ applications.length }} application{{ applications.length !== 1 ? 's' : '' }}
           </div>
-          <Button variant="outline" size="sm" icon="mdi:close" @click="$router.back()">Close</Button>
+          <Button variant="outline" size="sm" icon="mdi:close" @click="$router.back()"
+            >Close</Button
+          >
         </div>
       </template>
     </AppBar>
@@ -17,7 +19,7 @@
     <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-6xl">
         <!-- Job Overview -->
-        <div class="mb-8 rounded-lg border border-border bg-card p-6">
+        <div class="border-border bg-card mb-8 rounded-lg border p-6">
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <h1 class="text-foreground mb-2 text-2xl font-bold">{{ jobTitle }}</h1>
@@ -45,7 +47,8 @@
           <UsersIcon class="text-muted-foreground mx-auto mb-4 h-16 w-16" />
           <h3 class="text-foreground mb-2 text-lg font-medium">No Applications Yet</h3>
           <p class="text-muted-foreground">
-            No voice actors have applied to this job yet. Check back later or consider extending the deadline.
+            No voice actors have applied to this job yet. Check back later or consider extending the
+            deadline.
           </p>
         </div>
 
@@ -92,23 +95,45 @@
               <!-- Application Header -->
               <div class="mb-4 flex items-start justify-between">
                 <div class="flex items-center space-x-4">
-                  <Avatar :seed="application.voiceActorName" :src="getTalentAvatar(application.voiceActorId)" :alt="application.voiceActorName" size="md" />
+                  <Avatar
+                    :seed="application.voiceActorName"
+                    :src="getTalentAvatar(application.voiceActorId)"
+                    :alt="application.voiceActorName"
+                    size="md"
+                  />
                   <div>
-                    <h3 class="text-foreground text-lg font-semibold">{{ application.voiceActorName }}</h3>
-                    <p class="text-muted-foreground text-sm">{{ getTalentLocation(application.voiceActorId) }}</p>
-                    <div class="flex items-center space-x-2 mt-1">
+                    <h3 class="text-foreground text-lg font-semibold">
+                      {{ application.voiceActorName }}
+                    </h3>
+                    <p class="text-muted-foreground text-sm">
+                      {{ getTalentLocation(application.voiceActorId) }}
+                    </p>
+                    <div class="mt-1 flex items-center space-x-2">
                       <div class="flex items-center space-x-1">
                         <StarIcon class="h-4 w-4 text-yellow-500" />
-                        <span class="text-foreground text-sm font-medium">{{ getTalentRating(application.voiceActorId) }}</span>
+                        <span class="text-foreground text-sm font-medium">{{
+                          getTalentRating(application.voiceActorId)
+                        }}</span>
                       </div>
                       <span class="text-muted-foreground text-sm">•</span>
-                      <span class="text-muted-foreground text-sm">{{ getTalentExperience(application.voiceActorId) }}</span>
+                      <span class="text-muted-foreground text-sm">{{
+                        getTalentExperience(application.voiceActorId)
+                      }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-foreground text-lg font-bold">{{ formatBudget({ max: application.proposedCost, currency: application.proposedCurrency }) }}</div>
-                  <div class="text-muted-foreground text-sm">{{ application.proposedTimeline }}</div>
+                  <div class="text-foreground text-lg font-bold">
+                    {{
+                      formatBudget({
+                        max: application.proposedCost,
+                        currency: application.proposedCurrency,
+                      })
+                    }}
+                  </div>
+                  <div class="text-muted-foreground text-sm">
+                    {{ application.proposedTimeline }}
+                  </div>
                 </div>
               </div>
 
@@ -116,14 +141,20 @@
               <div class="mb-4 space-y-3">
                 <div>
                   <h4 class="text-foreground mb-2 font-medium">Personal Note</h4>
-                  <p class="text-muted-foreground text-sm line-clamp-3">{{ application.personalNote }}</p>
+                  <p class="text-muted-foreground line-clamp-3 text-sm">
+                    {{ application.personalNote }}
+                  </p>
                 </div>
                 <div v-if="application.customSamples?.length">
                   <h4 class="text-foreground mb-2 font-medium">Showcases</h4>
                   <div class="space-y-3">
-                    <div v-for="sample in application.customSamples" :key="sample.id" class="rounded-md border border-border p-3">
-                      <div class="mb-1 text-sm font-medium text-foreground">{{ sample.title }}</div>
-                      <div class="mb-2 text-xs text-muted-foreground">{{ sample.description }}</div>
+                    <div
+                      v-for="sample in application.customSamples"
+                      :key="sample.id"
+                      class="border-border rounded-md border p-3"
+                    >
+                      <div class="text-foreground mb-1 text-sm font-medium">{{ sample.title }}</div>
+                      <div class="text-muted-foreground mb-2 text-xs">{{ sample.description }}</div>
                       <audio :src="sample.audioUrl" controls class="w-full" />
                     </div>
                   </div>
@@ -172,23 +203,41 @@
               Full application from {{ selectedApplication?.voiceActorName }}
             </p>
           </div>
-          <Button variant="ghost" size="sm" icon="mdi:close" @click="showApplicationDetail = false" />
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="mdi:close"
+            @click="showApplicationDetail = false"
+          />
         </div>
 
         <div v-if="selectedApplication" class="space-y-6 p-6">
           <!-- Talent Info -->
           <div class="flex items-center space-x-4">
-            <Avatar :seed="selectedApplication.voiceActorName" :src="getTalentAvatar(selectedApplication.voiceActorId)" :alt="selectedApplication.voiceActorName" size="lg" />
+            <Avatar
+              :seed="selectedApplication.voiceActorName"
+              :src="getTalentAvatar(selectedApplication.voiceActorId)"
+              :alt="selectedApplication.voiceActorName"
+              size="lg"
+            />
             <div>
-              <h3 class="text-foreground text-xl font-semibold">{{ selectedApplication.voiceActorName }}</h3>
-              <p class="text-muted-foreground">{{ getTalentLocation(selectedApplication.voiceActorId) }}</p>
-              <div class="flex items-center space-x-4 mt-2">
+              <h3 class="text-foreground text-xl font-semibold">
+                {{ selectedApplication.voiceActorName }}
+              </h3>
+              <p class="text-muted-foreground">
+                {{ getTalentLocation(selectedApplication.voiceActorId) }}
+              </p>
+              <div class="mt-2 flex items-center space-x-4">
                 <div class="flex items-center space-x-1">
                   <StarIcon class="h-4 w-4 text-yellow-500" />
-                  <span class="text-foreground font-medium">{{ getTalentRating(selectedApplication.voiceActorId) }}</span>
+                  <span class="text-foreground font-medium">{{
+                    getTalentRating(selectedApplication.voiceActorId)
+                  }}</span>
                 </div>
                 <span class="text-muted-foreground">•</span>
-                <span class="text-muted-foreground">{{ getTalentExperience(selectedApplication.voiceActorId) }}</span>
+                <span class="text-muted-foreground">{{
+                  getTalentExperience(selectedApplication.voiceActorId)
+                }}</span>
               </div>
             </div>
           </div>
@@ -197,7 +246,14 @@
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
               <h4 class="text-foreground mb-2 font-medium">Proposed Cost</h4>
-              <p class="text-foreground text-lg font-semibold">{{ formatBudget({ max: selectedApplication.proposedCost, currency: selectedApplication.proposedCurrency }) }}</p>
+              <p class="text-foreground text-lg font-semibold">
+                {{
+                  formatBudget({
+                    max: selectedApplication.proposedCost,
+                    currency: selectedApplication.proposedCurrency,
+                  })
+                }}
+              </p>
             </div>
             <div>
               <h4 class="text-foreground mb-2 font-medium">Timeline</h4>
@@ -208,15 +264,21 @@
           <!-- Personal Note -->
           <div>
             <h4 class="text-foreground mb-2 font-medium">Personal Note</h4>
-            <p class="text-muted-foreground whitespace-pre-wrap">{{ selectedApplication.personalNote }}</p>
+            <p class="text-muted-foreground whitespace-pre-wrap">
+              {{ selectedApplication.personalNote }}
+            </p>
           </div>
           <!-- Showcases -->
           <div v-if="selectedApplication.customSamples?.length">
             <h4 class="text-foreground mb-2 font-medium">Showcases</h4>
             <div class="space-y-3">
-              <div v-for="sample in selectedApplication.customSamples" :key="sample.id" class="rounded-md border border-border p-3">
-                <div class="mb-1 text-sm font-medium text-foreground">{{ sample.title }}</div>
-                <div class="mb-2 text-xs text-muted-foreground">{{ sample.description }}</div>
+              <div
+                v-for="sample in selectedApplication.customSamples"
+                :key="sample.id"
+                class="border-border rounded-md border p-3"
+              >
+                <div class="text-foreground mb-1 text-sm font-medium">{{ sample.title }}</div>
+                <div class="text-muted-foreground mb-2 text-xs">{{ sample.description }}</div>
                 <audio :src="sample.audioUrl" controls class="w-full" />
               </div>
             </div>
@@ -265,7 +327,7 @@ const { getApplicationsByJobId, sortApplications } = useJobApplication()
 const { addToast: showToast } = useToast()
 
 // State
-const job = ref<any>(null)
+const job = ref<Record<string, unknown> | null>(null)
 const applications = ref<Application[]>([])
 const selectedApplication = ref<Application | null>(null)
 const showApplicationDetail = ref(false)
@@ -278,26 +340,32 @@ const jobDescription = computed(() => job.value?.description || '')
 const jobBudget = computed(() => job.value?.budget)
 const jobDeadline = computed(() => job.value?.deadline)
 
-const sortedApplications = computed(() => sortApplications(applications.value, sortBy.value === 'rate' ? 'cost' : (sortBy.value as any), sortOrder.value))
+const sortedApplications = computed(() =>
+  sortApplications(
+    applications.value,
+    sortBy.value === 'rate' ? 'cost' : (sortBy.value as 'date' | 'rating' | 'timeline'),
+    sortOrder.value,
+  ),
+)
 
 // Methods
 const getTalentAvatar = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.avatarUrl || ''
 }
 
 const getTalentLocation = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.location || 'Location not specified'
 }
 
 const getTalentRating = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.averageRating || 0
 }
 
 const getTalentExperience = (talentId: string) => {
-  const talent = mockVoiceActors.find(va => va.id === talentId)
+  const talent = mockVoiceActors.find((va) => va.id === talentId)
   return talent?.experience || 'Unknown'
 }
 
@@ -342,7 +410,7 @@ const selectTalent = (application: Application) => {
 }
 
 const viewApplication = (applicationId: string) => {
-  selectedApplication.value = applications.value.find(app => app.id === applicationId) || null
+  selectedApplication.value = applications.value.find((app) => app.id === applicationId) || null
   showApplicationDetail.value = true
 }
 

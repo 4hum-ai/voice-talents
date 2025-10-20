@@ -31,7 +31,6 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'My Profile', requiresAuth: true },
   },
 
-
   // Casting & Opportunities
   {
     path: '/talent/casting',

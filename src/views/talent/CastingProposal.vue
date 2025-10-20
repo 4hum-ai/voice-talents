@@ -174,7 +174,10 @@
 
             <!-- Actions -->
             <div class="border-border flex items-center justify-center space-x-4 border-t pt-6">
-              <Button variant="outline" @click="$router.push(`/talent/casting/${castingSession.id}`)">
+              <Button
+                variant="outline"
+                @click="$router.push(`/talent/casting/${castingSession.id}`)"
+              >
                 <EyeIcon class="mr-2 h-4 w-4" />
                 View Casting Details
               </Button>
@@ -322,7 +325,7 @@ const playSample = (sample: VoiceSample) => {
   console.log('Playing sample:', sample.title)
 }
 
-const playCustomSample = (customSample: any) => {
+const playCustomSample = (customSample: { title: string; url: string }) => {
   // In real app, this would play the custom sample
   console.log('Playing custom sample:', customSample.title)
 }

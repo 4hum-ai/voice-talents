@@ -97,14 +97,14 @@
                     step="100"
                     :class="[
                       'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
-                      formErrors.proposedCost 
-                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
-                        : 'border-border bg-background text-foreground focus:ring-primary'
+                      formErrors.proposedCost
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500'
+                        : 'border-border bg-background text-foreground focus:ring-primary',
                     ]"
                     placeholder="Enter your proposed cost"
                     required
                   />
-                  <p v-if="formErrors.proposedCost" class="text-red-500 mt-1 text-xs">
+                  <p v-if="formErrors.proposedCost" class="mt-1 text-xs text-red-500">
                     {{ formErrors.proposedCost }}
                   </p>
                 </div>
@@ -117,20 +117,19 @@
                     type="text"
                     :class="[
                       'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
-                      formErrors.proposedTimeline 
-                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
-                        : 'border-border bg-background text-foreground focus:ring-primary'
+                      formErrors.proposedTimeline
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500'
+                        : 'border-border bg-background text-foreground focus:ring-primary',
                     ]"
                     placeholder="e.g., 2-3 weeks, 1 month"
                     required
                   />
-                  <p v-if="formErrors.proposedTimeline" class="text-red-500 mt-1 text-xs">
+                  <p v-if="formErrors.proposedTimeline" class="mt-1 text-xs text-red-500">
                     {{ formErrors.proposedTimeline }}
                   </p>
                 </div>
               </div>
             </div>
-
 
             <!-- Showcases -->
             <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
@@ -148,7 +147,12 @@
                     <h4 class="text-foreground text-sm font-medium">
                       Custom Sample {{ index + 1 }}
                     </h4>
-                    <Button variant="ghost" size="sm" icon="mdi:trash" @click="removeCustomSample(index)" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon="mdi:trash"
+                      @click="removeCustomSample(index)"
+                    />
                   </div>
                   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
@@ -181,7 +185,9 @@
                     />
                   </div>
                 </div>
-                <Button variant="outline" icon="mdi:plus" @click="addCustomSample">Add Custom Sample</Button>
+                <Button variant="outline" icon="mdi:plus" @click="addCustomSample"
+                  >Add Custom Sample</Button
+                >
               </div>
             </div>
 
@@ -196,13 +202,13 @@
                 rows="6"
                 :class="[
                   'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
-                  formErrors.personalNote 
-                    ? 'border-red-500 bg-red-50 focus:ring-red-500' 
-                    : 'border-border bg-background text-foreground focus:ring-primary'
+                  formErrors.personalNote
+                    ? 'border-red-500 bg-red-50 focus:ring-red-500'
+                    : 'border-border bg-background text-foreground focus:ring-primary',
                 ]"
                 placeholder="Tell the studio why you're the perfect fit for this project..."
               ></textarea>
-              <p v-if="formErrors.personalNote" class="text-red-500 mt-1 text-xs">
+              <p v-if="formErrors.personalNote" class="mt-1 text-xs text-red-500">
                 {{ formErrors.personalNote }}
               </p>
             </div>
@@ -216,16 +222,16 @@
                 </span>
               </div>
               <div class="flex space-x-3">
-                <Button 
-                  variant="outline" 
-                  @click="saveDraft" 
+                <Button
+                  variant="outline"
+                  @click="saveDraft"
                   :disabled="isSubmitting || isSavingDraft"
                 >
                   {{ isSavingDraft ? 'Saving...' : 'Save Draft' }}
                 </Button>
-                <Button 
-                  variant="primary" 
-                  type="submit" 
+                <Button
+                  variant="primary"
+                  type="submit"
                   icon="mdi:send"
                   :disabled="isSubmitting || isSavingDraft || !isFormValid"
                 >
@@ -243,10 +249,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type {
-  CastingSession,
-  CastingProposal,
-} from '@/types/voice-actor'
+import type { CastingSession, CastingProposal } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
@@ -287,27 +290,50 @@ const proposal = ref<Partial<CastingProposal>>({
 // Form validation
 const isFormValid = computed(() => {
   const errors: Record<string, string> = {}
-  
+
   if (!proposal.value.proposedCost || proposal.value.proposedCost <= 0) {
     errors.proposedCost = 'Please enter a valid proposed cost'
   }
-  
+
   if (!proposal.value.proposedTimeline?.trim()) {
     errors.proposedTimeline = 'Please enter a proposed timeline'
   }
-  
+
   if (!proposal.value.personalNote?.trim()) {
     errors.personalNote = 'Please add a personal note to the studio'
   }
-  
-  formErrors.value = errors
+
   return Object.keys(errors).length === 0
 })
 
+// Watch for form validation changes and update formErrors
+watch(isFormValid, () => {
+  // Update formErrors when validation state changes
+  const errors: Record<string, string> = {}
+
+  if (!proposal.value.proposedCost || proposal.value.proposedCost <= 0) {
+    errors.proposedCost = 'Please enter a valid proposed cost'
+  }
+
+  if (!proposal.value.proposedTimeline?.trim()) {
+    errors.proposedTimeline = 'Please enter a proposed timeline'
+  }
+
+  if (!proposal.value.personalNote?.trim()) {
+    errors.personalNote = 'Please add a personal note to the studio'
+  }
+
+  formErrors.value = errors
+})
+
 // Watch for form changes
-watch(proposal, () => {
-  hasUnsavedChanges.value = true
-}, { deep: true })
+watch(
+  proposal,
+  () => {
+    hasUnsavedChanges.value = true
+  },
+  { deep: true },
+)
 
 // Methods
 const loadCastingSession = () => {
@@ -339,7 +365,6 @@ const formatDate = (dateString: string) => {
     year: 'numeric',
   })
 }
-
 
 const addCustomSample = () => {
   proposal.value.customSamples?.push({
@@ -375,23 +400,27 @@ const handleCustomSampleUpload = (event: Event, index: number) => {
     // In real app, upload file and get URL
     proposal.value.customSamples[index].audioUrl = URL.createObjectURL(file)
     proposal.value.customSamples[index].fileSize = file.size
-    proposal.value.customSamples[index].format = file.type.split('/')[1] as 'mp3' | 'wav' | 'aac' | 'flac'
+    proposal.value.customSamples[index].format = file.type.split('/')[1] as
+      | 'mp3'
+      | 'wav'
+      | 'aac'
+      | 'flac'
   }
 }
 
 const saveDraft = async () => {
   isSavingDraft.value = true
-  
+
   try {
     // In real app, save draft to backend
     console.log('Saving draft:', proposal.value)
-    
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    
+
     hasUnsavedChanges.value = false
     success('Draft saved successfully!')
-  } catch (err) {
+  } catch {
     error('Failed to save draft. Please try again.')
   } finally {
     isSavingDraft.value = false
@@ -415,7 +444,7 @@ const submitProposal = async () => {
 
     hasUnsavedChanges.value = false
     success('Proposal submitted successfully!')
-    
+
     // Redirect back to casting view
     router.push('/talent/casting')
   } catch (err) {

@@ -13,7 +13,14 @@
           <h2 class="text-foreground text-lg font-semibold">
             Invite {{ talent?.displayName || 'Talent' }} to Job
           </h2>
-          <Button variant="ghost" size="sm" icon="mdi:close" aria-label="Close" @click="$emit('close')">Close</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon="mdi:close"
+            aria-label="Close"
+            @click="$emit('close')"
+            >Close</Button
+          >
         </div>
 
         <!-- Content -->
@@ -56,7 +63,9 @@
                 <p class="text-muted-foreground mb-4">
                   You need to create a job posting before you can invite talents.
                 </p>
-                <Button variant="primary" icon="mdi:plus" @click="createNewJob">Create New Job</Button>
+                <Button variant="primary" icon="mdi:plus" @click="createNewJob"
+                  >Create New Job</Button
+                >
               </div>
 
               <div v-else class="space-y-3">

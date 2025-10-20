@@ -47,7 +47,14 @@
 
         <!-- Role Switcher -->
         <div class="mb-3">
-          <Button variant="ghost" size="sm" class="w-full justify-start" icon="mdi:briefcase" @click="switchToClient">Switch to Client</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="w-full justify-start"
+            icon="mdi:briefcase"
+            @click="switchToClient"
+            >Switch to Client</Button
+          >
         </div>
 
         <!-- Settings & Logout -->
@@ -59,7 +66,13 @@
             icon="mdi:cog"
             @click="$router.push('/talent/settings')"
           />
-          <Button variant="ghost" size="sm" class="flex-1" icon="mdi:logout" @click="handleLogout" />
+          <Button
+            variant="ghost"
+            size="sm"
+            class="flex-1"
+            icon="mdi:logout"
+            @click="handleLogout"
+          />
         </div>
       </div>
     </template>

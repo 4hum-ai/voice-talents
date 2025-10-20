@@ -18,15 +18,11 @@
           <div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
             <div>
               <span class="text-muted-foreground">Company:</span>
-              <span class="ml-2 font-medium">{{
-                modelValue.companyName || 'Not set'
-              }}</span>
+              <span class="ml-2 font-medium">{{ modelValue.companyName || 'Not set' }}</span>
             </div>
             <div>
               <span class="text-muted-foreground">Contact:</span>
-              <span class="ml-2 font-medium">{{
-                modelValue.contactName || 'Not set'
-              }}</span>
+              <span class="ml-2 font-medium">{{ modelValue.contactName || 'Not set' }}</span>
             </div>
             <div>
               <span class="text-muted-foreground">Email:</span>
@@ -50,11 +46,12 @@
             </div>
             <div v-if="modelValue.companySize">
               <span class="text-muted-foreground">Company Size:</span>
-              <span class="ml-2 font-medium">{{ getCompanySizeLabel(modelValue.companySize) }}</span>
+              <span class="ml-2 font-medium">{{
+                getCompanySizeLabel(modelValue.companySize)
+              }}</span>
             </div>
           </div>
         </div>
-
 
         <!-- Preferences Summary -->
         <div class="border-border border-b pb-6">
@@ -150,9 +147,9 @@ interface Props {
   showSocialLinks?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   showPublicProfile: true,
-  showSocialLinks: true
+  showSocialLinks: true,
 })
 
 // Company size options for label lookup
@@ -166,7 +163,7 @@ const companySizeOptions = [
 
 // Methods
 const getCompanySizeLabel = (value: string) => {
-  const option = companySizeOptions.find(opt => opt.value === value)
+  const option = companySizeOptions.find((opt) => opt.value === value)
   return option ? option.label : value
 }
 </script>

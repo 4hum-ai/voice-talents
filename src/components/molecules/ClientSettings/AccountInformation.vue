@@ -7,17 +7,13 @@
         <Icon name="mdi:account" class="h-8 w-8 text-white" />
       </div>
       <h2 class="text-foreground mb-2 text-2xl font-bold">Account Information</h2>
-      <p class="text-muted-foreground">
-        Set up your company details and contact information
-      </p>
+      <p class="text-muted-foreground">Set up your company details and contact information</p>
     </div>
 
     <div class="bg-card border-border rounded-lg border p-8">
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div class="lg:col-span-2">
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Company Name *
-          </label>
+          <label class="text-foreground mb-2 block text-sm font-medium"> Company Name * </label>
           <input
             :value="modelValue.companyName"
             @input="updateField('companyName', ($event.target as HTMLInputElement).value)"
@@ -29,9 +25,7 @@
         </div>
 
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Contact Name *
-          </label>
+          <label class="text-foreground mb-2 block text-sm font-medium"> Contact Name * </label>
           <input
             :value="modelValue.contactName"
             @input="updateField('contactName', ($event.target as HTMLInputElement).value)"
@@ -43,9 +37,7 @@
         </div>
 
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Email Address *
-          </label>
+          <label class="text-foreground mb-2 block text-sm font-medium"> Email Address * </label>
           <input
             :value="modelValue.email"
             @input="updateField('email', ($event.target as HTMLInputElement).value)"
@@ -57,9 +49,7 @@
         </div>
 
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Phone Number
-          </label>
+          <label class="text-foreground mb-2 block text-sm font-medium"> Phone Number </label>
           <input
             :value="modelValue.phone"
             @input="updateField('phone', ($event.target as HTMLInputElement).value)"
@@ -100,7 +90,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
 
 interface AccountInformationData {
   companyName: string
@@ -126,66 +115,81 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  requiredFields: () => ['companyName', 'contactName', 'email']
+  requiredFields: () => ['companyName', 'contactName', 'email'],
 })
 
 const emit = defineEmits<Emits>()
 
-// Options
-const timezoneOptions = [
-  { value: 'UTC-12', label: '(UTC-12:00) International Date Line West' },
-  { value: 'UTC-11', label: '(UTC-11:00) Coordinated Universal Time-11' },
-  { value: 'UTC+0', label: '(UTC+00:00) Coordinated Universal Time' },
-  { value: 'UTC+1', label: '(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' },
-  { value: 'UTC+2', label: '(UTC+02:00) Athens, Bucharest, Istanbul' },
-  { value: 'UTC+3', label: '(UTC+03:00) Moscow, St. Petersburg, Volgograd' },
-  { value: 'UTC+4', label: '(UTC+04:00) Abu Dhabi, Muscat' },
-  { value: 'UTC+5', label: '(UTC+05:00) Islamabad, Karachi, Tashkent' },
-  { value: 'UTC+6', label: '(UTC+06:00) Almaty, Dhaka' },
-  { value: 'UTC+7', label: '(UTC+07:00) Bangkok, Hanoi, Jakarta' },
-  { value: 'UTC+8', label: '(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi' },
-  { value: 'UTC+9', label: '(UTC+09:00) Osaka, Sapporo, Tokyo' },
-  { value: 'UTC+10', label: '(UTC+10:00) Brisbane, Canberra, Melbourne, Sydney' },
-  { value: 'UTC+11', label: '(UTC+11:00) Magadan, Solomon Islands, New Caledonia' },
-  { value: 'UTC+12', label: '(UTC+12:00) Auckland, Wellington, Fiji, Kamchatka' },
-]
+// Options - commented out as they're not currently used in the template
+// const timezoneOptions = [
+//   { value: 'UTC-12', label: '(UTC-12:00) International Date Line West' },
+//   { value: 'UTC-11', label: '(UTC-11:00) Coordinated Universal Time-11' },
+//   { value: 'UTC+0', label: '(UTC+00:00) Coordinated Universal Time' },
+//   { value: 'UTC+1', label: '(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' },
+//   { value: 'UTC+2', label: '(UTC+02:00) Athens, Bucharest, Istanbul' },
+//   { value: 'UTC+3', label: '(UTC+03:00) Moscow, St. Petersburg, Volgograd' },
+//   { value: 'UTC+4', label: '(UTC+04:00) Abu Dhabi, Muscat' },
+//   { value: 'UTC+5', label: '(UTC+05:00) Islamabad, Karachi, Tashkent' },
+//   { value: 'UTC+6', label: '(UTC+06:00) Almaty, Dhaka' },
+//   { value: 'UTC+7', label: '(UTC+07:00) Bangkok, Hanoi, Jakarta' },
+//   { value: 'UTC+8', label: '(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi' },
+//   { value: 'UTC+9', label: '(UTC+09:00) Osaka, Sapporo, Tokyo' },
+//   { value: 'UTC+10', label: '(UTC+10:00) Brisbane, Canberra, Melbourne, Sydney' },
+//   { value: 'UTC+11', label: '(UTC+11:00) Magadan, Solomon Islands, New Caledonia' },
+//   { value: 'UTC+12', label: '(UTC+12:00) Auckland, Wellington, Fiji, Kamchatka' },
+// ]
 
-const companySizeOptions = [
-  { value: 'startup', label: 'Startup (1-10 employees)' },
-  { value: 'small', label: 'Small (11-50 employees)' },
-  { value: 'medium', label: 'Medium (51-250 employees)' },
-  { value: 'large', label: 'Large (251-1000 employees)' },
-  { value: 'enterprise', label: 'Enterprise (1000+ employees)' },
-]
+// const companySizeOptions = [
+//   { value: 'startup', label: 'Startup (1-10 employees)' },
+//   { value: 'small', label: 'Small (11-50 employees)' },
+//   { value: 'medium', label: 'Medium (51-250 employees)' },
+//   { value: 'large', label: 'Large (251-1000 employees)' },
+//   { value: 'enterprise', label: 'Enterprise (1000+ employees)' },
+// ]
 
 // Computed
 const isValid = computed(() => {
-  const result = props.requiredFields.every(field => {
+  const result = props.requiredFields.every((field) => {
     const value = props.modelValue[field as keyof AccountInformationData]
     const isValid = value && value.toString().trim() !== ''
     console.log(`Field ${field}:`, value, 'isValid:', isValid)
     return isValid
   })
-  console.log('Overall validation result:', result, 'Required fields:', props.requiredFields, 'Model value:', props.modelValue)
+  console.log(
+    'Overall validation result:',
+    result,
+    'Required fields:',
+    props.requiredFields,
+    'Model value:',
+    props.modelValue,
+  )
   return result
 })
 
 // Methods
-const updateField = (field: keyof AccountInformationData, value: string | number | boolean | undefined) => {
+const updateField = (
+  field: keyof AccountInformationData,
+  value: string | number | boolean | undefined,
+) => {
   console.log(`updateField called with field: ${field}, value:`, value)
   const updated = { ...props.modelValue, [field]: String(value || '') }
   console.log(`Updating field ${field} with value:`, value, 'Updated data:', updated)
   console.log('Emitting update:modelValue with:', updated)
   emit('update:modelValue', updated)
-  
+
   // Compute validation based on updated data
-  const updatedIsValid = props.requiredFields.every(field => {
+  const updatedIsValid = props.requiredFields.every((field) => {
     const fieldValue = updated[field as keyof AccountInformationData]
     const isValid = fieldValue && fieldValue.toString().trim() !== ''
     console.log(`Field ${field}:`, fieldValue, 'isValid:', isValid)
     return isValid
   })
-  console.log('Emitting validation-change:', updatedIsValid, 'Required fields:', props.requiredFields)
+  console.log(
+    'Emitting validation-change:',
+    updatedIsValid,
+    'Required fields:',
+    props.requiredFields,
+  )
   emit('validation-change', updatedIsValid)
 }
 
@@ -194,8 +198,17 @@ console.log('Emitting initial validation state:', isValid.value)
 emit('validation-change', isValid.value)
 
 // Watch for changes in modelValue and re-emit validation
-watch(() => props.modelValue, (newValue) => {
-  console.log('Model value changed, re-emitting validation:', isValid.value, 'New value:', newValue)
-  emit('validation-change', isValid.value)
-}, { deep: true, immediate: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    console.log(
+      'Model value changed, re-emitting validation:',
+      isValid.value,
+      'New value:',
+      newValue,
+    )
+    emit('validation-change', isValid.value)
+  },
+  { deep: true, immediate: true },
+)
 </script>

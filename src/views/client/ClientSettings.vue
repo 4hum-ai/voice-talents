@@ -22,11 +22,7 @@
         <div class="mx-auto max-w-4xl">
           <form @submit.prevent="saveSettings" class="space-y-8">
             <!-- Tab Navigation with Content -->
-            <TabNavigation
-              v-model="currentTab"
-              variant="underline"
-              size="md"
-            >
+            <TabNavigation v-model="currentTab" variant="underline" size="md">
               <!-- Account Information Tab -->
               <Tab
                 id="account"
@@ -39,7 +35,6 @@
                   @validation-change="updateTabValidation('account', $event)"
                 />
               </Tab>
-
 
               <!-- Job Preferences Tab -->
               <Tab
@@ -68,19 +63,13 @@
               </Tab>
 
               <!-- Review & Save Tab -->
-              <Tab
-                id="review"
-                label="Review"
-                :icon="CheckCircleIcon"
-              >
-                <ReviewAndSave
-                  :model-value="reviewData"
-                />
+              <Tab id="review" label="Review" :icon="CheckCircleIcon">
+                <ReviewAndSave :model-value="reviewData" />
               </Tab>
             </TabNavigation>
 
             <!-- Save Button -->
-            <div class="flex justify-end pt-6 border-t border-border">
+            <div class="border-border flex justify-end border-t pt-6">
               <Button
                 variant="primary"
                 size="lg"
@@ -115,7 +104,7 @@ import {
   AccountInformation,
   JobPreferences,
   SocialLinks,
-  ReviewAndSave
+  ReviewAndSave,
 } from '@/components/molecules/ClientSettings'
 import AccountIcon from '~icons/mdi/account'
 import CogIcon from '~icons/mdi/cog'
@@ -130,7 +119,6 @@ const isSaving = ref(false)
 const currentTab = ref('account')
 const tabValidation = reactive<Record<string, boolean>>({})
 
-
 // Component data structures
 const accountData = reactive({
   companyName: '',
@@ -144,7 +132,6 @@ const accountData = reactive({
   companySize: 'small' as 'startup' | 'small' | 'medium' | 'large' | 'enterprise',
   description: '',
 })
-
 
 const jobPreferencesData = reactive({
   autoApprove: false,
@@ -240,11 +227,10 @@ const loadSettings = () => {
   accountData.companySize = client.companySize || 'small'
   accountData.description = client.description || ''
 
-
   // Load job preferences
   jobPreferencesData.autoApprove = client.preferences.autoApprove
   jobPreferencesData.requireNDA = client.preferences.requireNDA
-  jobPreferencesData.requirePortfolio = (client.preferences as any).requirePortfolio || true
+  jobPreferencesData.requirePortfolio = (client.preferences as Record<string, unknown>).requirePortfolio as boolean || true
   jobPreferencesData.isPublic = client.isPublic
 
   // Load social links
@@ -287,7 +273,6 @@ const saveSettings = async () => {
 
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
   } catch (error) {
     console.error('Error saving settings:', error)
     alert('Failed to save settings. Please try again.')

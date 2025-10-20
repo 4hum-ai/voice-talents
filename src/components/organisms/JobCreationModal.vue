@@ -162,14 +162,16 @@ const autoSaveInterval = ref<number | null>(null)
 const currentClient = ref(mockClientData.voiceClients[0])
 
 // Voice type selection (outside of steps)
-const selectedVoiceType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | undefined>(undefined)
+const selectedVoiceType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | undefined>(
+  undefined,
+)
 
 // Job form data - Dynamic based on voice type
 const jobForm = reactive({
   voiceType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
   title: '',
   description: '',
-  projectType: 'commercial' as any,
+  projectType: 'commercial' as string,
   priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
   budget: {
     max: 0,
@@ -267,7 +269,7 @@ const saveDraft = async () => {
 
   try {
     const draft = saveDraftToStorage(
-      jobForm as any,
+      jobForm as Record<string, unknown>,
       currentClient.value.id,
       currentClient.value.companyName,
       currentDraftId.value || undefined,
@@ -296,7 +298,7 @@ const saveDraft = async () => {
 const autoSaveHandler = () => {
   if (jobForm.title.trim() || jobForm.description.trim()) {
     const draft = autoSaveDraft(
-      jobForm as any,
+      jobForm as Record<string, unknown>,
       currentClient.value.id,
       currentClient.value.companyName,
       currentDraftId.value || undefined,
@@ -327,7 +329,7 @@ const loadDraftData = (draftId: string) => {
     currentDraftId.value = draft.id
 
     // Populate form with draft data
-    jobForm.voiceType = (draft.jobType as any) || 'talent_only'
+    jobForm.voiceType = (draft.jobType as 'talent_only' | 'ai_synthesis' | 'hybrid_approach') || 'talent_only'
     selectedVoiceType.value = jobForm.voiceType
     jobForm.title = draft.title
     jobForm.description = draft.description
@@ -336,31 +338,31 @@ const loadDraftData = (draftId: string) => {
     jobForm.budget = { max: draft.budget.max, currency: draft.budget.currency }
     jobForm.deadline = draft.deadline
     jobForm.requirements = {
-      language: (draft.requirements as any).language || '',
-      voiceType: (draft.requirements as any).voiceType || '',
+      language: (draft.requirements as Record<string, unknown>).language as string || '',
+      voiceType: (draft.requirements as Record<string, unknown>).voiceType as string || '',
       gender: draft.requirements.gender || 'any',
       specialInstructions: draft.requirements.specialInstructions || '',
-      deliveryFormat: (draft.requirements as any).deliveryFormat || '',
-      deliveryTimeline: (draft.requirements as any).deliveryTimeline || '',
-      revisionRounds: (draft.requirements as any).revisionRounds || '',
+      deliveryFormat: (draft.requirements as Record<string, unknown>).deliveryFormat as string || '',
+      deliveryTimeline: (draft.requirements as Record<string, unknown>).deliveryTimeline as string || '',
+      revisionRounds: (draft.requirements as Record<string, unknown>).revisionRounds as string || '',
     }
-    jobForm.files = (draft as any).files || {
+    jobForm.files = (draft as Record<string, unknown>).files as typeof jobForm.files || {
       script: undefined,
       referenceAudio: undefined,
       additional: undefined,
     }
-    jobForm.premiumFeatures = (draft as any).premiumFeatures || {
+    jobForm.premiumFeatures = (draft as Record<string, unknown>).premiumFeatures as typeof jobForm.premiumFeatures || {
       expressMatching: false,
       talentOutreach: false,
     }
-    jobForm.aiSettings = (draft as any).aiSettings || {
+    jobForm.aiSettings = (draft as Record<string, unknown>).aiSettings as typeof jobForm.aiSettings || {
       voiceModel: '',
       voiceStyle: '',
       emotion: '',
       speed: 'normal',
       pitch: 'normal',
     }
-    jobForm.paymentDetails = (draft as any).paymentDetails || {
+    jobForm.paymentDetails = (draft as Record<string, unknown>).paymentDetails as typeof jobForm.paymentDetails || {
       method: 'direct',
     }
     jobForm.isPublic = draft.isPublic
@@ -380,7 +382,7 @@ const publishJobHandler = async () => {
     // First save as draft if not already saved
     if (!currentDraftId.value) {
       const draft = saveDraftToStorage(
-        jobForm as any,
+        jobForm as Record<string, unknown>,
         currentClient.value.id,
         currentClient.value.companyName,
       )
@@ -421,7 +423,7 @@ const resetForm = () => {
     voiceType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
     title: '',
     description: '',
-    projectType: 'commercial' as any,
+    projectType: 'commercial' as string,
     budget: {
       max: 0,
       currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND',

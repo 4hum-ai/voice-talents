@@ -120,7 +120,7 @@ export function useOnboarding() {
     localStorage.setItem(STORAGE_KEYS.CURRENT_STEP, step.toString())
   }
 
-  const completeTalentOnboarding = (data?: any) => {
+  const completeTalentOnboarding = (data?: Record<string, unknown>) => {
     onboardingState.value.talentOnboarding = 'completed'
     localStorage.setItem(STORAGE_KEYS.TALENT_ONBOARDING, 'true')
     if (data) {
@@ -128,7 +128,7 @@ export function useOnboarding() {
     }
   }
 
-  const completeClientOnboarding = (data?: any) => {
+  const completeClientOnboarding = (data?: Record<string, unknown>) => {
     onboardingState.value.clientOnboarding = 'completed'
     localStorage.setItem(STORAGE_KEYS.CLIENT_ONBOARDING, 'true')
     if (data) {
@@ -136,7 +136,7 @@ export function useOnboarding() {
     }
   }
 
-  const completeCurrentOnboarding = (data?: any) => {
+  const completeCurrentOnboarding = (data?: Record<string, unknown>) => {
     if (onboardingState.value.mode === 'talent') {
       completeTalentOnboarding(data)
     } else if (onboardingState.value.mode === 'client') {

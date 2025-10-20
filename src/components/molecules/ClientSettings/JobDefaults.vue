@@ -41,9 +41,7 @@
         </div>
 
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Default Currency
-          </label>
+          <label class="text-foreground mb-2 block text-sm font-medium"> Default Currency </label>
           <SelectInput
             :model-value="modelValue.defaultBudget.currency"
             @update:model-value="updateBudgetField('currency', $event)"
@@ -110,7 +108,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  requiredFields: () => ['preferredLanguages', 'preferredVoiceTypes']
+  requiredFields: () => ['preferredLanguages', 'preferredVoiceTypes'],
 })
 
 const emit = defineEmits<Emits>()
@@ -155,7 +153,7 @@ const voiceTypeOptions = [
 
 // Computed
 const isValid = computed(() => {
-  return props.requiredFields.every(field => {
+  return props.requiredFields.every((field) => {
     const value = props.modelValue[field as keyof JobDefaultsData]
     if (field === 'preferredLanguages' || field === 'preferredVoiceTypes') {
       return Array.isArray(value) && value.length > 0
@@ -165,19 +163,19 @@ const isValid = computed(() => {
 })
 
 // Methods
-const updateField = (field: keyof JobDefaultsData, value: any) => {
+const updateField = (field: keyof JobDefaultsData, value: string | number | boolean) => {
   const updated = { ...props.modelValue, [field]: value }
   emit('update:modelValue', updated)
   emit('validation-change', isValid.value)
 }
 
-const updateBudgetField = (field: keyof BudgetRange, value: any) => {
+const updateBudgetField = (field: keyof BudgetRange, value: number) => {
   const updated = {
     ...props.modelValue,
     defaultBudget: {
       ...props.modelValue.defaultBudget,
-      [field]: value
-    }
+      [field]: value,
+    },
   }
   emit('update:modelValue', updated)
   emit('validation-change', isValid.value)

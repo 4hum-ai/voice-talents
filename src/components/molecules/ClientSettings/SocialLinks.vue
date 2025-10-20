@@ -23,9 +23,7 @@
           />
         </div>
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Facebook Page
-          </label>
+          <label class="text-foreground mb-2 block text-sm font-medium"> Facebook Page </label>
           <input
             :value="modelValue.facebook"
             @input="updateField('facebook', ($event.target as HTMLInputElement).value)"
@@ -81,7 +79,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showWebsite: false
+  showWebsite: false,
 })
 
 const emit = defineEmits<Emits>()

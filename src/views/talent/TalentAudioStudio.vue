@@ -1,6 +1,5 @@
 <template>
   <div class="bg-background flex min-h-screen">
-
     <!-- Main Content -->
     <div class="flex-1">
       <!-- Header -->
@@ -9,14 +8,21 @@
         <template #subtitle>{{ job?.title || 'Recording Session' }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="primary" size="sm" icon="mdi:send" @click="submitWork" :disabled="!canSubmit">Submit Work</Button>
+          <Button
+            variant="primary"
+            size="sm"
+            icon="mdi:send"
+            @click="submitWork"
+            :disabled="!canSubmit"
+            >Submit Work</Button
+          >
         </template>
       </AppBar>
 
       <!-- Studio Content -->
-      <div class="flex pt-16 h-[calc(100vh-4rem)] overflow-hidden">
+      <div class="flex h-[calc(100vh-4rem)] overflow-hidden pt-16">
         <!-- Left Side - Transcript -->
-        <div class="w-1/2 overflow-y-auto border-r border-border p-6">
+        <div class="border-border w-1/2 overflow-y-auto border-r p-6">
           <div class="mb-4 flex items-center justify-between">
             <h3 class="text-foreground text-lg font-semibold">Script & Transcript</h3>
             <div class="flex items-center space-x-2">
@@ -29,7 +35,14 @@
               >
                 {{ isGeneratingTTS ? 'Generating...' : 'Generate TTS' }}
               </Button>
-              <Button variant="outline" size="sm" icon="mdi:play" @click="playFullTTS" :disabled="!hasTTS">Play All</Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:play"
+                @click="playFullTTS"
+                :disabled="!hasTTS"
+                >Play All</Button
+              >
             </div>
           </div>
 
@@ -47,7 +60,9 @@
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <div class="mb-2 flex items-center space-x-2">
-                    <span class="text-muted-foreground rounded bg-gray-100 px-2 py-1 font-mono text-xs dark:bg-gray-700">
+                    <span
+                      class="text-muted-foreground rounded bg-gray-100 px-2 py-1 font-mono text-xs dark:bg-gray-700"
+                    >
                       {{ segment.startTime }}
                     </span>
                     <span class="text-muted-foreground text-xs">{{ segment.duration }}</span>
@@ -74,8 +89,18 @@
                     @click="playSegment(index)"
                     :disabled="!segment.hasAudio"
                   />
-                  <Button variant="ghost" size="sm" icon="mdi:microphone" @click="recordSegment(index)" />
-                  <Button variant="ghost" size="sm" icon="mdi:target" @click="selectSegment(index)" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="mdi:microphone"
+                    @click="recordSegment(index)"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="mdi:target"
+                    @click="selectSegment(index)"
+                  />
                 </div>
               </div>
             </div>
@@ -163,13 +188,27 @@
               >
                 Play
               </Button>
-              <Button variant="outline" size="lg" icon="mdi:scissors-cutting" @click="cutAudio" :disabled="!hasRecording">Cut</Button>
-              <Button variant="outline" size="lg" icon="mdi:delete" @click="removeAudio" :disabled="!hasRecording">Remove</Button>
+              <Button
+                variant="outline"
+                size="lg"
+                icon="mdi:scissors-cutting"
+                @click="cutAudio"
+                :disabled="!hasRecording"
+                >Cut</Button
+              >
+              <Button
+                variant="outline"
+                size="lg"
+                icon="mdi:delete"
+                @click="removeAudio"
+                :disabled="!hasRecording"
+                >Remove</Button
+              >
             </div>
           </div>
 
           <!-- Progress Summary -->
-          <div class="mt-8 rounded-lg border border-border bg-card p-4">
+          <div class="border-border bg-card mt-8 rounded-lg border p-4">
             <h4 class="text-foreground mb-3 font-medium">Recording Progress</h4>
             <div class="space-y-2 text-sm">
               <div class="flex justify-between">
@@ -186,7 +225,9 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-muted-foreground">Progress:</span>
-                <span class="text-foreground font-medium">{{ Math.round((recordedSegmentsCount / scriptSegments.length) * 100) }}%</span>
+                <span class="text-foreground font-medium"
+                  >{{ Math.round((recordedSegmentsCount / scriptSegments.length) * 100) }}%</span
+                >
               </div>
             </div>
           </div>
@@ -229,14 +270,14 @@ const selectedSegmentIndex = ref<number | null>(null)
 const loadJobData = () => {
   const jobId = route.params.id as string
   const jobData = getJob(jobId)
-  
+
   if (jobData) {
     // Transform Job to JobDetail with script segments
     job.value = {
       ...jobData,
       progress: 65,
       voiceStyle: 'Professional',
-      pace: 'Medium', 
+      pace: 'Medium',
       tone: 'Friendly',
       duration: '2-3 minutes',
       recordingQuality: 'Professional',
@@ -266,8 +307,8 @@ const loadJobData = () => {
             name: 'product_images.zip',
             size: 5242880,
             type: 'application/zip',
-          }
-        ]
+          },
+        ],
       },
       scriptSegments: [
         {
@@ -324,7 +365,7 @@ const loadJobData = () => {
           hasAudio: false,
           isSelected: false,
         },
-      ]
+      ],
     }
   } else {
     // Mock data for development
@@ -347,7 +388,7 @@ const loadJobData = () => {
         gender: 'any',
         experience: 'professional',
         specialInstructions: 'Professional voice over for product commercial',
-        quality: 'professional'
+        quality: 'professional',
       },
       deliverables: [],
       files: [],
@@ -362,7 +403,7 @@ const loadJobData = () => {
       progress: 65,
       voiceStyle: 'Professional',
       pace: 'Medium',
-      tone: 'Friendly', 
+      tone: 'Friendly',
       duration: '2-3 minutes',
       recordingQuality: 'Professional',
       clientNotes: [
@@ -391,8 +432,8 @@ const loadJobData = () => {
             name: 'product_images.zip',
             size: 5242880,
             type: 'application/zip',
-          }
-        ]
+          },
+        ],
       },
       scriptSegments: [
         {
@@ -449,7 +490,7 @@ const loadJobData = () => {
           hasAudio: false,
           isSelected: false,
         },
-      ]
+      ],
     }
   }
 }
@@ -458,18 +499,15 @@ const loadJobData = () => {
 const scriptSegments = computed(() => job.value?.scriptSegments || [])
 
 // Computed
-const recordedSegmentsCount = computed(() => 
-  scriptSegments.value.filter(segment => segment.hasRecording).length
+const recordedSegmentsCount = computed(
+  () => scriptSegments.value.filter((segment) => segment.hasRecording).length,
 )
 
-const ttsSegmentsCount = computed(() => 
-  scriptSegments.value.filter(segment => segment.hasTTS).length
+const ttsSegmentsCount = computed(
+  () => scriptSegments.value.filter((segment) => segment.hasTTS).length,
 )
 
-const canSubmit = computed(() => 
-  recordedSegmentsCount.value > 0 || job.value?.finalAudio
-)
-
+const canSubmit = computed(() => recordedSegmentsCount.value > 0 || job.value?.finalAudio)
 
 // TTS methods
 const generateTTS = async () => {
@@ -549,7 +587,7 @@ const stopRecording = () => {
   }
 }
 
-const playRecording = (recording?: any) => {
+const playRecording = (recording?: { name: string; url: string }) => {
   success(recording ? `Playing ${recording.name}` : 'Playing recording')
 }
 

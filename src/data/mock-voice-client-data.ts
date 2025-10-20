@@ -485,7 +485,13 @@ export const mockJobPostings: JobPosting[] = [
     ],
     campaignId: 'campaign-001',
     isPublic: true,
-    applications: [mockJobApplications[0], mockJobApplications[1], mockJobApplications[2], mockJobApplications[8], mockJobApplications[9]],
+    applications: [
+      mockJobApplications[0],
+      mockJobApplications[1],
+      mockJobApplications[2],
+      mockJobApplications[8],
+      mockJobApplications[9],
+    ],
     selectedTalents: [],
     totalApplications: 5,
     viewCount: 45,
@@ -644,7 +650,8 @@ export const mockJobPostings: JobPosting[] = [
     clientId: 'client-001',
     clientName: 'TechFlow Inc.',
     title: 'Mobile App Commercial Series',
-    description: 'Series of 3 commercials for mobile app launch. Completed successfully with high-quality deliverables.',
+    description:
+      'Series of 3 commercials for mobile app launch. Completed successfully with high-quality deliverables.',
     jobType: 'open_casting',
     projectType: 'commercial',
     status: 'completed',
@@ -677,9 +684,10 @@ export const mockJobPostings: JobPosting[] = [
           'https://example.com/deliverables/techflow-commercial-1.mp3',
           'https://example.com/deliverables/techflow-commercial-2.mp3',
           'https://example.com/deliverables/techflow-commercial-3.mp3',
-          'https://example.com/deliverables/techflow-commercial-series.zip'
+          'https://example.com/deliverables/techflow-commercial-series.zip',
         ],
-        notes: 'All files delivered in both individual and packaged formats. Includes raw and processed versions.',
+        notes:
+          'All files delivered in both individual and packaged formats. Includes raw and processed versions.',
         createdAt: '2024-01-01T09:00:00Z',
         updatedAt: '2024-01-14T16:00:00Z',
       },
@@ -748,9 +756,10 @@ export const mockJobPostings: JobPosting[] = [
         files: [
           'https://example.com/deliverables/edutech-training-module.mp3',
           'https://example.com/deliverables/edutech-training-chapters.zip',
-          'https://example.com/deliverables/edutech-training-raw-files.zip'
+          'https://example.com/deliverables/edutech-training-raw-files.zip',
         ],
-        notes: 'Delivered in multiple formats: single file, chapterized, and raw files for editing.',
+        notes:
+          'Delivered in multiple formats: single file, chapterized, and raw files for editing.',
         createdAt: '2023-12-25T09:00:00Z',
         updatedAt: '2024-01-09T15:30:00Z',
       },
@@ -790,7 +799,8 @@ export const mockJobPostings: JobPosting[] = [
     clientId: 'client-001',
     clientName: 'TechFlow Inc.',
     title: 'Podcast Intro & Outro',
-    description: 'Need professional voice-over for podcast intro and outro segments. Looking for warm, engaging voice that builds trust with listeners.',
+    description:
+      'Need professional voice-over for podcast intro and outro segments. Looking for warm, engaging voice that builds trust with listeners.',
     jobType: 'open_casting',
     projectType: 'podcast',
     status: 'published',
@@ -855,7 +865,8 @@ export const mockJobPostings: JobPosting[] = [
     clientId: 'client-001',
     clientName: 'TechFlow Inc.',
     title: 'Audiobook Narration Project',
-    description: 'Looking for a professional narrator for a 10-hour business audiobook. Need clear, engaging voice with good pacing.',
+    description:
+      'Looking for a professional narrator for a 10-hour business audiobook. Need clear, engaging voice with good pacing.',
     jobType: 'open_casting',
     projectType: 'audiobook',
     status: 'draft',
@@ -869,7 +880,8 @@ export const mockJobPostings: JobPosting[] = [
       accents: ['American'],
       voiceTypes: ['narrator', 'audiobook'],
       experience: 'advanced',
-      specialInstructions: 'Professional audiobook narration experience required. Must have home studio setup.',
+      specialInstructions:
+        'Professional audiobook narration experience required. Must have home studio setup.',
       quality: 'professional',
     },
     deliverables: [

@@ -256,13 +256,13 @@ interface FormField {
     minLength?: number
     maxLength?: number
     pattern?: RegExp
-    custom?: (value: any) => string | null
+    custom?: (value: unknown) => string | null
   }
 }
 
 interface Props {
   fields: FormField[]
-  initialValues?: Record<string, any>
+  initialValues?: Record<string, unknown>
   loading?: boolean
   showCancel?: boolean
   submitText?: string
@@ -275,13 +275,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  submit: [values: Record<string, any>]
+  submit: [values: Record<string, unknown>]
   cancel: []
-  change: [field: string, value: any]
+  change: [field: string, value: unknown]
 }>()
 
 // State
-const formData = reactive<Record<string, any>>({})
+const formData = reactive<Record<string, unknown>>({})
 const errors = reactive<Record<string, string>>({})
 const touched = reactive<Record<string, boolean>>({})
 
@@ -308,7 +308,7 @@ const getFieldValue = (name: string) => {
   return formData[name] || ''
 }
 
-const updateField = (name: string, value: any) => {
+const updateField = (name: string, value: unknown) => {
   formData[name] = value
   touched[name] = true
   emit('change', name, value)

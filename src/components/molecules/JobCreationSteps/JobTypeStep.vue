@@ -24,7 +24,7 @@
         />
         <label
           :for="type.value"
-          class="relative flex h-full cursor-pointer flex-col rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl overflow-visible"
+          class="relative flex h-full cursor-pointer flex-col overflow-visible rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
           :class="
             localJobType === type.value
               ? 'border-primary from-primary/10 via-primary/5 shadow-primary/20 bg-gradient-to-br to-transparent shadow-xl'
@@ -34,7 +34,7 @@
           <!-- Selection Indicator -->
           <div
             v-if="localJobType === type.value"
-            class="bg-primary absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full z-10"
+            class="bg-primary absolute -top-2 -right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full"
           >
             <Icon name="mdi:check" class="h-5 w-5 text-white" />
           </div>

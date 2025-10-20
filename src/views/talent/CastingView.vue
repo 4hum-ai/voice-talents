@@ -12,7 +12,9 @@
         <template #actions>
           <ThemeToggle />
           <ViewToggle v-model="viewMode" />
-          <Button variant="primary" size="sm" icon="mdi:refresh" @click="refreshCasting">Refresh</Button>
+          <Button variant="primary" size="sm" icon="mdi:refresh" @click="refreshCasting"
+            >Refresh</Button
+          >
         </template>
       </AppBar>
 
@@ -197,7 +199,12 @@
                       icon="mdi:eye"
                       @click="$router.push(`/talent/casting/${session.id}`)"
                     />
-                    <Button variant="ghost" size="sm" icon="mdi:share" @click="shareCasting(session)" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon="mdi:share"
+                      @click="shareCasting(session)"
+                    />
                   </div>
                   <Button
                     v-if="!getUserProposalStatus(session)"

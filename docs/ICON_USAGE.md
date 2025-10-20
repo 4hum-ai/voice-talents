@@ -1,6 +1,6 @@
 # Icon Usage Conventions
 
-This document outlines the standardized approach for using icons in the Movie Dubie Studio project.
+This document outlines the standardized approach for using icons in the project.
 
 ## 🎯 **Icon System Overview**
 

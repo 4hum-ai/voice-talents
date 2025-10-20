@@ -48,20 +48,22 @@ const initializeJobs = () => {
 // Initialize mock jobs for demonstration
 const initializeMockJobs = () => {
   // Import the enhanced mock data
-  import('@/data/mock-voice-client-data').then(({ mockJobPostings }) => {
-    // Convert JobPosting to Job format for ALL jobs (not just completed)
-    const mockJobs: Job[] = mockJobPostings.map((job: any) => ({
-      ...job,
-      lastSaved: job.closedDate || job.updatedAt || job.createdAt,
-      autoSaved: false,
-      version: 1,
-    }))
-    
-    state.jobs = mockJobs
-    saveJobsToStorage()
-  }).catch((error) => {
-    console.error('Error loading mock data:', error)
-  })
+  import('@/data/mock-voice-client-data')
+    .then(({ mockJobPostings }) => {
+      // Convert JobPosting to Job format for ALL jobs (not just completed)
+      const mockJobs: Job[] = mockJobPostings.map((job: Record<string, unknown>) => ({
+        ...job,
+        lastSaved: job.closedDate || job.updatedAt || job.createdAt,
+        autoSaved: false,
+        version: 1,
+      }))
+
+      state.jobs = mockJobs
+      saveJobsToStorage()
+    })
+    .catch((error) => {
+      console.error('Error loading mock data:', error)
+    })
 }
 
 // Save jobs to localStorage

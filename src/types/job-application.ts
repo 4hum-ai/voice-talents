@@ -8,7 +8,12 @@ export interface CustomSample {
   fileSize?: number
 }
 
-export type ApplicationStatus = 'submitted' | 'under_review' | 'shortlisted' | 'selected' | 'rejected'
+export type ApplicationStatus =
+  | 'submitted'
+  | 'under_review'
+  | 'shortlisted'
+  | 'selected'
+  | 'rejected'
 
 export interface Application {
   id: string
@@ -25,5 +30,3 @@ export interface Application {
   customSamples: CustomSample[]
   personalNote: string
 }
-
-

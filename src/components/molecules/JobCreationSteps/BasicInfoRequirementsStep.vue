@@ -143,8 +143,8 @@
           <h3 class="text-foreground mb-6 text-lg font-semibold">Project Files</h3>
 
           <!-- Project Type Selection Notice -->
-          <div v-if="!localProjectType" class="mb-6 rounded-lg bg-muted/50 p-4">
-            <div class="flex items-center gap-2 text-muted-foreground">
+          <div v-if="!localProjectType" class="bg-muted/50 mb-6 rounded-lg p-4">
+            <div class="text-muted-foreground flex items-center gap-2">
               <Icon name="mdi:information" class="h-5 w-5" />
               <span class="text-sm">Select a project type to see specific file requirements</span>
             </div>
@@ -156,7 +156,9 @@
             <div v-if="currentProjectConfig?.files.required.length">
               <h4 class="text-foreground mb-4 text-sm font-semibold">
                 Required Files
-                <span class="text-muted-foreground text-xs font-normal">({{ currentProjectConfig.files.required.length }})</span>
+                <span class="text-muted-foreground text-xs font-normal"
+                  >({{ currentProjectConfig.files.required.length }})</span
+                >
               </h4>
               <div class="space-y-4">
                 <div v-for="fileReq in currentProjectConfig.files.required" :key="fileReq.id">
@@ -183,7 +185,9 @@
             <div v-if="currentProjectConfig?.files.optional.length">
               <h4 class="text-foreground mb-4 text-sm font-semibold">
                 Optional Files
-                <span class="text-muted-foreground text-xs font-normal">({{ currentProjectConfig.files.optional.length }})</span>
+                <span class="text-muted-foreground text-xs font-normal"
+                  >({{ currentProjectConfig.files.optional.length }})</span
+                >
               </h4>
               <div class="space-y-4">
                 <div v-for="fileReq in currentProjectConfig.files.optional" :key="fileReq.id">
@@ -207,8 +211,14 @@
             </div>
 
             <!-- No Files Required -->
-            <div v-if="!currentProjectConfig?.files.required.length && !currentProjectConfig?.files.optional.length" class="rounded-lg bg-muted/50 p-4">
-              <div class="flex items-center gap-2 text-muted-foreground">
+            <div
+              v-if="
+                !currentProjectConfig?.files.required.length &&
+                !currentProjectConfig?.files.optional.length
+              "
+              class="bg-muted/50 rounded-lg p-4"
+            >
+              <div class="text-muted-foreground flex items-center gap-2">
                 <Icon name="mdi:file-check" class="h-5 w-5" />
                 <span class="text-sm">No specific files required for this project type</span>
               </div>
@@ -280,9 +290,9 @@ const emit = defineEmits<Emits>()
 
 const localTitle = ref(props.title)
 const localProjectType = ref(props.projectType)
-const localRequirements = ref<Requirements>({ 
+const localRequirements = ref<Requirements>({
   ...props.requirements,
-  deliveryFormat: props.requirements.deliveryFormat || 'mp3_44khz' // Default to ElevenLabs MP3
+  deliveryFormat: props.requirements.deliveryFormat || 'mp3_44khz', // Default to ElevenLabs MP3
 })
 const localDeadline = ref(props.deadline)
 const localFiles = ref<ProjectFiles>({ ...props.files })
@@ -292,9 +302,9 @@ const { getAllConfigs, getConfig } = useJobType()
 
 // Generate project type options from composable
 const combinedProjectTypeOptions = computed(() => {
-  return getAllConfigs.value.map(config => ({
+  return getAllConfigs.value.map((config) => ({
     value: config.id,
-    label: config.label
+    label: config.label,
   }))
 })
 
@@ -309,7 +319,7 @@ const deliveryFormat = computed({
   get: () => localRequirements.value.deliveryFormat || 'mp3_44khz',
   set: (value) => {
     localRequirements.value.deliveryFormat = value
-  }
+  },
 })
 
 const languageOptions = [
@@ -342,7 +352,6 @@ const revisionRoundsOptions = [
   { value: '3', label: '3 Revisions' },
   { value: 'unlimited', label: 'Unlimited' },
 ]
-
 
 // Computed properties
 

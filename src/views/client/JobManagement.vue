@@ -11,7 +11,9 @@
         <template #subtitle>Manage your voice acting job postings</template>
         <template #actions>
           <div class="flex items-center space-x-2">
-            <div class="flex items-center space-x-1 rounded-lg border border-border bg-background p-1">
+            <div
+              class="border-border bg-background flex items-center space-x-1 rounded-lg border p-1"
+            >
               <Button
                 variant="ghost"
                 size="sm"
@@ -27,9 +29,18 @@
                 :class="{ 'bg-primary text-primary-foreground': viewMode === 'kanban' }"
               />
             </div>
-          <ThemeToggle />
-            <Button variant="outline" size="sm" icon="mdi:refresh" @click="reloadMockData" title="Reload Mock Data">Reload Data</Button>
-          <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal">Create Job</Button>
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              size="sm"
+              icon="mdi:refresh"
+              @click="reloadMockData"
+              title="Reload Mock Data"
+              >Reload Data</Button
+            >
+            <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal"
+              >Create Job</Button
+            >
           </div>
         </template>
       </AppBar>
@@ -38,189 +49,203 @@
         <div class="mx-auto max-w-7xl">
           <!-- List View -->
           <div v-if="viewMode === 'list'">
-          <!-- Live Jobs Section -->
-          <div v-if="clientLiveJobs.length > 0" class="mb-8">
-            <div class="mb-4 flex items-center justify-between">
+            <!-- Live Jobs Section -->
+            <div v-if="clientLiveJobs.length > 0" class="mb-8">
+              <div class="mb-4 flex items-center justify-between">
                 <button
                   @click="toggleGroup('live')"
-                  class="flex items-center space-x-2 text-left hover:text-primary"
+                  class="hover:text-primary flex items-center space-x-2 text-left"
                 >
                   <ChevronDownIcon
                     v-if="!collapsedGroups.has('live')"
                     class="h-4 w-4 transition-transform"
                   />
-                  <ChevronRightIcon
-                    v-else
-                    class="h-4 w-4 transition-transform"
-                  />
-              <h2 class="text-foreground text-lg font-semibold">Live Jobs</h2>
-              <span class="text-muted-foreground text-sm"
-                >{{ clientLiveJobs.length }} job{{ clientLiveJobs.length !== 1 ? 's' : '' }}</span
-              >
+                  <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
+                  <h2 class="text-foreground text-lg font-semibold">Live Jobs</h2>
+                  <span class="text-muted-foreground text-sm"
+                    >{{ clientLiveJobs.length }} job{{
+                      clientLiveJobs.length !== 1 ? 's' : ''
+                    }}</span
+                  >
                 </button>
-            </div>
+              </div>
 
-              <div v-if="!collapsedGroups.has('live')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
-                v-for="job in clientLiveJobs"
-                :key="job.id"
-                class="bg-card border-border hover:border-green-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                v-if="!collapsedGroups.has('live')"
+                class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
               >
-                <!-- Job Title -->
-                <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
-                  {{ job.title || 'Untitled Job' }}
-                </h3>
+                <div
+                  v-for="job in clientLiveJobs"
+                  :key="job.id"
+                  class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-green-500/20 hover:shadow-md"
+                >
+                  <!-- Job Title -->
+                  <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
+                    {{ job.title || 'Untitled Job' }}
+                  </h3>
 
-                <!-- Key Info -->
-                <div class="mb-3 space-y-1 text-sm">
-                  <div class="flex items-center justify-between">
-                    <span class="text-muted-foreground">Budget:</span>
-                    <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-muted-foreground">Deadline:</span>
-                    <span class="text-foreground">{{ formatDeadline(job.deadline) }}</span>
-                  </div>
+                  <!-- Key Info -->
+                  <div class="mb-3 space-y-1 text-sm">
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Budget:</span>
+                      <span class="text-foreground font-medium">{{
+                        formatBudget(job.budget)
+                      }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Deadline:</span>
+                      <span class="text-foreground">{{ formatDeadline(job.deadline) }}</span>
+                    </div>
                     <div class="flex items-center justify-between">
                       <span class="text-muted-foreground">Applications:</span>
                       <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Action Button -->
-                <Button
-                  icon="mdi:eye"
-                  variant="outline"
-                  size="sm"
-                  @click="viewLiveJob(job.id)"
-                  class="w-full group-hover:bg-green-50 group-hover:border-green-200 group-hover:text-green-700 dark:group-hover:bg-green-950 dark:group-hover:border-green-800 dark:group-hover:text-green-300"
-                >
-                  View & Approve
-                </Button>
+                  <!-- Action Button -->
+                  <Button
+                    icon="mdi:eye"
+                    variant="outline"
+                    size="sm"
+                    @click="viewLiveJob(job.id)"
+                    class="w-full group-hover:border-green-200 group-hover:bg-green-50 group-hover:text-green-700 dark:group-hover:border-green-800 dark:group-hover:bg-green-950 dark:group-hover:text-green-300"
+                  >
+                    View & Approve
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Draft Jobs Section -->
-          <div v-if="clientDrafts.length > 0" class="mb-8">
-            <div class="mb-4 flex items-center justify-between">
+            <!-- Draft Jobs Section -->
+            <div v-if="clientDrafts.length > 0" class="mb-8">
+              <div class="mb-4 flex items-center justify-between">
                 <button
                   @click="toggleGroup('drafts')"
-                  class="flex items-center space-x-2 text-left hover:text-primary"
+                  class="hover:text-primary flex items-center space-x-2 text-left"
                 >
                   <ChevronDownIcon
                     v-if="!collapsedGroups.has('drafts')"
                     class="h-4 w-4 transition-transform"
                   />
-                  <ChevronRightIcon
-                    v-else
-                    class="h-4 w-4 transition-transform"
-                  />
-              <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
-              <span class="text-muted-foreground text-sm"
-                >{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span
-              >
+                  <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
+                  <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
+                  <span class="text-muted-foreground text-sm"
+                    >{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span
+                  >
                 </button>
-            </div>
+              </div>
 
-              <div v-if="!collapsedGroups.has('drafts')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
-                v-for="draft in clientDrafts"
-                :key="draft.id"
-                class="bg-card border-border hover:border-orange-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                v-if="!collapsedGroups.has('drafts')"
+                class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
               >
-                <!-- Job Title -->
-                <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
-                  {{ draft.title || 'Untitled Job' }}
-                </h3>
+                <div
+                  v-for="draft in clientDrafts"
+                  :key="draft.id"
+                  class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-orange-500/20 hover:shadow-md"
+                >
+                  <!-- Job Title -->
+                  <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
+                    {{ draft.title || 'Untitled Job' }}
+                  </h3>
 
-                <!-- Key Info -->
-                <div class="mb-3 space-y-1 text-sm">
-                  <div class="flex items-center justify-between">
-                    <span class="text-muted-foreground">Budget:</span>
-                    <span class="text-foreground font-medium">{{ formatBudget(draft.budget) }}</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-muted-foreground">Last saved:</span>
-                    <span class="text-foreground">{{ formatDate(draft.lastSaved) }}</span>
-                  </div>
+                  <!-- Key Info -->
+                  <div class="mb-3 space-y-1 text-sm">
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Budget:</span>
+                      <span class="text-foreground font-medium">{{
+                        formatBudget(draft.budget)
+                      }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Last saved:</span>
+                      <span class="text-foreground">{{ formatDate(draft.lastSaved) }}</span>
+                    </div>
                     <div class="flex items-center justify-between">
                       <span class="text-muted-foreground">Version:</span>
                       <span class="text-foreground">v{{ draft.version || 1 }}</span>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Action Buttons -->
-                <div class="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    icon="mdi:pencil"
-                    @click="editDraft(draft.id)"
-                    class="flex-1 group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 dark:group-hover:bg-orange-950 dark:group-hover:border-orange-800 dark:group-hover:text-orange-300"
-                  >
-                    Continue
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon="mdi:trash-can"
-                    @click="confirmDiscardDraft(draft)"
-                    class="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  />
+                  <!-- Action Buttons -->
+                  <div class="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      icon="mdi:pencil"
+                      @click="editDraft(draft.id)"
+                      class="flex-1 group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700 dark:group-hover:border-orange-800 dark:group-hover:bg-orange-950 dark:group-hover:text-orange-300"
+                    >
+                      Continue
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon="mdi:trash-can"
+                      @click="confirmDiscardDraft(draft)"
+                      class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Completed Jobs Section -->
-          <div v-if="clientCompletedJobs.length > 0" class="mb-8">
-            <div class="mb-4 flex items-center justify-between">
+            <!-- Completed Jobs Section -->
+            <div v-if="clientCompletedJobs.length > 0" class="mb-8">
+              <div class="mb-4 flex items-center justify-between">
                 <button
                   @click="toggleGroup('completed')"
-                  class="flex items-center space-x-2 text-left hover:text-primary"
+                  class="hover:text-primary flex items-center space-x-2 text-left"
                 >
                   <ChevronDownIcon
                     v-if="!collapsedGroups.has('completed')"
                     class="h-4 w-4 transition-transform"
                   />
-                  <ChevronRightIcon
-                    v-else
-                    class="h-4 w-4 transition-transform"
-                  />
-              <h2 class="text-foreground text-lg font-semibold">Completed Jobs</h2>
-              <span class="text-muted-foreground text-sm"
-                >{{ clientCompletedJobs.length }} job{{ clientCompletedJobs.length !== 1 ? 's' : '' }}</span
-              >
+                  <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
+                  <h2 class="text-foreground text-lg font-semibold">Completed Jobs</h2>
+                  <span class="text-muted-foreground text-sm"
+                    >{{ clientCompletedJobs.length }} job{{
+                      clientCompletedJobs.length !== 1 ? 's' : ''
+                    }}</span
+                  >
                 </button>
-            </div>
+              </div>
 
-              <div v-if="!collapsedGroups.has('completed')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
-                v-for="job in clientCompletedJobs"
-                :key="job.id"
-                class="bg-card border-border hover:border-blue-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                v-if="!collapsedGroups.has('completed')"
+                class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
               >
-                <!-- Job Title -->
-                <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
-                  {{ job.title || 'Untitled Job' }}
-                </h3>
+                <div
+                  v-for="job in clientCompletedJobs"
+                  :key="job.id"
+                  class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-blue-500/20 hover:shadow-md"
+                >
+                  <!-- Job Title -->
+                  <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
+                    {{ job.title || 'Untitled Job' }}
+                  </h3>
 
-                <!-- Key Info -->
-                <div class="mb-3 space-y-1 text-sm">
-                  <div class="flex items-center justify-between">
-                    <span class="text-muted-foreground">Budget:</span>
-                    <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
-                  </div>
+                  <!-- Key Info -->
+                  <div class="mb-3 space-y-1 text-sm">
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Budget:</span>
+                      <span class="text-foreground font-medium">{{
+                        formatBudget(job.budget)
+                      }}</span>
+                    </div>
                     <div class="flex items-center justify-between">
                       <span class="text-muted-foreground">Completed:</span>
-                      <span class="text-foreground">{{ formatDate(job.closedDate || job.updatedAt) }}</span>
+                      <span class="text-foreground">{{
+                        formatDate(job.closedDate || job.updatedAt)
+                      }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Talent:</span>
+                      <span class="text-foreground"
+                        >{{ job.selectedTalents?.length || 0 }} selected</span
+                      >
+                    </div>
                   </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-muted-foreground">Talent:</span>
-                    <span class="text-foreground">{{ job.selectedTalents?.length || 0 }} selected</span>
-                  </div>
-                </div>
 
                   <!-- Action Buttons -->
                   <div class="flex space-x-2">
@@ -229,7 +254,7 @@
                       size="sm"
                       icon="mdi:download"
                       @click="downloadDelivery(job.id)"
-                      class="flex-1 group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-700 dark:group-hover:bg-blue-950 dark:group-hover:border-blue-800 dark:group-hover:text-blue-300"
+                      class="flex-1 group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:text-blue-700 dark:group-hover:border-blue-800 dark:group-hover:bg-blue-950 dark:group-hover:text-blue-300"
                     >
                       Download
                     </Button>
@@ -238,7 +263,7 @@
                       size="sm"
                       icon="mdi:star"
                       @click="rateTalent(job.id)"
-                      class="group-hover:bg-yellow-50 group-hover:border-yellow-200 group-hover:text-yellow-700 dark:group-hover:bg-yellow-950 dark:group-hover:border-yellow-800 dark:group-hover:text-yellow-300"
+                      class="group-hover:border-yellow-200 group-hover:bg-yellow-50 group-hover:text-yellow-700 dark:group-hover:border-yellow-800 dark:group-hover:bg-yellow-950 dark:group-hover:text-yellow-300"
                     />
                   </div>
                 </div>
@@ -253,7 +278,9 @@
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <h3 class="text-foreground text-lg font-semibold">Live Jobs</h3>
-                  <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full px-2 py-1 text-xs font-medium">
+                  <span
+                    class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
+                  >
                     {{ clientLiveJobs.length }}
                   </span>
                 </div>
@@ -261,13 +288,17 @@
                   <div
                     v-for="job in clientLiveJobs"
                     :key="job.id"
-                    class="bg-card border-border hover:border-green-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                    class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-green-500/20 hover:shadow-md"
                   >
-                    <h4 class="text-foreground mb-2 font-medium line-clamp-2">{{ job.title || 'Untitled Job' }}</h4>
+                    <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
+                      {{ job.title || 'Untitled Job' }}
+                    </h4>
                     <div class="mb-3 space-y-1 text-sm">
                       <div class="flex justify-between">
                         <span class="text-muted-foreground">Budget:</span>
-                        <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                        <span class="text-foreground font-medium">{{
+                          formatBudget(job.budget)
+                        }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-muted-foreground">Applications:</span>
@@ -291,7 +322,9 @@
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <h3 class="text-foreground text-lg font-semibold">Draft Jobs</h3>
-                  <span class="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded-full px-2 py-1 text-xs font-medium">
+                  <span
+                    class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                  >
                     {{ clientDrafts.length }}
                   </span>
                 </div>
@@ -299,13 +332,17 @@
                   <div
                     v-for="draft in clientDrafts"
                     :key="draft.id"
-                    class="bg-card border-border hover:border-orange-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                    class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-orange-500/20 hover:shadow-md"
                   >
-                    <h4 class="text-foreground mb-2 font-medium line-clamp-2">{{ draft.title || 'Untitled Job' }}</h4>
+                    <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
+                      {{ draft.title || 'Untitled Job' }}
+                    </h4>
                     <div class="mb-3 space-y-1 text-sm">
                       <div class="flex justify-between">
                         <span class="text-muted-foreground">Budget:</span>
-                        <span class="text-foreground font-medium">{{ formatBudget(draft.budget) }}</span>
+                        <span class="text-foreground font-medium">{{
+                          formatBudget(draft.budget)
+                        }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-muted-foreground">Version:</span>
@@ -338,7 +375,9 @@
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <h3 class="text-foreground text-lg font-semibold">Completed Jobs</h3>
-                  <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full px-2 py-1 text-xs font-medium">
+                  <span
+                    class="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  >
                     {{ clientCompletedJobs.length }}
                   </span>
                 </div>
@@ -346,27 +385,33 @@
                   <div
                     v-for="job in clientCompletedJobs"
                     :key="job.id"
-                    class="bg-card border-border hover:border-blue-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                    class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-blue-500/20 hover:shadow-md"
                   >
-                    <h4 class="text-foreground mb-2 font-medium line-clamp-2">{{ job.title || 'Untitled Job' }}</h4>
+                    <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
+                      {{ job.title || 'Untitled Job' }}
+                    </h4>
                     <div class="mb-3 space-y-1 text-sm">
                       <div class="flex justify-between">
                         <span class="text-muted-foreground">Budget:</span>
-                        <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                        <span class="text-foreground font-medium">{{
+                          formatBudget(job.budget)
+                        }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-muted-foreground">Completed:</span>
-                        <span class="text-foreground">{{ formatDate(job.closedDate || job.updatedAt) }}</span>
+                        <span class="text-foreground">{{
+                          formatDate(job.closedDate || job.updatedAt)
+                        }}</span>
                       </div>
                     </div>
                     <div class="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:download"
-                  @click="downloadDelivery(job.id)"
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        icon="mdi:download"
+                        @click="downloadDelivery(job.id)"
                         class="flex-1"
-                >
+                      >
                         Download
                       </Button>
                       <Button
@@ -384,7 +429,11 @@
 
           <!-- Empty State -->
           <div
-            v-if="clientDrafts.length === 0 && clientLiveJobs.length === 0 && clientCompletedJobs.length === 0"
+            v-if="
+              clientDrafts.length === 0 &&
+              clientLiveJobs.length === 0 &&
+              clientCompletedJobs.length === 0
+            "
             class="py-12 text-center"
           >
             <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
@@ -392,7 +441,9 @@
             <p class="text-muted-foreground mb-6">
               Start creating your first job posting or save a draft to continue later
             </p>
-            <Button variant="primary" icon="mdi:plus" @click="openJobCreationModal">Create Your First Job</Button>
+            <Button variant="primary" icon="mdi:plus" @click="openJobCreationModal"
+              >Create Your First Job</Button
+            >
           </div>
         </div>
       </div>
@@ -417,7 +468,6 @@
       @cancel="cancelDiscard"
     />
 
-
     <!-- Job Rating Modal -->
     <JobRatingModal
       :open="showRatingModal"
@@ -428,7 +478,10 @@
       :budget="selectedJobForRating?.budget"
       :timeline="selectedJobForRating?.estimatedDuration || ''"
       :completed-date="selectedJobForRating?.closedDate || selectedJobForRating?.updatedAt || ''"
-      @close="showRatingModal = false; selectedJobForRating = null"
+      @close="
+        showRatingModal = false
+        selectedJobForRating = null
+      "
       @submit="submitRating"
     />
   </div>
@@ -454,7 +507,14 @@ import ChevronRightIcon from '~icons/mdi/chevron-right'
 // Star icon used as button icon via prop
 
 const router = useRouter()
-const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, getCompletedJobsByClient, refreshJobs, reloadMockData } = useJob()
+const {
+  deleteDraft,
+  getDraftsByClient,
+  getPublishedJobsByClient,
+  getCompletedJobsByClient,
+  refreshJobs,
+  reloadMockData,
+} = useJob()
 const { addToast: showToast } = useToast()
 
 // Get current client (in real app, this would come from auth)
@@ -483,12 +543,11 @@ const selectedDraftId = ref<string | null>(null)
 
 // Confirmation modal state
 const showDiscardModal = ref(false)
-const draftToDiscard = ref<any>(null)
-
+const draftToDiscard = ref<Record<string, unknown> | null>(null)
 
 // Rating modal state
 const showRatingModal = ref(false)
-const selectedJobForRating = ref<any>(null)
+const selectedJobForRating = ref<Record<string, unknown> | null>(null)
 
 // Format date for display
 const formatDate = (dateString: string) => {
@@ -515,7 +574,7 @@ const editDraft = (draftId: string) => {
 }
 
 // Confirm discard draft
-const confirmDiscardDraft = (draft: any) => {
+const confirmDiscardDraft = (draft: Record<string, unknown>) => {
   draftToDiscard.value = draft
   showDiscardModal.value = true
 }
@@ -559,7 +618,7 @@ const closeJobCreationModal = () => {
   selectedDraftId.value = null
 }
 
-const handleJobCreated = (job: any) => {
+const handleJobCreated = (job: Record<string, unknown>) => {
   showToast({
     type: 'success',
     title: 'Job Published',
@@ -577,7 +636,6 @@ const viewLiveJob = (jobId: string) => {
   router.push(`/client/jobs/${jobId}/talent-selection`)
 }
 
-
 // Toggle group collapse
 const toggleGroup = (groupName: string) => {
   if (collapsedGroups.value.has(groupName)) {
@@ -589,7 +647,7 @@ const toggleGroup = (groupName: string) => {
 
 // Rate talent for completed job
 const rateTalent = (jobId: string) => {
-  const job = clientCompletedJobs.value.find(j => j.id === jobId)
+  const job = clientCompletedJobs.value.find((j) => j.id === jobId)
   if (job) {
     selectedJobForRating.value = job
     showRatingModal.value = true
@@ -597,14 +655,14 @@ const rateTalent = (jobId: string) => {
 }
 
 // Submit rating
-const submitRating = (ratingData: any) => {
+const submitRating = (ratingData: Record<string, unknown>) => {
   // In a real app, this would save the rating to the backend
   showToast({
     type: 'success',
     title: 'Rating Submitted',
     message: `Thank you for rating ${ratingData.talentName}! Your feedback helps improve our platform.`,
   })
-  
+
   // Close modal
   showRatingModal.value = false
   selectedJobForRating.value = null
@@ -619,15 +677,15 @@ const getTalentName = (talentId: string) => {
     { id: 'va-002', displayName: 'Marcus Chen' },
     { id: 'va-003', displayName: 'Emma Rodriguez' },
     { id: 'va-004', displayName: 'Alex Thompson' },
-    { id: 'va-005', displayName: 'Jessica Park' }
+    { id: 'va-005', displayName: 'Jessica Park' },
   ]
-  const talent = mockVoiceActors.find((va: any) => va.id === talentId)
+  const talent = mockVoiceActors.find((va: Record<string, unknown>) => va.id === talentId)
   return talent?.displayName || 'Unknown Talent'
 }
 
 // Download delivery for completed jobs
 const downloadDelivery = (jobId: string) => {
-  const job = clientCompletedJobs.value.find(j => j.id === jobId)
+  const job = clientCompletedJobs.value.find((j) => j.id === jobId)
   if (job && job.deliverables && job.deliverables.length > 0) {
     const deliverable = job.deliverables[0]
     if (deliverable.files && deliverable.files.length > 0) {
@@ -640,10 +698,10 @@ const downloadDelivery = (jobId: string) => {
         link.click()
         document.body.removeChild(link)
       })
-      
-  showToast({
-    type: 'success',
-    title: 'Download Started',
+
+      showToast({
+        type: 'success',
+        title: 'Download Started',
         message: `Downloading ${deliverable.files.length} file(s) from "${deliverable.title}"`,
       })
     } else {
@@ -664,7 +722,7 @@ const downloadDelivery = (jobId: string) => {
 
 // Formatting functions
 
-const formatBudget = (budget: any) => {
+const formatBudget = (budget: { max: number; currency: string }) => {
   if (!budget || !budget.max) return 'Not set'
   const symbol = getCurrencySymbol(budget.currency)
   return `${symbol}${budget.max.toLocaleString()}`

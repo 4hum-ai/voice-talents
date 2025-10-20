@@ -86,20 +86,20 @@ const activeTab = computed(() => props.modelValue || tabList.value[0]?.id)
 
 // Provide tab management functions to child Tab components
 const registerTab = (tab: Tab) => {
-  if (!tabList.value.find(t => t.id === tab.id)) {
+  if (!tabList.value.find((t) => t.id === tab.id)) {
     tabList.value.push(tab)
   }
 }
 
 const unregisterTab = (tabId: string) => {
-  const index = tabList.value.findIndex(t => t.id === tabId)
+  const index = tabList.value.findIndex((t) => t.id === tabId)
   if (index > -1) {
     tabList.value.splice(index, 1)
   }
 }
 
 const updateTab = (tabId: string, updates: Partial<Tab>) => {
-  const tab = tabList.value.find(t => t.id === tabId)
+  const tab = tabList.value.find((t) => t.id === tabId)
   if (tab) {
     Object.assign(tab, updates)
   }

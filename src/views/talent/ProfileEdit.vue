@@ -24,613 +24,630 @@
               <!-- Basic Information Tab -->
               <Tab id="basic" label="Basic Info">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-500"
-                  >
-                    <Icon name="mdi:account" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Basic Information</h2>
-                  <p class="text-muted-foreground">
-                    Tell us about yourself so clients can find and connect with you.
-                  </p>
-                </div>
-
-                <div class="mx-auto max-w-2xl space-y-6">
-                  <!-- Avatar Upload -->
-                  <div class="text-center">
-                    <label class="text-foreground mb-4 block text-sm font-medium">
-                      Profile Photo
-                    </label>
-                    <div class="relative inline-block">
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
                       <div
-                        class="mx-auto h-24 w-24 overflow-hidden rounded-full border-4 border-gray-200 dark:border-gray-600"
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-500"
                       >
-                        <img
-                          v-if="profileData.avatarUrl"
-                          :src="profileData.avatarUrl"
-                          alt="Profile"
-                          class="h-full w-full object-cover"
-                        />
-                        <div
-                          v-else
-                          class="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700"
-                        >
-                          <Icon name="mdi:account" class="text-muted-foreground h-8 w-8" />
-                        </div>
+                        <Icon name="mdi:account" class="h-8 w-8 text-white" />
                       </div>
-                      <input
-                        ref="avatarInput"
-                        type="file"
-                        accept="image/*"
-                        class="hidden"
-                        @change="handleAvatarUpload"
-                      />
-                      <button
-                        type="button"
-                        @click="triggerAvatarUpload"
-                        class="absolute -right-1 -bottom-1 rounded-full bg-blue-500 p-2 text-white shadow-lg transition-colors hover:bg-blue-600"
-                      >
-                        <Icon name="mdi:camera" class="h-4 w-4" />
-                      </button>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Basic Information</h2>
+                      <p class="text-muted-foreground">
+                        Tell us about yourself so clients can find and connect with you.
+                      </p>
                     </div>
-                    <p class="text-muted-foreground mt-2 text-xs">Click camera icon to upload</p>
-                  </div>
 
-                  <!-- Display Name -->
-                  <div>
-                    <label for="displayName" class="text-foreground mb-2 block text-sm font-medium">
-                      What should we call you? *
-                    </label>
-                    <input
-                      id="displayName"
-                      v-model="profileData.displayName"
-                      type="text"
-                      required
-                      placeholder="Your professional name"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
+                    <div class="mx-auto max-w-2xl space-y-6">
+                      <!-- Avatar Upload -->
+                      <div class="text-center">
+                        <label class="text-foreground mb-4 block text-sm font-medium">
+                          Profile Photo
+                        </label>
+                        <div class="relative inline-block">
+                          <div
+                            class="mx-auto h-24 w-24 overflow-hidden rounded-full border-4 border-gray-200 dark:border-gray-600"
+                          >
+                            <img
+                              v-if="profileData.avatarUrl"
+                              :src="profileData.avatarUrl"
+                              alt="Profile"
+                              class="h-full w-full object-cover"
+                            />
+                            <div
+                              v-else
+                              class="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700"
+                            >
+                              <Icon name="mdi:account" class="text-muted-foreground h-8 w-8" />
+                            </div>
+                          </div>
+                          <input
+                            ref="avatarInput"
+                            type="file"
+                            accept="image/*"
+                            class="hidden"
+                            @change="handleAvatarUpload"
+                          />
+                          <button
+                            type="button"
+                            @click="triggerAvatarUpload"
+                            class="absolute -right-1 -bottom-1 rounded-full bg-blue-500 p-2 text-white shadow-lg transition-colors hover:bg-blue-600"
+                          >
+                            <Icon name="mdi:camera" class="h-4 w-4" />
+                          </button>
+                        </div>
+                        <p class="text-muted-foreground mt-2 text-xs">
+                          Click camera icon to upload
+                        </p>
+                      </div>
 
-                  <!-- Location -->
-                  <div>
-                    <label for="location" class="text-foreground mb-2 block text-sm font-medium">
-                      Where are you based? *
-                    </label>
-                    <input
-                      id="location"
-                      v-model="profileData.location"
-                      type="text"
-                      required
-                      placeholder="City, Country"
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
+                      <!-- Display Name -->
+                      <div>
+                        <label
+                          for="displayName"
+                          class="text-foreground mb-2 block text-sm font-medium"
+                        >
+                          What should we call you? *
+                        </label>
+                        <input
+                          id="displayName"
+                          v-model="profileData.displayName"
+                          type="text"
+                          required
+                          placeholder="Your professional name"
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
 
-                  <!-- Bio -->
-                  <div>
-                    <label for="bio" class="text-foreground mb-2 block text-sm font-medium">
-                      Tell us about yourself *
-                    </label>
-                    <textarea
-                      id="bio"
-                      v-model="profileData.bio"
-                      required
-                      rows="4"
-                      placeholder="Share your voice acting experience, specialties, and what makes you unique..."
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                    <p class="text-muted-foreground mt-1 text-xs">
-                      {{ profileData.bio.length }}/500 characters
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                      <!-- Location -->
+                      <div>
+                        <label
+                          for="location"
+                          class="text-foreground mb-2 block text-sm font-medium"
+                        >
+                          Where are you based? *
+                        </label>
+                        <input
+                          id="location"
+                          v-model="profileData.location"
+                          type="text"
+                          required
+                          placeholder="City, Country"
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+
+                      <!-- Bio -->
+                      <div>
+                        <label for="bio" class="text-foreground mb-2 block text-sm font-medium">
+                          Tell us about yourself *
+                        </label>
+                        <textarea
+                          id="bio"
+                          v-model="profileData.bio"
+                          required
+                          rows="4"
+                          placeholder="Share your voice acting experience, specialties, and what makes you unique..."
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
+                        <p class="text-muted-foreground mt-1 text-xs">
+                          {{ profileData.bio.length }}/500 characters
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Voice Types Tab -->
               <Tab id="voice-types" label="Voice Types">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
-                  >
-                    <Icon name="mdi:microphone" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Voice Types</h2>
-                  <p class="text-muted-foreground">
-                    Select all the voice types you specialize in. This helps clients find the right
-                    voice for their projects.
-                  </p>
-                </div>
-
-                <div class="mx-auto max-w-4xl">
-                  <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                    <label
-                      v-for="voiceType in voiceTypeOptions"
-                      :key="voiceType.value"
-                      class="group"
-                    >
-                      <input
-                        v-model="profileData.voiceTypes"
-                        :value="voiceType.value"
-                        type="checkbox"
-                        class="sr-only"
-                      />
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
                       <div
-                        class="cursor-pointer rounded-xl border-2 border-gray-200 p-4 transition-all duration-200 group-has-[:checked]:border-purple-500 group-has-[:checked]:bg-purple-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-purple-900/20 dark:hover:border-gray-500"
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
                       >
-                        <div class="text-center">
-                          <div
-                            :class="`h-12 w-12 bg-gray-400 group-has-[:checked]:${getVoiceTypeColor(voiceType.value)} mx-auto mb-3 flex items-center justify-center rounded-lg transition-all duration-200`"
-                          >
-                            <Icon
-                              :name="voiceType.icon"
-                              class="h-6 w-6 text-white grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
-                            />
-                          </div>
-                          <h4 class="text-foreground font-medium">{{ voiceType.label }}</h4>
-                        </div>
+                        <Icon name="mdi:microphone" class="h-8 w-8 text-white" />
                       </div>
-                    </label>
-                  </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Voice Types</h2>
+                      <p class="text-muted-foreground">
+                        Select all the voice types you specialize in. This helps clients find the
+                        right voice for their projects.
+                      </p>
+                    </div>
 
-                  <div
-                    v-if="profileData.voiceTypes.length > 0"
-                    class="mt-6 rounded-lg bg-purple-50 p-4 dark:bg-purple-900/20"
-                  >
-                    <p class="text-sm text-purple-700 dark:text-purple-300">
-                      <Icon name="mdi:check-circle" class="mr-1 inline h-4 w-4" />
-                      You've selected {{ profileData.voiceTypes.length }} voice type{{
-                        profileData.voiceTypes.length > 1 ? 's' : ''
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                    <div class="mx-auto max-w-4xl">
+                      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                        <label
+                          v-for="voiceType in voiceTypeOptions"
+                          :key="voiceType.value"
+                          class="group"
+                        >
+                          <input
+                            v-model="profileData.voiceTypes"
+                            :value="voiceType.value"
+                            type="checkbox"
+                            class="sr-only"
+                          />
+                          <div
+                            class="cursor-pointer rounded-xl border-2 border-gray-200 p-4 transition-all duration-200 group-has-[:checked]:border-purple-500 group-has-[:checked]:bg-purple-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-purple-900/20 dark:hover:border-gray-500"
+                          >
+                            <div class="text-center">
+                              <div
+                                :class="`h-12 w-12 bg-gray-400 group-has-[:checked]:${getVoiceTypeColor(voiceType.value)} mx-auto mb-3 flex items-center justify-center rounded-lg transition-all duration-200`"
+                              >
+                                <Icon
+                                  :name="voiceType.icon"
+                                  class="h-6 w-6 text-white grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
+                                />
+                              </div>
+                              <h4 class="text-foreground font-medium">{{ voiceType.label }}</h4>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div
+                        v-if="profileData.voiceTypes.length > 0"
+                        class="mt-6 rounded-lg bg-purple-50 p-4 dark:bg-purple-900/20"
+                      >
+                        <p class="text-sm text-purple-700 dark:text-purple-300">
+                          <Icon name="mdi:check-circle" class="mr-1 inline h-4 w-4" />
+                          You've selected {{ profileData.voiceTypes.length }} voice type{{
+                            profileData.voiceTypes.length > 1 ? 's' : ''
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Languages Tab -->
               <Tab id="languages" label="Languages">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-500"
-                  >
-                    <Icon name="mdi:translate" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Languages</h2>
-                  <p class="text-muted-foreground">
-                    Select all the languages you can perform voice work in. This opens up more
-                    opportunities for you.
-                  </p>
-                </div>
-
-                <div class="mx-auto max-w-4xl">
-                  <div
-                    class="grid max-h-96 grid-cols-1 gap-3 overflow-y-auto md:grid-cols-2 lg:grid-cols-3"
-                  >
-                    <label v-for="language in languageOptions" :key="language.value" class="group">
-                      <input
-                        v-model="profileData.languages"
-                        :value="language.value"
-                        type="checkbox"
-                        class="sr-only"
-                      />
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
                       <div
-                        class="cursor-pointer rounded-lg border border-gray-200 p-3 transition-all duration-200 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-indigo-900/20 dark:hover:border-gray-500"
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-500"
                       >
-                        <div class="flex items-center">
-                          <div
-                            :class="`h-6 w-8 bg-gray-400 group-has-[:checked]:${getLanguageColor(language.value)} mr-3 flex items-center justify-center rounded transition-all duration-200`"
-                          >
-                            <CountryFlag
-                              :country-code="language.countryCode"
-                              size="sm"
-                              variant="rounded"
-                              class="h-4 w-6 grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
-                            />
-                          </div>
-                          <span class="text-foreground text-sm font-medium">{{
-                            language.label
-                          }}</span>
-                        </div>
+                        <Icon name="mdi:translate" class="h-8 w-8 text-white" />
                       </div>
-                    </label>
-                  </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Languages</h2>
+                      <p class="text-muted-foreground">
+                        Select all the languages you can perform voice work in. This opens up more
+                        opportunities for you.
+                      </p>
+                    </div>
 
-                  <div
-                    v-if="profileData.languages.length > 0"
-                    class="mt-6 rounded-lg bg-indigo-50 p-4 dark:bg-indigo-900/20"
-                  >
-                    <p class="text-sm text-indigo-700 dark:text-indigo-300">
-                      <Icon name="mdi:check-circle" class="mr-1 inline h-4 w-4" />
-                      You can perform in {{ profileData.languages.length }} language{{
-                        profileData.languages.length > 1 ? 's' : ''
-                      }}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                    <div class="mx-auto max-w-4xl">
+                      <div
+                        class="grid max-h-96 grid-cols-1 gap-3 overflow-y-auto md:grid-cols-2 lg:grid-cols-3"
+                      >
+                        <label
+                          v-for="language in languageOptions"
+                          :key="language.value"
+                          class="group"
+                        >
+                          <input
+                            v-model="profileData.languages"
+                            :value="language.value"
+                            type="checkbox"
+                            class="sr-only"
+                          />
+                          <div
+                            class="cursor-pointer rounded-lg border border-gray-200 p-3 transition-all duration-200 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-indigo-900/20 dark:hover:border-gray-500"
+                          >
+                            <div class="flex items-center">
+                              <div
+                                :class="`h-6 w-8 bg-gray-400 group-has-[:checked]:${getLanguageColor(language.value)} mr-3 flex items-center justify-center rounded transition-all duration-200`"
+                              >
+                                <CountryFlag
+                                  :country-code="language.countryCode"
+                                  size="sm"
+                                  variant="rounded"
+                                  class="h-4 w-6 grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
+                                />
+                              </div>
+                              <span class="text-foreground text-sm font-medium">{{
+                                language.label
+                              }}</span>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div
+                        v-if="profileData.languages.length > 0"
+                        class="mt-6 rounded-lg bg-indigo-50 p-4 dark:bg-indigo-900/20"
+                      >
+                        <p class="text-sm text-indigo-700 dark:text-indigo-300">
+                          <Icon name="mdi:check-circle" class="mr-1 inline h-4 w-4" />
+                          You can perform in {{ profileData.languages.length }} language{{
+                            profileData.languages.length > 1 ? 's' : ''
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Voice Samples Tab -->
               <Tab id="voice-samples" label="Voice Samples">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
-                  >
-                    <Icon name="mdi:upload" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Voice Samples</h2>
-                  <p class="text-muted-foreground">
-                    Upload samples for each voice type you selected. This showcases your range and
-                    versatility!
-                  </p>
-                </div>
-
-                <!-- Voice Type Upload Areas -->
-                <div class="space-y-6">
-                  <div
-                    v-for="voiceType in selectedVoiceTypes"
-                    :key="voiceType.value"
-                    class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800"
-                  >
-                    <div class="mb-4 flex items-center justify-between">
-                      <div class="flex items-center space-x-3">
-                        <div
-                          :class="`h-10 w-10 ${getVoiceTypeColor(voiceType.value)} flex items-center justify-center rounded-lg`"
-                        >
-                          <Icon :name="voiceType.icon" class="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <h4 class="text-foreground text-lg font-semibold">
-                            {{ voiceType.label }}
-                          </h4>
-                          <p class="text-muted-foreground text-sm">
-                            Upload a sample for {{ voiceType.label.toLowerCase() }}
-                          </p>
-                        </div>
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
+                      <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
+                      >
+                        <Icon name="mdi:upload" class="h-8 w-8 text-white" />
                       </div>
-                      <div v-if="voiceSamples[voiceType.value]" class="flex items-center space-x-2">
-                        <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
-                        <span class="text-sm text-green-600 dark:text-green-400">Uploaded</span>
-                      </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Voice Samples</h2>
+                      <p class="text-muted-foreground">
+                        Upload samples for each voice type you selected. This showcases your range
+                        and versatility!
+                      </p>
                     </div>
 
-                    <!-- Upload Area for this Voice Type -->
-                    <div
-                      class="upload-area cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400 dark:border-gray-600 dark:hover:border-blue-500"
-                      :class="{
-                        'drag-over border-blue-400 bg-blue-50 dark:bg-blue-900/20':
-                          isDragOver === voiceType.value,
-                        'border-green-400 bg-green-50 dark:bg-green-900/20':
-                          voiceSamples[voiceType.value],
-                      }"
-                      @dragover.prevent="isDragOver = voiceType.value"
-                      @dragleave.prevent="isDragOver = null"
-                      @drop.prevent="handleFileDrop($event, voiceType.value)"
-                      @click.stop="triggerFileInput(voiceType.value)"
-                    >
-                      <input
-                        :id="`file-input-${voiceType.value}`"
-                        :data-voice-type="voiceType.value"
-                        type="file"
-                        accept="audio/mp3,audio/wav,audio/ogg,audio/aac"
-                        class="hidden"
-                        @change="handleFileSelect($event, voiceType.value)"
-                      />
+                    <!-- Voice Type Upload Areas -->
+                    <div class="space-y-6">
+                      <div
+                        v-for="voiceType in selectedVoiceTypes"
+                        :key="voiceType.value"
+                        class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800"
+                      >
+                        <div class="mb-4 flex items-center justify-between">
+                          <div class="flex items-center space-x-3">
+                            <div
+                              :class="`h-10 w-10 ${getVoiceTypeColor(voiceType.value)} flex items-center justify-center rounded-lg`"
+                            >
+                              <Icon :name="voiceType.icon" class="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <h4 class="text-foreground text-lg font-semibold">
+                                {{ voiceType.label }}
+                              </h4>
+                              <p class="text-muted-foreground text-sm">
+                                Upload a sample for {{ voiceType.label.toLowerCase() }}
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            v-if="voiceSamples[voiceType.value]"
+                            class="flex items-center space-x-2"
+                          >
+                            <Icon name="mdi:check-circle" class="h-5 w-5 text-green-500" />
+                            <span class="text-sm text-green-600 dark:text-green-400">Uploaded</span>
+                          </div>
+                        </div>
 
-                      <div v-if="!voiceSamples[voiceType.value]">
-                        <Icon
-                          name="mdi:cloud-upload"
-                          class="text-muted-foreground mx-auto mb-4 h-12 w-12"
-                        />
-                        <h5 class="text-foreground mb-2 text-lg font-medium">
-                          Drop your {{ voiceType.label.toLowerCase() }} sample here
-                        </h5>
-                        <p class="text-muted-foreground mb-4">or click to browse files</p>
-                        <Button
-                          variant="primary"
-                          class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
+                        <!-- Upload Area for this Voice Type -->
+                        <div
+                          class="upload-area cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400 dark:border-gray-600 dark:hover:border-blue-500"
+                          :class="{
+                            'drag-over border-blue-400 bg-blue-50 dark:bg-blue-900/20':
+                              isDragOver === voiceType.value,
+                            'border-green-400 bg-green-50 dark:bg-green-900/20':
+                              voiceSamples[voiceType.value],
+                          }"
+                          @dragover.prevent="isDragOver = voiceType.value"
+                          @dragleave.prevent="isDragOver = null"
+                          @drop.prevent="handleFileDrop($event, voiceType.value)"
                           @click.stop="triggerFileInput(voiceType.value)"
                         >
-                          <Icon name="mdi:folder-open" class="mr-2 h-4 w-4" />
-                          Choose File
-                        </Button>
-                      </div>
-
-                      <!-- File Preview -->
-                      <div v-else class="space-y-4">
-                        <div class="flex items-center justify-between">
-                          <div class="min-w-0 flex-1">
-                            <p class="text-foreground truncate text-sm font-medium">
-                              {{ voiceSamples[voiceType.value].name }}
-                            </p>
-                            <p class="text-muted-foreground text-sm">
-                              {{ formatFileSize(voiceSamples[voiceType.value].size) }}
-                            </p>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            @click="removeFile(voiceType.value)"
-                            class="text-red-500 hover:text-red-700"
-                          >
-                            <Icon name="mdi:delete" class="h-4 w-4" />
-                          </Button>
-                        </div>
-
-                        <!-- Audio Preview -->
-                        <div>
-                          <audio
-                            :src="voiceSamples[voiceType.value].previewUrl"
-                            controls
-                            class="w-full"
+                          <input
+                            :id="`file-input-${voiceType.value}`"
+                            :data-voice-type="voiceType.value"
+                            type="file"
+                            accept="audio/mp3,audio/wav,audio/ogg,audio/aac"
+                            class="hidden"
+                            @change="handleFileSelect($event, voiceType.value)"
                           />
-                        </div>
 
-                        <!-- Sample Details -->
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                          <div>
-                            <label
-                              :for="`title-${voiceType.value}`"
-                              class="text-foreground mb-2 block text-sm font-medium"
-                            >
-                              Sample Title
-                            </label>
-                            <input
-                              :id="`title-${voiceType.value}`"
-                              v-model="voiceSamples[voiceType.value].title"
-                              type="text"
-                              :placeholder="`${voiceType.label} Demo`"
-                              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                          <div v-if="!voiceSamples[voiceType.value]">
+                            <Icon
+                              name="mdi:cloud-upload"
+                              class="text-muted-foreground mx-auto mb-4 h-12 w-12"
                             />
+                            <h5 class="text-foreground mb-2 text-lg font-medium">
+                              Drop your {{ voiceType.label.toLowerCase() }} sample here
+                            </h5>
+                            <p class="text-muted-foreground mb-4">or click to browse files</p>
+                            <Button
+                              variant="primary"
+                              class="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
+                              @click.stop="triggerFileInput(voiceType.value)"
+                            >
+                              <Icon name="mdi:folder-open" class="mr-2 h-4 w-4" />
+                              Choose File
+                            </Button>
                           </div>
 
-                          <div>
-                            <label
-                              :for="`description-${voiceType.value}`"
-                              class="text-foreground mb-2 block text-sm font-medium"
-                            >
-                              Description
-                            </label>
-                            <input
-                              :id="`description-${voiceType.value}`"
-                              v-model="voiceSamples[voiceType.value].description"
-                              type="text"
-                              placeholder="Describe this sample..."
-                              class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            />
+                          <!-- File Preview -->
+                          <div v-else class="space-y-4">
+                            <div class="flex items-center justify-between">
+                              <div class="min-w-0 flex-1">
+                                <p class="text-foreground truncate text-sm font-medium">
+                                  {{ voiceSamples[voiceType.value].name }}
+                                </p>
+                                <p class="text-muted-foreground text-sm">
+                                  {{ formatFileSize(voiceSamples[voiceType.value].size) }}
+                                </p>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                @click="removeFile(voiceType.value)"
+                                class="text-red-500 hover:text-red-700"
+                              >
+                                <Icon name="mdi:delete" class="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            <!-- Audio Preview -->
+                            <div>
+                              <audio
+                                :src="voiceSamples[voiceType.value].previewUrl"
+                                controls
+                                class="w-full"
+                              />
+                            </div>
+
+                            <!-- Sample Details -->
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <div>
+                                <label
+                                  :for="`title-${voiceType.value}`"
+                                  class="text-foreground mb-2 block text-sm font-medium"
+                                >
+                                  Sample Title
+                                </label>
+                                <input
+                                  :id="`title-${voiceType.value}`"
+                                  v-model="voiceSamples[voiceType.value].title"
+                                  type="text"
+                                  :placeholder="`${voiceType.label} Demo`"
+                                  class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                />
+                              </div>
+
+                              <div>
+                                <label
+                                  :for="`description-${voiceType.value}`"
+                                  class="text-foreground mb-2 block text-sm font-medium"
+                                >
+                                  Description
+                                </label>
+                                <input
+                                  :id="`description-${voiceType.value}`"
+                                  v-model="voiceSamples[voiceType.value].description"
+                                  type="text"
+                                  placeholder="Describe this sample..."
+                                  class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <div class="text-muted-foreground mt-6 text-center text-sm">
-                  <p>Supported formats: MP3, WAV, OGG, AAC</p>
-                  <p>Maximum file size: 50MB per file</p>
-                </div>
-              </Card>
+                    <div class="text-muted-foreground mt-6 text-center text-sm">
+                      <p>Supported formats: MP3, WAV, OGG, AAC</p>
+                      <p>Maximum file size: 50MB per file</p>
+                    </div>
+                  </Card>
                 </div>
               </Tab>
 
               <!-- Pricing & Rates Tab -->
               <Tab id="pricing" label="Pricing & Rates">
                 <div class="space-y-8">
-              <Card class="p-6">
-                <div class="mb-8 text-center">
-                  <div
-                    class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
-                  >
-                    <Icon name="mdi:currency-usd" class="h-8 w-8 text-white" />
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">Pricing & Rates</h2>
-                  <p class="text-muted-foreground">
-                    Define your rates for different types of voice work. This helps clients
-                    understand your pricing structure.
-                  </p>
-                </div>
+                  <Card class="p-6">
+                    <div class="mb-8 text-center">
+                      <div
+                        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
+                      >
+                        <Icon name="mdi:currency-usd" class="h-8 w-8 text-white" />
+                      </div>
+                      <h2 class="text-foreground mb-2 text-2xl font-semibold">Pricing & Rates</h2>
+                      <p class="text-muted-foreground">
+                        Define your rates for different types of voice work. This helps clients
+                        understand your pricing structure.
+                      </p>
+                    </div>
 
-                <div class="space-y-8">
-                  <!-- Rate Structure -->
-                  <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
-                    <h4 class="text-foreground mb-4 text-lg font-semibold">Rate Structure</h4>
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div class="space-y-8">
+                      <!-- Rate Structure -->
+                      <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
+                        <h4 class="text-foreground mb-4 text-lg font-semibold">Rate Structure</h4>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                          <div>
+                            <label
+                              for="hourlyRate"
+                              class="text-foreground mb-2 block text-sm font-medium"
+                            >
+                              Hourly Rate (USD) *
+                            </label>
+                            <div class="relative">
+                              <div
+                                class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                              >
+                                <span class="text-muted-foreground text-sm">$</span>
+                              </div>
+                              <input
+                                id="hourlyRate"
+                                v-model="pricingData.hourlyRate"
+                                type="number"
+                                min="0"
+                                step="5"
+                                placeholder="50"
+                                class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              />
+                            </div>
+                            <p class="text-muted-foreground mt-1 text-xs">
+                              Your standard hourly rate for voice work
+                            </p>
+                          </div>
+
+                          <div>
+                            <label
+                              for="perWordRate"
+                              class="text-foreground mb-2 block text-sm font-medium"
+                            >
+                              Per Word Rate (USD)
+                            </label>
+                            <div class="relative">
+                              <div
+                                class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                              >
+                                <span class="text-muted-foreground text-sm">$</span>
+                              </div>
+                              <input
+                                id="perWordRate"
+                                v-model="pricingData.perWordRate"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.25"
+                                class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                              />
+                            </div>
+                            <p class="text-muted-foreground mt-1 text-xs">
+                              Rate per word for audiobooks, e-learning
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Project Type Rates -->
+                      <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
+                        <h4 class="text-foreground mb-4 text-lg font-semibold">
+                          Project Type Rates
+                        </h4>
+                        <div class="space-y-4">
+                          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                              <label
+                                for="commercialRate"
+                                class="text-foreground mb-2 block text-sm font-medium"
+                              >
+                                Commercial (30 seconds)
+                              </label>
+                              <div class="relative">
+                                <div
+                                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                                >
+                                  <span class="text-muted-foreground text-sm">$</span>
+                                </div>
+                                <input
+                                  id="commercialRate"
+                                  v-model="pricingData.commercialRate"
+                                  type="number"
+                                  min="0"
+                                  step="25"
+                                  placeholder="500"
+                                  class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label
+                                for="audiobookRate"
+                                class="text-foreground mb-2 block text-sm font-medium"
+                              >
+                                Audiobook (per finished hour)
+                              </label>
+                              <div class="relative">
+                                <div
+                                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                                >
+                                  <span class="text-muted-foreground text-sm">$</span>
+                                </div>
+                                <input
+                                  id="audiobookRate"
+                                  v-model="pricingData.audiobookRate"
+                                  type="number"
+                                  min="0"
+                                  step="25"
+                                  placeholder="200"
+                                  class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label
+                                for="animationRate"
+                                class="text-foreground mb-2 block text-sm font-medium"
+                              >
+                                Animation (per character)
+                              </label>
+                              <div class="relative">
+                                <div
+                                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                                >
+                                  <span class="text-muted-foreground text-sm">$</span>
+                                </div>
+                                <input
+                                  id="animationRate"
+                                  v-model="pricingData.animationRate"
+                                  type="number"
+                                  min="0"
+                                  step="25"
+                                  placeholder="1000"
+                                  class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label
+                                for="elearningRate"
+                                class="text-foreground mb-2 block text-sm font-medium"
+                              >
+                                E-Learning (per hour)
+                              </label>
+                              <div class="relative">
+                                <div
+                                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                                >
+                                  <span class="text-muted-foreground text-sm">$</span>
+                                </div>
+                                <input
+                                  id="elearningRate"
+                                  v-model="pricingData.elearningRate"
+                                  type="number"
+                                  min="0"
+                                  step="25"
+                                  placeholder="300"
+                                  class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Additional Information -->
                       <div>
                         <label
-                          for="hourlyRate"
+                          for="pricingNotes"
                           class="text-foreground mb-2 block text-sm font-medium"
                         >
-                          Hourly Rate (USD) *
+                          Additional Pricing Notes
                         </label>
-                        <div class="relative">
-                          <div
-                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-                          >
-                            <span class="text-muted-foreground text-sm">$</span>
-                          </div>
-                          <input
-                            id="hourlyRate"
-                            v-model="pricingData.hourlyRate"
-                            type="number"
-                            min="0"
-                            step="5"
-                            placeholder="50"
-                            class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                          />
-                        </div>
-                        <p class="text-muted-foreground mt-1 text-xs">
-                          Your standard hourly rate for voice work
-                        </p>
-                      </div>
-
-                      <div>
-                        <label
-                          for="perWordRate"
-                          class="text-foreground mb-2 block text-sm font-medium"
-                        >
-                          Per Word Rate (USD)
-                        </label>
-                        <div class="relative">
-                          <div
-                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-                          >
-                            <span class="text-muted-foreground text-sm">$</span>
-                          </div>
-                          <input
-                            id="perWordRate"
-                            v-model="pricingData.perWordRate"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.25"
-                            class="w-full rounded-lg border border-gray-300 py-3 pr-3 pl-8 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                          />
-                        </div>
-                        <p class="text-muted-foreground mt-1 text-xs">
-                          Rate per word for audiobooks, e-learning
-                        </p>
+                        <textarea
+                          id="pricingNotes"
+                          v-model="pricingData.notes"
+                          rows="3"
+                          placeholder="e.g., Rush jobs +50%, Weekend work +25%, Minimum project fee $100..."
+                          class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                        />
                       </div>
                     </div>
-                  </div>
-
-                  <!-- Project Type Rates -->
-                  <div class="rounded-xl bg-gray-50 p-6 dark:bg-gray-800">
-                    <h4 class="text-foreground mb-4 text-lg font-semibold">Project Type Rates</h4>
-                    <div class="space-y-4">
-                      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div>
-                          <label
-                            for="commercialRate"
-                            class="text-foreground mb-2 block text-sm font-medium"
-                          >
-                            Commercial (30 seconds)
-                          </label>
-                          <div class="relative">
-                            <div
-                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-                            >
-                              <span class="text-muted-foreground text-sm">$</span>
-                            </div>
-                            <input
-                              id="commercialRate"
-                              v-model="pricingData.commercialRate"
-                              type="number"
-                              min="0"
-                              step="25"
-                              placeholder="500"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label
-                            for="audiobookRate"
-                            class="text-foreground mb-2 block text-sm font-medium"
-                          >
-                            Audiobook (per finished hour)
-                          </label>
-                          <div class="relative">
-                            <div
-                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-                            >
-                              <span class="text-muted-foreground text-sm">$</span>
-                            </div>
-                            <input
-                              id="audiobookRate"
-                              v-model="pricingData.audiobookRate"
-                              type="number"
-                              min="0"
-                              step="25"
-                              placeholder="200"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label
-                            for="animationRate"
-                            class="text-foreground mb-2 block text-sm font-medium"
-                          >
-                            Animation (per character)
-                          </label>
-                          <div class="relative">
-                            <div
-                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-                            >
-                              <span class="text-muted-foreground text-sm">$</span>
-                            </div>
-                            <input
-                              id="animationRate"
-                              v-model="pricingData.animationRate"
-                              type="number"
-                              min="0"
-                              step="25"
-                              placeholder="1000"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label
-                            for="elearningRate"
-                            class="text-foreground mb-2 block text-sm font-medium"
-                          >
-                            E-Learning (per hour)
-                          </label>
-                          <div class="relative">
-                            <div
-                              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
-                            >
-                              <span class="text-muted-foreground text-sm">$</span>
-                            </div>
-                            <input
-                              id="elearningRate"
-                              v-model="pricingData.elearningRate"
-                              type="number"
-                              min="0"
-                              step="25"
-                              placeholder="300"
-                              class="w-full rounded-md border border-gray-300 py-2 pr-3 pl-8 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Additional Information -->
-                  <div>
-                    <label
-                      for="pricingNotes"
-                      class="text-foreground mb-2 block text-sm font-medium"
-                    >
-                      Additional Pricing Notes
-                    </label>
-                    <textarea
-                      id="pricingNotes"
-                      v-model="pricingData.notes"
-                      rows="3"
-                      placeholder="e.g., Rush jobs +50%, Weekend work +25%, Minimum project fee $100..."
-                      class="w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
-                </div>
-              </Card>
+                  </Card>
                 </div>
               </Tab>
             </TabNavigation>
@@ -672,7 +689,7 @@ const profileData = reactive({
 })
 
 // Voice samples data
-const voiceSamples = reactive<Record<string, any>>({})
+const voiceSamples = reactive<Record<string, unknown>>({})
 const isDragOver = ref<string | null>(null)
 const avatarInput = ref<HTMLInputElement>()
 
