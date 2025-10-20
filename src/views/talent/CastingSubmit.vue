@@ -95,10 +95,18 @@
                     type="number"
                     min="0"
                     step="100"
-                    class="border-border bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+                    :class="[
+                      'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
+                      formErrors.proposedCost 
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+                        : 'border-border bg-background text-foreground focus:ring-primary'
+                    ]"
                     placeholder="Enter your proposed cost"
                     required
                   />
+                  <p v-if="formErrors.proposedCost" class="text-red-500 mt-1 text-xs">
+                    {{ formErrors.proposedCost }}
+                  </p>
                 </div>
                 <div>
                   <label class="text-foreground mb-2 block text-sm font-medium">
@@ -107,10 +115,18 @@
                   <input
                     v-model="proposal.proposedTimeline"
                     type="text"
-                    class="border-border bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+                    :class="[
+                      'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
+                      formErrors.proposedTimeline 
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+                        : 'border-border bg-background text-foreground focus:ring-primary'
+                    ]"
                     placeholder="e.g., 2-3 weeks, 1 month"
                     required
                   />
+                  <p v-if="formErrors.proposedTimeline" class="text-red-500 mt-1 text-xs">
+                    {{ formErrors.proposedTimeline }}
+                  </p>
                 </div>
                 <div>
                   <label class="text-foreground mb-2 block text-sm font-medium">
@@ -121,10 +137,18 @@
                     type="number"
                     min="1"
                     step="0.5"
-                    class="border-border bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+                    :class="[
+                      'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
+                      formErrors.estimatedHours 
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+                        : 'border-border bg-background text-foreground focus:ring-primary'
+                    ]"
                     placeholder="Estimated hours of work"
                     required
                   />
+                  <p v-if="formErrors.estimatedHours" class="text-red-500 mt-1 text-xs">
+                    {{ formErrors.estimatedHours }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -135,6 +159,9 @@
               <p class="text-muted-foreground mb-4 text-sm">
                 Select samples from your portfolio that best showcase your abilities for this
                 project.
+              </p>
+              <p v-if="formErrors.samples" class="text-red-500 mb-4 text-sm">
+                {{ formErrors.samples }}
               </p>
               <div class="space-y-4">
                 <div
@@ -238,19 +265,40 @@
               <textarea
                 v-model="proposal.personalNote"
                 rows="6"
-                class="border-border bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+                :class="[
+                  'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
+                  formErrors.personalNote 
+                    ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+                    : 'border-border bg-background text-foreground focus:ring-primary'
+                ]"
                 placeholder="Tell the studio why you're the perfect fit for this project..."
               ></textarea>
+              <p v-if="formErrors.personalNote" class="text-red-500 mt-1 text-xs">
+                {{ formErrors.personalNote }}
+              </p>
             </div>
 
             <!-- Submit Actions -->
             <div class="border-border flex items-center justify-between border-t pt-6">
-              <Button variant="outline" @click="$router.back()"> Cancel </Button>
+              <div class="flex items-center space-x-2">
+                <Button variant="outline" @click="$router.back()"> Cancel </Button>
+                <span v-if="hasUnsavedChanges" class="text-muted-foreground text-xs">
+                  • Unsaved changes
+                </span>
+              </div>
               <div class="flex space-x-3">
-                <Button variant="outline" @click="saveDraft" :disabled="isSubmitting">
-                  Save Draft
+                <Button 
+                  variant="outline" 
+                  @click="saveDraft" 
+                  :disabled="isSubmitting || isSavingDraft"
+                >
+                  {{ isSavingDraft ? 'Saving...' : 'Save Draft' }}
                 </Button>
-                <Button variant="primary" type="submit" :disabled="isSubmitting">
+                <Button 
+                  variant="primary" 
+                  type="submit" 
+                  :disabled="isSubmitting || isSavingDraft || !isFormValid"
+                >
                   <SendIcon class="mr-2 h-4 w-4" />
                   {{ isSubmitting ? 'Submitting...' : 'Submit Proposal' }}
                 </Button>
@@ -423,14 +471,31 @@ const handleCustomSampleUpload = (event: Event, index: number) => {
   }
 }
 
-const saveDraft = () => {
-  // In real app, save draft to backend
-  console.log('Saving draft:', proposal.value)
-  // For now, just show success message
-  alert('Draft saved successfully!')
+const saveDraft = async () => {
+  isSavingDraft.value = true
+  
+  try {
+    // In real app, save draft to backend
+    console.log('Saving draft:', proposal.value)
+    
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    
+    hasUnsavedChanges.value = false
+    success('Draft saved successfully!')
+  } catch (err) {
+    error('Failed to save draft. Please try again.')
+  } finally {
+    isSavingDraft.value = false
+  }
 }
 
 const submitProposal = async () => {
+  if (!isFormValid.value) {
+    warning('Please fix the form errors before submitting')
+    return
+  }
+
   isSubmitting.value = true
 
   try {
@@ -440,14 +505,14 @@ const submitProposal = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
+    hasUnsavedChanges.value = false
+    success('Proposal submitted successfully!')
+    
     // Redirect back to casting view
     router.push('/talent/casting')
-
-    // Show success message
-    alert('Proposal submitted successfully!')
-  } catch (error) {
-    console.error('Error submitting proposal:', error)
-    alert('Error submitting proposal. Please try again.')
+  } catch (err) {
+    console.error('Error submitting proposal:', err)
+    error('Error submitting proposal. Please try again.')
   } finally {
     isSubmitting.value = false
   }

@@ -20,7 +20,7 @@
               {{ currentActor?.displayName }}
             </p>
             <p class="text-muted-foreground truncate text-xs">
-              {{ currentActor?.experience }} • {{ currentActor?.location }}
+              {{ authStore.user?.email }}
             </p>
           </div>
         </div>
@@ -101,8 +101,6 @@ const currentActor = computed(() => {
   return {
     displayName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor',
     avatarUrl: authStore.user?.photoURL,
-    experience: 'professional', // Default value, could be fetched from user profile
-    location: 'Location', // Default value, could be fetched from user profile
   }
 })
 

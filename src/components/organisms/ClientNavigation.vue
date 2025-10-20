@@ -20,7 +20,7 @@
               {{ currentClient?.companyName }}
             </p>
             <p class="text-muted-foreground truncate text-xs">
-              {{ currentClient?.contactName }} • {{ currentClient?.industry }}
+              {{ authStore.user?.email }}
             </p>
           </div>
         </div>
@@ -104,7 +104,6 @@ const currentClient = computed(() => ({
   companyName: authStore.user?.displayName || authStore.user?.email || 'Client',
   logoUrl: authStore.user?.photoURL,
   contactName: authStore.user?.displayName || authStore.user?.email || 'Contact',
-  industry: 'Industry', // Default value, could be fetched from user profile
 }))
 
 // Keep stats as mock for now, but this could be fetched from API based on user ID
