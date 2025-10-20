@@ -9,10 +9,7 @@
         <template #subtitle>{{ job?.title || 'Recording Session' }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="primary" size="sm" @click="submitWork" :disabled="!canSubmit">
-            <SendIcon class="mr-2 h-4 w-4" />
-            Submit Work
-          </Button>
+          <Button variant="primary" size="sm" icon="mdi:send" @click="submitWork" :disabled="!canSubmit">Submit Work</Button>
         </template>
       </AppBar>
 
@@ -26,16 +23,13 @@
               <Button
                 variant="outline"
                 size="sm"
+                icon="mdi:robot"
                 @click="generateTTS"
                 :disabled="isGeneratingTTS"
               >
-                <RobotIcon class="mr-2 h-4 w-4" />
                 {{ isGeneratingTTS ? 'Generating...' : 'Generate TTS' }}
               </Button>
-              <Button variant="outline" size="sm" @click="playFullTTS" :disabled="!hasTTS">
-                <PlayIcon class="mr-2 h-4 w-4" />
-                Play All
-              </Button>
+              <Button variant="outline" size="sm" icon="mdi:play" @click="playFullTTS" :disabled="!hasTTS">Play All</Button>
             </div>
           </div>
 
@@ -76,17 +70,12 @@
                   <Button
                     variant="ghost"
                     size="sm"
+                    icon="mdi:play"
                     @click="playSegment(index)"
                     :disabled="!segment.hasAudio"
-                  >
-                    <PlayIcon class="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" @click="recordSegment(index)">
-                    <MicrophoneIcon class="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" @click="selectSegment(index)">
-                    <TargetIcon class="h-4 w-4" />
-                  </Button>
+                  />
+                  <Button variant="ghost" size="sm" icon="mdi:microphone" @click="recordSegment(index)" />
+                  <Button variant="ghost" size="sm" icon="mdi:target" @click="selectSegment(index)" />
                 </div>
               </div>
             </div>
@@ -124,10 +113,8 @@
                 @click="toggleRecording"
                 class="h-32 w-32 rounded-full text-2xl font-bold"
                 :disabled="selectedSegmentIndex === null"
-              >
-                <MicrophoneIcon v-if="!isRecording" class="h-12 w-12" />
-                <StopIcon v-else class="h-12 w-12" />
-              </Button>
+                :icon="isRecording ? 'mdi:stop' : 'mdi:microphone'"
+              />
               <div
                 v-if="isRecording"
                 class="absolute -inset-4 animate-ping rounded-full border-4 border-red-500"
@@ -170,20 +157,14 @@
               <Button
                 variant="outline"
                 size="lg"
+                icon="mdi:play"
                 @click="playRecording"
                 :disabled="!hasRecording"
               >
-                <PlayIcon class="mr-2 h-6 w-6" />
                 Play
               </Button>
-              <Button variant="outline" size="lg" @click="cutAudio" :disabled="!hasRecording">
-                <ScissorsIcon class="mr-2 h-6 w-6" />
-                Cut
-              </Button>
-              <Button variant="outline" size="lg" @click="removeAudio" :disabled="!hasRecording">
-                <DeleteIcon class="mr-2 h-6 w-6" />
-                Remove
-              </Button>
+              <Button variant="outline" size="lg" icon="mdi:scissors-cutting" @click="cutAudio" :disabled="!hasRecording">Cut</Button>
+              <Button variant="outline" size="lg" icon="mdi:delete" @click="removeAudio" :disabled="!hasRecording">Remove</Button>
             </div>
           </div>
 
@@ -226,14 +207,7 @@ import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
 
 // Icons
-import MicrophoneIcon from '~icons/mdi/microphone'
-import SendIcon from '~icons/mdi/send'
-import RobotIcon from '~icons/mdi/robot'
-import PlayIcon from '~icons/mdi/play'
-import TargetIcon from '~icons/mdi/target'
-import StopIcon from '~icons/mdi/stop'
-import ScissorsIcon from '~icons/mdi/scissors-cutting'
-import DeleteIcon from '~icons/mdi/delete'
+// Icons removed; using Button icon prop instead
 
 const route = useRoute()
 const { success, error } = useToast()

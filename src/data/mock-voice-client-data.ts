@@ -312,13 +312,13 @@ export const mockJobApplications: JobApplication[] = [
     status: 'selected',
     appliedDate: '2024-01-14T14:00:00Z',
     reviewedDate: '2024-01-15T10:00:00Z',
-    proposedRate: 12000,
+    proposedCost: 12000,
     proposedCurrency: 'USD',
     proposedTimeline: '2-3 weeks',
     estimatedHours: 35,
     portfolioSampleIds: ['sample-003'],
     customSamples: [],
-    coverLetter:
+    personalNote:
       "I'm very excited about this animated series project! I have extensive experience with character voices and animation work. I can bring the perfect blend of adventure and humor to this character.",
     relevantExperience:
       '8+ years of animation voice work, including lead characters in animated series. Known for versatile character development and comedic timing.',
@@ -337,13 +337,13 @@ export const mockJobApplications: JobApplication[] = [
     status: 'selected',
     appliedDate: '2023-12-25T10:00:00Z',
     reviewedDate: '2023-12-26T09:00:00Z',
-    proposedRate: 4500,
+    proposedCost: 4500,
     proposedCurrency: 'USD',
     proposedTimeline: '2 weeks',
     estimatedHours: 20,
     portfolioSampleIds: ['sample-001', 'sample-002'],
     customSamples: [],
-    coverLetter:
+    personalNote:
       'I would love to work on this mobile app commercial series. My energetic, modern delivery style would be perfect for your target demographic.',
     relevantExperience:
       '5+ years of commercial voice work, including tech startups and mobile apps. Recent clients include similar companies in the fintech space.',
@@ -361,13 +361,13 @@ export const mockJobApplications: JobApplication[] = [
     status: 'selected',
     appliedDate: '2023-12-20T11:00:00Z',
     reviewedDate: '2023-12-21T10:00:00Z',
-    proposedRate: 3000,
+    proposedCost: 3000,
     proposedCurrency: 'USD',
     proposedTimeline: '3 weeks',
     estimatedHours: 25,
     portfolioSampleIds: ['sample-001'],
     customSamples: [],
-    coverLetter:
+    personalNote:
       'I have extensive experience with corporate training content and can deliver clear, engaging narration that keeps learners engaged throughout the module.',
     relevantExperience:
       'Specialized in educational content with over 3 years of e-learning narration experience. Worked with major corporate training companies.',
@@ -385,13 +385,13 @@ export const mockJobApplications: JobApplication[] = [
     voiceActorName: 'Alex Thompson',
     status: 'under_review',
     appliedDate: '2024-01-19T14:20:00Z',
-    proposedRate: 4000,
+    proposedCost: 4000,
     proposedCurrency: 'USD',
     proposedTimeline: '1-2 weeks',
     estimatedHours: 17,
     portfolioSampleIds: ['sample-001'],
     customSamples: [],
-    coverLetter:
+    personalNote:
       'I specialize in tech commercial work and have a modern, energetic voice that would be perfect for your startup. I can deliver high-quality work within your timeline.',
     relevantExperience:
       '3+ years of commercial voice work with focus on technology and startup companies. Experience with mobile app commercials and tech product launches.',
@@ -405,13 +405,13 @@ export const mockJobApplications: JobApplication[] = [
     voiceActorName: 'Jessica Park',
     status: 'under_review',
     appliedDate: '2024-01-20T09:45:00Z',
-    proposedRate: 3600,
+    proposedCost: 3600,
     proposedCurrency: 'USD',
     proposedTimeline: '1 week',
     estimatedHours: 14,
     portfolioSampleIds: ['sample-002'],
     customSamples: [],
-    coverLetter:
+    personalNote:
       'I have a fresh, modern voice that resonates well with younger audiences. Perfect for tech startups looking to connect with millennials and Gen Z.',
     relevantExperience:
       '2+ years of commercial voice work with focus on modern brands and digital products. Strong background in tech and startup marketing.',

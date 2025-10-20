@@ -237,6 +237,8 @@ import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 // Using lightweight in-view modal; no external dialog imports
 import { useJob } from '@/composables/useJob'
+import { useJobApplication } from '@/composables/useJobApplication'
+import type { Application } from '@/types/job-application'
 import { useToast } from '@/composables/useToast'
 import { mockVoiceActors } from '@/data/mock-voice-actor-data'
 // Close icon removed; using Button icon prop instead
@@ -250,12 +252,13 @@ import type { JobApplication } from '@/types/voice-client'
 const route = useRoute()
 const router = useRouter()
 const { getJob } = useJob()
+const { getApplicationsByJobId, sortApplications } = useJobApplication()
 const { addToast: showToast } = useToast()
 
 // State
 const job = ref<any>(null)
-const applications = ref<JobApplication[]>([])
-const selectedApplication = ref<JobApplication | null>(null)
+const applications = ref<Application[]>([])
+const selectedApplication = ref<Application | null>(null)
 const showApplicationDetail = ref(false)
 const sortBy = ref<'date' | 'rate' | 'rating' | 'timeline'>('date')
 const sortOrder = ref<'asc' | 'desc'>('desc')
@@ -266,40 +269,7 @@ const jobDescription = computed(() => job.value?.description || '')
 const jobBudget = computed(() => job.value?.budget)
 const jobDeadline = computed(() => job.value?.deadline)
 
-const sortedApplications = computed(() => {
-  const sorted = [...applications.value].sort((a, b) => {
-    let aValue: any, bValue: any
-
-    switch (sortBy.value) {
-      case 'rate':
-        aValue = a.proposedRate
-        bValue = b.proposedRate
-        break
-      case 'rating':
-        aValue = getTalentRating(a.voiceActorId)
-        bValue = getTalentRating(b.voiceActorId)
-        break
-      case 'timeline':
-        // Simple timeline comparison (could be improved)
-        aValue = a.proposedTimeline
-        bValue = b.proposedTimeline
-        break
-      case 'date':
-      default:
-        aValue = new Date(a.appliedDate).getTime()
-        bValue = new Date(b.appliedDate).getTime()
-        break
-    }
-
-    if (sortOrder.value === 'asc') {
-      return aValue > bValue ? 1 : -1
-    } else {
-      return aValue < bValue ? 1 : -1
-    }
-  })
-
-  return sorted
-})
+const sortedApplications = computed(() => sortApplications(applications.value, sortBy.value === 'rate' ? 'cost' : (sortBy.value as any), sortOrder.value))
 
 // Methods
 const getTalentAvatar = (talentId: string) => {
@@ -375,7 +345,7 @@ const loadJob = (id: string | undefined) => {
   const found = getJob(id)
   if (found) {
     job.value = found
-    applications.value = found.applications || []
+    applications.value = getApplicationsByJobId(found.id)
   } else {
     showToast({
       type: 'error',
