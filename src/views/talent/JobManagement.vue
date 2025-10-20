@@ -11,8 +11,7 @@
         <template #subtitle>View and manage your assigned voice acting jobs</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="outline" size="sm" @click="refreshJobs">
-            <RefreshIcon class="mr-2 h-4 w-4" />
+          <Button variant="outline" size="sm" icon="mdi:refresh" @click="refreshJobs">
             Refresh
           </Button>
         </template>
@@ -129,9 +128,7 @@
                         +{{ job.tags.length - 2 }} more
                       </span>
                     </div>
-                    <Button variant="ghost" size="sm">
-                      <ArrowRightIcon class="h-4 w-4" />
-                    </Button>
+                    <Button variant="ghost" size="sm" icon="mdi:arrow-right" />
                   </div>
                 </div>
               </Card>
@@ -191,9 +188,7 @@
                         </div>
                       </td>
                       <td class="p-4 text-right">
-                        <Button variant="ghost" size="sm">
-                          <ArrowRightIcon class="h-4 w-4" />
-                        </Button>
+                        <Button variant="ghost" size="sm" icon="mdi:arrow-right" />
                       </td>
                     </tr>
                   </tbody>
@@ -215,8 +210,7 @@
               <Button v-if="searchQuery || statusFilter !== 'all'" variant="outline" @click="clearFilters">
                 Clear Filters
               </Button>
-              <Button variant="primary" @click="$router.push('/talent/casting')">
-                <MegaphoneIcon class="mr-2 h-4 w-4" />
+              <Button variant="primary" icon="mdi:megaphone" @click="$router.push('/talent/casting')">
                 Browse Casting Calls
               </Button>
             </div>
@@ -240,10 +234,8 @@ import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import RefreshIcon from '~icons/mdi/refresh'
-import ArrowRightIcon from '~icons/mdi/arrow-right'
 import BriefcaseIcon from '~icons/mdi/briefcase'
-import MegaphoneIcon from '~icons/mdi/megaphone'
+// Icons removed; using Button icon prop for buttons
 
 // Mock data - in real app, this would come from API
 const jobs = ref([

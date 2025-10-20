@@ -69,54 +69,11 @@
             </p>
           </div>
 
-          <div class="bg-card rounded-lg p-8 shadow-lg">
-            <h2 class="text-foreground mb-6 text-xl font-semibold">Company Information</h2>
-
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium">
-                  Company Name *
-                </label>
-                <input
-                  v-model="onboardingData.companyName"
-                  type="text"
-                  required
-                  class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-                  placeholder="Your Company Name"
-                />
-              </div>
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium"> Your Name * </label>
-                <input
-                  v-model="onboardingData.contactName"
-                  type="text"
-                  required
-                  class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-                  placeholder="Your Full Name"
-                />
-              </div>
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium">
-                  Email Address *
-                </label>
-                <input
-                  v-model="onboardingData.email"
-                  type="email"
-                  required
-                  class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium"> Industry </label>
-                <SelectInput
-                  v-model="onboardingData.industry"
-                  :options="industryOptions"
-                  placeholder="Select your industry"
-                />
-              </div>
-            </div>
-          </div>
+          <AccountInformation
+            v-model="accountData"
+            :required-fields="['companyName', 'contactName', 'email']"
+            @validation-change="updateStepValidation(1, $event)"
+          />
         </div>
 
         <!-- Step 2: Job Preferences -->
@@ -133,65 +90,10 @@
             </p>
           </div>
 
-          <div class="bg-card rounded-lg p-8 shadow-lg">
-            <h2 class="text-foreground mb-6 text-xl font-semibold">Job Defaults</h2>
-
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium">
-                  Typical Budget Range
-                </label>
-                <div class="grid grid-cols-2 gap-3">
-                  <input
-                    v-model.number="onboardingData.defaultBudget.min"
-                    type="number"
-                    min="0"
-                    class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-                    placeholder="Min"
-                  />
-                  <input
-                    v-model.number="onboardingData.defaultBudget.max"
-                    type="number"
-                    min="0"
-                    class="border-border bg-input text-foreground placeholder-muted-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-                    placeholder="Max"
-                  />
-                </div>
-              </div>
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium">
-                  Preferred Currency
-                </label>
-                <SelectInput
-                  v-model="onboardingData.defaultBudget.currency"
-                  :options="currencyOptions"
-                  placeholder="Select currency"
-                />
-              </div>
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium">
-                  Preferred Languages
-                </label>
-                <SelectInput
-                  v-model="onboardingData.preferredLanguages"
-                  :options="languageOptions"
-                  placeholder="Select languages"
-                  multiple
-                />
-              </div>
-              <div>
-                <label class="text-foreground mb-2 block text-sm font-medium">
-                  Preferred Voice Types
-                </label>
-                <SelectInput
-                  v-model="onboardingData.preferredVoiceTypes"
-                  :options="voiceTypeOptions"
-                  placeholder="Select voice types"
-                  multiple
-                />
-              </div>
-            </div>
-          </div>
+          <JobDefaults
+            v-model="jobDefaultsData"
+            @validation-change="updateStepValidation(2, $event)"
+          />
         </div>
 
         <!-- Step 3: Workflow Preferences -->
@@ -208,53 +110,11 @@
             </p>
           </div>
 
-          <div class="bg-card rounded-lg p-8 shadow-lg">
-            <h2 class="text-foreground mb-6 text-xl font-semibold">Job Preferences</h2>
-
-            <div class="space-y-6">
-              <div class="border-border flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <h3 class="text-foreground text-sm font-medium">Auto-approve Applications</h3>
-                  <p class="text-muted-foreground text-sm">
-                    Automatically approve applications that meet your criteria
-                  </p>
-                </div>
-                <input
-                  v-model="onboardingData.autoApprove"
-                  type="checkbox"
-                  class="border-border text-primary focus:ring-primary h-4 w-4 rounded"
-                />
-              </div>
-
-              <div class="border-border flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <h3 class="text-foreground text-sm font-medium">Require NDA</h3>
-                  <p class="text-muted-foreground text-sm">
-                    Require voice actors to sign an NDA before starting work
-                  </p>
-                </div>
-                <input
-                  v-model="onboardingData.requireNDA"
-                  type="checkbox"
-                  class="border-border text-primary focus:ring-primary h-4 w-4 rounded"
-                />
-              </div>
-
-              <div class="border-border flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <h3 class="text-foreground text-sm font-medium">Require Portfolio</h3>
-                  <p class="text-muted-foreground text-sm">
-                    Only allow voice actors with portfolios to apply
-                  </p>
-                </div>
-                <input
-                  v-model="onboardingData.requirePortfolio"
-                  type="checkbox"
-                  class="border-border text-primary focus:ring-primary h-4 w-4 rounded"
-                />
-              </div>
-            </div>
-          </div>
+          <JobPreferences
+            v-model="jobPreferencesData"
+            :show-public-profile="false"
+            @validation-change="updateStepValidation(3, $event)"
+          />
         </div>
 
         <!-- Step 4: Complete Setup -->
@@ -307,12 +167,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import {
+  AccountInformation,
+  JobDefaults,
+  JobPreferences
+} from '@/components/molecules/ClientSettings'
 
 const router = useRouter()
 const {
@@ -328,8 +192,40 @@ const {
 const showOnboarding = ref(false)
 const currentStep = ref(1)
 const totalSteps = ref(4)
+const stepValidation = reactive<Record<number, boolean>>({})
 
-// Onboarding data
+// Component data structures
+const accountData = reactive({
+  companyName: '',
+  contactName: '',
+  email: '',
+  phone: '',
+  website: '',
+  location: '',
+  timezone: '',
+  industry: '',
+  companySize: 'small' as 'startup' | 'small' | 'medium' | 'large' | 'enterprise',
+  description: '',
+})
+
+const jobDefaultsData = reactive({
+  defaultBudget: {
+    min: 0,
+    max: 0,
+    currency: 'USD',
+  },
+  preferredLanguages: [] as string[],
+  preferredVoiceTypes: [] as string[],
+})
+
+const jobPreferencesData = reactive({
+  autoApprove: false,
+  requireNDA: false,
+  requirePortfolio: true,
+  isPublic: false,
+})
+
+// Legacy onboarding data for compatibility
 const onboardingData = ref({
   companyName: '',
   contactName: '',
@@ -347,78 +243,14 @@ const onboardingData = ref({
   requirePortfolio: true,
 })
 
-// Options
-const industryOptions = [
-  { value: 'technology', label: 'Technology' },
-  { value: 'advertising', label: 'Advertising & Marketing' },
-  { value: 'education', label: 'Education' },
-  { value: 'entertainment', label: 'Entertainment & Media' },
-  { value: 'gaming', label: 'Gaming' },
-  { value: 'healthcare', label: 'Healthcare' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'retail', label: 'Retail & E-commerce' },
-  { value: 'nonprofit', label: 'Non-profit' },
-  { value: 'other', label: 'Other' },
-]
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'GBP', label: 'GBP (£)' },
-  { value: 'CAD', label: 'CAD (C$)' },
-  { value: 'AUD', label: 'AUD (A$)' },
-  { value: 'VND', label: 'VND (₫)' },
-]
-
-const languageOptions = [
-  { value: 'English', label: 'English' },
-  { value: 'Spanish', label: 'Spanish' },
-  { value: 'French', label: 'French' },
-  { value: 'German', label: 'German' },
-  { value: 'Italian', label: 'Italian' },
-  { value: 'Portuguese', label: 'Portuguese' },
-  { value: 'Japanese', label: 'Japanese' },
-  { value: 'Korean', label: 'Korean' },
-  { value: 'Chinese', label: 'Chinese' },
-  { value: 'Arabic', label: 'Arabic' },
-  { value: 'Russian', label: 'Russian' },
-  { value: 'Dutch', label: 'Dutch' },
-]
-
-const voiceTypeOptions = [
-  { value: 'narrator', label: 'Narrator' },
-  { value: 'character', label: 'Character' },
-  { value: 'announcer', label: 'Announcer' },
-  { value: 'commercial', label: 'Commercial' },
-  { value: 'audiobook', label: 'Audiobook' },
-  { value: 'podcast', label: 'Podcast' },
-  { value: 'animation', label: 'Animation' },
-  { value: 'video_game', label: 'Video Game' },
-  { value: 'documentary', label: 'Documentary' },
-  { value: 'e-learning', label: 'E-Learning' },
-]
+// Methods
+const updateStepValidation = (step: number, isValid: boolean) => {
+  stepValidation[step] = isValid
+}
 
 // Computed
 const canProceedToNext = computed(() => {
-  switch (currentStep.value) {
-    case 1:
-      return (
-        onboardingData.value.companyName &&
-        onboardingData.value.contactName &&
-        onboardingData.value.email
-      )
-    case 2:
-      return (
-        onboardingData.value.preferredLanguages.length > 0 &&
-        onboardingData.value.preferredVoiceTypes.length > 0
-      )
-    case 3:
-      return true // All optional preferences
-    case 4:
-      return true // Completion step
-    default:
-      return false
-  }
+  return stepValidation[currentStep.value] ?? false
 })
 
 // Methods
@@ -437,6 +269,20 @@ const previousStep = () => {
 }
 
 const completeOnboarding = () => {
+  // Update legacy data for compatibility
+  onboardingData.value = {
+    companyName: accountData.companyName,
+    contactName: accountData.contactName,
+    email: accountData.email,
+    industry: accountData.industry,
+    defaultBudget: jobDefaultsData.defaultBudget,
+    preferredLanguages: jobDefaultsData.preferredLanguages,
+    preferredVoiceTypes: jobDefaultsData.preferredVoiceTypes,
+    autoApprove: jobPreferencesData.autoApprove,
+    requireNDA: jobPreferencesData.requireNDA,
+    requirePortfolio: jobPreferencesData.requirePortfolio,
+  }
+
   // Save onboarding data
   completeCurrentOnboarding(onboardingData.value)
 
