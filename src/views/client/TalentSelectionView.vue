@@ -9,10 +9,7 @@
           <div class="text-muted-foreground text-sm">
             {{ applications.length }} application{{ applications.length !== 1 ? 's' : '' }}
           </div>
-          <Button variant="outline" size="sm" @click="$router.back()">
-            <CloseIcon class="mr-2 h-4 w-4" />
-            Close
-          </Button>
+          <Button variant="outline" size="sm" icon="mdi:close" @click="$router.back()">Close</Button>
         </div>
       </template>
     </AppBar>
@@ -96,10 +93,7 @@
               <!-- Application Header -->
               <div class="mb-4 flex items-start justify-between">
                 <div class="flex items-center space-x-4">
-                  <Avatar class="h-12 w-12">
-                    <AvatarImage :src="getTalentAvatar(application.voiceActorId)" />
-                    <AvatarFallback>{{ application.voiceActorName.charAt(0) }}</AvatarFallback>
-                  </Avatar>
+                  <Avatar :seed="application.voiceActorName" :src="getTalentAvatar(application.voiceActorId)" :alt="application.voiceActorName" size="md" />
                   <div>
                     <h3 class="text-foreground text-lg font-semibold">{{ application.voiceActorName }}</h3>
                     <p class="text-muted-foreground text-sm">{{ getTalentLocation(application.voiceActorId) }}</p>
@@ -136,20 +130,20 @@
                 <Button
                   variant="outline"
                   size="sm"
+                  icon="mdi:eye"
                   @click="viewApplication(application.id)"
                   class="flex-1"
                 >
-                  <EyeIcon class="mr-2 h-4 w-4" />
                   View Full Application
                 </Button>
                 <Button
                   variant="primary"
                   size="sm"
                   :disabled="isTalentSelected(application.voiceActorId)"
+                  icon="mdi:check"
                   @click="selectTalent(application)"
                   class="flex-1"
                 >
-                  <CheckIcon class="mr-2 h-4 w-4" />
                   {{ isTalentSelected(application.voiceActorId) ? 'Selected' : 'Select Talent' }}
                 </Button>
               </div>
@@ -173,18 +167,13 @@
               Full application from {{ selectedApplication?.voiceActorName }}
             </p>
           </div>
-          <Button variant="ghost" size="sm" @click="showApplicationDetail = false">
-            <CloseIcon class="h-5 w-5" />
-          </Button>
+          <Button variant="ghost" size="sm" icon="mdi:close" @click="showApplicationDetail = false" />
         </div>
 
         <div v-if="selectedApplication" class="space-y-6 p-6">
           <!-- Talent Info -->
           <div class="flex items-center space-x-4">
-            <Avatar class="h-16 w-16">
-              <AvatarImage :src="getTalentAvatar(selectedApplication.voiceActorId)" />
-              <AvatarFallback>{{ selectedApplication.voiceActorName.charAt(0) }}</AvatarFallback>
-            </Avatar>
+            <Avatar :seed="selectedApplication.voiceActorName" :src="getTalentAvatar(selectedApplication.voiceActorId)" :alt="selectedApplication.voiceActorName" size="lg" />
             <div>
               <h3 class="text-foreground text-xl font-semibold">{{ selectedApplication.voiceActorName }}</h3>
               <p class="text-muted-foreground">{{ getTalentLocation(selectedApplication.voiceActorId) }}</p>
@@ -228,9 +217,9 @@
               v-if="selectedApplication"
               variant="primary"
               :disabled="isTalentSelected(selectedApplication.voiceActorId)"
+              icon="mdi:check"
               @click="selectTalent(selectedApplication as any)"
             >
-              <CheckIcon class="mr-2 h-4 w-4" />
               Select This Talent
             </Button>
           </div>
@@ -250,11 +239,10 @@ import Avatar from '@/components/atoms/Avatar.vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { mockVoiceActors } from '@/data/mock-voice-actor-data'
-import CloseIcon from '~icons/mdi/close'
+// Close icon removed; using Button icon prop instead
 import UsersIcon from '~icons/mdi/account-group'
 import StarIcon from '~icons/mdi/star'
-import EyeIcon from '~icons/mdi/eye'
-import CheckIcon from '~icons/mdi/check'
+// Icons removed; using Button icon prop instead
 import ArrowUpIcon from '~icons/mdi/arrow-up'
 import ArrowDownIcon from '~icons/mdi/arrow-down'
 import type { JobApplication } from '@/types/voice-client'
