@@ -231,7 +231,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type {
-  VoiceClient,
   ClientStats,
   JobPosting,
   JobApplication,
@@ -247,14 +246,22 @@ import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { useAuthStore } from '@/stores/auth'
 import PlusIcon from '~icons/mdi/plus'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import AccountGroupIcon from '~icons/mdi/account-group'
 import EmailIcon from '~icons/mdi/email'
 
-// Mock data - in real app, this would come from API
-const currentClient = ref<VoiceClient>(mockClientData.voiceClients[0])
+// Use authenticated user data instead of mock data
+const authStore = useAuthStore()
+const currentClient = computed(() => ({
+  companyName: authStore.user?.displayName || authStore.user?.email || 'Client',
+  logoUrl: authStore.user?.photoURL,
+  contactName: authStore.user?.displayName || authStore.user?.email || 'Contact',
+}))
+
+// Keep stats and other data as mock for now, but this could be fetched from API based on user ID
 const stats = ref<ClientStats>(mockClientData.clientStats)
 const jobPostings = ref<JobPosting[]>(mockClientData.jobPostings)
 const applications = ref<JobApplication[]>(mockClientData.jobApplications)

@@ -75,15 +75,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import type { VoiceActor, VoiceActorStats } from '@/types/voice-actor'
+import type { VoiceActorStats } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import HomeIcon from '~icons/mdi/home'
 import UserIcon from '~icons/mdi/account'
-import FolderOpenIcon from '~icons/mdi/folder-open'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import CogIcon from '~icons/mdi/cog'
@@ -92,9 +92,21 @@ import LogoutIcon from '~icons/mdi/logout'
 const router = useRouter()
 const route = useRoute()
 const { switchMode } = useOnboarding()
+const authStore = useAuthStore()
 
-// Mock data - in real app, this would come from API
-const currentActor = ref<VoiceActor>(mockData.voiceActors[0])
+// Use authenticated user data instead of mock data
+const currentActor = computed(() => {
+  console.log('🔍 VoiceActNavigation: authStore.user:', authStore.user)
+  console.log('🔍 VoiceActNavigation: authStore.isAuthenticated:', authStore.isAuthenticated)
+  return {
+    displayName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor',
+    avatarUrl: authStore.user?.photoURL,
+    experience: 'professional', // Default value, could be fetched from user profile
+    location: 'Location', // Default value, could be fetched from user profile
+  }
+})
+
+// Keep stats as mock for now, but this could be fetched from API based on user ID
 const stats = ref<VoiceActorStats>(mockData.voiceActorStats)
 
 // Computed
@@ -161,10 +173,15 @@ const switchToClient = () => {
   router.push('/client/dashboard')
 }
 
-const handleLogout = () => {
-  // In real app, this would handle logout
-  console.log('Logout clicked')
-  router.push('/auth')
+const handleLogout = async () => {
+  try {
+    await authStore.logoutUser()
+    router.push('/auth')
+  } catch (error) {
+    console.error('Logout failed:', error)
+    // Still redirect to auth page even if logout fails
+    router.push('/auth')
+  }
 }
 
 onMounted(() => {

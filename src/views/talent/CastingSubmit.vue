@@ -264,7 +264,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type {
   CastingSession,
@@ -272,6 +272,8 @@ import type {
   VoiceSample,
 } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
+import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/composables/useToast'
 import Button from '@/components/atoms/Button.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import FileInput from '@/components/atoms/FileInput.vue'
@@ -285,19 +287,24 @@ import SendIcon from '~icons/mdi/send'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
+const { success, error, warning } = useToast()
 
 // Current user ID - in real app, this would come from auth store
-const currentUserId = 'va-001'
+const currentUserId = authStore.user?.id || 'va-001'
 
 // State
 const castingSession = ref<CastingSession | null>(null)
 const isSubmitting = ref(false)
+const isSavingDraft = ref(false)
+const formErrors = ref<Record<string, string>>({})
+const hasUnsavedChanges = ref(false)
 
 // Proposal form data
 const proposal = ref<Partial<CastingProposal>>({
   castingSessionId: route.params.id as string,
   voiceActorId: currentUserId,
-  voiceActorName: 'Sarah Johnson', // In real app, get from auth store
+  voiceActorName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor', // Get from auth store
   status: 'draft',
   proposedCost: 0,
   proposedCurrency: 'USD',
@@ -313,6 +320,39 @@ const availableSamples = computed(() => {
   return mockData.voiceSamples.filter((sample) => sample.voiceActorId === currentUserId)
 })
 
+// Form validation
+const isFormValid = computed(() => {
+  const errors: Record<string, string> = {}
+  
+  if (!proposal.value.proposedCost || proposal.value.proposedCost <= 0) {
+    errors.proposedCost = 'Please enter a valid proposed cost'
+  }
+  
+  if (!proposal.value.proposedTimeline?.trim()) {
+    errors.proposedTimeline = 'Please enter a proposed timeline'
+  }
+  
+  if (!proposal.value.estimatedHours || proposal.value.estimatedHours <= 0) {
+    errors.estimatedHours = 'Please enter estimated hours'
+  }
+  
+  if (!proposal.value.personalNote?.trim()) {
+    errors.personalNote = 'Please add a personal note to the studio'
+  }
+  
+  if (!proposal.value.portfolioSampleIds?.length && !proposal.value.customSamples?.length) {
+    errors.samples = 'Please select at least one portfolio sample or upload a custom sample'
+  }
+  
+  formErrors.value = errors
+  return Object.keys(errors).length === 0
+})
+
+// Watch for form changes
+watch(proposal, () => {
+  hasUnsavedChanges.value = true
+}, { deep: true })
+
 // Methods
 const loadCastingSession = () => {
   const session = mockData.castingSessions.find((s) => s.id === route.params.id)
@@ -320,7 +360,7 @@ const loadCastingSession = () => {
     castingSession.value = session
     proposal.value.castingSessionId = session.id
   } else {
-    router.push('/casting')
+    router.push('/talent/casting')
   }
 }
 
@@ -401,7 +441,7 @@ const submitProposal = async () => {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Redirect back to casting view
-    router.push('/casting')
+    router.push('/talent/casting')
 
     // Show success message
     alert('Proposal submitted successfully!')

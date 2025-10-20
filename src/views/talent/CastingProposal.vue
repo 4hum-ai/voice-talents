@@ -174,11 +174,11 @@
 
             <!-- Actions -->
             <div class="border-border flex items-center justify-center space-x-4 border-t pt-6">
-              <Button variant="outline" @click="$router.push(`/casting/${castingSession.id}`)">
+              <Button variant="outline" @click="$router.push(`/talent/casting/${castingSession.id}`)">
                 <EyeIcon class="mr-2 h-4 w-4" />
                 View Casting Details
               </Button>
-              <Button variant="outline" @click="$router.push('/casting')">
+              <Button variant="outline" @click="$router.push('/talent/casting')">
                 <ArrowLeftIcon class="mr-2 h-4 w-4" />
                 Back to Casting
               </Button>
@@ -191,7 +191,7 @@
             <p class="text-muted-foreground mb-6">
               The proposal you're looking for doesn't exist or has been removed.
             </p>
-            <Button variant="primary" @click="$router.push('/casting')">
+            <Button variant="primary" @click="$router.push('/talent/casting')">
               <ArrowLeftIcon class="mr-2 h-4 w-4" />
               Back to Casting
             </Button>
@@ -216,6 +216,7 @@ import AppBar from '@/components/molecules/AppBar.vue'
 import PlayIcon from '~icons/mdi/play'
 import EyeIcon from '~icons/mdi/eye'
 import MegaphoneIcon from '~icons/mdi/megaphone'
+import ArrowLeftIcon from '~icons/mdi/arrow-left'
 
 const route = useRoute()
 const router = useRouter()
@@ -236,10 +237,10 @@ const loadProposal = () => {
     if (userProposal) {
       proposal.value = userProposal
     } else {
-      router.push(`/casting/${route.params.id}`)
+      router.push(`/talent/casting/${route.params.id}`)
     }
   } else {
-    router.push('/casting')
+    router.push('/talent/casting')
   }
 }
 

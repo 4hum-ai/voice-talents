@@ -127,7 +127,7 @@
                 v-if="!getUserProposalStatus(castingSession)"
                 variant="primary"
                 size="lg"
-                @click="$router.push(`/casting/${castingSession.id}/submit`)"
+                @click="$router.push(`/talent/casting/${castingSession.id}/submit`)"
                 :disabled="castingSession.status !== 'open'"
               >
                 <SendIcon class="mr-2 h-5 w-5" />
@@ -137,12 +137,12 @@
                 v-else
                 variant="outline"
                 size="lg"
-                @click="$router.push(`/casting/${castingSession.id}/proposal`)"
+                @click="$router.push(`/talent/casting/${castingSession.id}/proposal`)"
               >
                 <EyeIcon class="mr-2 h-5 w-5" />
                 View My Proposal
               </Button>
-              <Button variant="outline" size="lg" @click="$router.push('/casting')">
+              <Button variant="outline" size="lg" @click="$router.push('/talent/casting')">
                 <ArrowLeftIcon class="mr-2 h-5 w-5" />
                 Back to Casting
               </Button>
@@ -208,6 +208,7 @@ import ShareIcon from '~icons/mdi/share'
 import SendIcon from '~icons/mdi/send'
 import EyeIcon from '~icons/mdi/eye'
 import MegaphoneIcon from '~icons/mdi/megaphone'
+import ArrowLeftIcon from '~icons/mdi/arrow-left'
 
 const route = useRoute()
 

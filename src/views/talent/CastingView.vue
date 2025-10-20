@@ -200,7 +200,7 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      @click="$router.push(`/casting/${session.id}`)"
+                      @click="$router.push(`/talent/casting/${session.id}`)"
                     >
                       <EyeIcon class="h-4 w-4" />
                     </Button>
@@ -212,7 +212,7 @@
                     v-if="!getUserProposalStatus(session)"
                     variant="primary"
                     size="sm"
-                    @click="$router.push(`/casting/${session.id}/submit`)"
+                    @click="$router.push(`/talent/casting/${session.id}/submit`)"
                     :disabled="session.status !== 'open'"
                   >
                     <IconSend class="mr-2 h-4 w-4" />
@@ -222,7 +222,7 @@
                     v-else
                     variant="outline"
                     size="sm"
-                    @click="$router.push(`/casting/${session.id}/proposal`)"
+                    @click="$router.push(`/talent/casting/${session.id}/proposal`)"
                     :disabled="session.status !== 'open'"
                   >
                     <EyeIcon class="mr-2 h-4 w-4" />
@@ -335,7 +335,7 @@
                         <Button
                           variant="ghost"
                           size="sm"
-                          @click="$router.push(`/casting/${session.id}`)"
+                          @click="$router.push(`/talent/casting/${session.id}`)"
                         >
                           <EyeIcon class="h-4 w-4" />
                         </Button>
@@ -343,7 +343,7 @@
                           v-if="!getUserProposalStatus(session)"
                           variant="primary"
                           size="sm"
-                          @click="$router.push(`/casting/${session.id}/submit`)"
+                          @click="$router.push(`/talent/casting/${session.id}/submit`)"
                           :disabled="session.status !== 'open'"
                         >
                           <SendIcon class="h-4 w-4" />
@@ -352,7 +352,7 @@
                           v-else
                           variant="outline"
                           size="sm"
-                          @click="$router.push(`/casting/${session.id}/proposal`)"
+                          @click="$router.push(`/talent/casting/${session.id}/proposal`)"
                           :disabled="session.status !== 'open'"
                         >
                           <EyeIcon class="h-4 w-4" />

@@ -20,7 +20,7 @@
         <!-- Welcome Section -->
         <div class="mb-8">
           <h2 class="text-foreground mb-2 text-3xl font-bold">
-            Welcome back, {{ currentActor?.displayName }}! 👋
+            Welcome back, {{ authStore.user?.displayName || authStore.user?.email || 'there' }}! 👋
           </h2>
           <p class="text-muted-foreground">
             Here's what's happening with your voice acting career today.
@@ -265,10 +265,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { VoiceActor, VoiceActorStats } from '@/types/voice-actor'
+import type { VoiceActorStats } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useToast } from '@/composables/useToast'
+import { useAuthStore } from '@/stores/auth'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
@@ -285,9 +286,15 @@ const router = useRouter()
 // Onboarding logic
 const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
 const { success } = useToast()
+const authStore = useAuthStore()
 
-// Mock data
-const currentActor = ref<VoiceActor>(mockData.voiceActors[0])
+// Use authenticated user data instead of mock data
+// const currentActor = computed(() => ({
+//   displayName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor',
+//   avatarUrl: authStore.user?.photoURL,
+// }))
+
+// Keep stats as mock for now, but this could be fetched from API based on user ID
 const voiceActorStats = ref<VoiceActorStats>(mockData.voiceActorStats)
 
 // Computed properties

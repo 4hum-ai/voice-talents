@@ -567,6 +567,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { VoiceClient } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
+import { useAuthStore } from '@/stores/auth'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
@@ -578,6 +579,7 @@ import SaveIcon from '~icons/mdi/content-save'
 import RefreshIcon from '~icons/mdi/refresh'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 // State
 const isSaving = ref(false)
@@ -736,13 +738,14 @@ const previousStep = () => {
 }
 
 const loadSettings = () => {
-  const client = mockClientData.voiceClients[0]
+  // Use authenticated user data instead of mock data
+  const client = mockClientData.voiceClients[0] // Keep mock for other fields not available in auth
 
-  // Load basic info
-  settings.id = client.id
-  settings.companyName = client.companyName
-  settings.contactName = client.contactName
-  settings.email = client.email
+  // Load basic info from authenticated user
+  settings.id = authStore.user?.id || client.id
+  settings.companyName = authStore.user?.displayName || client.companyName
+  settings.contactName = authStore.user?.displayName || client.contactName
+  settings.email = authStore.user?.email || client.email
   settings.phone = client.phone || ''
   settings.website = client.website || ''
   settings.location = client.location

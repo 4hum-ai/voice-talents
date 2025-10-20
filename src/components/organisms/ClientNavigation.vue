@@ -80,9 +80,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import type { VoiceClient, ClientStats } from '@/types/voice-client'
+import type { ClientStats } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
@@ -96,9 +97,17 @@ import UserIcon from '~icons/mdi/account'
 const router = useRouter()
 const route = useRoute()
 const { switchMode } = useOnboarding()
+const authStore = useAuthStore()
 
-// Mock data - in real app, this would come from API
-const currentClient = ref<VoiceClient>(mockClientData.voiceClients[0])
+// Use authenticated user data instead of mock data
+const currentClient = computed(() => ({
+  companyName: authStore.user?.displayName || authStore.user?.email || 'Client',
+  logoUrl: authStore.user?.photoURL,
+  contactName: authStore.user?.displayName || authStore.user?.email || 'Contact',
+  industry: 'Industry', // Default value, could be fetched from user profile
+}))
+
+// Keep stats as mock for now, but this could be fetched from API based on user ID
 const stats = ref<ClientStats>(mockClientData.clientStats)
 
 // Computed
@@ -157,10 +166,15 @@ const switchToVoiceActor = () => {
   router.push('/talent/dashboard')
 }
 
-const handleLogout = () => {
-  // In real app, this would handle logout
-  console.log('Logout clicked')
-  router.push('/auth')
+const handleLogout = async () => {
+  try {
+    await authStore.logoutUser()
+    router.push('/auth')
+  } catch (error) {
+    console.error('Logout failed:', error)
+    // Still redirect to auth page even if logout fails
+    router.push('/auth')
+  }
 }
 
 onMounted(() => {
