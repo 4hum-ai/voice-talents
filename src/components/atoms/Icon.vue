@@ -1,5 +1,17 @@
 <template>
-  <svg v-if="svgContent" v-html="svgContent" v-bind="$attrs" class="inline-block" />
+  <!-- Loaded icon content rendered within a sized SVG wrapper -->
+  <svg
+    v-if="svgContent"
+    v-bind="$attrs"
+    class="inline-block text-current"
+    viewBox="0 0 24 24"
+    :style="{ width: size, height: size }"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <!-- Injected paths from Iconify response -->
+    <g v-html="svgContent" />
+  </svg>
   <div
     v-else-if="isLoading"
     class="bg-muted inline-block animate-pulse rounded"

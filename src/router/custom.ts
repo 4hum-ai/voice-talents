@@ -99,6 +99,11 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'Job Details', requiresAuth: true, role: 'client' },
   },
   {
+    path: '/client/jobs/:id/talent-selection',
+    component: () => import('../views/client/TalentSelectionView.vue'),
+    meta: { title: 'Talent Selection', requiresAuth: true, role: 'client' },
+  },
+  {
     path: '/client/talents',
     component: () => import('../views/client/TalentManagement.vue'),
     meta: { title: 'Talent Management', requiresAuth: true, role: 'client' },

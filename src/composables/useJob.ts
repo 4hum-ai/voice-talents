@@ -45,91 +45,23 @@ const initializeJobs = () => {
   }
 }
 
-// Initialize mock completed jobs for demonstration
+// Initialize mock jobs for demonstration
 const initializeMockJobs = () => {
-  const mockCompletedJobs: Job[] = [
-    {
-      id: 'job-completed-001',
-      clientId: 'client-001',
-      clientName: 'TechFlow Inc.',
-      title: 'Mobile App Commercial Series',
-      description: 'Series of 3 commercials for mobile app launch. Completed successfully with high-quality deliverables.',
-      jobType: 'open_casting',
-      projectType: 'commercial',
-      status: 'completed',
-      priority: 'high',
-      budget: { min: 3000, max: 5000, currency: 'USD' },
-      deadline: '2024-01-15T17:00:00Z',
-      startDate: '2024-01-01T09:00:00Z',
-      estimatedDuration: '2 weeks',
-      requirements: {
-        languages: ['English'],
-        accents: ['American'],
-        voiceTypes: ['commercial'],
-        ageRange: '25-35',
-        gender: 'any',
-        experience: 'professional',
-        specialInstructions: 'Energetic, modern tone for tech audience',
-        quality: 'professional',
-      },
-      deliverables: [],
-      files: [],
-      isPublic: true,
-      applications: [],
-      selectedTalents: ['va-001'],
-      totalApplications: 5,
-      viewCount: 45,
-      createdDate: '2023-12-20T10:00:00Z',
-      publishedDate: '2023-12-20T10:00:00Z',
-      closedDate: '2024-01-15T17:00:00Z',
-      createdAt: '2023-12-20T10:00:00Z',
-      updatedAt: '2024-01-15T17:00:00Z',
-      lastSaved: '2024-01-15T17:00:00Z',
+  // Import the enhanced mock data
+  import('@/data/mock-voice-client-data').then(({ mockJobPostings }) => {
+    // Convert JobPosting to Job format for ALL jobs (not just completed)
+    const mockJobs: Job[] = mockJobPostings.map((job: any) => ({
+      ...job,
+      lastSaved: job.closedDate || job.updatedAt || job.createdAt,
       autoSaved: false,
       version: 1,
-    },
-    {
-      id: 'job-completed-002',
-      clientId: 'client-002',
-      clientName: 'EduTech Solutions',
-      title: 'Corporate Training Module',
-      description: 'Voice-over for corporate training module on digital marketing best practices.',
-      jobType: 'targeted_search',
-      projectType: 'e-learning',
-      status: 'completed',
-      priority: 'medium',
-      budget: { min: 2500, max: 4000, currency: 'USD' },
-      deadline: '2024-01-10T17:00:00Z',
-      startDate: '2023-12-25T09:00:00Z',
-      estimatedDuration: '3 weeks',
-      requirements: {
-        languages: ['English'],
-        accents: ['American'],
-        voiceTypes: ['narrator'],
-        experience: 'advanced',
-        specialInstructions: 'Clear, engaging delivery for corporate audience',
-        quality: 'professional',
-      },
-      deliverables: [],
-      files: [],
-      isPublic: true,
-      applications: [],
-      selectedTalents: ['va-003'],
-      totalApplications: 3,
-      viewCount: 28,
-      createdDate: '2023-12-15T10:00:00Z',
-      publishedDate: '2023-12-15T10:00:00Z',
-      closedDate: '2024-01-10T17:00:00Z',
-      createdAt: '2023-12-15T10:00:00Z',
-      updatedAt: '2024-01-10T17:00:00Z',
-      lastSaved: '2024-01-10T17:00:00Z',
-      autoSaved: false,
-      version: 1,
-    },
-  ]
-  
-  state.jobs = mockCompletedJobs
-  saveJobsToStorage()
+    }))
+    
+    state.jobs = mockJobs
+    saveJobsToStorage()
+  }).catch((error) => {
+    console.error('Error loading mock data:', error)
+  })
 }
 
 // Save jobs to localStorage
@@ -408,6 +340,13 @@ export function useJob() {
     initializeJobs()
   }
 
+  // Force reload mock data (clears localStorage and reloads)
+  const reloadMockData = (): void => {
+    localStorage.removeItem(JOBS_STORAGE_KEY)
+    state.jobs = []
+    initializeJobs()
+  }
+
   return {
     // State
     jobs,
@@ -436,5 +375,6 @@ export function useJob() {
     deleteDraft,
     clearAllJobs,
     refreshJobs,
+    reloadMockData,
   }
 }

@@ -19,12 +19,13 @@
       v-else-if="icon && !$slots.default"
       :name="icon"
       :class="iconClasses"
+      :size="iconPixelSize"
       aria-hidden="true"
     />
 
     <!-- Icon with text -->
     <template v-else-if="icon && $slots.default">
-      <Icon :name="icon" :class="iconClasses" aria-hidden="true" />
+      <Icon :name="icon" :class="iconClasses" :size="iconPixelSize" aria-hidden="true" />
       <span :class="textClasses">
         <slot />
       </span>
@@ -147,6 +148,18 @@ const iconClasses = computed(() => {
     xl: 'h-6 w-6',
   }
   return sizes[props.size]
+})
+
+// Provide a concrete pixel size to Icon to avoid clipping with external SVGs
+const iconPixelSize = computed(() => {
+  const sizeMap: Record<typeof props.size, string> = {
+    xs: '12px',
+    sm: '16px',
+    md: '16px',
+    lg: '20px',
+    xl: '24px',
+  }
+  return sizeMap[props.size]
 })
 
 const textClasses = computed(() => {

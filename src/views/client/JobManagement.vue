@@ -10,40 +10,70 @@
         <template #title>Job Management</template>
         <template #subtitle>Manage your voice acting job postings</template>
         <template #actions>
+          <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1 rounded-lg border border-border bg-background p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                @click="viewMode = 'list'"
+                :class="{ 'bg-primary text-primary-foreground': viewMode === 'list' }"
+              >
+                <ViewListIcon class="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                @click="viewMode = 'kanban'"
+                :class="{ 'bg-primary text-primary-foreground': viewMode === 'kanban' }"
+              >
+                <ViewKanbanIcon class="h-4 w-4" />
+              </Button>
+            </div>
           <ThemeToggle />
+            <Button variant="outline" size="sm" @click="reloadMockData" title="Reload Mock Data">
+              <RefreshIcon class="mr-2 h-4 w-4" />
+              Reload Data
+            </Button>
           <Button variant="primary" size="sm" @click="openJobCreationModal">
             <PlusIcon class="mr-2 h-4 w-4" />
             Create Job
           </Button>
+          </div>
         </template>
       </AppBar>
 
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-7xl">
+          <!-- List View -->
+          <div v-if="viewMode === 'list'">
           <!-- Live Jobs Section -->
           <div v-if="clientLiveJobs.length > 0" class="mb-8">
             <div class="mb-4 flex items-center justify-between">
+                <button
+                  @click="toggleGroup('live')"
+                  class="flex items-center space-x-2 text-left hover:text-primary"
+                >
+                  <ChevronDownIcon
+                    v-if="!collapsedGroups.has('live')"
+                    class="h-4 w-4 transition-transform"
+                  />
+                  <ChevronRightIcon
+                    v-else
+                    class="h-4 w-4 transition-transform"
+                  />
               <h2 class="text-foreground text-lg font-semibold">Live Jobs</h2>
               <span class="text-muted-foreground text-sm"
                 >{{ clientLiveJobs.length }} job{{ clientLiveJobs.length !== 1 ? 's' : '' }}</span
               >
+                </button>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div v-if="!collapsedGroups.has('live')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
                 v-for="job in clientLiveJobs"
                 :key="job.id"
                 class="bg-card border-border hover:border-green-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
               >
-                <!-- Status Badge -->
-                <div class="mb-3 flex items-center justify-between">
-                  <div class="flex items-center space-x-2">
-                    <div class="h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
-                    <span class="text-xs font-medium text-green-600 dark:text-green-400">LIVE</span>
-                  </div>
-                  <span class="text-xs text-muted-foreground">{{ job.totalApplications || 0 }} applications</span>
-                </div>
-
                 <!-- Job Title -->
                 <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
                   {{ job.title || 'Untitled Job' }}
@@ -59,16 +89,20 @@
                     <span class="text-muted-foreground">Deadline:</span>
                     <span class="text-foreground">{{ formatDeadline(job.deadline) }}</span>
                   </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Applications:</span>
+                      <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
+                  </div>
                 </div>
 
                 <!-- Action Button -->
                 <Button
+                  icon="mdi:eye"
                   variant="outline"
                   size="sm"
                   @click="viewLiveJob(job.id)"
                   class="w-full group-hover:bg-green-50 group-hover:border-green-200 group-hover:text-green-700 dark:group-hover:bg-green-950 dark:group-hover:border-green-800 dark:group-hover:text-green-300"
                 >
-                  <EyeIcon class="mr-2 h-4 w-4" />
                   View & Approve
                 </Button>
               </div>
@@ -78,27 +112,31 @@
           <!-- Draft Jobs Section -->
           <div v-if="clientDrafts.length > 0" class="mb-8">
             <div class="mb-4 flex items-center justify-between">
+                <button
+                  @click="toggleGroup('drafts')"
+                  class="flex items-center space-x-2 text-left hover:text-primary"
+                >
+                  <ChevronDownIcon
+                    v-if="!collapsedGroups.has('drafts')"
+                    class="h-4 w-4 transition-transform"
+                  />
+                  <ChevronRightIcon
+                    v-else
+                    class="h-4 w-4 transition-transform"
+                  />
               <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
               <span class="text-muted-foreground text-sm"
                 >{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span
               >
+                </button>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div v-if="!collapsedGroups.has('drafts')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
                 v-for="draft in clientDrafts"
                 :key="draft.id"
                 class="bg-card border-border hover:border-orange-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
               >
-                <!-- Status Badge -->
-                <div class="mb-3 flex items-center justify-between">
-                  <div class="flex items-center space-x-2">
-                    <div class="h-2 w-2 rounded-full bg-orange-500"></div>
-                    <span class="text-xs font-medium text-orange-600 dark:text-orange-400">DRAFT</span>
-                  </div>
-                  <span class="text-xs text-muted-foreground">v{{ draft.version || 1 }}</span>
-                </div>
-
                 <!-- Job Title -->
                 <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
                   {{ draft.title || 'Untitled Job' }}
@@ -113,6 +151,10 @@
                   <div class="flex items-center justify-between">
                     <span class="text-muted-foreground">Last saved:</span>
                     <span class="text-foreground">{{ formatDate(draft.lastSaved) }}</span>
+                  </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Version:</span>
+                      <span class="text-foreground">v{{ draft.version || 1 }}</span>
                   </div>
                 </div>
 
@@ -143,27 +185,31 @@
           <!-- Completed Jobs Section -->
           <div v-if="clientCompletedJobs.length > 0" class="mb-8">
             <div class="mb-4 flex items-center justify-between">
+                <button
+                  @click="toggleGroup('completed')"
+                  class="flex items-center space-x-2 text-left hover:text-primary"
+                >
+                  <ChevronDownIcon
+                    v-if="!collapsedGroups.has('completed')"
+                    class="h-4 w-4 transition-transform"
+                  />
+                  <ChevronRightIcon
+                    v-else
+                    class="h-4 w-4 transition-transform"
+                  />
               <h2 class="text-foreground text-lg font-semibold">Completed Jobs</h2>
               <span class="text-muted-foreground text-sm"
                 >{{ clientCompletedJobs.length }} job{{ clientCompletedJobs.length !== 1 ? 's' : '' }}</span
               >
+                </button>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div v-if="!collapsedGroups.has('completed')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div
                 v-for="job in clientCompletedJobs"
                 :key="job.id"
                 class="bg-card border-border hover:border-blue-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
               >
-                <!-- Status Badge -->
-                <div class="mb-3 flex items-center justify-between">
-                  <div class="flex items-center space-x-2">
-                    <div class="h-2 w-2 rounded-full bg-blue-500"></div>
-                    <span class="text-xs font-medium text-blue-600 dark:text-blue-400">COMPLETED</span>
-                  </div>
-                  <span class="text-xs text-muted-foreground">{{ formatDate(job.closedDate || job.updatedAt) }}</span>
-                </div>
-
                 <!-- Job Title -->
                 <h3 class="text-foreground mb-2 text-base font-semibold line-clamp-2">
                   {{ job.title || 'Untitled Job' }}
@@ -175,22 +221,175 @@
                     <span class="text-muted-foreground">Budget:</span>
                     <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
                   </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-muted-foreground">Completed:</span>
+                      <span class="text-foreground">{{ formatDate(job.closedDate || job.updatedAt) }}</span>
+                  </div>
                   <div class="flex items-center justify-between">
                     <span class="text-muted-foreground">Talent:</span>
                     <span class="text-foreground">{{ job.selectedTalents?.length || 0 }} selected</span>
                   </div>
                 </div>
 
-                <!-- Action Button -->
+                  <!-- Action Buttons -->
+                  <div class="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="downloadDelivery(job.id)"
+                      class="flex-1 group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-700 dark:group-hover:bg-blue-950 dark:group-hover:border-blue-800 dark:group-hover:text-blue-300"
+                    >
+                      <DownloadIcon class="mr-2 h-4 w-4" />
+                      Download
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="rateTalent(job.id)"
+                      class="group-hover:bg-yellow-50 group-hover:border-yellow-200 group-hover:text-yellow-700 dark:group-hover:bg-yellow-950 dark:group-hover:border-yellow-800 dark:group-hover:text-yellow-300"
+                    >
+                      <StarIcon class="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kanban View -->
+          <div v-else-if="viewMode === 'kanban'" class="space-y-6">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <!-- Live Jobs Column -->
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-foreground text-lg font-semibold">Live Jobs</h3>
+                  <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full px-2 py-1 text-xs font-medium">
+                    {{ clientLiveJobs.length }}
+                  </span>
+                </div>
+                <div class="space-y-3">
+                  <div
+                    v-for="job in clientLiveJobs"
+                    :key="job.id"
+                    class="bg-card border-border hover:border-green-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                  >
+                    <h4 class="text-foreground mb-2 font-medium line-clamp-2">{{ job.title || 'Untitled Job' }}</h4>
+                    <div class="mb-3 space-y-1 text-sm">
+                      <div class="flex justify-between">
+                        <span class="text-muted-foreground">Budget:</span>
+                        <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-muted-foreground">Applications:</span>
+                        <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      @click="viewLiveJob(job.id)"
+                      class="w-full"
+                    >
+                      <EyeIcon class="mr-2 h-4 w-4" />
+                      View & Approve
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Draft Jobs Column -->
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-foreground text-lg font-semibold">Draft Jobs</h3>
+                  <span class="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded-full px-2 py-1 text-xs font-medium">
+                    {{ clientDrafts.length }}
+                  </span>
+                </div>
+                <div class="space-y-3">
+                  <div
+                    v-for="draft in clientDrafts"
+                    :key="draft.id"
+                    class="bg-card border-border hover:border-orange-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                  >
+                    <h4 class="text-foreground mb-2 font-medium line-clamp-2">{{ draft.title || 'Untitled Job' }}</h4>
+                    <div class="mb-3 space-y-1 text-sm">
+                      <div class="flex justify-between">
+                        <span class="text-muted-foreground">Budget:</span>
+                        <span class="text-foreground font-medium">{{ formatBudget(draft.budget) }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-muted-foreground">Version:</span>
+                        <span class="text-foreground">v{{ draft.version || 1 }}</span>
+                      </div>
+                    </div>
+                    <div class="flex space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        @click="editDraft(draft.id)"
+                        class="flex-1"
+                      >
+                        <EditIcon class="mr-2 h-4 w-4" />
+                        Continue
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="confirmDiscardDraft(draft)"
+                        class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <TrashIcon class="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Completed Jobs Column -->
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-foreground text-lg font-semibold">Completed Jobs</h3>
+                  <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full px-2 py-1 text-xs font-medium">
+                    {{ clientCompletedJobs.length }}
+                  </span>
+                </div>
+                <div class="space-y-3">
+                  <div
+                    v-for="job in clientCompletedJobs"
+                    :key="job.id"
+                    class="bg-card border-border hover:border-blue-500/20 group rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
+                  >
+                    <h4 class="text-foreground mb-2 font-medium line-clamp-2">{{ job.title || 'Untitled Job' }}</h4>
+                    <div class="mb-3 space-y-1 text-sm">
+                      <div class="flex justify-between">
+                        <span class="text-muted-foreground">Budget:</span>
+                        <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-muted-foreground">Completed:</span>
+                        <span class="text-foreground">{{ formatDate(job.closedDate || job.updatedAt) }}</span>
+                      </div>
+                    </div>
+                    <div class="flex space-x-2">
                 <Button
                   variant="outline"
                   size="sm"
                   @click="downloadDelivery(job.id)"
-                  class="w-full group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-700 dark:group-hover:bg-blue-950 dark:group-hover:border-blue-800 dark:group-hover:text-blue-300"
+                        class="flex-1"
                 >
                   <DownloadIcon class="mr-2 h-4 w-4" />
-                  Download Delivery
+                        Download
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        @click="rateTalent(job.id)"
+                      >
+                        <StarIcon class="h-4 w-4" />
                 </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -232,17 +431,34 @@
       @confirm="discardDraft"
       @cancel="cancelDiscard"
     />
+
+
+    <!-- Job Rating Modal -->
+    <JobRatingModal
+      :open="showRatingModal"
+      :job-title="selectedJobForRating?.title || ''"
+      :talent-id="selectedJobForRating?.selectedTalents?.[0] || ''"
+      :talent-name="getTalentName(selectedJobForRating?.selectedTalents?.[0])"
+      :project-type="selectedJobForRating?.projectType || ''"
+      :budget="selectedJobForRating?.budget"
+      :timeline="selectedJobForRating?.estimatedDuration || ''"
+      :completed-date="selectedJobForRating?.closedDate || selectedJobForRating?.updatedAt || ''"
+      @close="showRatingModal = false; selectedJobForRating = null"
+      @submit="submitRating"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
+import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { mockClientData } from '@/data/mock-voice-client-data'
@@ -250,15 +466,24 @@ import PlusIcon from '~icons/mdi/plus'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import EditIcon from '~icons/mdi/pencil'
 import TrashIcon from '~icons/mdi/trash-can'
-import EyeIcon from '~icons/mdi/eye'
 import DownloadIcon from '~icons/mdi/download'
+import ViewListIcon from '~icons/mdi/view-list'
+import ViewKanbanIcon from '~icons/mdi/view-grid'
+import ChevronDownIcon from '~icons/mdi/chevron-down'
+import ChevronRightIcon from '~icons/mdi/chevron-right'
+import StarIcon from '~icons/mdi/star'
+import RefreshIcon from '~icons/mdi/refresh'
 
-// const router = useRouter() // Not needed with modal approach
-const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, getCompletedJobsByClient, refreshJobs } = useJob()
+const router = useRouter()
+const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, getCompletedJobsByClient, refreshJobs, reloadMockData } = useJob()
 const { addToast: showToast } = useToast()
 
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])
+
+// View mode state
+const viewMode = ref<'list' | 'kanban'>('list')
+const collapsedGroups = ref<Set<string>>(new Set())
 
 // Filter jobs for current client
 const clientDrafts = computed(() => {
@@ -280,6 +505,11 @@ const selectedDraftId = ref<string | null>(null)
 // Confirmation modal state
 const showDiscardModal = ref(false)
 const draftToDiscard = ref<any>(null)
+
+
+// Rating modal state
+const showRatingModal = ref(false)
+const selectedJobForRating = ref<any>(null)
 
 // Format date for display
 const formatDate = (dateString: string) => {
@@ -363,29 +593,97 @@ const handleJobCreated = (job: any) => {
 }
 
 // View live job for approval
-const viewLiveJob = (_jobId: string) => {
-  // In a real app, this would navigate to job applications view
+const viewLiveJob = (jobId: string) => {
+  // Navigate to talent selection view
+  router.push(`/client/jobs/${jobId}/talent-selection`)
+}
+
+
+// Toggle group collapse
+const toggleGroup = (groupName: string) => {
+  if (collapsedGroups.value.has(groupName)) {
+    collapsedGroups.value.delete(groupName)
+  } else {
+    collapsedGroups.value.add(groupName)
+  }
+}
+
+// Rate talent for completed job
+const rateTalent = (jobId: string) => {
+  const job = clientCompletedJobs.value.find(j => j.id === jobId)
+  if (job) {
+    selectedJobForRating.value = job
+    showRatingModal.value = true
+  }
+}
+
+// Submit rating
+const submitRating = (ratingData: any) => {
+  // In a real app, this would save the rating to the backend
   showToast({
-    type: 'info',
-    title: 'View Applications',
-    message: 'Job applications view would open here for talent approval',
+    type: 'success',
+    title: 'Rating Submitted',
+    message: `Thank you for rating ${ratingData.talentName}! Your feedback helps improve our platform.`,
   })
+  
+  // Close modal
+  showRatingModal.value = false
+  selectedJobForRating.value = null
+}
+
+// Helper function to get talent name
+const getTalentName = (talentId: string) => {
+  if (!talentId) return 'Unknown Talent'
+  // Import mock data dynamically to avoid circular dependencies
+  const mockVoiceActors = [
+    { id: 'va-001', displayName: 'Sarah Johnson' },
+    { id: 'va-002', displayName: 'Marcus Chen' },
+    { id: 'va-003', displayName: 'Emma Rodriguez' },
+    { id: 'va-004', displayName: 'Alex Thompson' },
+    { id: 'va-005', displayName: 'Jessica Park' }
+  ]
+  const talent = mockVoiceActors.find((va: any) => va.id === talentId)
+  return talent?.displayName || 'Unknown Talent'
 }
 
 // Download delivery for completed jobs
-const downloadDelivery = (_jobId: string) => {
-  // In a real app, this would trigger download of completed deliverables
+const downloadDelivery = (jobId: string) => {
+  const job = clientCompletedJobs.value.find(j => j.id === jobId)
+  if (job && job.deliverables && job.deliverables.length > 0) {
+    const deliverable = job.deliverables[0]
+    if (deliverable.files && deliverable.files.length > 0) {
+      // In a real app, this would trigger actual file downloads
+      deliverable.files.forEach((fileUrl: string, index: number) => {
+        const link = document.createElement('a')
+        link.href = fileUrl
+        link.download = `deliverable-${jobId}-${index + 1}`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+      
   showToast({
     type: 'success',
     title: 'Download Started',
-    message: 'Downloading completed job deliverables...',
-  })
+        message: `Downloading ${deliverable.files.length} file(s) from "${deliverable.title}"`,
+      })
+    } else {
+      showToast({
+        type: 'warning',
+        title: 'No Files Available',
+        message: 'No deliverable files found for this job.',
+      })
+    }
+  } else {
+    showToast({
+      type: 'warning',
+      title: 'No Deliverables',
+      message: 'No deliverables found for this job.',
+    })
+  }
 }
 
 // Formatting functions
-const formatJobType = (_jobType: string) => {
-  return _jobType.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-}
 
 const formatBudget = (budget: any) => {
   if (!budget || !budget.max) return 'Not set'

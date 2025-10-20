@@ -47,10 +47,7 @@
 
         <!-- Role Switcher -->
         <div class="mb-3">
-          <Button variant="ghost" size="sm" class="w-full justify-start" @click="switchToClient">
-            <BriefcaseIcon class="mr-2 h-4 w-4" />
-            Switch to Client
-          </Button>
+          <Button variant="ghost" size="sm" class="w-full justify-start" icon="mdi:briefcase" @click="switchToClient">Switch to Client</Button>
         </div>
 
         <!-- Settings & Logout -->
@@ -59,13 +56,10 @@
             variant="ghost"
             size="sm"
             class="flex-1"
+            icon="mdi:cog"
             @click="$router.push('/talent/settings')"
-          >
-            <CogIcon class="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm" class="flex-1" @click="handleLogout">
-            <LogoutIcon class="h-4 w-4" />
-          </Button>
+          />
+          <Button variant="ghost" size="sm" class="flex-1" icon="mdi:logout" @click="handleLogout" />
         </div>
       </div>
     </template>
@@ -86,8 +80,7 @@ import HomeIcon from '~icons/mdi/home'
 import UserIcon from '~icons/mdi/account'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import BriefcaseIcon from '~icons/mdi/briefcase'
-import CogIcon from '~icons/mdi/cog'
-import LogoutIcon from '~icons/mdi/logout'
+// Icons removed; using Button icon prop instead
 
 const router = useRouter()
 const route = useRoute()
