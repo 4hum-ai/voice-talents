@@ -148,9 +148,7 @@
                     <h4 class="text-foreground text-sm font-medium">
                       Custom Sample {{ index + 1 }}
                     </h4>
-                    <Button variant="ghost" size="sm" @click="removeCustomSample(index)">
-                      <TrashIcon class="h-4 w-4" />
-                    </Button>
+                    <Button variant="ghost" size="sm" icon="mdi:trash" @click="removeCustomSample(index)" />
                   </div>
                   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
@@ -183,10 +181,7 @@
                     />
                   </div>
                 </div>
-                <Button variant="outline" @click="addCustomSample">
-                  <PlusIcon class="mr-2 h-4 w-4" />
-                  Add Custom Sample
-                </Button>
+                <Button variant="outline" icon="mdi:plus" @click="addCustomSample">Add Custom Sample</Button>
               </div>
             </div>
 
@@ -231,9 +226,9 @@
                 <Button 
                   variant="primary" 
                   type="submit" 
+                  icon="mdi:send"
                   :disabled="isSubmitting || isSavingDraft || !isFormValid"
                 >
-                  <SendIcon class="mr-2 h-4 w-4" />
                   {{ isSubmitting ? 'Submitting...' : 'Submit Proposal' }}
                 </Button>
               </div>
@@ -259,9 +254,7 @@ import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
-import TrashIcon from '~icons/mdi/trash'
-import PlusIcon from '~icons/mdi/plus'
-import SendIcon from '~icons/mdi/send'
+// Icons removed; using Button icon prop instead
 
 const route = useRoute()
 const router = useRouter()
