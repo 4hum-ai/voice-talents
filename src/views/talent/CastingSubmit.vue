@@ -128,81 +128,15 @@
                     {{ formErrors.proposedTimeline }}
                   </p>
                 </div>
-                <div>
-                  <label class="text-foreground mb-2 block text-sm font-medium">
-                    Estimated Hours
-                  </label>
-                  <input
-                    v-model="proposal.estimatedHours"
-                    type="number"
-                    min="1"
-                    step="0.5"
-                    :class="[
-                      'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
-                      formErrors.estimatedHours 
-                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
-                        : 'border-border bg-background text-foreground focus:ring-primary'
-                    ]"
-                    placeholder="Estimated hours of work"
-                    required
-                  />
-                  <p v-if="formErrors.estimatedHours" class="text-red-500 mt-1 text-xs">
-                    {{ formErrors.estimatedHours }}
-                  </p>
-                </div>
               </div>
             </div>
 
-            <!-- Portfolio Samples -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Portfolio Samples</h2>
-              <p class="text-muted-foreground mb-4 text-sm">
-                Select samples from your portfolio that best showcase your abilities for this
-                project.
-              </p>
-              <p v-if="formErrors.samples" class="text-red-500 mb-4 text-sm">
-                {{ formErrors.samples }}
-              </p>
-              <div class="space-y-4">
-                <div
-                  v-for="sample in availableSamples"
-                  :key="sample.id"
-                  class="flex items-center space-x-3"
-                >
-                  <input
-                    :id="`sample-${sample.id}`"
-                    v-model="proposal.portfolioSampleIds"
-                    :value="sample.id"
-                    type="checkbox"
-                    class="text-primary focus:ring-primary border-border h-4 w-4 rounded"
-                  />
-                  <label :for="`sample-${sample.id}`" class="flex-1 cursor-pointer">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <h4 class="text-foreground text-sm font-medium">{{ sample.title }}</h4>
-                        <p class="text-muted-foreground text-xs">{{ sample.description }}</p>
-                        <div class="mt-1 flex items-center space-x-2">
-                          <Chip size="sm" variant="outline">{{
-                            formatVoiceType(sample.voiceType)
-                          }}</Chip>
-                          <Chip size="sm" variant="outline">{{ sample.genre }}</Chip>
-                          <span class="text-muted-foreground text-xs">{{ sample.duration }}s</span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm" @click="playSample(sample)">
-                        <PlayIcon class="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
 
-            <!-- Custom Samples -->
+            <!-- Showcases -->
             <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Custom Samples</h2>
+              <h2 class="text-foreground mb-4 text-lg font-semibold">Showcases</h2>
               <p class="text-muted-foreground mb-4 text-sm">
-                Upload custom samples specifically created for this casting call (optional).
+                Upload audio samples that showcase your voice for this specific project (optional).
               </p>
               <div class="space-y-4">
                 <div
@@ -317,17 +251,14 @@ import { useRoute, useRouter } from 'vue-router'
 import type {
   CastingSession,
   CastingProposal,
-  VoiceSample,
 } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import Button from '@/components/atoms/Button.vue'
-import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
-import PlayIcon from '~icons/mdi/play'
 import TrashIcon from '~icons/mdi/trash'
 import PlusIcon from '~icons/mdi/plus'
 import SendIcon from '~icons/mdi/send'
@@ -356,15 +287,8 @@ const proposal = ref<Partial<CastingProposal>>({
   proposedCost: 0,
   proposedCurrency: 'USD',
   proposedTimeline: '',
-  estimatedHours: 0,
   customSamples: [],
-  portfolioSampleIds: [],
   personalNote: '',
-})
-
-// Available portfolio samples
-const availableSamples = computed(() => {
-  return mockData.voiceSamples.filter((sample) => sample.voiceActorId === currentUserId)
 })
 
 // Form validation
@@ -379,16 +303,8 @@ const isFormValid = computed(() => {
     errors.proposedTimeline = 'Please enter a proposed timeline'
   }
   
-  if (!proposal.value.estimatedHours || proposal.value.estimatedHours <= 0) {
-    errors.estimatedHours = 'Please enter estimated hours'
-  }
-  
   if (!proposal.value.personalNote?.trim()) {
     errors.personalNote = 'Please add a personal note to the studio'
-  }
-  
-  if (!proposal.value.portfolioSampleIds?.length && !proposal.value.customSamples?.length) {
-    errors.samples = 'Please select at least one portfolio sample or upload a custom sample'
   }
   
   formErrors.value = errors
@@ -431,10 +347,6 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const playSample = (sample: VoiceSample) => {
-  // In real app, this would play the audio sample
-  console.log('Playing sample:', sample.title)
-}
 
 const addCustomSample = () => {
   proposal.value.customSamples?.push({
