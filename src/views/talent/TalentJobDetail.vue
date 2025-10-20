@@ -11,14 +11,8 @@
         <template #subtitle>{{ job?.clientName || 'Client Project' }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="outline" size="sm" @click="goToAudioStudio">
-            <MicrophoneIcon class="mr-2 h-4 w-4" />
-            Audio Studio
-          </Button>
-          <Button variant="primary" size="sm" @click="submitWork" :disabled="!canSubmit">
-            <SendIcon class="mr-2 h-4 w-4" />
-            Submit Work
-          </Button>
+          <Button variant="outline" size="sm" icon="mdi:microphone" @click="goToAudioStudio">Audio Studio</Button>
+          <Button variant="primary" size="sm" icon="mdi:send" @click="submitWork" :disabled="!canSubmit">Submit Work</Button>
         </template>
       </AppBar>
 
@@ -126,10 +120,7 @@
                       <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
                     </div>
                     <div class="text-center">
-                      <Button variant="primary" size="sm" @click="goToAudioStudio" class="w-full">
-                        <MicrophoneIcon class="mr-2 h-4 w-4" />
-                        Continue Recording
-                      </Button>
+                      <Button variant="primary" size="sm" icon="mdi:microphone" @click="goToAudioStudio" class="w-full">Continue Recording</Button>
                     </div>
                   </div>
                 </div>
@@ -253,10 +244,7 @@
                   <UploadIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                   <h4 class="text-foreground mb-2 font-medium">No deliverables uploaded yet</h4>
                   <p class="text-muted-foreground mb-4">Complete your recording and upload the final audio file</p>
-                  <Button variant="outline" @click="goToAudioStudio">
-                    <MicrophoneIcon class="mr-2 h-4 w-4" />
-                    Start Recording
-                  </Button>
+                  <Button variant="outline" icon="mdi:microphone" @click="goToAudioStudio">Start Recording</Button>
                 </div>
               </div>
             </div>
@@ -302,8 +290,7 @@ import {
 } from '@/types/job-detail'
 
 // Icons
-import MicrophoneIcon from '~icons/mdi/microphone'
-import SendIcon from '~icons/mdi/send'
+// Icons removed; using Button icon prop instead
 import LightbulbIcon from '~icons/mdi/lightbulb-outline'
 import AudioIcon from '~icons/mdi/audio'
 import DownloadIcon from '~icons/mdi/download'

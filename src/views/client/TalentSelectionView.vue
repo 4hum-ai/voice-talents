@@ -60,7 +60,7 @@
                   class="border-border bg-background rounded-md border px-3 py-1 text-sm"
                 >
                   <option value="date">Application Date</option>
-                  <option value="rate">Proposed Rate</option>
+                  <option value="rate">Proposed Cost</option>
                   <option value="rating">Talent Rating</option>
                   <option value="timeline">Timeline</option>
                 </select>
@@ -108,7 +108,7 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="text-foreground text-lg font-bold">{{ formatBudget({ max: application.proposedRate, currency: application.proposedCurrency }) }}</div>
+                  <div class="text-foreground text-lg font-bold">{{ formatBudget({ max: application.proposedCost, currency: application.proposedCurrency }) }}</div>
                   <div class="text-muted-foreground text-sm">{{ application.proposedTimeline }}</div>
                 </div>
               </div>
@@ -116,12 +116,18 @@
               <!-- Application Details -->
               <div class="mb-4 space-y-3">
                 <div>
-                  <h4 class="text-foreground mb-2 font-medium">Cover Letter</h4>
-                  <p class="text-muted-foreground text-sm line-clamp-3">{{ application.coverLetter }}</p>
+                  <h4 class="text-foreground mb-2 font-medium">Personal Note</h4>
+                  <p class="text-muted-foreground text-sm line-clamp-3">{{ application.personalNote }}</p>
                 </div>
-                <div>
-                  <h4 class="text-foreground mb-2 font-medium">Relevant Experience</h4>
-                  <p class="text-muted-foreground text-sm line-clamp-2">{{ application.relevantExperience }}</p>
+                <div v-if="application.customSamples?.length">
+                  <h4 class="text-foreground mb-2 font-medium">Showcases</h4>
+                  <div class="space-y-3">
+                    <div v-for="sample in application.customSamples" :key="sample.id" class="rounded-md border border-border p-3">
+                      <div class="mb-1 text-sm font-medium text-foreground">{{ sample.title }}</div>
+                      <div class="mb-2 text-xs text-muted-foreground">{{ sample.description }}</div>
+                      <audio :src="sample.audioUrl" controls class="w-full" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -191,8 +197,8 @@
           <!-- Proposal Details -->
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <h4 class="text-foreground mb-2 font-medium">Proposed Rate</h4>
-              <p class="text-foreground text-lg font-semibold">{{ formatBudget({ max: selectedApplication.proposedRate, currency: selectedApplication.proposedCurrency }) }}</p>
+              <h4 class="text-foreground mb-2 font-medium">Proposed Cost</h4>
+              <p class="text-foreground text-lg font-semibold">{{ formatBudget({ max: selectedApplication.proposedCost, currency: selectedApplication.proposedCurrency }) }}</p>
             </div>
             <div>
               <h4 class="text-foreground mb-2 font-medium">Timeline</h4>
@@ -200,16 +206,21 @@
             </div>
           </div>
 
-          <!-- Cover Letter -->
+          <!-- Personal Note -->
           <div>
-            <h4 class="text-foreground mb-2 font-medium">Cover Letter</h4>
-            <p class="text-muted-foreground whitespace-pre-wrap">{{ selectedApplication.coverLetter }}</p>
+            <h4 class="text-foreground mb-2 font-medium">Personal Note</h4>
+            <p class="text-muted-foreground whitespace-pre-wrap">{{ selectedApplication.personalNote }}</p>
           </div>
-
-          <!-- Experience -->
-          <div>
-            <h4 class="text-foreground mb-2 font-medium">Relevant Experience</h4>
-            <p class="text-muted-foreground whitespace-pre-wrap">{{ selectedApplication.relevantExperience }}</p>
+          <!-- Showcases -->
+          <div v-if="selectedApplication.customSamples?.length">
+            <h4 class="text-foreground mb-2 font-medium">Showcases</h4>
+            <div class="space-y-3">
+              <div v-for="sample in selectedApplication.customSamples" :key="sample.id" class="rounded-md border border-border p-3">
+                <div class="mb-1 text-sm font-medium text-foreground">{{ sample.title }}</div>
+                <div class="mb-2 text-xs text-muted-foreground">{{ sample.description }}</div>
+                <audio :src="sample.audioUrl" controls class="w-full" />
+              </div>
+            </div>
           </div>
           <div class="border-border flex items-center justify-end space-x-2 border-t p-4">
             <Button variant="outline" @click="showApplicationDetail = false">Close</Button>
@@ -247,7 +258,7 @@ import StarIcon from '~icons/mdi/star'
 // Icons removed; using Button icon prop instead
 import ArrowUpIcon from '~icons/mdi/arrow-up'
 import ArrowDownIcon from '~icons/mdi/arrow-down'
-import type { JobApplication } from '@/types/voice-client'
+// using common Application type for review
 
 const route = useRoute()
 const router = useRouter()
@@ -320,18 +331,16 @@ const isTalentSelected = (talentId: string) => {
   return job.value?.selectedTalents?.includes(talentId) || false
 }
 
-const selectTalent = (application: JobApplication) => {
-  if (job.value) {
-    // In a real app, this would update the job status and notify the talent
-    showToast({
-      type: 'success',
-      title: 'Talent Selected',
-      message: `Contract awarded to ${application.voiceActorName} for "${job.value.title}"`,
-    })
-    
-    // Navigate back to job management
-    router.push('/client/jobs')
-  }
+const selectTalent = (application: Application) => {
+  if (!job.value) return
+  // use composable to mark selection and update job state if needed
+  // (job state transition can be handled elsewhere if required)
+  showToast({
+    type: 'success',
+    title: 'Talent Selected',
+    message: `Contract awarded to ${application.voiceActorName} for "${job.value.title}"`,
+  })
+  router.push('/client/jobs')
 }
 
 const viewApplication = (applicationId: string) => {
