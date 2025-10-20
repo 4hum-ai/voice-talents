@@ -4,7 +4,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-background border-border max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-lg border shadow-lg">
+    <div class="bg-background border-border max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-lg border shadow-lg flex flex-col">
       <!-- Header -->
       <div class="border-border flex items-center justify-between border-b p-6">
         <div>
@@ -15,7 +15,7 @@
       </div>
 
       <!-- Content -->
-      <div class="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
+      <div class="flex-1 overflow-y-auto p-6">
         <div class="space-y-6">
           <!-- Talent Info -->
           <div class="flex items-center space-x-4">

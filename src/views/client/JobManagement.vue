@@ -15,29 +15,21 @@
               <Button
                 variant="ghost"
                 size="sm"
+                icon="mdi:view-list"
                 @click="viewMode = 'list'"
                 :class="{ 'bg-primary text-primary-foreground': viewMode === 'list' }"
-              >
-                <ViewListIcon class="h-4 w-4" />
-              </Button>
+              />
               <Button
                 variant="ghost"
                 size="sm"
+                icon="mdi:view-grid"
                 @click="viewMode = 'kanban'"
                 :class="{ 'bg-primary text-primary-foreground': viewMode === 'kanban' }"
-              >
-                <ViewKanbanIcon class="h-4 w-4" />
-              </Button>
+              />
             </div>
           <ThemeToggle />
-            <Button variant="outline" size="sm" @click="reloadMockData" title="Reload Mock Data">
-              <RefreshIcon class="mr-2 h-4 w-4" />
-              Reload Data
-            </Button>
-          <Button variant="primary" size="sm" @click="openJobCreationModal">
-            <PlusIcon class="mr-2 h-4 w-4" />
-            Create Job
-          </Button>
+            <Button variant="outline" size="sm" icon="mdi:refresh" @click="reloadMockData" title="Reload Mock Data">Reload Data</Button>
+          <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal">Create Job</Button>
           </div>
         </template>
       </AppBar>
@@ -163,20 +155,19 @@
                   <Button
                     variant="outline"
                     size="sm"
+                    icon="mdi:pencil"
                     @click="editDraft(draft.id)"
                     class="flex-1 group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 dark:group-hover:bg-orange-950 dark:group-hover:border-orange-800 dark:group-hover:text-orange-300"
                   >
-                    <EditIcon class="mr-2 h-4 w-4" />
                     Continue
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
+                    icon="mdi:trash-can"
                     @click="confirmDiscardDraft(draft)"
                     class="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <TrashIcon class="h-4 w-4" />
-                  </Button>
+                  />
                 </div>
               </div>
             </div>
@@ -236,20 +227,19 @@
                     <Button
                       variant="outline"
                       size="sm"
+                      icon="mdi:download"
                       @click="downloadDelivery(job.id)"
                       class="flex-1 group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-700 dark:group-hover:bg-blue-950 dark:group-hover:border-blue-800 dark:group-hover:text-blue-300"
                     >
-                      <DownloadIcon class="mr-2 h-4 w-4" />
                       Download
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
+                      icon="mdi:star"
                       @click="rateTalent(job.id)"
                       class="group-hover:bg-yellow-50 group-hover:border-yellow-200 group-hover:text-yellow-700 dark:group-hover:bg-yellow-950 dark:group-hover:border-yellow-800 dark:group-hover:text-yellow-300"
-                    >
-                      <StarIcon class="h-4 w-4" />
-                    </Button>
+                    />
                   </div>
                 </div>
               </div>
@@ -287,10 +277,10 @@
                     <Button
                       variant="outline"
                       size="sm"
+                      icon="mdi:eye"
                       @click="viewLiveJob(job.id)"
                       class="w-full"
                     >
-                      <EyeIcon class="mr-2 h-4 w-4" />
                       View & Approve
                     </Button>
                   </div>
@@ -326,20 +316,19 @@
                       <Button
                         variant="outline"
                         size="sm"
+                        icon="mdi:pencil"
                         @click="editDraft(draft.id)"
                         class="flex-1"
                       >
-                        <EditIcon class="mr-2 h-4 w-4" />
                         Continue
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
+                        icon="mdi:trash-can"
                         @click="confirmDiscardDraft(draft)"
                         class="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <TrashIcon class="h-4 w-4" />
-                      </Button>
+                      />
                     </div>
                   </div>
                 </div>
@@ -374,19 +363,18 @@
                 <Button
                   variant="outline"
                   size="sm"
+                  icon="mdi:download"
                   @click="downloadDelivery(job.id)"
                         class="flex-1"
                 >
-                  <DownloadIcon class="mr-2 h-4 w-4" />
                         Download
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
+                        icon="mdi:star"
                         @click="rateTalent(job.id)"
-                      >
-                        <StarIcon class="h-4 w-4" />
-                </Button>
+                      />
                     </div>
                   </div>
                 </div>
@@ -404,10 +392,7 @@
             <p class="text-muted-foreground mb-6">
               Start creating your first job posting or save a draft to continue later
             </p>
-            <Button variant="primary" @click="openJobCreationModal">
-              <PlusIcon class="mr-2 h-4 w-4" />
-              Create Your First Job
-            </Button>
+            <Button variant="primary" icon="mdi:plus" @click="openJobCreationModal">Create Your First Job</Button>
           </div>
         </div>
       </div>
@@ -462,17 +447,11 @@ import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import PlusIcon from '~icons/mdi/plus'
 import BriefcaseIcon from '~icons/mdi/briefcase'
-import EditIcon from '~icons/mdi/pencil'
-import TrashIcon from '~icons/mdi/trash-can'
-import DownloadIcon from '~icons/mdi/download'
-import ViewListIcon from '~icons/mdi/view-list'
-import ViewKanbanIcon from '~icons/mdi/view-grid'
+// Icons removed; using Button icon prop for buttons
 import ChevronDownIcon from '~icons/mdi/chevron-down'
 import ChevronRightIcon from '~icons/mdi/chevron-right'
-import StarIcon from '~icons/mdi/star'
-import RefreshIcon from '~icons/mdi/refresh'
+// Star icon used as button icon via prop
 
 const router = useRouter()
 const { deleteDraft, getDraftsByClient, getPublishedJobsByClient, getCompletedJobsByClient, refreshJobs, reloadMockData } = useJob()
