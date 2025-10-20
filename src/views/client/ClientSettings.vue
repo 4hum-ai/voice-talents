@@ -40,18 +40,6 @@
                 />
               </Tab>
 
-              <!-- Job Defaults Tab -->
-              <Tab
-                id="defaults"
-                label="Job Defaults"
-                :icon="TargetIcon"
-                :badge="tabValidation.defaults ? '✓' : undefined"
-              >
-                <JobDefaults
-                  v-model="jobDefaultsData"
-                  @validation-change="updateTabValidation('defaults', $event)"
-                />
-              </Tab>
 
               <!-- Job Preferences Tab -->
               <Tab
@@ -125,13 +113,11 @@ import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import {
   AccountInformation,
-  JobDefaults,
   JobPreferences,
   SocialLinks,
   ReviewAndSave
 } from '@/components/molecules/ClientSettings'
 import AccountIcon from '~icons/mdi/account'
-import TargetIcon from '~icons/mdi/target'
 import CogIcon from '~icons/mdi/cog'
 import ShareVariantIcon from '~icons/mdi/share-variant'
 import CheckCircleIcon from '~icons/mdi/check-circle'
@@ -159,15 +145,6 @@ const accountData = reactive({
   description: '',
 })
 
-const jobDefaultsData = reactive({
-  defaultBudget: {
-    min: 0,
-    max: 0,
-    currency: 'USD',
-  },
-  preferredLanguages: [] as string[],
-  preferredVoiceTypes: [] as string[],
-})
 
 const jobPreferencesData = reactive({
   autoApprove: false,
@@ -187,7 +164,6 @@ const socialLinksData = reactive({
 const reviewData = computed(() => ({
   ...accountData,
   preferences: {
-    ...jobDefaultsData,
     ...jobPreferencesData,
   },
   isPublic: jobPreferencesData.isPublic,
@@ -264,12 +240,6 @@ const loadSettings = () => {
   accountData.companySize = client.companySize || 'small'
   accountData.description = client.description || ''
 
-  // Load job defaults
-  jobDefaultsData.defaultBudget.min = client.preferences.defaultBudget.min
-  jobDefaultsData.defaultBudget.max = client.preferences.defaultBudget.max
-  jobDefaultsData.defaultBudget.currency = client.preferences.defaultBudget.currency
-  jobDefaultsData.preferredLanguages = [...client.preferences.preferredLanguages]
-  jobDefaultsData.preferredVoiceTypes = [...client.preferences.preferredVoiceTypes]
 
   // Load job preferences
   jobPreferencesData.autoApprove = client.preferences.autoApprove
@@ -302,7 +272,6 @@ const loadSettings = () => {
     isPublic: jobPreferencesData.isPublic,
     socialLinks: socialLinksData,
     preferences: {
-      ...jobDefaultsData,
       autoApprove: jobPreferencesData.autoApprove,
       requireNDA: jobPreferencesData.requireNDA,
     },

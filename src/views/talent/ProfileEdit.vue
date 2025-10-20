@@ -652,6 +652,7 @@ import Icon from '@/components/atoms/Icon.vue'
 import CountryFlag from '@/components/atoms/CountryFlag.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
+import Tab from '@/components/molecules/Tab.vue'
 import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
@@ -659,15 +660,6 @@ const { success, error } = useToast()
 
 // Tab management
 const activeTab = ref('basic')
-
-// Tab definitions
-const profileTabs = [
-  { id: 'basic', label: 'Basic Info' },
-  { id: 'voice-types', label: 'Voice Types' },
-  { id: 'languages', label: 'Languages' },
-  { id: 'voice-samples', label: 'Voice Samples' },
-  { id: 'pricing', label: 'Pricing & Rates' },
-]
 
 // Profile data structure (matching onboarding)
 const profileData = reactive({

@@ -57,68 +57,26 @@
       <div class="mx-auto max-w-4xl px-6 py-8">
         <!-- Step 1: Welcome & Company Info -->
         <div v-if="currentStep === 1" class="space-y-8">
-          <div class="text-center">
-            <div
-              class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600"
-            >
-              <Icon name="mdi:briefcase" class="h-10 w-10 text-white" />
-            </div>
-            <h1 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceAct.AI</h1>
-            <p class="text-muted-foreground mb-8 text-lg">
-              Let's set up your client account to start finding amazing voice talent
-            </p>
-          </div>
-
           <AccountInformation
-            v-model="accountData"
+            :model-value="accountData"
             :required-fields="['companyName', 'contactName', 'email']"
             @validation-change="updateStepValidation(1, $event)"
+            @update:modelValue="handleAccountDataUpdate"
           />
+
         </div>
 
-        <!-- Step 2: Job Preferences -->
+        <!-- Step 2: Workflow Preferences -->
         <div v-if="currentStep === 2" class="space-y-8">
-          <div class="text-center">
-            <div
-              class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-600"
-            >
-              <Icon name="mdi:target" class="h-10 w-10 text-white" />
-            </div>
-            <h1 class="text-foreground mb-4 text-3xl font-bold">Set Your Preferences</h1>
-            <p class="text-muted-foreground mb-8 text-lg">
-              Tell us about your typical voice over needs
-            </p>
-          </div>
-
-          <JobDefaults
-            v-model="jobDefaultsData"
+          <JobPreferences
+            v-model="jobPreferencesData"
+            :show-public-profile="false"
             @validation-change="updateStepValidation(2, $event)"
           />
         </div>
 
-        <!-- Step 3: Workflow Preferences -->
+        <!-- Step 3: Complete Setup -->
         <div v-if="currentStep === 3" class="space-y-8">
-          <div class="text-center">
-            <div
-              class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-600"
-            >
-              <Icon name="mdi:cog" class="h-10 w-10 text-white" />
-            </div>
-            <h1 class="text-foreground mb-4 text-3xl font-bold">Workflow Preferences</h1>
-            <p class="text-muted-foreground mb-8 text-lg">
-              How would you like to work with voice actors?
-            </p>
-          </div>
-
-          <JobPreferences
-            v-model="jobPreferencesData"
-            :show-public-profile="false"
-            @validation-change="updateStepValidation(3, $event)"
-          />
-        </div>
-
-        <!-- Step 4: Complete Setup -->
-        <div v-if="currentStep === 4" class="space-y-8">
           <div class="text-center">
             <div
               class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600"
@@ -174,7 +132,6 @@ import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import {
   AccountInformation,
-  JobDefaults,
   JobPreferences
 } from '@/components/molecules/ClientSettings'
 
@@ -191,7 +148,7 @@ const {
 // State
 const showOnboarding = ref(false)
 const currentStep = ref(1)
-const totalSteps = ref(4)
+const totalSteps = ref(3)
 const stepValidation = reactive<Record<number, boolean>>({})
 
 // Component data structures
@@ -208,15 +165,6 @@ const accountData = reactive({
   description: '',
 })
 
-const jobDefaultsData = reactive({
-  defaultBudget: {
-    min: 0,
-    max: 0,
-    currency: 'USD',
-  },
-  preferredLanguages: [] as string[],
-  preferredVoiceTypes: [] as string[],
-})
 
 const jobPreferencesData = reactive({
   autoApprove: false,
@@ -231,13 +179,6 @@ const onboardingData = ref({
   contactName: '',
   email: '',
   industry: '',
-  defaultBudget: {
-    min: 0,
-    max: 0,
-    currency: 'USD',
-  },
-  preferredLanguages: [] as string[],
-  preferredVoiceTypes: [] as string[],
   autoApprove: false,
   requireNDA: false,
   requirePortfolio: true,
@@ -245,12 +186,26 @@ const onboardingData = ref({
 
 // Methods
 const updateStepValidation = (step: number, isValid: boolean) => {
+  console.log(`updateStepValidation called - Step ${step} validation:`, isValid)
   stepValidation[step] = isValid
+  console.log('Current stepValidation after update:', stepValidation)
+  console.log('canProceedToNext will be:', stepValidation[currentStep.value] ?? false)
+}
+
+const handleAccountDataUpdate = (newData: any) => {
+  console.log('handleAccountDataUpdate called with:', newData)
+  // Update each field individually to ensure reactivity
+  Object.keys(newData).forEach(key => {
+    accountData[key as keyof typeof accountData] = newData[key]
+  })
+  console.log('Updated accountData:', accountData)
 }
 
 // Computed
 const canProceedToNext = computed(() => {
-  return stepValidation[currentStep.value] ?? false
+  const result = stepValidation[currentStep.value] ?? false
+  console.log(`canProceedToNext for step ${currentStep.value}:`, result, 'stepValidation:', stepValidation)
+  return result
 })
 
 // Methods
@@ -275,9 +230,6 @@ const completeOnboarding = () => {
     contactName: accountData.contactName,
     email: accountData.email,
     industry: accountData.industry,
-    defaultBudget: jobDefaultsData.defaultBudget,
-    preferredLanguages: jobDefaultsData.preferredLanguages,
-    preferredVoiceTypes: jobDefaultsData.preferredVoiceTypes,
     autoApprove: jobPreferencesData.autoApprove,
     requireNDA: jobPreferencesData.requireNDA,
     requirePortfolio: jobPreferencesData.requirePortfolio,

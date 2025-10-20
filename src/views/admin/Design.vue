@@ -275,7 +275,8 @@
                             componentConfig.id !== 'confirm-modal' &&
                             componentConfig.id !== 'dynamic-form-sidebar' &&
                             componentConfig.id !== 'file-upload-modal' &&
-                            componentConfig.id !== 'filter-sidebar'
+                            componentConfig.id !== 'filter-sidebar' &&
+                            componentConfig.id !== 'tab-navigation'
                           "
                           :is="componentConfig.component"
                           v-bind="componentConfig.props"
@@ -292,6 +293,33 @@
                           @close-search="handleCloseSearch"
                           @change="handleTabChange"
                         />
+
+                        <!-- Special handling for TabNavigation with Tab components -->
+                        <TabNavigation
+                          v-else-if="componentConfig.id === 'tab-navigation'"
+                          v-bind="componentConfig.props"
+                          class="rounded-lg"
+                          @change="handleTabChange"
+                        >
+                          <Tab id="tab1" label="Overview">
+                            <div class="p-4">
+                              <h3 class="text-lg font-semibold mb-2">Overview Tab</h3>
+                              <p class="text-gray-600">This is the overview tab content.</p>
+                            </div>
+                          </Tab>
+                          <Tab id="tab2" label="Details" :badge="5">
+                            <div class="p-4">
+                              <h3 class="text-lg font-semibold mb-2">Details Tab</h3>
+                              <p class="text-gray-600">This is the details tab content with a badge.</p>
+                            </div>
+                          </Tab>
+                          <Tab id="tab3" label="Settings">
+                            <div class="p-4">
+                              <h3 class="text-lg font-semibold mb-2">Settings Tab</h3>
+                              <p class="text-gray-600">This is the settings tab content.</p>
+                            </div>
+                          </Tab>
+                        </TabNavigation>
 
                         <!-- Special handling for DynamicFormSidebar - show placeholder when not open -->
                         <div
@@ -545,6 +573,7 @@ import FilterSidebar from '@/components/molecules/FilterSidebar.vue'
 import ProgressIndicator from '@/components/molecules/ProgressIndicator.vue'
 import SortDropdown from '@/components/molecules/SortDropdown.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
+import Tab from '@/components/molecules/Tab.vue'
 import TimeWindowPicker from '@/components/molecules/TimeWindowPicker.vue'
 // Atoms
 import JsonInput from '@/components/atoms/JsonInput.vue'
@@ -1434,16 +1463,11 @@ const componentDefinitions: ComponentDefinition[] = [
   {
     id: 'tab-navigation',
     title: 'Tab Navigation',
-    description: 'Tab navigation component with multiple variants',
+    description: 'Tab navigation component with multiple variants and slot-based tabs',
     componentName: 'TabNavigation',
     component: TabNavigation,
     section: 'molecules',
     defaultProps: {
-      tabs: [
-        { id: 'tab1', label: 'Overview', badge: undefined },
-        { id: 'tab2', label: 'Details', badge: 5 },
-        { id: 'tab3', label: 'Settings', badge: undefined, disabled: false },
-      ],
       modelValue: 'tab1',
       variant: 'default',
       size: 'md',

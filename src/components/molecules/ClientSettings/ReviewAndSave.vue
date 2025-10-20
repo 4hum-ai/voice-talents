@@ -55,32 +55,6 @@
           </div>
         </div>
 
-        <!-- Job Defaults Summary -->
-        <div class="border-border border-b pb-6">
-          <h3 class="text-foreground mb-4 text-lg font-semibold">Job Defaults</h3>
-          <div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
-            <div>
-              <span class="text-muted-foreground">Budget Range:</span>
-              <span class="ml-2 font-medium">
-                {{ modelValue.preferences.defaultBudget.min || 0 }} -
-                {{ modelValue.preferences.defaultBudget.max || 0 }}
-                {{ modelValue.preferences.defaultBudget.currency }}
-              </span>
-            </div>
-            <div>
-              <span class="text-muted-foreground">Languages:</span>
-              <span class="ml-2 font-medium"
-                >{{ modelValue.preferences.preferredLanguages.length }} selected</span
-              >
-            </div>
-            <div>
-              <span class="text-muted-foreground">Voice Types:</span>
-              <span class="ml-2 font-medium"
-                >{{ modelValue.preferences.preferredVoiceTypes.length }} selected</span
-              >
-            </div>
-          </div>
-        </div>
 
         <!-- Preferences Summary -->
         <div class="border-border border-b pb-6">
@@ -143,16 +117,7 @@
 <script setup lang="ts">
 import Icon from '@/components/atoms/Icon.vue'
 
-interface BudgetRange {
-  min: number
-  max: number
-  currency: string
-}
-
 interface Preferences {
-  defaultBudget: BudgetRange
-  preferredLanguages: string[]
-  preferredVoiceTypes: string[]
   autoApprove: boolean
   requireNDA: boolean
   requirePortfolio: boolean

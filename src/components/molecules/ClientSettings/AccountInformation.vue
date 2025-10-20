@@ -80,60 +80,6 @@
           />
         </div>
 
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Location *
-          </label>
-          <input
-            :value="modelValue.location"
-            @input="updateField('location', ($event.target as HTMLInputElement).value)"
-            type="text"
-            required
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="City, Country"
-          />
-        </div>
-
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Timezone *
-          </label>
-          <SelectInput
-            :model-value="modelValue.timezone"
-            @update:model-value="updateField('timezone', $event)"
-            :options="timezoneOptions"
-            placeholder="Select timezone"
-            required
-          />
-        </div>
-
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Industry *
-          </label>
-          <input
-            :value="modelValue.industry"
-            @input="updateField('industry', ($event.target as HTMLInputElement).value)"
-            type="text"
-            required
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="e.g., Technology, Advertising, Education"
-          />
-        </div>
-
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Company Size *
-          </label>
-          <SelectInput
-            :model-value="modelValue.companySize"
-            @update:model-value="updateField('companySize', $event)"
-            :options="companySizeOptions"
-            placeholder="Select company size"
-            required
-          />
-        </div>
-
         <div class="lg:col-span-2">
           <label class="text-foreground mb-2 block text-sm font-medium">
             Company Description
@@ -152,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 
@@ -180,7 +126,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  requiredFields: () => ['companyName', 'contactName', 'email', 'location', 'timezone', 'industry', 'companySize']
+  requiredFields: () => ['companyName', 'contactName', 'email']
 })
 
 const emit = defineEmits<Emits>()
@@ -214,19 +160,42 @@ const companySizeOptions = [
 
 // Computed
 const isValid = computed(() => {
-  return props.requiredFields.every(field => {
+  const result = props.requiredFields.every(field => {
     const value = props.modelValue[field as keyof AccountInformationData]
-    return value && value.toString().trim() !== ''
+    const isValid = value && value.toString().trim() !== ''
+    console.log(`Field ${field}:`, value, 'isValid:', isValid)
+    return isValid
   })
+  console.log('Overall validation result:', result, 'Required fields:', props.requiredFields, 'Model value:', props.modelValue)
+  return result
 })
 
 // Methods
-const updateField = (field: keyof AccountInformationData, value: string) => {
-  const updated = { ...props.modelValue, [field]: value }
+const updateField = (field: keyof AccountInformationData, value: string | number | boolean | undefined) => {
+  console.log(`updateField called with field: ${field}, value:`, value)
+  const updated = { ...props.modelValue, [field]: String(value || '') }
+  console.log(`Updating field ${field} with value:`, value, 'Updated data:', updated)
+  console.log('Emitting update:modelValue with:', updated)
   emit('update:modelValue', updated)
-  emit('validation-change', isValid.value)
+  
+  // Compute validation based on updated data
+  const updatedIsValid = props.requiredFields.every(field => {
+    const fieldValue = updated[field as keyof AccountInformationData]
+    const isValid = fieldValue && fieldValue.toString().trim() !== ''
+    console.log(`Field ${field}:`, fieldValue, 'isValid:', isValid)
+    return isValid
+  })
+  console.log('Emitting validation-change:', updatedIsValid, 'Required fields:', props.requiredFields)
+  emit('validation-change', updatedIsValid)
 }
 
 // Emit initial validation state
+console.log('Emitting initial validation state:', isValid.value)
 emit('validation-change', isValid.value)
+
+// Watch for changes in modelValue and re-emit validation
+watch(() => props.modelValue, (newValue) => {
+  console.log('Model value changed, re-emitting validation:', isValid.value, 'New value:', newValue)
+  emit('validation-change', isValid.value)
+}, { deep: true, immediate: true })
 </script>
