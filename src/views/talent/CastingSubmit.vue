@@ -241,11 +241,11 @@
                     </div>
                   </div>
                   <div class="mt-4">
-                    <FileInput
-                      v-model="customSample.file"
+                    <input
+                      type="file"
                       accept="audio/*"
-                      label="Upload Audio File"
                       @change="handleCustomSampleUpload($event, index)"
+                      class="border-border bg-background text-foreground focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -324,7 +324,6 @@ import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import Button from '@/components/atoms/Button.vue'
 import Chip from '@/components/atoms/Chip.vue'
-import FileInput from '@/components/atoms/FileInput.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
@@ -439,15 +438,18 @@ const playSample = (sample: VoiceSample) => {
 
 const addCustomSample = () => {
   proposal.value.customSamples?.push({
+    id: `custom-${Date.now()}`,
+    proposalId: proposal.value.castingSessionId || '',
     title: '',
     description: '',
-    file: null,
     audioUrl: '',
     duration: 0,
     fileSize: 0,
     format: 'mp3',
     isPublic: false,
     tags: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     metadata: {
       recordingQuality: 'professional',
       equipment: '',
@@ -465,9 +467,10 @@ const handleCustomSampleUpload = (event: Event, index: number) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (file && proposal.value.customSamples) {
-    proposal.value.customSamples[index].file = file
     // In real app, upload file and get URL
     proposal.value.customSamples[index].audioUrl = URL.createObjectURL(file)
+    proposal.value.customSamples[index].fileSize = file.size
+    proposal.value.customSamples[index].format = file.type.split('/')[1] as 'mp3' | 'wav' | 'aac' | 'flac'
   }
 }
 
