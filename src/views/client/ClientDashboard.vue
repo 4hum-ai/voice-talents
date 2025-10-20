@@ -11,10 +11,7 @@
         <template #subtitle>Welcome back, {{ currentClient?.contactName }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="primary" size="sm" @click="openJobCreationModal">
-            <PlusIcon class="mr-2 h-4 w-4" />
-            Create Job
-          </Button>
+          <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal">Create Job</Button>
         </template>
       </AppBar>
 
@@ -51,27 +48,21 @@
                 <Button
                   variant="outline"
                   class="w-full justify-start"
+                  icon="mdi:briefcase"
                   @click="openJobCreationModal"
-                >
-                  <BriefcaseIcon class="mr-2 h-4 w-4" />
-                  Post New Job
-                </Button>
+                >Post New Job</Button>
                 <Button
                   variant="outline"
                   class="w-full justify-start"
+                  icon="mdi:megaphone"
                   @click="$router.push('/client/campaigns/create')"
-                >
-                  <MegaphoneIcon class="mr-2 h-4 w-4" />
-                  Create Campaign
-                </Button>
+                >Create Campaign</Button>
                 <Button
                   variant="outline"
                   class="w-full justify-start"
+                  icon="mdi:account-group"
                   @click="$router.push('/client/talents')"
-                >
-                  <AccountGroupIcon class="mr-2 h-4 w-4" />
-                  Talents
-                </Button>
+                >Talents</Button>
               </div>
             </div>
 
@@ -247,10 +238,7 @@ import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vu
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuthStore } from '@/stores/auth'
-import PlusIcon from '~icons/mdi/plus'
-import BriefcaseIcon from '~icons/mdi/briefcase'
-import MegaphoneIcon from '~icons/mdi/megaphone'
-import AccountGroupIcon from '~icons/mdi/account-group'
+// Icons removed; using Button icon prop instead
 import EmailIcon from '~icons/mdi/email'
 
 // Use authenticated user data instead of mock data

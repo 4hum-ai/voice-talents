@@ -12,10 +12,7 @@
         <template #actions>
           <ThemeToggle />
           <ViewToggle v-model="viewMode" />
-          <Button variant="primary" size="sm" @click="refreshCasting">
-            <RefreshIcon class="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
+          <Button variant="primary" size="sm" icon="mdi:refresh" @click="refreshCasting">Refresh</Button>
         </template>
       </AppBar>
 
@@ -88,10 +85,7 @@
                   : 'Check back later for new opportunities'
               }}
             </p>
-            <Button variant="primary" @click="refreshCasting">
-              <RefreshIcon class="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
+            <Button variant="primary" icon="mdi:refresh" @click="refreshCasting">Refresh</Button>
           </div>
 
           <!-- Grid View -->
@@ -200,32 +194,29 @@
                     <Button
                       variant="ghost"
                       size="sm"
+                      icon="mdi:eye"
                       @click="$router.push(`/talent/casting/${session.id}`)"
-                    >
-                      <EyeIcon class="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" @click="shareCasting(session)">
-                      <ShareIcon class="h-4 w-4" />
-                    </Button>
+                    />
+                    <Button variant="ghost" size="sm" icon="mdi:share" @click="shareCasting(session)" />
                   </div>
                   <Button
                     v-if="!getUserProposalStatus(session)"
                     variant="primary"
                     size="sm"
+                    icon="mdi:send"
                     @click="$router.push(`/talent/casting/${session.id}/submit`)"
                     :disabled="session.status !== 'open'"
                   >
-                    <IconSend class="mr-2 h-4 w-4" />
                     Apply
                   </Button>
                   <Button
                     v-else
                     variant="outline"
                     size="sm"
+                    icon="mdi:eye"
                     @click="$router.push(`/talent/casting/${session.id}/proposal`)"
                     :disabled="session.status !== 'open'"
                   >
-                    <EyeIcon class="mr-2 h-4 w-4" />
                     View Proposal
                   </Button>
                 </div>
@@ -335,28 +326,25 @@
                         <Button
                           variant="ghost"
                           size="sm"
+                          icon="mdi:eye"
                           @click="$router.push(`/talent/casting/${session.id}`)"
-                        >
-                          <EyeIcon class="h-4 w-4" />
-                        </Button>
+                        />
                         <Button
                           v-if="!getUserProposalStatus(session)"
                           variant="primary"
                           size="sm"
+                          icon="mdi:send"
                           @click="$router.push(`/talent/casting/${session.id}/submit`)"
                           :disabled="session.status !== 'open'"
-                        >
-                          <SendIcon class="h-4 w-4" />
-                        </Button>
+                        />
                         <Button
                           v-else
                           variant="outline"
                           size="sm"
+                          icon="mdi:eye"
                           @click="$router.push(`/talent/casting/${session.id}/proposal`)"
                           :disabled="session.status !== 'open'"
-                        >
-                          <EyeIcon class="h-4 w-4" />
-                        </Button>
+                        />
                       </div>
                     </td>
                   </tr>
@@ -384,11 +372,7 @@ import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import ViewToggle from '@/components/molecules/ViewToggle.vue'
-import RefreshIcon from '~icons/mdi/refresh'
 import MegaphoneIcon from '~icons/mdi/megaphone'
-import EyeIcon from '~icons/mdi/eye'
-import ShareIcon from '~icons/mdi/share'
-import SendIcon from '~icons/mdi/send'
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')
