@@ -48,7 +48,7 @@
 
               <div
                 :class="[
-                  'group flex w-full items-start gap-3 text-left focus:outline-none',
+                  'flex w-full items-center gap-3 text-left focus:outline-none',
                   itemPadding,
                   item.key === activeItemKey ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                   item.disabled ? 'cursor-not-allowed opacity-50' : '',
@@ -60,7 +60,7 @@
                 @click="onSelect(item)"
               >
                 <!-- Icon -->
-                <div v-if="item.icon" class="flex-shrink-0">
+                <div v-if="item.icon" class="flex flex-shrink-0 items-center">
                   <Icon :name="`mdi:${item.icon}`" class="h-4 w-4" />
                 </div>
 

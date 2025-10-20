@@ -5,17 +5,17 @@
     aria-modal="true"
     aria-label="Upload Media"
   >
-    <div class="h-full w-full bg-white dark:bg-gray-900">
+    <div class="bg-background h-full w-full">
       <!-- Header -->
-      <div class="flex items-center justify-between border-b px-5 py-3 dark:border-gray-800">
+      <div class="border-border flex items-center justify-between border-b px-5 py-3">
         <div class="flex items-center gap-3">
-          <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Upload Media</h2>
+          <h2 class="text-foreground text-base font-semibold">Upload Media</h2>
           <p class="hidden text-xs text-gray-500 sm:block dark:text-gray-400">
             Select files on the left, set details on the right
           </p>
         </div>
         <button
-          class="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+          class="border-border text-foreground hover:bg-muted flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm"
           aria-label="Close"
           @click="$emit('close')"
         >
@@ -25,7 +25,7 @@
       </div>
 
       <div class="grid h-[calc(100%-3rem)] grid-cols-1 sm:grid-cols-5">
-        <div class="col-span-1 p-4 sm:col-span-3 sm:border-r sm:p-6 dark:border-gray-800">
+        <div class="border-border col-span-1 p-4 sm:col-span-3 sm:border-r sm:p-6">
           <div
             v-if="!files.length"
             class="grid min-h-[200px] place-items-center rounded-lg border-2 border-dashed sm:h-full"
@@ -34,12 +34,9 @@
             v-show="allowDragDrop"
           >
             <div class="text-center">
-              <CloudUploadIcon
-                class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
-                aria-hidden="true"
-              />
-              <div class="mt-3 text-sm text-gray-600 dark:text-gray-300">Drag & drop files</div>
-              <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">or</div>
+              <CloudUploadIcon class="text-muted-foreground mx-auto h-12 w-12" aria-hidden="true" />
+              <div class="text-muted-foreground mt-3 text-sm">Drag & drop files</div>
+              <div class="text-muted-foreground mt-1 text-xs">or</div>
               <button
                 class="bg-primary-600 hover:bg-primary-700 mt-3 flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-white"
                 @click="pick"
@@ -61,7 +58,7 @@
           <div v-else class="overflow-y-auto sm:h-full">
             <!-- File previews based on mode -->
             <div v-if="previewMode === 'single' && previews.length === 1" class="space-y-3">
-              <div class="overflow-hidden rounded-lg border bg-black/5 dark:bg-white/5">
+              <div class="border-border bg-muted/5 overflow-hidden rounded-lg border">
                 <Image
                   v-if="previews[0].kind === 'image'"
                   :src="previews[0].url"
@@ -80,16 +77,14 @@
                   controls
                   class="w-full"
                 />
-                <div v-else class="p-8 text-sm text-gray-500 dark:text-gray-400">
-                  No preview available
-                </div>
+                <div v-else class="text-muted-foreground p-8 text-sm">No preview available</div>
               </div>
-              <div class="text-xs text-gray-600 dark:text-gray-300">
+              <div class="text-muted-foreground text-xs">
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex min-w-0 items-center gap-2">
                     <component
                       :is="getFileTypeIcon(previews[0].kind)"
-                      class="h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400"
+                      class="text-muted-foreground h-4 w-4 flex-shrink-0"
                       aria-hidden="true"
                     />
                     <div class="min-w-0">
@@ -119,7 +114,7 @@
             <!-- Multi file list (default mode) -->
             <div v-else-if="previewMode === 'single'" class="space-y-3">
               <div class="flex items-center justify-between">
-                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <div class="text-foreground text-sm font-medium">
                   Selected files ({{ files.length }})
                 </div>
                 <Button variant="outline" size="xs" @click="clearAll">
@@ -136,14 +131,14 @@
                   <div class="flex min-w-0 items-center gap-2">
                     <component
                       :is="getFileTypeIcon(p.kind)"
-                      class="h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400"
+                      class="text-muted-foreground h-4 w-4 flex-shrink-0"
                       aria-hidden="true"
                     />
                     <div class="min-w-0">
-                      <div class="truncate text-xs font-medium text-gray-900 dark:text-gray-100">
+                      <div class="text-foreground truncate text-xs font-medium">
                         {{ p.name }}
                       </div>
-                      <div class="text-[11px] text-gray-500 dark:text-gray-400">
+                      <div class="text-muted-foreground text-[11px]">
                         {{ p.format.toUpperCase() }} • {{ prettySize(p.size) }}
                         <span v-if="p.duration !== undefined"
                           >• {{ prettyDuration(p.duration) }}</span
@@ -157,7 +152,7 @@
                   </Button>
                 </li>
               </ul>
-              <div class="text-xs text-gray-500 dark:text-gray-400">
+              <div class="text-muted-foreground text-xs">
                 Total size: {{ prettySize(totalSize) }}
               </div>
             </div>
@@ -170,7 +165,7 @@
               v-for="field in typeof formFields === 'function' ? formFields() : formFields"
               :key="field.key"
             >
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">
+              <label class="text-muted-foreground mb-1 block text-xs">
                 {{ field.label }}
                 <span v-if="field.required" class="text-red-500">*</span>
               </label>
@@ -180,14 +175,14 @@
                 v-if="field.type === 'text'"
                 v-model="formData[field.key]"
                 :placeholder="field.placeholder"
-                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="border-border bg-input text-foreground w-full rounded-md border px-2 py-1.5 text-sm"
               />
 
               <!-- Select input -->
               <select
                 v-else-if="field.type === 'select'"
                 v-model="formData[field.key]"
-                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="border-border bg-input text-foreground w-full rounded-md border px-2 py-1.5 text-sm"
               >
                 <option v-for="option in field.options" :key="option" :value="option">
                   {{ option }}
@@ -199,7 +194,7 @@
                 v-else-if="field.type === 'textarea'"
                 v-model="formData[field.key]"
                 :placeholder="field.placeholder"
-                class="w-full rounded-md border px-2 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                class="border-border bg-input text-foreground w-full rounded-md border px-2 py-1.5 text-sm"
                 rows="3"
               />
 
@@ -213,18 +208,18 @@
 
             <!-- Duration display (if available) -->
             <div v-if="previews.length === 1 && previews[0].duration !== undefined">
-              <label class="mb-1 block text-xs text-gray-500 dark:text-gray-400">Duration</label>
+              <label class="text-muted-foreground mb-1 block text-xs">Duration</label>
               <input
                 :value="prettyDuration(previews[0].duration as number)"
                 type="text"
                 readonly
                 disabled
-                class="w-full cursor-not-allowed rounded-md border bg-gray-50 px-2 py-1.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                class="bg-muted text-foreground w-full cursor-not-allowed rounded-md border px-2 py-1.5 text-sm"
               />
             </div>
           </div>
           <div
-            class="sticky bottom-0 mt-4 flex justify-end gap-2 border-t bg-white/80 px-4 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80"
+            class="bg-card/80 border-border sticky bottom-0 mt-4 flex justify-end gap-2 border-t px-4 py-3 backdrop-blur"
           >
             <Button variant="outline" size="sm" :disabled="uploading" @click="$emit('close')">
               Cancel
@@ -238,7 +233,7 @@
               Upload
             </Button>
           </div>
-          <div v-if="uploading" class="sticky right-0 bottom-0 left-0 h-1 bg-gray-200">
+          <div v-if="uploading" class="bg-muted sticky right-0 bottom-0 left-0 h-1">
             <div class="bg-primary-600 h-1 transition-all" :style="{ width: `${progress}%` }" />
           </div>
         </div>

@@ -12,7 +12,7 @@
             <th
               v-for="column in visibleColumns"
               :key="column.key"
-              class="group px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase transition-colors duration-150 dark:text-gray-400"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase transition-colors duration-150 dark:text-gray-400"
               :class="[
                 column.sortable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
                 column.align ? `text-${column.align}` : 'text-left',
@@ -31,13 +31,13 @@
             >
               <div class="inline-flex items-center gap-1 select-none">
                 <span>{{ column.label }}</span>
-                <svg
+                <ChevronUpIcon
                   class="h-3.5 w-3.5 transition-transform duration-150"
                   :class="[
                     column.sortable ? '' : 'hidden',
                     sortField === column.key
                       ? 'text-gray-700 opacity-100 dark:text-gray-200'
-                      : 'text-gray-400 opacity-0 group-hover:opacity-60 dark:text-gray-500',
+                      : 'text-gray-400 opacity-0 hover:opacity-60 dark:text-gray-500',
                   ]"
                   :style="{
                     transform:
@@ -45,16 +45,8 @@
                         ? 'rotate(180deg)'
                         : 'rotate(0deg)',
                   }"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
                   aria-hidden="true"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M12 7c.3 0 .58.13.77.36l4 5a1 1 0 01-.77 1.64H8a1 1 0 01-.77-1.64l4-5A1 1 0 0112 7z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                />
               </div>
             </th>
           </tr>
@@ -214,6 +206,7 @@ import { toDate } from '@/utils/date'
 import type { DataArray, ActionArray, DataItem } from '@/types/common'
 import { ColumnConfig, UiConfig } from '@/types/ui-config'
 import Image from '@/components/molecules/Image.vue'
+import ChevronUpIcon from '~icons/mdi/chevron-up'
 
 type Props = {
   data: DataArray

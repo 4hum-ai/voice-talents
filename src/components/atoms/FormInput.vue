@@ -11,7 +11,7 @@
         v-if="prefixIcon"
         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
       >
-        <component :is="prefixIcon" class="h-4 w-4 text-gray-400" />
+        <component :is="prefixIcon" class="text-muted-foreground h-4 w-4" />
       </div>
 
       <input
@@ -33,7 +33,7 @@
         v-if="suffixIcon"
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
       >
-        <component :is="suffixIcon" class="h-4 w-4 text-gray-400" />
+        <component :is="suffixIcon" class="text-muted-foreground h-4 w-4" />
       </div>
 
       <!-- Password toggle for password type -->
@@ -43,8 +43,8 @@
         class="absolute inset-y-0 right-0 flex items-center pr-3"
         @click="togglePassword"
       >
-        <IconEye v-if="!showPassword" class="h-4 w-4 text-gray-400 hover:text-gray-600" />
-        <IconEyeOff v-else class="h-4 w-4 text-gray-400 hover:text-gray-600" />
+        <IconEye v-if="!showPassword" class="text-muted-foreground hover:text-foreground h-4 w-4" />
+        <IconEyeOff v-else class="text-muted-foreground hover:text-foreground h-4 w-4" />
       </button>
     </div>
 
@@ -123,7 +123,7 @@ const showPassword = ref(false)
 
 const inputClasses = computed(() => {
   const base =
-    'w-full rounded-md border bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500'
+    'w-full rounded-md border bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
 
   const sizes = {
     sm: 'px-2 py-1 text-xs',
@@ -135,8 +135,7 @@ const inputClasses = computed(() => {
   const paddingRight =
     props.suffixIcon || (props.type === 'password' && props.showPasswordToggle) ? 'pr-10' : 'pr-3'
 
-  let borderClasses =
-    'border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400'
+  let borderClasses = 'border-border focus:border-primary focus:ring-primary'
 
   if (props.validationState === 'success') {
     borderClasses =
@@ -153,7 +152,7 @@ const inputClasses = computed(() => {
 })
 
 const labelClasses = computed(() => {
-  const base = 'block font-medium text-gray-700 dark:text-gray-300'
+  const base = 'block font-medium text-foreground'
   const sizes = {
     sm: 'text-xs mb-1',
     md: 'text-sm mb-2',
@@ -163,7 +162,7 @@ const labelClasses = computed(() => {
 })
 
 const helpTextClasses = computed(() => {
-  const base = 'mt-1 text-gray-500 dark:text-gray-400'
+  const base = 'mt-1 text-muted-foreground'
   const sizes = {
     sm: 'text-xs',
     md: 'text-xs',

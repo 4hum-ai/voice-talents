@@ -26,7 +26,7 @@
 
       <!-- Dropdown arrow icon -->
       <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-        <IconChevronDown class="h-4 w-4 text-gray-400" />
+        <IconChevronDown class="h-4 w-4 text-gray-400 dark:text-gray-500" />
       </div>
     </div>
 

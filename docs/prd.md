@@ -1,72 +1,145 @@
-## Product Requirements Document (PRD) — Movie Dubie Admin UI
+# 🎙️ VoiceAct — Product Requirements Document (PRD)
 
-### 1) Overview
+## 1. 📘 Overview
 
-The Admin UI is a low‑code, schema‑driven Vue 3 application for managing backend data. It renders list/detail/forms and alternative layouts (gallery, kanban, calendar, table) from local json files or server‑provided UI configuration.
+**VoiceAct** is a platform for **voice actors** to manage their careers — from creating profiles and uploading categorized voice samples, to managing active projects and collaborating with recording studios.
 
-Primary users are internal operators and admins who need efficient CRUD, filtering, workflow changes, and media operations.
+The app bridges **voice actors, studios, and clients** by streamlining the casting, recording, and project management process.
 
-### 2) Goals and Non‑Goals
+---
 
-- Goals
-  - Provide a fast, low‑code admin for core entities using server‑driven UI configs
-  - Support multiple data presentation modes: table, gallery, kanban, calendar
-  - Enable robust list querying: pagination, sorting, search, time windows, filters
-  - Provide reliable CRUD with optimistic UX and clear error surfacing via toasts
+## 2. 🎯 Objectives & Goals
 
-- Non‑Goals
-  - Public customer‑facing features (separate apps)
-  - Complex role‑based authorization (planned; see Open Questions)
+### 2.1 Primary Goals
 
-### 3) Personas
+- Empower voice actors to **showcase their talent** and easily update their professional profiles.
+- Simplify how actors **organize voice samples** by genre, tone, and project type.
+- Provide visibility into **ongoing and past projects/jobs**, including deadlines and deliverables.
+- Facilitate **studio collaboration** for recording sessions with transcripts or video guides.
+- Ensure that all communication and file delivery are **centralized and secure**.
 
-- Studio Operator: triages content, updates statuses, edits metadata, manages relationships
-- Admin: manages users and organizations, configures modules, audits data quality
-- Engineer: extends modules declaratively, observes logs, validates API contracts
+### 2.2 Secondary Goals
 
-### 4) Frontend Functional Requirements
+- Enable casting directors to discover talent efficiently.
+- Allow studios to assign actors to recording tasks and manage revisions.
+- Support multilingual voice actors and cross-regional job listings.
 
-- Routing
-  - `/:module` renders list; `/:module/:id` renders detail
-  - Route guard initializes auth and sets document title; unknown modules are tolerated but UI config drives rendering
+---
 
-- Authentication
-  - Firebase authentication: email/password + OAuth providers
-  - Admin UI attaches `Authorization: Bearer <idToken>` to each request
-  - On 401, client retries once after token refresh
+## 3. 👥 Target Users
 
-- List Views
-  - Table view with sortable columns, pagination, and server‑side filtering
-  - Gallery view with load‑more pagination
-  - Kanban view with drag‑drop status updates via `groupByField`
-  - Calendar view with date‑based windowing (query window managed by query builder)
-  - Filters, search, sort, pagination are reflected in URL and debounced
-  - Active filter chips shown; individual and bulk clear supported
+| User Type                      | Description                               | Key Needs                                                        |
+| ------------------------------ | ----------------------------------------- | ---------------------------------------------------------------- |
+| **Voice Actor**                | Talent providing voiceover work           | Showcase portfolio, manage jobs, receive scripts, track payments |
+| **Studio Engineer / Producer** | Person facilitating recording sessions    | Assign jobs, manage revisions, track recording progress          |
+| **Casting Director / Client**  | Person seeking voice talent for a project | Discover actors, review samples, manage casting sessions         |
 
-- Detail View
-  - Fetches item and UI config; supports Update/Delete via service
-  - Navigates back preserving list state
+---
 
-- Error Handling
-  - Network errors surfaced via `useToast.push(...)`
-  - Non‑JSON responses raise actionable hints about incorrect base URL
+## 4. 📱 Core Features & Requirements
 
-### 5) Query & Filtering Contract (canonical)
+### 4.1 User Profiles
 
-- Pagination: `page`, `limit` or `pagination[page]`, `pagination[pageSize]`
-- Sort: `sort=field:asc|desc` (first entry used if multiple)
-- Search: `search` with scope narrowed by `searchFields=name,email`
-- Filters (mapped in backend):
-  - Equality: `filters[status]=active` (alias of `$eq`)
-  - Operators: `$ne,$gt,$gte,$lt,$lte,$in,$notIn,$between,$null,$notNull`
-  - Date values accept ISO or `YYYY-MM-DD`
+**Purpose:** Represent professional identity of voice actors.
 
-### 6) Non‑Functional Requirements
+**Functional Requirements:**
 
-- Performance
-  - Backend list endpoints must stream/limit results appropriately and return `pagination.hasMore`
-  - Admin UI should debounce query changes (already implemented) and cancel in‑flight requests
+- Create and edit personal profile (name, bio, language, accent, skills)
+- Upload headshot/profile image
+- Add voice categories (commercial, animation, narration, etc.)
+- Display demo reel links and previous work
 
-- Security
-  - Client sends Firebase ID tokens
-  - Backend auth middleware is planned (see Open Questions); once enabled, validate tokens and map user claims to permissions
+**Acceptance Criteria:**
+
+- User can create a profile with all mandatory fields
+- Editable sections persist across sessions
+- Public/private visibility toggle available
+
+---
+
+### 4.2 Voice Samples Management
+
+**Purpose:** Centralized portfolio of categorized voice recordings.
+
+**Functional Requirements:**
+
+- Upload and categorize voice samples by:
+  - Genre (commercial, audiobook, game, etc.)
+  - Tone/emotion (serious, playful, warm, dramatic)
+  - Language/accent
+
+- Preview and delete samples
+- Share sample links (public or password-protected)
+- Optional studio-uploaded samples (tagged as “verified”)
+
+**Acceptance Criteria:**
+
+- Each audio file is playable within app
+- Metadata properly searchable and filterable
+- Supports .mp3, .wav, .ogg formats
+
+---
+
+### 4.3 Job / Project Management
+
+**Purpose:** Track actor involvement in active and past projects.
+
+**Functional Requirements:**
+
+- List current and past projects
+- Each project includes:
+  - Project title, client/studio name
+  - Script, due date, progress, and payment status
+  - Communication thread between actor and manager
+
+- Actors can upload deliverables and mark tasks as complete
+- Statuses: Assigned → In Progress → Review → Completed
+
+**Acceptance Criteria:**
+
+- Actor dashboard shows projects with real-time status updates
+- Upload limit up to 500MB per file
+- Notifications for assignment, feedback, and approval
+
+---
+
+### 4.4 Studio Collaboration Tools
+
+**Purpose:** Enable streamlined collaboration for recording sessions.
+
+**Functional Requirements:**
+
+- Studio can assign recording tasks to actors
+- Attach transcripts, video references, or time-stamped scripts
+- Support for in-app audio recording and direct upload
+- Real-time session mode using WebRTC (for remote direction)
+- Version control for voice takes (V1, V2, etc.)
+- Feedback comments per line or timestamp
+
+**Acceptance Criteria:**
+
+- Actor can open studio assignment and access reference materials
+- Studio can review and comment within 24h of submission
+- Multiple takes are stored and versioned
+
+---
+
+### 4.5 Notifications & Messaging
+
+**Purpose:** Keep users updated and facilitate collaboration.
+
+**Functional Requirements:**
+
+- Real-time notifications for:
+  - New assignments
+  - Job approvals/rejections
+  - Studio feedback
+
+- Direct chat between actors and studios
+- Email digest for weekly updates
+
+**Acceptance Criteria:**
+
+- Notifications delivered via web push and in-app
+- Chat messages persist and load within 2 seconds
+- Notification preferences configurable per user

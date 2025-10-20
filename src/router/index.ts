@@ -45,7 +45,7 @@ router.beforeEach(async (to, _from, next) => {
     titleSuffix = to.meta.title ? `${maybeResource} - ${to.meta.title}` : maybeResource
   }
 
-  document.title = `${titleSuffix} - Admin UI`
+  document.title = `${titleSuffix} - VoiceAct`
   next()
 })
 

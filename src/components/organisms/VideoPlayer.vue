@@ -38,14 +38,7 @@
     <!-- Error Overlay -->
     <div v-if="error" class="absolute inset-0 flex items-center justify-center bg-black/50">
       <div class="flex flex-col items-center gap-3 text-white">
-        <svg class="h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
+        <AlertCircleOutlineIcon class="h-12 w-12 text-red-500" />
         <span class="text-center text-sm">{{ error }}</span>
         <button @click="retry" class="rounded-md bg-white/20 px-3 py-1 text-sm hover:bg-white/30">
           Retry
@@ -91,12 +84,8 @@
             class="text-white transition-colors hover:text-blue-400"
             :aria-label="isPlaying ? 'Pause' : 'Play'"
           >
-            <svg v-if="!isPlaying" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            <svg v-else class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-            </svg>
+            <PlayIcon v-if="!isPlaying" class="h-6 w-6" />
+            <PauseIcon v-else class="h-6 w-6" />
           </button>
 
           <!-- Volume -->
@@ -106,16 +95,8 @@
               class="text-white transition-colors hover:text-blue-400"
               :aria-label="isMuted ? 'Unmute' : 'Mute'"
             >
-              <svg v-if="!isMuted" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
-                />
-              </svg>
-              <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"
-                />
-              </svg>
+              <VolumeHighIcon v-if="!isMuted" class="h-5 w-5" />
+              <VolumeOffIcon v-else class="h-5 w-5" />
             </button>
             <input
               ref="volumeInput"
@@ -152,17 +133,7 @@
                 {{ track.label }}
               </option>
             </select>
-            <svg
-              class="absolute top-1/2 right-1 h-3 w-3 -translate-y-1/2 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            <ChevronDownIcon class="absolute top-1/2 right-1 h-3 w-3 -translate-y-1/2 text-white" />
           </div>
 
           <!-- Subtitle Toggle -->
@@ -173,11 +144,7 @@
             :class="{ 'text-blue-400': subtitlesEnabled }"
             :aria-label="subtitlesEnabled ? 'Disable subtitles' : 'Enable subtitles'"
           >
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
-              />
-            </svg>
+            <SubtitlesIcon class="h-5 w-5" />
           </button>
 
           <!-- Picture-in-Picture -->
@@ -187,11 +154,7 @@
             :class="{ 'text-blue-400': isPipMode }"
             :aria-label="isPipMode ? 'Exit picture-in-picture' : 'Enter picture-in-picture'"
           >
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"
-              />
-            </svg>
+            <IconPiPOutline class="h-5 w-5" />
           </button>
 
           <!-- Fullscreen -->
@@ -200,16 +163,8 @@
             class="text-white transition-colors hover:text-blue-400"
             :aria-label="isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'"
           >
-            <svg v-if="!isFullscreen" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
-              />
-            </svg>
-            <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"
-              />
-            </svg>
+            <FullscreenIcon v-if="!isFullscreen" class="h-5 w-5" />
+            <FullscreenExitIcon v-else class="h-5 w-5" />
           </button>
 
           <!-- Close Button (for modal mode) -->
@@ -219,11 +174,7 @@
             class="text-white transition-colors hover:text-red-400"
             aria-label="Close"
           >
-            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-              />
-            </svg>
+            <CloseIcon class="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -245,6 +196,17 @@
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useCdn } from '@/composables/useCdn'
 import Hls from 'hls.js'
+import AlertCircleOutlineIcon from '~icons/mdi/alert-circle-outline'
+import PlayIcon from '~icons/mdi/play'
+import PauseIcon from '~icons/mdi/pause'
+import VolumeHighIcon from '~icons/mdi/volume-high'
+import VolumeOffIcon from '~icons/mdi/volume-off'
+import ChevronDownIcon from '~icons/mdi/chevron-down'
+import SubtitlesIcon from '~icons/mdi/subtitles'
+import IconPiPOutline from '~icons/mdi/picture-in-picture-bottom-right-outline'
+import FullscreenIcon from '~icons/mdi/fullscreen'
+import FullscreenExitIcon from '~icons/mdi/fullscreen-exit'
+import CloseIcon from '~icons/mdi/close'
 
 interface Props {
   url: string

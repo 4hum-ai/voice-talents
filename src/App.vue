@@ -24,10 +24,10 @@ import ToastContainer from '@/components/organisms/ToastContainer.vue'
 import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue'
 import GlobalProgressBar from '@/components/organisms/GlobalProgressBar.vue'
 import GlobalUploadBar from '@/components/organisms/GlobalUploadBar.vue'
-
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
 import { computed } from 'vue'
 import { useUiConfig } from '@/composables/useUiConfig'
+
 const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
 
 const { state: uiState } = useUiConfig()

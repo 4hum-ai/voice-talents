@@ -17,16 +17,14 @@
               ? 'text-green-500'
               : props.message.type === 'warning'
                 ? 'text-yellow-500'
-                : theme === 'dark'
+                : isDark.value
                   ? 'text-zinc-50'
                   : 'text-zinc-900',
         'mt-0.5 flex-none text-base',
       ]"
     />
 
-    <div
-      :class="['flex-auto wrap-break-word', theme === 'dark' ? 'text-zinc-50' : 'text-zinc-900']"
-    >
+    <div :class="['flex-auto wrap-break-word', isDark.value ? 'text-zinc-50' : 'text-zinc-900']">
       <h4 class="font-medium">
         {{ props.message.title }}
       </h4>
@@ -56,7 +54,7 @@ import InfoIcon from '~icons/mdi/information-outline'
 import SuccessIcon from '~icons/mdi/check-circle-outline'
 import WarningIcon from '~icons/mdi/warning-outline'
 import CloseIcon from '~icons/mdi/close'
-import { theme } from '@/composables/useToast'
+import { useTheme } from '@/composables/useTheme'
 
 // Types
 interface Props {
@@ -72,6 +70,7 @@ const emit = defineEmits<{
 const props = defineProps<Props>()
 
 // Composables
+const { isDark } = useTheme()
 const { start, stop, ready } = useTimeout(props.message.timeout || 0, {
   controls: true,
   immediate: false,

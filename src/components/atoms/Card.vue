@@ -45,24 +45,24 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const cardClasses = computed(() => {
-  const base = 'rounded-lg border bg-white dark:bg-gray-900 transition-all duration-200'
+  const base = 'rounded-lg border bg-card transition-all duration-200'
 
   // Variant styles
   const variants = {
-    default: 'border-gray-200 shadow-sm dark:border-gray-700',
-    outline: 'border-gray-300 dark:border-gray-600',
-    elevated: 'border-gray-200 shadow-md dark:border-gray-700',
+    default: 'border-border shadow-sm',
+    outline: 'border-border',
+    elevated: 'border-border shadow-md',
     ghost: 'border-transparent shadow-none',
-    bordered: 'border-2 border-gray-300 dark:border-gray-600 shadow-none',
-    flat: 'border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800',
+    bordered: 'border-2 border-border shadow-none',
+    flat: 'border-border bg-muted',
   }
 
   // Preset styles
   const presets = {
     default: '',
     dashboard: 'hover:shadow-md transition-shadow duration-200',
-    form: 'border-gray-200 shadow-sm',
-    content: 'border-gray-200 shadow-sm max-w-none',
+    form: 'border-border shadow-sm',
+    content: 'border-border shadow-sm max-w-none',
     media: 'overflow-hidden',
     stats: 'text-center border-0 shadow-lg',
     custom: props.customClass || '',
@@ -83,7 +83,7 @@ const cardClasses = computed(() => {
     : ''
 
   // Selected styles
-  const selectedStyles = props.selected ? 'ring-2 ring-primary-500 border-primary-500' : ''
+  const selectedStyles = props.selected ? 'ring-2 ring-primary border-primary' : ''
 
   // Disabled styles
   const disabledStyles = props.disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
@@ -102,7 +102,7 @@ const cardClasses = computed(() => {
 })
 
 const headerClasses = computed(() => {
-  const base = 'border-b border-gray-200 dark:border-gray-700'
+  const base = 'border-b border-border'
   const paddings = {
     none: 'px-0 py-0',
     sm: 'px-3 py-2',
@@ -114,7 +114,7 @@ const headerClasses = computed(() => {
 })
 
 const footerClasses = computed(() => {
-  const base = 'border-t border-gray-200 dark:border-gray-700'
+  const base = 'border-t border-border'
   const paddings = {
     none: 'px-0 py-0',
     sm: 'px-3 py-2',

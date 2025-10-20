@@ -60,7 +60,7 @@
                 <div class="h-10 w-10 flex-none overflow-hidden">
                   <div class="grid h-full w-full place-items-center">
                     <Icon
-                      v-if="m.icon"
+                      v-if="m.icon && m.icon.trim()"
                       :name="m.icon"
                       class="text-primary-600 dark:text-primary-400 h-6 w-6"
                     />
@@ -233,6 +233,8 @@ const formatCount = (n: number | null | undefined): string => {
 }
 
 const visibleResources = computed(() => {
+  if (!adminResources.value) return []
+
   const q = filter.value.trim().toLowerCase()
   const mods = q
     ? adminResources.value.filter((m) => {
@@ -252,7 +254,7 @@ const visibleResources = computed(() => {
 const loadCounts = async () => {
   loadingCounts.value = true
   try {
-    if (adminResources.value.length === 0) {
+    if (!adminResources.value || adminResources.value.length === 0) {
       try {
         adminResources.value = await uiConfig.listResources()
       } catch {
@@ -367,8 +369,14 @@ function openItem(module: string, id: string) {
   router.push({ path: `/${module}/${id}` }).catch(() => {})
 }
 
-function formatTimeAgo(ts: number): string {
-  const diff = Date.now() - ts
+function formatTimeAgo(ts: number | string): string {
+  // Convert string timestamps to numbers
+  const timestamp = typeof ts === 'string' ? new Date(ts).getTime() : ts
+
+  // Handle invalid timestamps
+  if (isNaN(timestamp)) return 'Unknown'
+
+  const diff = Date.now() - timestamp
   const s = Math.floor(diff / 1000)
   if (s < 60) return `${s}s ago`
   const m = Math.floor(s / 60)

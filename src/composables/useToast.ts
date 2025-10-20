@@ -1,50 +1,117 @@
-import { IToastMessage, ToastTheme } from '@/types/toast'
-import { ref, Ref } from 'vue'
+import { ref } from 'vue'
 
-/** Reactive array of toast messages */
-const messages: Ref<IToastMessage[]> = ref([])
+interface ToastOptions {
+  type?: 'success' | 'error' | 'warning' | 'info'
+  title?: string
+  message?: string
+  duration?: number
+  persistent?: boolean
+  action?: {
+    label: string
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+    size?: 'sm' | 'md' | 'lg'
+    onClick?: () => void
+  }
+}
 
-/** Current toast theme */
-export const theme: ToastTheme = 'light'
+interface ToastData {
+  id: string
+  type: 'success' | 'error' | 'warning' | 'info'
+  title?: string
+  message?: string
+  duration?: number
+  persistent?: boolean
+  action?: {
+    label: string
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+    size?: 'sm' | 'md' | 'lg'
+    onClick?: () => void
+  }
+}
 
-export const useToast = () => {
-  const push = (message: IToastMessage) => {
-    messages.value.push(message)
+const toasts = ref<ToastData[]>([])
+let toastIdCounter = 0
+
+export function useToast() {
+  const addToast = (options: ToastOptions) => {
+    const id = `toast-${++toastIdCounter}`
+    const toast: ToastData = {
+      id,
+      type: options.type || 'info',
+      title: options.title,
+      message: options.message,
+      duration: options.duration,
+      persistent: options.persistent,
+      action: options.action,
+    }
+
+    toasts.value.push(toast)
+    return id
   }
 
-  /**
-   * Remove a specific toast message by ID
-   * @param id - Unique identifier of the toast message to remove
-   *
-   * @example
-   * ```typescript
-   * toast.remove('my-toast-id');
-   * ```
-   */
-  const remove = (id: string) => {
-    messages.value = messages.value.filter((msg) => msg.id !== id)
+  const removeToast = (id: string) => {
+    const index = toasts.value.findIndex((toast) => toast.id === id)
+    if (index > -1) {
+      toasts.value.splice(index, 1)
+    }
   }
 
-  /**
-   * Clear all toast messages
-   *
-   * @example
-   * ```typescript
-   * toast.clear();
-   * ```
-   */
-  const clear = () => {
-    messages.value = []
+  const clearAllToasts = () => {
+    toasts.value = []
+  }
+
+  // Convenience methods
+  const success = (message: string, title?: string, options?: Partial<ToastOptions>) => {
+    return addToast({
+      type: 'success',
+      title,
+      message,
+      duration: 4000,
+      ...options,
+    })
+  }
+
+  const error = (message: string, title?: string, options?: Partial<ToastOptions>) => {
+    return addToast({
+      type: 'error',
+      title,
+      message,
+      duration: 6000,
+      ...options,
+    })
+  }
+
+  const warning = (message: string, title?: string, options?: Partial<ToastOptions>) => {
+    return addToast({
+      type: 'warning',
+      title,
+      message,
+      duration: 5000,
+      ...options,
+    })
+  }
+
+  const info = (message: string, title?: string, options?: Partial<ToastOptions>) => {
+    return addToast({
+      type: 'info',
+      title,
+      message,
+      duration: 4000,
+      ...options,
+    })
   }
 
   return {
-    /** Clear all toast messages */
-    clear,
-    /** Add a new toast message */
-    push,
-    /** Remove a specific toast message by ID */
-    remove,
-    /** Reactive array of all toast messages */
-    messages,
+    toasts: toasts.value,
+    addToast,
+    removeToast,
+    clearAllToasts,
+    success,
+    error,
+    warning,
+    info,
   }
 }
+
+// Global toast instance for app-wide use
+export const toast = useToast()

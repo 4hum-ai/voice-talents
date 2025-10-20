@@ -77,7 +77,7 @@ const textareaId = `textarea-${Math.random().toString(36).substr(2, 9)}`
 
 const textareaClasses = computed(() => {
   const base =
-    'w-full rounded-md border bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 resize-y'
+    'w-full rounded-md border bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed resize-y'
 
   const sizes = {
     sm: 'px-2 py-1 text-xs',
@@ -85,8 +85,7 @@ const textareaClasses = computed(() => {
     lg: 'px-4 py-3 text-base',
   }
 
-  let borderClasses =
-    'border-gray-300 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:focus:border-primary-400 dark:focus:ring-primary-400'
+  let borderClasses = 'border-border focus:border-primary focus:ring-primary'
 
   if (props.validationState === 'success') {
     borderClasses =
@@ -105,7 +104,7 @@ const textareaClasses = computed(() => {
 })
 
 const labelClasses = computed(() => {
-  const base = 'block font-medium text-gray-700 dark:text-gray-300'
+  const base = 'block font-medium text-foreground'
   const sizes = {
     sm: 'text-xs mb-1',
     md: 'text-sm mb-2',
@@ -115,7 +114,7 @@ const labelClasses = computed(() => {
 })
 
 const helpTextClasses = computed(() => {
-  const base = 'mt-1 text-gray-500 dark:text-gray-400'
+  const base = 'mt-1 text-muted-foreground'
   const sizes = {
     sm: 'text-xs',
     md: 'text-xs',
