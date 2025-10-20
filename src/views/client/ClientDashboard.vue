@@ -139,8 +139,8 @@
                         {{ job.totalApplications }} applications
                       </span>
                       <span class="text-foreground font-medium">
-                        ${{ job.budget.min.toLocaleString() }} - ${{
-                          job.budget.max.toLocaleString()
+                        ${{ (job.budget?.min ?? 0).toLocaleString() }} - ${{
+                          (job.budget?.max ?? 0).toLocaleString()
                         }}
                       </span>
                     </div>
@@ -190,7 +190,7 @@
                         {{ formatTimeAgo(application.appliedDate) }}
                       </span>
                       <span class="text-foreground font-medium">
-                        ${{ application.proposedRate.toLocaleString() }}
+                        ${{ (application.proposedRate ?? 0).toLocaleString() }}
                       </span>
                     </div>
                   </div>
@@ -238,7 +238,8 @@ import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vu
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuthStore } from '@/stores/auth'
-// Icons removed; using Button icon prop instead
+// Keep these icons: used as standalone elements in empty states
+import BriefcaseIcon from '~icons/mdi/briefcase'
 import EmailIcon from '~icons/mdi/email'
 
 // Use authenticated user data instead of mock data

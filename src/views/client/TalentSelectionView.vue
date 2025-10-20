@@ -70,10 +70,9 @@
                 <Button
                   variant="ghost"
                   size="sm"
+                  :icon="sortOrder === 'asc' ? 'mdi:arrow-up' : 'mdi:arrow-down'"
                   @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'"
                 >
-                  <ArrowUpIcon v-if="sortOrder === 'asc'" class="h-4 w-4" />
-                  <ArrowDownIcon v-else class="h-4 w-4" />
                   {{ sortOrder === 'asc' ? 'Ascending' : 'Descending' }}
                 </Button>
               </div>
@@ -256,8 +255,7 @@ import { mockVoiceActors } from '@/data/mock-voice-actor-data'
 import UsersIcon from '~icons/mdi/account-group'
 import StarIcon from '~icons/mdi/star'
 // Icons removed; using Button icon prop instead
-import ArrowUpIcon from '~icons/mdi/arrow-up'
-import ArrowDownIcon from '~icons/mdi/arrow-down'
+// Arrow icons removed; using Button icon prop instead
 // using common Application type for review
 
 const route = useRoute()
