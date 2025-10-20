@@ -1,49 +1,57 @@
 <template>
-  <div class="border-b border-gray-200 dark:border-gray-700">
-    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab.id"
-        :disabled="tab.disabled"
-        :class="[
-          'border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200',
-          'focus:ring-primary-500 focus:ring-2 focus:ring-offset-2 focus:outline-none',
-          isActive(tab.id) ? activeClasses : inactiveClasses,
-          tab.disabled ? disabledClasses : '',
-          variantClasses,
-        ]"
-        @click="selectTab(tab.id)"
-      >
-        <div class="flex items-center gap-2">
-          <!-- Icon -->
-          <component
-            v-if="tab.icon"
-            :is="tab.icon"
-            :class="['flex-shrink-0', sizeClasses.icon]"
-            aria-hidden="true"
-          />
+  <div class="w-full">
+    <!-- Tab Navigation -->
+    <div class="border-b border-gray-200 dark:border-gray-700">
+      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <button
+          v-for="tab in tabList"
+          :key="tab.id"
+          :disabled="tab.disabled"
+          :class="[
+            'border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200',
+            'focus:ring-primary-500 focus:ring-2 focus:ring-offset-2 focus:outline-none',
+            isActive(tab.id) ? activeClasses : inactiveClasses,
+            tab.disabled ? disabledClasses : '',
+            variantClasses,
+          ]"
+          @click="selectTab(tab.id)"
+        >
+          <div class="flex items-center gap-2">
+            <!-- Icon -->
+            <component
+              v-if="tab.icon"
+              :is="tab.icon"
+              :class="['flex-shrink-0', sizeClasses.icon]"
+              aria-hidden="true"
+            />
 
-          <!-- Label -->
-          <span>{{ tab.label }}</span>
+            <!-- Label -->
+            <span>{{ tab.label }}</span>
 
-          <!-- Badge -->
-          <span
-            v-if="tab.badge !== undefined"
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-              badgeClasses,
-            ]"
-          >
-            {{ tab.badge }}
-          </span>
-        </div>
-      </button>
-    </nav>
+            <!-- Badge -->
+            <span
+              v-if="tab.badge !== undefined"
+              :class="[
+                'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                badgeClasses,
+              ]"
+            >
+              {{ tab.badge }}
+            </span>
+          </div>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <slot />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, type Component } from 'vue'
+import { computed, provide, ref, type Component } from 'vue'
 
 interface Tab {
   id: string
@@ -54,8 +62,6 @@ interface Tab {
 }
 
 interface Props {
-  /** Tab definitions */
-  tabs: Tab[]
   /** Active tab ID */
   modelValue?: string
   /** Visual variant */
@@ -74,12 +80,44 @@ const emit = defineEmits<{
   (e: 'change', value: string): void
 }>()
 
+// Tab management
+const tabList = ref<Tab[]>([])
+const activeTab = computed(() => props.modelValue || tabList.value[0]?.id)
+
+// Provide tab management functions to child Tab components
+const registerTab = (tab: Tab) => {
+  if (!tabList.value.find(t => t.id === tab.id)) {
+    tabList.value.push(tab)
+  }
+}
+
+const unregisterTab = (tabId: string) => {
+  const index = tabList.value.findIndex(t => t.id === tabId)
+  if (index > -1) {
+    tabList.value.splice(index, 1)
+  }
+}
+
+const updateTab = (tabId: string, updates: Partial<Tab>) => {
+  const tab = tabList.value.find(t => t.id === tabId)
+  if (tab) {
+    Object.assign(tab, updates)
+  }
+}
+
+provide('tabNavigation', {
+  activeTab,
+  registerTab,
+  unregisterTab,
+  updateTab,
+})
+
 const isActive = (tabId: string) => {
-  return props.modelValue === tabId
+  return activeTab.value === tabId
 }
 
 const selectTab = (tabId: string) => {
-  if (props.modelValue !== tabId) {
+  if (activeTab.value !== tabId) {
     emit('update:modelValue', tabId)
     emit('change', tabId)
   }

@@ -11,111 +11,99 @@
         <template #subtitle>Manage your client account settings and preferences</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="outline" size="sm" @click="resetSettings">
-            <RefreshIcon class="mr-2 h-4 w-4" />
+          <Button variant="outline" size="sm" icon="mdi:refresh" @click="resetSettings">
             Reset to Defaults
           </Button>
         </template>
       </AppBar>
 
-      <div class="bg-card border-border border-b shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <!-- Stepper Navigation -->
-          <div class="border-border border-t py-4">
-            <div class="flex items-center justify-between">
-              <!-- Previous Button -->
-              <Button
-                v-if="currentStep > 1"
-                variant="outline"
-                size="sm"
-                @click="previousStep"
-                :disabled="!canGoBack"
-              >
-                <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                Previous
-              </Button>
-              <div v-else class="w-20" />
-
-              <!-- Progress Indicator -->
-              <div class="flex items-center space-x-4">
-                <div class="text-muted-foreground text-sm">
-                  Step {{ currentStep }} of {{ totalSteps }}
-                </div>
-                <div class="bg-muted h-2 w-32 rounded-full">
-                  <div
-                    class="bg-primary h-2 rounded-full transition-all duration-500 ease-out"
-                    :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
-                  />
-                </div>
-                <div class="text-muted-foreground text-sm">
-                  {{ Math.round((currentStep / totalSteps) * 100) }}%
-                </div>
-              </div>
-
-              <!-- Next Button -->
-              <Button
-                v-if="currentStep < totalSteps"
-                variant="primary"
-                size="sm"
-                @click="nextStep"
-                :disabled="!canProceedToNext"
-              >
-                Next
-                <ArrowRightIcon class="ml-2 h-4 w-4" />
-              </Button>
-              <Button
-                v-else
-                variant="primary"
-                size="sm"
-                @click="saveSettings"
-                :disabled="isSaving"
-                :loading="isSaving"
-              >
-                <SaveIcon class="mr-2 h-4 w-4" />
-                {{ isSaving ? 'Saving...' : 'Save Settings' }}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Main Content Area -->
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
           <form @submit.prevent="saveSettings" class="space-y-8">
-            <!-- Step 1: Account Information -->
-            <AccountInformation
-              v-if="currentStep === 1"
-              v-model="accountData"
-              @validation-change="updateStepValidation(1, $event)"
-            />
+            <!-- Tab Navigation with Content -->
+            <TabNavigation
+              v-model="currentTab"
+              variant="underline"
+              size="md"
+            >
+              <!-- Account Information Tab -->
+              <Tab
+                id="account"
+                label="Account"
+                :icon="AccountIcon"
+                :badge="tabValidation.account ? '✓' : undefined"
+              >
+                <AccountInformation
+                  v-model="accountData"
+                  @validation-change="updateTabValidation('account', $event)"
+                />
+              </Tab>
 
-            <!-- Step 2: Job Defaults -->
-            <JobDefaults
-              v-if="currentStep === 2"
-              v-model="jobDefaultsData"
-              @validation-change="updateStepValidation(2, $event)"
-            />
+              <!-- Job Defaults Tab -->
+              <Tab
+                id="defaults"
+                label="Job Defaults"
+                :icon="TargetIcon"
+                :badge="tabValidation.defaults ? '✓' : undefined"
+              >
+                <JobDefaults
+                  v-model="jobDefaultsData"
+                  @validation-change="updateTabValidation('defaults', $event)"
+                />
+              </Tab>
 
-            <!-- Step 3: Job Preferences -->
-            <JobPreferences
-              v-if="currentStep === 3"
-              v-model="jobPreferencesData"
-              @validation-change="updateStepValidation(3, $event)"
-            />
+              <!-- Job Preferences Tab -->
+              <Tab
+                id="preferences"
+                label="Preferences"
+                :icon="CogIcon"
+                :badge="tabValidation.preferences ? '✓' : undefined"
+              >
+                <JobPreferences
+                  v-model="jobPreferencesData"
+                  @validation-change="updateTabValidation('preferences', $event)"
+                />
+              </Tab>
 
-            <!-- Step 4: Social Links -->
-            <SocialLinks
-              v-if="currentStep === 4"
-              v-model="socialLinksData"
-              @validation-change="updateStepValidation(4, $event)"
-            />
+              <!-- Social Links Tab -->
+              <Tab
+                id="social"
+                label="Social Links"
+                :icon="ShareVariantIcon"
+                :badge="tabValidation.social ? '✓' : undefined"
+              >
+                <SocialLinks
+                  v-model="socialLinksData"
+                  @validation-change="updateTabValidation('social', $event)"
+                />
+              </Tab>
 
-            <!-- Step 5: Review & Save -->
-            <ReviewAndSave
-              v-if="currentStep === 5"
-              :model-value="reviewData"
-            />
+              <!-- Review & Save Tab -->
+              <Tab
+                id="review"
+                label="Review"
+                :icon="CheckCircleIcon"
+              >
+                <ReviewAndSave
+                  :model-value="reviewData"
+                />
+              </Tab>
+            </TabNavigation>
+
+            <!-- Save Button -->
+            <div class="flex justify-end pt-6 border-t border-border">
+              <Button
+                variant="primary"
+                size="lg"
+                icon="mdi:content-save"
+                @click="saveSettings"
+                :disabled="isSaving"
+                :loading="isSaving"
+              >
+                {{ isSaving ? 'Saving...' : 'Save Settings' }}
+              </Button>
+            </div>
           </form>
         </div>
       </div>
@@ -133,6 +121,8 @@ import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import TabNavigation from '@/components/molecules/TabNavigation.vue'
+import Tab from '@/components/molecules/Tab.vue'
 import {
   AccountInformation,
   JobDefaults,
@@ -140,18 +130,20 @@ import {
   SocialLinks,
   ReviewAndSave
 } from '@/components/molecules/ClientSettings'
-import ArrowRightIcon from '~icons/mdi/arrow-right'
-import SaveIcon from '~icons/mdi/content-save'
-import RefreshIcon from '~icons/mdi/refresh'
+import AccountIcon from '~icons/mdi/account'
+import TargetIcon from '~icons/mdi/target'
+import CogIcon from '~icons/mdi/cog'
+import ShareVariantIcon from '~icons/mdi/share-variant'
+import CheckCircleIcon from '~icons/mdi/check-circle'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 // State
 const isSaving = ref(false)
-const currentStep = ref(1)
-const totalSteps = ref(5)
-const stepValidation = reactive<Record<number, boolean>>({})
+const currentTab = ref('account')
+const tabValidation = reactive<Record<string, boolean>>({})
+
 
 // Component data structures
 const accountData = reactive({
@@ -248,32 +240,12 @@ const settings = reactive<VoiceClient>({
 })
 
 // Methods
-const updateStepValidation = (step: number, isValid: boolean) => {
-  stepValidation[step] = isValid
+const updateTabValidation = (tabId: string, isValid: boolean) => {
+  tabValidation[tabId] = isValid
 }
 
-// Computed
-const canGoBack = computed(() => currentStep.value > 1)
-
-const canProceedToNext = computed(() => {
-  return stepValidation[currentStep.value] ?? false
-})
-
-// Methods
 const goBack = () => {
   router.back()
-}
-
-const nextStep = () => {
-  if (currentStep.value < totalSteps.value && canProceedToNext.value) {
-    currentStep.value++
-  }
-}
-
-const previousStep = () => {
-  if (currentStep.value > 1) {
-    currentStep.value--
-  }
 }
 
 const loadSettings = () => {
@@ -362,7 +334,7 @@ const saveSettings = async () => {
 
 const resetSettings = () => {
   loadSettings()
-  currentStep.value = 1
+  currentTab.value = 'account'
   alert('Settings reset to default values.')
 }
 
