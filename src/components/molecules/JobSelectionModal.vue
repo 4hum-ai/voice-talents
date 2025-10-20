@@ -13,14 +13,7 @@
           <h2 class="text-foreground text-lg font-semibold">
             Invite {{ talent?.displayName || 'Talent' }} to Job
           </h2>
-          <button
-            class="border-border text-muted-foreground hover:bg-muted flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm"
-            aria-label="Close"
-            @click="$emit('close')"
-          >
-            <CloseIcon class="h-4 w-4" aria-hidden="true" />
-            Close
-          </button>
+          <Button variant="ghost" size="sm" icon="mdi:close" aria-label="Close" @click="$emit('close')">Close</Button>
         </div>
 
         <!-- Content -->
@@ -63,10 +56,7 @@
                 <p class="text-muted-foreground mb-4">
                   You need to create a job posting before you can invite talents.
                 </p>
-                <Button variant="primary" @click="createNewJob">
-                  <PlusIcon class="mr-2 h-4 w-4" />
-                  Create New Job
-                </Button>
+                <Button variant="primary" icon="mdi:plus" @click="createNewJob">Create New Job</Button>
               </div>
 
               <div v-else class="space-y-3">
@@ -198,11 +188,11 @@
           <div class="flex space-x-2">
             <Button
               variant="primary"
+              icon="mdi:email"
               @click="sendInvitation"
               :disabled="!selectedJobId || isInviting"
               :loading="isInviting"
             >
-              <EmailIcon class="mr-2 h-4 w-4" />
               {{ isInviting ? 'Sending...' : 'Send Invitation' }}
             </Button>
           </div>
@@ -224,9 +214,6 @@ import Chip from '@/components/atoms/Chip.vue'
 import Textarea from '@/components/atoms/Textarea.vue'
 import { useToast } from '@/composables/useToast'
 import FolderOpenIcon from '~icons/mdi/folder-open'
-import PlusIcon from '~icons/mdi/plus'
-import EmailIcon from '~icons/mdi/email'
-import CloseIcon from '~icons/mdi/close'
 
 interface Props {
   isOpen: boolean
