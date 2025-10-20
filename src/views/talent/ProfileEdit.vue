@@ -18,15 +18,12 @@
 
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
-          <!-- Tab Navigation -->
+          <!-- Tab Navigation with Content -->
           <div class="mb-8">
-            <TabNavigation v-model="activeTab" :tabs="profileTabs" variant="underline" size="lg" />
-          </div>
-
-          <!-- Tab Content -->
-          <div class="min-h-[600px]">
-            <!-- Basic Information Tab -->
-            <div v-if="activeTab === 'basic'" class="space-y-8">
+            <TabNavigation v-model="activeTab" variant="underline" size="lg">
+              <!-- Basic Information Tab -->
+              <Tab id="basic" label="Basic Info">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -130,10 +127,12 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Voice Types Tab -->
-            <div v-if="activeTab === 'voice-types'" class="space-y-8">
+              <!-- Voice Types Tab -->
+              <Tab id="voice-types" label="Voice Types">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -192,10 +191,12 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Languages Tab -->
-            <div v-if="activeTab === 'languages'" class="space-y-8">
+              <!-- Languages Tab -->
+              <Tab id="languages" label="Languages">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -256,10 +257,12 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Voice Samples Tab -->
-            <div v-if="activeTab === 'voice-samples'" class="space-y-8">
+              <!-- Voice Samples Tab -->
+              <Tab id="voice-samples" label="Voice Samples">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -419,10 +422,12 @@
                   <p>Maximum file size: 50MB per file</p>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Pricing & Rates Tab -->
-            <div v-if="activeTab === 'pricing'" class="space-y-8">
+              <!-- Pricing & Rates Tab -->
+              <Tab id="pricing" label="Pricing & Rates">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -626,7 +631,9 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
+            </TabNavigation>
           </div>
         </div>
       </div>

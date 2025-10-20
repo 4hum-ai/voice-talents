@@ -95,8 +95,7 @@
                   : 'No voice actors match your current filters'
               }}
             </p>
-            <Button variant="primary" @click="clearFilters">
-              <RefreshIcon class="mr-2 h-4 w-4" />
+            <Button variant="primary" icon="mdi:refresh" @click="clearFilters">
               Clear Filters
             </Button>
           </div>
@@ -207,21 +206,18 @@
                     <Button
                       variant="ghost"
                       size="sm"
+                      icon="mdi:eye"
                       @click="$router.push(`/client/talents/${talent.id}`)"
-                    >
-                      <EyeIcon class="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" @click="viewPortfolio(talent)">
-                      <FolderOpenIcon class="h-4 w-4" />
-                    </Button>
+                    />
+                    <Button variant="ghost" size="sm" icon="mdi:folder-open" @click="viewPortfolio(talent)" />
                   </div>
                   <Button
                     variant="primary"
                     size="sm"
+                    icon="mdi:email"
                     @click="inviteTalent(talent)"
                     :disabled="isInvited(talent.id)"
                   >
-                    <EmailIcon class="mr-2 h-4 w-4" />
                     {{ isInvited(talent.id) ? 'Invited' : 'Invite' }}
                   </Button>
                 </div>
@@ -353,18 +349,16 @@
                         <Button
                           variant="ghost"
                           size="sm"
+                          icon="mdi:eye"
                           @click="$router.push(`/client/talents/${talent.id}`)"
-                        >
-                          <EyeIcon class="h-4 w-4" />
-                        </Button>
+                        />
                         <Button
                           variant="primary"
                           size="sm"
+                          icon="mdi:email"
                           @click="inviteTalent(talent)"
                           :disabled="isInvited(talent.id)"
-                        >
-                          <EmailIcon class="h-4 w-4" />
-                        </Button>
+                        />
                       </div>
                     </td>
                   </tr>
@@ -403,11 +397,8 @@ import Avatar from '@/components/atoms/Avatar.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobSelectionModal from '@/components/molecules/JobSelectionModal.vue'
 import AccountGroupIcon from '~icons/mdi/account-group'
-import RefreshIcon from '~icons/mdi/refresh'
-import EyeIcon from '~icons/mdi/eye'
-import FolderOpenIcon from '~icons/mdi/folder-open'
-import EmailIcon from '~icons/mdi/email'
 import StarIcon from '~icons/mdi/star'
+// Icons removed; using Button icon prop for buttons
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')

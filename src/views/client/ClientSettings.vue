@@ -18,7 +18,7 @@
       </AppBar>
 
       <!-- Main Content Area -->
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
+      <div class="px-4 py-8 pt-20 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
           <form @submit.prevent="saveSettings" class="space-y-8">
             <!-- Tab Navigation with Content -->
@@ -96,11 +96,11 @@
               <Button
                 variant="primary"
                 size="lg"
-                icon="mdi:content-save"
                 @click="saveSettings"
                 :disabled="isSaving"
                 :loading="isSaving"
               >
+                <SaveIcon class="mr-2 h-4 w-4" />
                 {{ isSaving ? 'Saving...' : 'Save Settings' }}
               </Button>
             </div>
@@ -319,11 +319,6 @@ const saveSettings = async () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    // Show success message
-    alert('Settings saved successfully!')
-
-    // Navigate back or to dashboard
-    router.push('/client/dashboard')
   } catch (error) {
     console.error('Error saving settings:', error)
     alert('Failed to save settings. Please try again.')

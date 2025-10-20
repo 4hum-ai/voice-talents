@@ -12,15 +12,12 @@
 
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
-          <!-- Tab Navigation -->
+          <!-- Tab Navigation with Content -->
           <div class="mb-8">
-            <TabNavigation v-model="activeTab" :tabs="settingsTabs" variant="underline" size="lg" />
-          </div>
-
-          <!-- Tab Content -->
-          <div class="min-h-[600px]">
-            <!-- Account Settings Tab -->
-            <div v-if="activeTab === 'account'" class="space-y-8">
+            <TabNavigation v-model="activeTab" variant="underline" size="lg">
+              <!-- Account Settings Tab -->
+              <Tab id="account" label="Account">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -101,10 +98,12 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Notification Preferences Tab -->
-            <div v-if="activeTab === 'notifications'" class="space-y-8">
+              <!-- Notification Preferences Tab -->
+              <Tab id="notifications" label="Notifications">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -216,10 +215,12 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Privacy Settings Tab -->
-            <div v-if="activeTab === 'privacy'" class="space-y-8">
+              <!-- Privacy Settings Tab -->
+              <Tab id="privacy" label="Privacy">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -304,10 +305,12 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
 
-            <!-- Data & Export Tab -->
-            <div v-if="activeTab === 'data'" class="space-y-8">
+              <!-- Data & Export Tab -->
+              <Tab id="data" label="Data & Export">
+                <div class="space-y-8">
               <Card class="p-6">
                 <div class="mb-8 text-center">
                   <div
@@ -357,7 +360,9 @@
                   </div>
                 </div>
               </Card>
-            </div>
+                </div>
+              </Tab>
+            </TabNavigation>
           </div>
         </div>
       </div>
@@ -374,6 +379,7 @@ import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
+import Tab from '@/components/molecules/Tab.vue'
 import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
@@ -381,13 +387,6 @@ const { success, error } = useToast()
 
 // Tab management
 const activeTab = ref('account')
-
-const settingsTabs = [
-  { id: 'account', label: 'Account' },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'privacy', label: 'Privacy' },
-  { id: 'data', label: 'Data & Export' },
-]
 
 // Account settings
 const accountSettings = reactive({
