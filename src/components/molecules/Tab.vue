@@ -36,7 +36,7 @@ if (!tabNavigation) {
 }
 
 const isActive = computed(() => {
-  return tabNavigation.activeTab === props.id
+  return tabNavigation.activeTab.value === props.id
 })
 
 // Register this tab when mounted
