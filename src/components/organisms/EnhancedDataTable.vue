@@ -352,11 +352,16 @@ const visiblePages = computed(() => {
 
 // Methods
 const getItemKey = (item: Record<string, unknown>, index: number) => {
-  return item[props.keyField] || index
+  return (item[props.keyField] as string) || index.toString()
 }
 
 const getNestedValue = (obj: Record<string, unknown>, path: string) => {
-  return path.split('.').reduce((current, key) => (current as Record<string, unknown>)?.[key], obj)
+  return path.split('.').reduce((current, key) => {
+    if (current && typeof current === 'object' && key in current) {
+      return (current as Record<string, unknown>)[key]
+    }
+    return undefined
+  }, obj as unknown)
 }
 
 const formatCellValue = (value: unknown, column: Column) => {

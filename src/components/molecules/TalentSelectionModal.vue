@@ -38,7 +38,7 @@
               <span class="text-muted-foreground text-sm">Sort by:</span>
               <SelectInput
                 :model-value="sortBy"
-                @update:model-value="sortBy = $event"
+                @update:model-value="sortBy = $event as string"
                 :options="sortOptions"
                 class="w-40"
               />
@@ -182,7 +182,7 @@
                     variant="outline"
                     size="sm"
                     icon="mdi:account"
-                    @click="viewTalentProfile(application.voiceActorId)"
+                    @click="viewTalentProfile()"
                     >View Profile</Button
                   >
                   <Button
