@@ -9,8 +9,8 @@ import type {
   Campaign,
   TalentInvitation,
   JobApplication,
-  CustomSample,
   ClientStats,
+  CustomSample,
 } from '@/types/voice-client'
 
 // Mock Voice Clients
@@ -52,7 +52,7 @@ export const mockVoiceClients: VoiceClient[] = [
         max: 8000,
         currency: 'USD',
       },
-      preferredLanguages: ['English'],
+      preferredLanguages: ['english'],
       preferredVoiceTypes: ['commercial', 'narrator'],
       autoApprove: false,
       requireNDA: true,
@@ -96,7 +96,7 @@ export const mockVoiceClients: VoiceClient[] = [
         max: 15000,
         currency: 'USD',
       },
-      preferredLanguages: ['English', 'Spanish'],
+      preferredLanguages: ['english', 'spanish'],
       preferredVoiceTypes: ['narrator', 'e-learning'],
       autoApprove: true,
       requireNDA: false,
@@ -141,7 +141,7 @@ export const mockVoiceClients: VoiceClient[] = [
         max: 25000,
         currency: 'USD',
       },
-      preferredLanguages: ['English'],
+      preferredLanguages: ['english'],
       preferredVoiceTypes: ['character', 'animation'],
       autoApprove: false,
       requireNDA: true,
@@ -151,49 +151,6 @@ export const mockVoiceClients: VoiceClient[] = [
   },
 ]
 
-// Mock Custom Samples for Applications
-export const mockClientCustomSamples: CustomSample[] = [
-  {
-    id: 'client-custom-sample-001',
-    applicationId: 'application-001',
-    title: 'Tech Commercial Demo',
-    description: 'Custom sample showcasing modern, energetic delivery for tech startup commercial.',
-    audioUrl: 'https://example.com/audio/client-custom-sample-001.mp3',
-    duration: 30,
-    fileSize: 480000,
-    format: 'mp3',
-    isPublic: false,
-    tags: ['commercial', 'tech', 'energetic', 'custom'],
-    metadata: {
-      recordingQuality: 'professional',
-      equipment: 'Rode NT1',
-      recordingLocation: 'Home Studio',
-      dateRecorded: '2024-01-16T10:00:00Z',
-    },
-    createdAt: '2024-01-16T10:00:00Z',
-    updatedAt: '2024-01-16T10:00:00Z',
-  },
-  {
-    id: 'client-custom-sample-002',
-    applicationId: 'application-002',
-    title: 'E-Learning Narration Sample',
-    description: 'Custom sample demonstrating clear, engaging narration for educational content.',
-    audioUrl: 'https://example.com/audio/client-custom-sample-002.mp3',
-    duration: 60,
-    fileSize: 960000,
-    format: 'mp3',
-    isPublic: false,
-    tags: ['e-learning', 'narration', 'educational', 'custom'],
-    metadata: {
-      recordingQuality: 'professional',
-      equipment: 'Neumann U87',
-      recordingLocation: 'Professional Studio',
-      dateRecorded: '2024-01-17T14:00:00Z',
-    },
-    createdAt: '2024-01-17T14:00:00Z',
-    updatedAt: '2024-01-17T14:00:00Z',
-  },
-]
 
 // Mock Job Applications
 export const mockJobApplications: JobApplication[] = [
@@ -209,8 +166,8 @@ export const mockJobApplications: JobApplication[] = [
     proposedCurrency: 'USD',
     proposedTimeline: '1 week',
     estimatedHours: 15,
+    customSamples: [],
     portfolioSampleIds: ['sample-001', 'sample-002'],
-    customSamples: [mockClientCustomSamples[0]],
     coverLetter:
       "I'd love to work on this tech startup commercial series. My energetic, modern delivery style would be perfect for your target demographic. I can deliver all 5 spots within a week and have extensive experience with tech brands.",
     relevantExperience:
@@ -271,8 +228,8 @@ export const mockJobApplications: JobApplication[] = [
     proposedCurrency: 'USD',
     proposedTimeline: '2 weeks',
     estimatedHours: 20,
+    customSamples: [],
     portfolioSampleIds: ['sample-001'],
-    customSamples: [mockClientCustomSamples[1]],
     coverLetter:
       'I have extensive experience with e-learning content and can deliver clear, engaging narration that keeps learners engaged throughout the 45-minute module. My bilingual capabilities could also be valuable for future projects.',
     relevantExperience:
@@ -442,7 +399,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2024-01-20T09:00:00Z',
     estimatedDuration: '1-2 weeks',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['commercial'],
       ageRange: '25-35',
@@ -520,7 +477,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2024-01-22T09:00:00Z',
     estimatedDuration: '2-3 weeks',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['narrator', 'character'],
       experience: 'advanced',
@@ -590,7 +547,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2024-01-10T09:00:00Z',
     estimatedDuration: '2-3 weeks',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['character', 'animation'],
       ageRange: '25-35',
@@ -661,7 +618,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2024-01-01T09:00:00Z',
     estimatedDuration: '2 weeks',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['commercial'],
       ageRange: '25-35',
@@ -736,7 +693,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2023-12-25T09:00:00Z',
     estimatedDuration: '3 weeks',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['narrator'],
       experience: 'advanced',
@@ -810,7 +767,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2024-01-25T09:00:00Z',
     estimatedDuration: '1 week',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['narrator', 'podcast'],
       experience: 'intermediate',
@@ -876,7 +833,7 @@ export const mockJobPostings: JobPosting[] = [
     startDate: '2024-02-01T09:00:00Z',
     estimatedDuration: '4-6 weeks',
     requirements: {
-      languages: ['English'],
+      languages: ['english'],
       accents: ['American'],
       voiceTypes: ['narrator', 'audiobook'],
       experience: 'advanced',
@@ -931,280 +888,46 @@ export const mockJobPostings: JobPosting[] = [
   },
 ]
 
-// Mock Talent Invitations
-export const mockTalentInvitations: TalentInvitation[] = [
+// Mock Job Invitations
+export const mockJobInvitations: JobInvitation[] = [
   {
     id: 'invitation-001',
-    campaignId: 'campaign-001',
     jobId: 'job-001',
     clientId: 'client-001',
-    clientName: 'TechFlow Inc.',
-    voiceActorId: 'va-001',
-    voiceActorName: 'Sarah Johnson',
-    status: 'responded',
-    message:
-      "Hi Sarah! We're launching a new tech startup and would love to work with you on our commercial series. Your commercial samples are exactly what we're looking for - energetic and modern. Would you be interested?",
-    customOffer: {
-      rate: 4000,
-      currency: 'USD',
-      timeline: '1 week',
-      specialTerms: 'Priority project with potential for ongoing work',
-    },
-    sentDate: '2024-01-15T10:00:00Z',
-    respondedDate: '2024-01-16T15:00:00Z',
-    response: {
-      status: 'accepted',
-      message:
-        "Thank you for the invitation! I'd love to work on this project. I've submitted my application with a custom sample.",
-    },
+    voiceTalentId: 'va-001',
+    message: "Hi Sarah! We're launching a new tech startup and would love to work with you on our commercial series. Your commercial samples are exactly what we're looking for - energetic and modern. Would you be interested?",
+    status: 'accepted',
+    invitedAt: '2024-01-15T10:00:00Z',
+    respondedAt: '2024-01-16T15:00:00Z',
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-16T15:00:00Z',
   },
   {
     id: 'invitation-002',
-    campaignId: 'campaign-002',
     jobId: 'job-002',
     clientId: 'client-002',
-    clientName: 'EduTech Solutions',
-    voiceActorId: 'va-003',
-    voiceActorName: 'Emma Rodriguez',
-    status: 'responded',
-    message:
-      'Hi Emma! We have an exciting e-learning project that would be perfect for your educational content expertise. The module is about digital marketing and we need someone who can keep learners engaged for 45 minutes.',
-    customOffer: {
-      rate: 3500,
-      currency: 'USD',
-      timeline: '2 weeks',
-      specialTerms: 'Potential for additional modules if this goes well',
-    },
-    sentDate: '2024-01-15T10:00:00Z',
-    respondedDate: '2024-01-15T11:00:00Z',
-    response: {
-      status: 'accepted',
-      message:
-        'This sounds perfect! I have extensive experience with e-learning content and would love to work on this project.',
-    },
+    voiceTalentId: 'va-003',
+    message: 'Hi Emma! We have an exciting e-learning project that would be perfect for your educational content expertise. The module is about digital marketing and we need someone who can keep learners engaged for 45 minutes.',
+    status: 'accepted',
+    invitedAt: '2024-01-15T10:00:00Z',
+    respondedAt: '2024-01-15T11:00:00Z',
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T11:00:00Z',
   },
   {
     id: 'invitation-003',
-    campaignId: 'campaign-003',
     jobId: 'job-003',
     clientId: 'client-003',
-    clientName: 'Animation Studios Inc.',
-    voiceActorId: 'va-002',
-    voiceActorName: 'Marcus Chen',
-    status: 'responded',
-    message:
-      "Hi Marcus! We're developing a new animated series and your character voice work is exactly what we need. The lead character is a 25-year-old adventurer with great comedic timing.",
-    customOffer: {
-      rate: 10000,
-      currency: 'USD',
-      timeline: '2-3 weeks',
-      specialTerms: 'Lead character role with potential for series continuation',
-    },
-    sentDate: '2024-01-15T10:00:00Z',
-    respondedDate: '2024-01-14T14:00:00Z',
-    response: {
-      status: 'accepted',
-      message:
-        "I'm very excited about this project! I love character work and this sounds like a fantastic opportunity.",
-    },
+    voiceTalentId: 'va-002',
+    message: "Hi Marcus! We're developing a new animated series and your character voice work is exactly what we need. The lead character is a 25-year-old adventurer with great comedic timing.",
+    status: 'accepted',
+    invitedAt: '2024-01-15T10:00:00Z',
+    respondedAt: '2024-01-14T14:00:00Z',
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-14T14:00:00Z',
   },
 ]
 
-// Mock Campaigns
-export const mockCampaigns: Campaign[] = [
-  {
-    id: 'campaign-001',
-    clientId: 'client-001',
-    name: 'TechFlow Commercial Launch',
-    description:
-      'Campaign to find the perfect voice for our tech startup commercial series. Need energetic, modern voice that appeals to millennials.',
-    type: 'fill_asap',
-    status: 'published',
-    targetAudience: {
-      languages: ['English'],
-      accents: ['American'],
-      voiceTypes: ['commercial'],
-      experience: ['professional'],
-      location: ['United States'],
-      availability: ['available'],
-      minRating: 4.5,
-      maxRate: 200,
-      isVerified: true,
-      customCriteria: 'Tech-savvy, modern delivery style',
-    },
-    budget: {
-      total: 10000,
-      spent: 4000,
-      currency: 'USD',
-    },
-    timeline: {
-      startDate: '2024-01-15T10:00:00Z',
-      endDate: '2024-02-15T17:00:00Z',
-      duration: '1 month',
-    },
-    jobs: ['job-001'],
-    invitations: [mockTalentInvitations[0]],
-    metrics: {
-      totalViews: 45,
-      totalApplications: 1,
-      totalInvitations: 1,
-      responseRate: 100,
-      conversionRate: 100,
-      averageResponseTime: 1.2,
-      topPerformingJobs: ['job-001'],
-      talentEngagement: {
-        views: 45,
-        applications: 1,
-        shortlists: 1,
-        hires: 0,
-      },
-    },
-    settings: {
-      autoApprove: false,
-      requirePortfolio: true,
-      requireCustomSample: true,
-      allowMultipleApplications: false,
-      notificationFrequency: 'immediate',
-      privacyLevel: 'public',
-      ndaRequired: true,
-      contractTemplate: 'techflow-standard-contract',
-    },
-    createdDate: '2024-01-15T10:00:00Z',
-    launchedDate: '2024-01-15T10:00:00Z',
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-16T15:00:00Z',
-  },
-  {
-    id: 'campaign-002',
-    clientId: 'client-002',
-    name: 'E-Learning Content Expansion',
-    description:
-      'Targeted campaign to find experienced e-learning narrators for our expanding educational content library.',
-    type: 'invite_specific',
-    status: 'published',
-    targetAudience: {
-      languages: ['English', 'Spanish'],
-      accents: ['American'],
-      voiceTypes: ['narrator', 'e-learning'],
-      experience: ['advanced', 'professional'],
-      location: ['United States'],
-      availability: ['available'],
-      minRating: 4.0,
-      maxRate: 150,
-      isVerified: true,
-      customCriteria: 'Experience with educational content preferred',
-    },
-    budget: {
-      total: 20000,
-      spent: 3500,
-      currency: 'USD',
-    },
-    timeline: {
-      startDate: '2024-01-15T10:00:00Z',
-      endDate: '2024-03-15T17:00:00Z',
-      duration: '2 months',
-    },
-    jobs: ['job-002'],
-    invitations: [mockTalentInvitations[1]],
-    metrics: {
-      totalViews: 32,
-      totalApplications: 1,
-      totalInvitations: 1,
-      responseRate: 100,
-      conversionRate: 100,
-      averageResponseTime: 0.04,
-      topPerformingJobs: ['job-002'],
-      talentEngagement: {
-        views: 32,
-        applications: 1,
-        shortlists: 1,
-        hires: 1,
-      },
-    },
-    settings: {
-      autoApprove: true,
-      requirePortfolio: true,
-      requireCustomSample: false,
-      allowMultipleApplications: true,
-      notificationFrequency: 'daily',
-      privacyLevel: 'public',
-      ndaRequired: false,
-    },
-    createdDate: '2024-01-15T10:00:00Z',
-    launchedDate: '2024-01-15T10:00:00Z',
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-16T09:00:00Z',
-  },
-  {
-    id: 'campaign-003',
-    clientId: 'client-003',
-    name: 'Animated Series Casting',
-    description:
-      'Exclusive campaign to find the perfect voice for our lead character in a new animated series. Looking for versatile character actors.',
-    type: 'custom',
-    status: 'completed',
-    targetAudience: {
-      languages: ['English'],
-      accents: ['American'],
-      voiceTypes: ['character', 'animation'],
-      experience: ['professional'],
-      location: ['United States'],
-      availability: ['available'],
-      minRating: 4.5,
-      maxRate: 300,
-      isVerified: true,
-      customCriteria: 'Character voice experience, comedic timing, emotional range',
-    },
-    budget: {
-      total: 15000,
-      spent: 10000,
-      currency: 'USD',
-    },
-    timeline: {
-      startDate: '2024-01-15T10:00:00Z',
-      endDate: '2024-01-28T17:00:00Z',
-      duration: '2 weeks',
-    },
-    jobs: ['job-003'],
-    invitations: [mockTalentInvitations[2]],
-    metrics: {
-      totalViews: 78,
-      totalApplications: 1,
-      totalInvitations: 1,
-      responseRate: 100,
-      conversionRate: 100,
-      averageResponseTime: 0.17,
-      topPerformingJobs: ['job-003'],
-      talentEngagement: {
-        views: 78,
-        applications: 1,
-        shortlists: 1,
-        hires: 1,
-      },
-    },
-    settings: {
-      autoApprove: false,
-      requirePortfolio: true,
-      requireCustomSample: true,
-      allowMultipleApplications: false,
-      notificationFrequency: 'immediate',
-      privacyLevel: 'invite_only',
-      ndaRequired: true,
-      contractTemplate: 'animation-series-contract',
-    },
-    createdDate: '2024-01-15T10:00:00Z',
-    launchedDate: '2024-01-15T10:00:00Z',
-    completedDate: '2024-01-28T16:00:00Z',
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-28T16:00:00Z',
-  },
-]
 
 // Mock Client Stats
 export const mockClientStats: ClientStats = {
@@ -1263,9 +986,7 @@ export const mockClientStats: ClientStats = {
 export const mockClientData = {
   voiceClients: mockVoiceClients,
   jobPostings: mockJobPostings,
-  campaigns: mockCampaigns,
-  talentInvitations: mockTalentInvitations,
+  jobInvitations: mockJobInvitations,
   jobApplications: mockJobApplications,
-  customSamples: mockClientCustomSamples,
   clientStats: mockClientStats,
 }

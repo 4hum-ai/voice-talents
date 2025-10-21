@@ -324,6 +324,7 @@ const deliveryFormat = computed({
 
 const languageOptions = [
   { value: 'english', label: 'English' },
+  { value: 'spanish', label: 'Spanish' },
   { value: 'vietnamese', label: 'Vietnamese' },
 ]
 

@@ -320,15 +320,16 @@ const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+const playCustomSample = (customSample: { title: string; url: string }) => {
+  // In real app, play audio
+  console.log('Playing custom sample:', customSample.title)
+}
+
 const playSample = (sample: VoiceSample) => {
   // In real app, this would play the audio sample
   console.log('Playing sample:', sample.title)
 }
 
-const playCustomSample = (customSample: { title: string; url: string }) => {
-  // In real app, this would play the custom sample
-  console.log('Playing custom sample:', customSample.title)
-}
 
 onMounted(() => {
   loadProposal()
