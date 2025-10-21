@@ -67,7 +67,7 @@ import {
 
 
 // Tab management
-const activeTab = ref('account')
+const currentTab = ref('account')
 const tabValidation = reactive<Record<string, boolean>>({})
 
 // Account settings
