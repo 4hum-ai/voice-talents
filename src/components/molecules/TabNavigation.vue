@@ -106,7 +106,7 @@ const updateTab = (tabId: string, updates: Partial<Tab>) => {
 }
 
 provide('tabNavigation', {
-  activeTab: computed(() => activeTab.value),
+  activeTab,
   registerTab,
   unregisterTab,
   updateTab,
