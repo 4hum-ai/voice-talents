@@ -8,7 +8,7 @@
 import { computed, inject, onMounted, onUnmounted, type Component } from 'vue'
 
 interface TabNavigationContext {
-  activeTab: string
+  activeTab: { value: string }
   registerTab: (tab: { id: string; label: string; icon?: Component }) => void
   unregisterTab: (tabId: string) => void
   updateTab: (tabId: string, updates: { label?: string; icon?: Component }) => void
@@ -36,7 +36,7 @@ if (!tabNavigation) {
 }
 
 const isActive = computed(() => {
-  return tabNavigation.activeTab === props.id
+  return tabNavigation.activeTab.value === props.id
 })
 
 // Register this tab when mounted
