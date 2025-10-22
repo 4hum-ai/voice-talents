@@ -212,9 +212,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { CastingSession, CastingProposal, VoiceSample } from '@/types/voice-actor'
+import type { CastingSession, CastingProposal, VoiceSample } from '@/types/voice-talent'
 import type { CustomSample } from '@/types/job-application'
-import { mockData } from '@/data/mock-voice-actor-data'
+import { mockData } from '@/data/mock-voice-talent-data'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -241,7 +241,7 @@ const loadProposal = () => {
   const session = mockData.castingSessions.find((s) => s.id === route.params.id)
   if (session) {
     castingSession.value = session
-    const userProposal = session.proposals.find((p) => p.voiceActorId === currentUserId)
+    const userProposal = session.proposals.find((p) => p.voiceTalentId === currentUserId)
     if (userProposal) {
       proposal.value = userProposal
     } else {

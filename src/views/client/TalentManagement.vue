@@ -8,7 +8,7 @@
       <!-- Header -->
       <AppBar :show-back="true" @back="$router.back()">
         <template #title>Talent Management</template>
-        <template #subtitle>Browse and invite voice actors for your projects</template>
+        <template #subtitle>Browse and invite voice talents for your projects</template>
         <template #actions>
           <ThemeToggle />
           <ViewToggle v-model="viewMode" />
@@ -23,7 +23,7 @@
               <div class="flex-1">
                 <SearchInput
                   v-model="searchQuery"
-                  placeholder="Search voice actors by name, skills, or location..."
+                  placeholder="Search voice talents by name, skills, or location..."
                   @update:model-value="handleSearch"
                 />
               </div>
@@ -87,12 +87,12 @@
           <!-- Talent Grid/List -->
           <div v-if="filteredTalents.length === 0" class="py-12 text-center">
             <AccountGroupIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">No voice actors found</h3>
+            <h3 class="text-foreground mb-2 text-lg font-medium">No voice talents found</h3>
             <p class="text-muted-foreground mb-6">
               {{
                 searchQuery
                   ? 'Try adjusting your search criteria'
-                  : 'No voice actors match your current filters'
+                  : 'No voice talents match your current filters'
               }}
             </p>
             <Button variant="primary" icon="mdi:refresh" @click="clearFilters">
@@ -239,7 +239,7 @@
                     <th
                       class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
                     >
-                      Voice Actor
+                      Voice Talent
                     </th>
                     <th
                       class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
@@ -387,8 +387,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { VoiceActor, VoiceType } from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+import type { VoiceTalent, VoiceType } from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import ViewToggle from '@/components/molecules/ViewToggle.vue'
@@ -416,10 +416,10 @@ const invitedTalents = ref<string[]>([])
 
 // Modal state
 const isJobSelectionModalOpen = ref(false)
-const selectedTalent = ref<VoiceActor | null>(null)
+const selectedTalent = ref<VoiceTalent | null>(null)
 
 // Mock data - in real app, this would come from API
-const talents = ref<VoiceActor[]>(mockData.voiceActors)
+const talents = ref<VoiceTalent[]>(mockData.voiceTalents)
 
 // Computed
 const filteredTalents = computed(() => {
@@ -521,7 +521,7 @@ const isInvited = (talentId: string) => {
   return invitedTalents.value.includes(talentId)
 }
 
-const inviteTalent = (talent: VoiceActor) => {
+const inviteTalent = (talent: VoiceTalent) => {
   selectedTalent.value = talent
   isJobSelectionModalOpen.value = true
 }
@@ -546,7 +546,7 @@ const closeJobSelectionModal = () => {
   selectedTalent.value = null
 }
 
-const viewPortfolio = (talent: VoiceActor) => {
+const viewPortfolio = (talent: VoiceTalent) => {
   // In real app, open portfolio in modal or new page
   console.log('Viewing portfolio for:', talent.displayName)
 }

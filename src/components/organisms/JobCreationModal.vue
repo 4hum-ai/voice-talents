@@ -115,7 +115,7 @@ import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import type { JobPosting } from '@/types/voice-client'
-import type { VoiceType } from '@/types/voice-actor'
+import type { VoiceType } from '@/types/voice-talent'
 
 // Components
 import Button from '@/components/atoms/Button.vue'

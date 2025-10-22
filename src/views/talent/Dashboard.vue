@@ -265,8 +265,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { VoiceActorStats } from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+import type { VoiceTalentStats } from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useToast } from '@/composables/useToast'
 import { useAuthStore } from '@/stores/auth'
@@ -290,15 +290,15 @@ const authStore = useAuthStore()
 
 // Use authenticated user data instead of mock data
 // const currentActor = computed(() => ({
-//   displayName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor',
+//   displayName: authStore.user?.displayName || authStore.user?.email || 'Voice Talent',
 //   avatarUrl: authStore.user?.photoURL,
 // }))
 
 // Keep stats as mock for now, but this could be fetched from API based on user ID
-const voiceActorStats = ref<VoiceActorStats>(mockData.voiceActorStats)
+const voiceTalentStats = ref<VoiceTalentStats>(mockData.voiceTalentStats)
 
 // Computed properties
-const stats = computed(() => voiceActorStats.value)
+const stats = computed(() => voiceTalentStats.value)
 const showTalentOnboarding = computed(() => isTalentMode.value && shouldShowOnboarding.value)
 
 const recentProjects = computed(() => mockData.projects.slice(0, 3))

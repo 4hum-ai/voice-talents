@@ -196,8 +196,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import type { CastingSession, CastingProposal } from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+import type { CastingSession, CastingProposal } from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -240,7 +240,7 @@ const getCastingSessionStatus = (session: CastingSession) => {
 }
 
 const getUserProposalStatus = (session: CastingSession): CastingProposal | null => {
-  return session.proposals.find((proposal) => proposal.voiceActorId === currentUserId) || null
+  return session.proposals.find((proposal) => proposal.voiceTalentId === currentUserId) || null
 }
 
 const getProposalStatusInfo = (session: CastingSession) => {

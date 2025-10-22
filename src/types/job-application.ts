@@ -18,8 +18,8 @@ export type ApplicationStatus =
 export interface Application {
   id: string
   jobId: string
-  voiceActorId: string
-  voiceActorName: string
+  voiceTalentId: string
+  voiceTalentName: string
   status: ApplicationStatus
   appliedDate: string
 

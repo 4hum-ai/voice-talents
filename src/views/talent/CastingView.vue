@@ -367,8 +367,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { CastingSession, CastingProposal } from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+import type { CastingSession, CastingProposal } from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
@@ -454,7 +454,7 @@ const selectedCount = computed(() => {
 
 // Get user's proposal status for a casting session
 const getUserProposalStatus = (session: CastingSession): CastingProposal | null => {
-  return session.proposals.find((proposal) => proposal.voiceActorId === currentUserId) || null
+  return session.proposals.find((proposal) => proposal.voiceTalentId === currentUserId) || null
 }
 
 // Get casting session status for StatusBadge

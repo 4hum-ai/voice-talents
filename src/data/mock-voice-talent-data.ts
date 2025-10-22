@@ -1,24 +1,24 @@
 /**
- * VoiceAct Mock Data
- * Comprehensive mock data for all voice actor entities
+ * VoiceTalents Mock Data
+ * Comprehensive mock data for all voice talent entities
  */
 
 import type {
-  VoiceActor,
+  VoiceTalent,
   VoiceSample,
   Project,
   CastingSession,
   CastingProposal,
-  VoiceActorStats,
-} from '@/types/voice-actor'
+  VoiceTalentStats,
+} from '@/types/voice-talent'
 
-// Mock Voice Actors
-export const mockVoiceActors: VoiceActor[] = [
+// Mock Voice Talents
+export const mockVoiceTalents: VoiceTalent[] = [
   {
     id: 'va-001',
     userId: 'user-001',
     displayName: 'Sarah Johnson',
-    bio: 'Professional voice actor with 8+ years of experience in commercial, audiobook, and animation work. Known for warm, conversational tones and versatile character voices.',
+    bio: 'Professional voice talent with 8+ years of experience in commercial, audiobook, and animation work. Known for warm, conversational tones and versatile character voices.',
     avatarUrl:
       'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
     headshotUrl:
@@ -55,7 +55,7 @@ export const mockVoiceActors: VoiceActor[] = [
     id: 'va-002',
     userId: 'user-002',
     displayName: 'Marcus Chen',
-    bio: 'Versatile voice actor specializing in video games, animation, and e-learning. Deep, authoritative voice perfect for documentaries and corporate presentations.',
+    bio: 'Versatile voice talent specializing in video games, animation, and e-learning. Deep, authoritative voice perfect for documentaries and corporate presentations.',
     avatarUrl:
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     headshotUrl:
@@ -91,7 +91,7 @@ export const mockVoiceActors: VoiceActor[] = [
     id: 'va-003',
     userId: 'user-003',
     displayName: 'Emma Rodriguez',
-    bio: 'Bilingual voice actor fluent in English and Spanish. Specializes in commercial work, audiobooks, and educational content with a warm, engaging delivery.',
+    bio: 'Bilingual voice talent fluent in English and Spanish. Specializes in commercial work, audiobooks, and educational content with a warm, engaging delivery.',
     avatarUrl:
       'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     headshotUrl:
@@ -127,7 +127,7 @@ export const mockVoiceActors: VoiceActor[] = [
     id: 'va-004',
     userId: 'user-004',
     displayName: 'Alex Thompson',
-    bio: 'Professional voice actor specializing in commercial work and tech industry projects. Known for modern, energetic delivery that connects with startup audiences.',
+    bio: 'Professional voice talent specializing in commercial work and tech industry projects. Known for modern, energetic delivery that connects with startup audiences.',
     avatarUrl:
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     headshotUrl:
@@ -201,7 +201,7 @@ export const mockVoiceActors: VoiceActor[] = [
 export const mockVoiceSamples: VoiceSample[] = [
   {
     id: 'sample-001',
-    voiceActorId: 'va-001',
+    voiceTalentId: 'va-001',
     title: 'Warm Commercial - Coffee Shop',
     description:
       'Friendly, inviting commercial for a local coffee shop. Warm and conversational tone.',
@@ -234,7 +234,7 @@ export const mockVoiceSamples: VoiceSample[] = [
   },
   {
     id: 'sample-002',
-    voiceActorId: 'va-001',
+    voiceTalentId: 'va-001',
     title: 'Audiobook Narration - Fiction',
     description:
       'Engaging narration for a fantasy novel. Character voices and descriptive passages.',
@@ -267,7 +267,7 @@ export const mockVoiceSamples: VoiceSample[] = [
   },
   {
     id: 'sample-003',
-    voiceActorId: 'va-002',
+    voiceTalentId: 'va-002',
     title: 'Video Game Character - Villain',
     description:
       'Deep, menacing voice for a video game antagonist. Authoritative and intimidating.',
@@ -321,8 +321,8 @@ export const mockProjects: Project[] = [
       {
         id: 'assignment-001',
         projectId: 'project-001',
-        voiceActorId: 'va-001',
-        voiceActorName: 'Sarah Johnson',
+        voiceTalentId: 'va-001',
+        voiceTalentName: 'Sarah Johnson',
         role: 'Lead Voice',
         status: 'in_progress',
         assignedDate: '2024-01-10T09:00:00Z',
@@ -430,8 +430,8 @@ export const mockProjects: Project[] = [
       {
         id: 'assignment-002',
         projectId: 'project-002',
-        voiceActorId: 'va-003',
-        voiceActorName: 'Emma Rodriguez',
+        voiceTalentId: 'va-003',
+        voiceTalentName: 'Emma Rodriguez',
         role: 'Narrator',
         status: 'submitted',
         assignedDate: '2024-01-05T09:00:00Z',
@@ -484,8 +484,8 @@ export const mockCastingProposals: CastingProposal[] = [
   {
     id: 'proposal-001',
     castingSessionId: 'casting-001',
-    voiceActorId: 'va-001',
-    voiceActorName: 'Sarah Johnson',
+    voiceTalentId: 'va-001',
+    voiceTalentName: 'Sarah Johnson',
     status: 'submitted',
     submittedDate: '2024-01-16T15:00:00Z',
     proposedCost: 10000,
@@ -502,8 +502,8 @@ export const mockCastingProposals: CastingProposal[] = [
   {
     id: 'proposal-002',
     castingSessionId: 'casting-002',
-    voiceActorId: 'va-001',
-    voiceActorName: 'Sarah Johnson',
+    voiceTalentId: 'va-001',
+    voiceTalentName: 'Sarah Johnson',
     status: 'under_review',
     submittedDate: '2024-01-17T11:00:00Z',
     proposedCost: 3500,
@@ -520,8 +520,8 @@ export const mockCastingProposals: CastingProposal[] = [
   {
     id: 'proposal-003',
     castingSessionId: 'casting-003',
-    voiceActorId: 'va-001',
-    voiceActorName: 'Sarah Johnson',
+    voiceTalentId: 'va-001',
+    voiceTalentName: 'Sarah Johnson',
     status: 'shortlisted',
     submittedDate: '2024-01-10T09:00:00Z',
     reviewedDate: '2024-01-12T14:00:00Z',
@@ -546,7 +546,7 @@ export const mockCastingSessions: CastingSession[] = [
     id: 'casting-001',
     title: 'Animated Series - Lead Character',
     description:
-      'Seeking a versatile voice actor for the lead character in a new animated series. Character is a 25-year-old adventurer with a sense of humor.',
+      'Seeking a versatile voice talent for the lead character in a new animated series. Character is a 25-year-old adventurer with a sense of humor.',
     clientName: 'Animation Studios Inc.',
     studioId: 'studio-001',
     projectType: 'animation',
@@ -668,8 +668,8 @@ export const mockCastingSessions: CastingSession[] = [
   },
 ]
 
-// Mock Voice Actor Stats
-export const mockVoiceActorStats: VoiceActorStats = {
+// Mock Voice Talent Stats
+export const mockVoiceTalentStats: VoiceTalentStats = {
   totalProjects: 45,
   activeProjects: 3,
   completedProjects: 42,
@@ -714,12 +714,12 @@ export const mockVoiceActorStats: VoiceActorStats = {
 
 // Export all mock data
 export const mockData = {
-  voiceActors: mockVoiceActors,
+  voiceTalents: mockVoiceTalents,
   voiceSamples: mockVoiceSamples,
   projects: mockProjects,
   castingSessions: mockCastingSessions,
   castingProposals: mockCastingProposals,
-  voiceActorStats: mockVoiceActorStats,
+  voiceTalentStats: mockVoiceTalentStats,
   projectMessages: [
     {
       id: 'msg-001',

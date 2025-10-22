@@ -249,8 +249,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { CastingSession, CastingProposal } from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+import type { CastingSession, CastingProposal } from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import Button from '@/components/atoms/Button.vue'
@@ -277,8 +277,8 @@ const hasUnsavedChanges = ref(false)
 // Proposal form data
 const proposal = ref<Partial<CastingProposal>>({
   castingSessionId: route.params.id as string,
-  voiceActorId: currentUserId,
-  voiceActorName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor', // Get from auth store
+  voiceTalentId: currentUserId,
+  voiceTalentName: authStore.user?.displayName || authStore.user?.email || 'Voice Talent', // Get from auth store
   status: 'draft',
   proposedCost: 0,
   proposedCurrency: 'USD',

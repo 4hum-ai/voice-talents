@@ -73,15 +73,15 @@
               <!-- Talent Info -->
               <div class="mb-4 flex items-start space-x-4">
                 <Avatar
-                  :src="getTalentAvatar(application.voiceActorId)"
-                  :alt="application.voiceActorName"
-                  :seed="application.voiceActorName"
+                  :src="getTalentAvatar(application.voiceTalentId)"
+                  :alt="application.voiceTalentName"
+                  :seed="application.voiceTalentName"
                   size="lg"
                 />
                 <div class="flex-1">
                   <div class="flex items-center space-x-2">
                     <h3 class="text-foreground text-lg font-semibold">
-                      {{ application.voiceActorName }}
+                      {{ application.voiceTalentName }}
                     </h3>
                     <StatusBadge
                       :status="application.status"
@@ -89,19 +89,19 @@
                     />
                   </div>
                   <p class="text-muted-foreground text-sm">
-                    {{ getTalentLocation(application.voiceActorId) }}
+                    {{ getTalentLocation(application.voiceTalentId) }}
                   </p>
                   <div class="mt-2 flex items-center space-x-4 text-sm">
                     <div class="flex items-center space-x-1">
                       <StarIcon class="h-4 w-4 text-yellow-500" />
                       <span class="text-foreground font-medium">{{
-                        getTalentRating(application.voiceActorId)
+                        getTalentRating(application.voiceTalentId)
                       }}</span>
                     </div>
                     <div class="flex items-center space-x-1">
                       <BriefcaseIcon class="h-4 w-4 text-blue-500" />
                       <span class="text-foreground">{{
-                        getTalentExperience(application.voiceActorId)
+                        getTalentExperience(application.voiceTalentId)
                       }}</span>
                     </div>
                   </div>
@@ -211,7 +211,7 @@
           <span v-if="selectedApplication">
             Selected:
             <span class="text-foreground font-medium">{{
-              selectedApplication.voiceActorName
+              selectedApplication.voiceTalentName
             }}</span>
           </span>
           <span v-else>No talent selected</span>
@@ -238,7 +238,7 @@ import Avatar from '@/components/atoms/Avatar.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import { useToast } from '@/composables/useToast'
-import { mockVoiceActors } from '@/data/mock-voice-actor-data'
+import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
 import type { JobApplication } from '@/types/voice-client'
 // Close icon removed; using Button icon prop instead
 // User icon removed; using Button icon prop instead
@@ -293,8 +293,8 @@ const sortedApplications = computed(() => {
       })
     case 'rating':
       return apps.sort((a, b) => {
-        const aRating = getTalentRating(a.voiceActorId)
-        const bRating = getTalentRating(b.voiceActorId)
+        const aRating = getTalentRating(a.voiceTalentId)
+        const bRating = getTalentRating(b.voiceTalentId)
         return bRating - aRating
       })
     case 'appliedDate':
@@ -317,7 +317,7 @@ const approveTalent = () => {
   showToast({
     type: 'success',
     title: 'Talent Approved',
-    message: `Contract awarded to ${selectedApplication.value.voiceActorName}`,
+    message: `Contract awarded to ${selectedApplication.value.voiceTalentName}`,
   })
 }
 
@@ -341,22 +341,22 @@ const playSample = (sample: { title: string }) => {
 
 // Helper functions
 const getTalentAvatar = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.avatarUrl || ''
 }
 
 const getTalentLocation = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.location || 'Location not specified'
 }
 
 const getTalentRating = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.averageRating || 0
 }
 
 const getTalentExperience = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.experience || 'Unknown'
 }
 

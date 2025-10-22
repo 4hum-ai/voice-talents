@@ -82,8 +82,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import type { VoiceActorStats } from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+import type { VoiceTalentStats } from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/atoms/Sidebar.vue'
@@ -111,7 +111,7 @@ const currentActor = computed(() => {
 })
 
 // Keep stats as mock for now, but this could be fetched from API based on user ID
-const stats = ref<VoiceActorStats>(mockData.voiceActorStats)
+const stats = ref<VoiceTalentStats>(mockData.voiceTalentStats)
 
 // Computed
 const activeItemId = computed(() => {

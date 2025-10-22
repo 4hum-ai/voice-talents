@@ -96,7 +96,7 @@
                 <Icon name="mdi:plus-circle" class="mx-auto mb-3 h-8 w-8 text-blue-600" />
                 <h3 class="text-foreground mb-2 font-medium">Post Your First Job</h3>
                 <p class="text-muted-foreground text-sm">
-                  Create a job posting to find voice actors
+                  Create a job posting to find voice talents
                 </p>
               </div>
 
@@ -104,7 +104,7 @@
                 <Icon name="mdi:account-group" class="mx-auto mb-3 h-8 w-8 text-green-600" />
                 <h3 class="text-foreground mb-2 font-medium">Browse Talent</h3>
                 <p class="text-muted-foreground text-sm">
-                  Discover voice actors in our talent pool
+                  Discover voice talents in our talent pool
                 </p>
               </div>
 
@@ -112,7 +112,7 @@
                 <Icon name="mdi:email" class="mx-auto mb-3 h-8 w-8 text-purple-600" />
                 <h3 class="text-foreground mb-2 font-medium">Send Invitations</h3>
                 <p class="text-muted-foreground text-sm">
-                  Invite specific voice actors to your projects
+                  Invite specific voice talents to your projects
                 </p>
               </div>
             </div>

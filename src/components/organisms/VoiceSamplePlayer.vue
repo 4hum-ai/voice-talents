@@ -169,7 +169,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import type { VoiceSample } from '@/types/voice-actor'
+import type { VoiceSample } from '@/types/voice-talent'
 import Button from '@/components/atoms/Button.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'

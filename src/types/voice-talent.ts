@@ -1,13 +1,13 @@
 /**
- * VoiceAct - Voice Actor Management App
- * TypeScript interfaces for voice actor domain models
+ * VoiceTalents - Voice Talent Management App
+ * TypeScript interfaces for voice talent domain models
  */
 
 import type { BaseEntity } from './models'
 import type { CustomSample } from './job-application'
 
-// Voice Actor Profile - Extended from base User
-export interface VoiceActor extends BaseEntity {
+// Voice Talent Profile - Extended from base User
+export interface VoiceTalent extends BaseEntity {
   userId: string
   displayName: string
   bio: string
@@ -43,7 +43,7 @@ export interface VoiceActor extends BaseEntity {
 
 // Voice Sample - Categorized voice recordings
 export interface VoiceSample extends BaseEntity {
-  voiceActorId: string
+  voiceTalentId: string
   title: string
   description?: string
   audioUrl: string
@@ -103,11 +103,11 @@ export interface Project extends BaseEntity {
   paidAmount?: number
 }
 
-// Project Assignment - Links actors to projects
+// Project Assignment - Links talents to projects
 export interface ProjectAssignment extends BaseEntity {
   projectId: string
-  voiceActorId: string
-  voiceActorName: string
+  voiceTalentId: string
+  voiceTalentName: string
   role: string
   status: AssignmentStatus
   assignedDate: string
@@ -125,7 +125,7 @@ export interface ProjectAssignment extends BaseEntity {
 export interface Recording extends BaseEntity {
   assignmentId: string
   projectId: string
-  voiceActorId: string
+  voiceTalentId: string
   title: string
   audioUrl: string
   duration: number
@@ -259,8 +259,8 @@ export interface CastingSession extends BaseEntity {
 // Casting Proposal - Enhanced submission with time, cost, and custom samples
 export interface CastingProposal extends BaseEntity {
   castingSessionId: string
-  voiceActorId: string
-  voiceActorName: string
+  voiceTalentId: string
+  voiceTalentName: string
   status: 'draft' | 'submitted' | 'under_review' | 'shortlisted' | 'selected' | 'rejected'
   submittedDate: string
   reviewedDate?: string
@@ -286,8 +286,8 @@ export interface CastingProposal extends BaseEntity {
 // Casting Submission - Legacy interface for backward compatibility
 export interface CastingSubmission extends BaseEntity {
   castingSessionId: string
-  voiceActorId: string
-  voiceActorName: string
+  voiceTalentId: string
+  voiceTalentName: string
   status: 'submitted' | 'reviewed' | 'shortlisted' | 'selected' | 'rejected'
   submittedDate: string
   reviewedDate?: string
@@ -430,7 +430,7 @@ export type NotificationType =
   | 'system_announcement'
 
 // Dashboard Statistics
-export interface VoiceActorStats {
+export interface VoiceTalentStats {
   totalProjects: number
   activeProjects: number
   completedProjects: number
@@ -457,7 +457,7 @@ export interface ActivityItem {
 }
 
 // Search and Filter Types
-export interface VoiceActorSearchFilters {
+export interface VoiceTalentSearchFilters {
   languages?: string[]
   accents?: string[]
   voiceTypes?: VoiceType[]

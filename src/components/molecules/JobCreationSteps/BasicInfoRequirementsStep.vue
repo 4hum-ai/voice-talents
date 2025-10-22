@@ -247,7 +247,7 @@ import Button from '@/components/atoms/Button.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import FileUpload from '@/components/atoms/FileUpload.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import type { VoiceType } from '@/types/voice-actor'
+import type { VoiceType } from '@/types/voice-talent'
 import { useJobType } from '@/composables/useJobType'
 
 interface Requirements {

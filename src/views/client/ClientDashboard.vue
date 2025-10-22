@@ -175,7 +175,7 @@
                     <div class="mb-2 flex items-start justify-between">
                       <div>
                         <h4 class="text-foreground text-sm font-medium">
-                          {{ application.voiceActorName }}
+                          {{ application.voiceTalentName }}
                         </h4>
                         <p class="text-muted-foreground text-xs">
                           Applied to {{ getJobTitle(application.jobId) }}

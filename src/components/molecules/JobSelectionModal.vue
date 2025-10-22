@@ -213,7 +213,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import type { VoiceActor } from '@/types/voice-actor'
+import type { VoiceTalent } from '@/types/voice-talent'
 import type { JobPosting } from '@/types/voice-client'
 import { mockJobPostings } from '@/data/mock-voice-client-data'
 import Button from '@/components/atoms/Button.vue'
@@ -226,7 +226,7 @@ import FolderOpenIcon from '~icons/mdi/folder-open'
 
 interface Props {
   isOpen: boolean
-  talent: VoiceActor | null
+  talent: VoiceTalent | null
 }
 
 interface Emits {

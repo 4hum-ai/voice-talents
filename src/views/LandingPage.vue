@@ -59,7 +59,7 @@
                 <span>Track your projects</span>
               </div>
             </div>
-            <Button variant="primary" size="lg" class="mt-6 w-full" @click="navigateToVoiceActor">
+            <Button variant="primary" size="lg" class="mt-6 w-full" @click="navigateToVoiceTalent">
               Enter
               <Icon name="mdi:arrow-right" class="ml-2 h-5 w-5" />
             </Button>
@@ -124,8 +124,8 @@ import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 
 const router = useRouter()
 
-const navigateToVoiceActor = () => {
-  // Navigate to voice actor dashboard
+const navigateToVoiceTalent = () => {
+  // Navigate to voice talent dashboard
   router.push('/talent/dashboard')
 }
 

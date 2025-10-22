@@ -174,7 +174,7 @@ import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import Textarea from '@/components/atoms/Textarea.vue'
 import { useToast } from '@/composables/useToast'
-import { mockVoiceActors } from '@/data/mock-voice-actor-data'
+import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
 // Close icon removed; using Button icon prop instead
 // Star icon kept for rating stars in content
 import StarIcon from '~icons/mdi/star'
@@ -238,12 +238,12 @@ const ratingCriteria = [
 
 // Computed
 const talentAvatar = computed(() => {
-  const talent = mockVoiceActors.find((va) => va.id === props.talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === props.talentId)
   return talent?.avatarUrl || ''
 })
 
 const talentLocation = computed(() => {
-  const talent = mockVoiceActors.find((va) => va.id === props.talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === props.talentId)
   return talent?.location || 'Location not specified'
 })
 

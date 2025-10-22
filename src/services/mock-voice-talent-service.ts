@@ -1,79 +1,79 @@
 /**
- * Mock Voice Actor Service
- * Simulates API responses for VoiceAct app development
+ * Mock Voice Talent Service
+ * Simulates API responses for VoiceTalents app development
  */
 
 import type {
-  VoiceActor,
+  VoiceTalent,
   VoiceSample,
   Project,
   ProjectAssignment,
   CastingSession,
   CastingSubmission,
-  VoiceActorStats,
+  VoiceTalentStats,
   ActivityItem,
-  VoiceActorSearchFilters,
+  VoiceTalentSearchFilters,
   ProjectSearchFilters,
-} from '@/types/voice-actor'
-import { mockData } from '@/data/mock-voice-actor-data'
+} from '@/types/voice-talent'
+import { mockData } from '@/data/mock-voice-talent-data'
 
 // Simulate API delay
 const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // Mock API responses
-export class MockVoiceActorService {
-  // Voice Actor Management
-  async getVoiceActor(id: string): Promise<VoiceActor> {
+export class MockVoiceTalentService {
+  // Voice Talent Management
+  async getVoiceTalent(id: string): Promise<VoiceTalent> {
     await delay()
-    const actor = mockData.voiceActors.find((a) => a.id === id)
-    if (!actor) throw new Error('Voice actor not found')
-    return actor
+    const talent = mockData.voiceTalents.find((a) => a.id === id)
+    if (!talent) throw new Error('Voice talent not found')
+    return talent
   }
 
-  async updateVoiceActor(id: string, updates: Partial<VoiceActor>): Promise<VoiceActor> {
+  async updateVoiceTalent(id: string, updates: Partial<VoiceTalent>): Promise<VoiceTalent> {
     await delay()
-    const actor = mockData.voiceActors.find((a) => a.id === id)
-    if (!actor) throw new Error('Voice actor not found')
+    const talent = mockData.voiceTalents.find((a) => a.id === id)
+    if (!talent) throw new Error('Voice talent not found')
 
-    const updatedActor = { ...actor, ...updates, updatedAt: new Date().toISOString() }
-    const index = mockData.voiceActors.findIndex((a) => a.id === id)
-    mockData.voiceActors[index] = updatedActor
+    const updatedTalent = { ...talent, ...updates, updatedAt: new Date().toISOString() }
+    const index = mockData.voiceTalents.findIndex((a) => a.id === id)
+    mockData.voiceTalents[index] = updatedTalent
 
-    return updatedActor
+    return updatedTalent
   }
 
-  async searchVoiceActors(filters: VoiceActorSearchFilters = {}): Promise<VoiceActor[]> {
+  async searchVoiceTalents(filters: VoiceTalentSearchFilters = {}): Promise<VoiceTalent[]> {
     await delay()
-    let results = [...mockData.voiceActors]
+    let results = [...mockData.voiceTalents]
 
     if (filters.languages?.length) {
-      results = results.filter((actor) =>
-        filters.languages!.some((lang) => actor.languages.includes(lang)),
+      results = results.filter((talent) =>
+        filters.languages!.some((lang) => talent.languages.includes(lang)),
       )
     }
 
     if (filters.voiceTypes?.length) {
-      results = results.filter((actor) =>
-        filters.voiceTypes!.some((type) => actor.voiceTypes.includes(type)),
+      results = results.filter((talent) =>
+        filters.voiceTypes!.some((type) => talent.voiceTypes.includes(type)),
       )
     }
 
     if (filters.experience?.length) {
-      results = results.filter((actor) => filters.experience!.includes(actor.experience))
+      results = results.filter((talent) => filters.experience!.includes(talent.experience))
     }
 
     if (filters.isVerified !== undefined) {
-      results = results.filter((actor) => actor.isVerified === filters.isVerified)
+      results = results.filter((talent) => talent.isVerified === filters.isVerified)
     }
 
     return results
   }
 
   // Voice Samples Management
-  async getVoiceSamples(actorId?: string): Promise<VoiceSample[]> {
+  async getVoiceSamples(talentId?: string): Promise<VoiceSample[]> {
     await delay()
-    if (actorId) {
-      return mockData.voiceSamples.filter((sample) => sample.voiceActorId === actorId)
+    if (talentId) {
+      return mockData.voiceSamples.filter((sample) => sample.voiceTalentId === talentId)
     }
     return mockData.voiceSamples
   }
@@ -119,11 +119,11 @@ export class MockVoiceActorService {
   }
 
   // Project Management
-  async getProjects(actorId?: string): Promise<Project[]> {
+  async getProjects(talentId?: string): Promise<Project[]> {
     await delay()
-    if (actorId) {
+    if (talentId) {
       return mockData.projects.filter((project) =>
-        project.assignedActors.some((assignment) => assignment.voiceActorId === actorId),
+        project.assignedActors.some((assignment) => assignment.voiceTalentId === talentId),
       )
     }
     return mockData.projects
@@ -233,16 +233,16 @@ export class MockVoiceActorService {
   }
 
   // Statistics
-  async getVoiceActorStats(): Promise<VoiceActorStats> {
+  async getVoiceTalentStats(): Promise<VoiceTalentStats> {
     await delay()
     // In real app, this would calculate stats from actual data
-    return mockData.voiceActorStats
+    return mockData.voiceTalentStats
   }
 
   // Activity Feed
   async getRecentActivity(limit: number = 10): Promise<ActivityItem[]> {
     await delay()
-    return mockData.voiceActorStats.recentActivity.slice(0, limit)
+    return mockData.voiceTalentStats.recentActivity.slice(0, limit)
   }
 
   // File Upload Simulation
@@ -351,4 +351,4 @@ export class MockVoiceActorService {
 }
 
 // Export singleton instance
-export const mockVoiceActorService = new MockVoiceActorService()
+export const mockVoiceTalentService = new MockVoiceTalentService()

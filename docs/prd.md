@@ -32,7 +32,7 @@ The app bridges **voice actors, studios, and clients** by streamlining the casti
 | ------------------------------ | ----------------------------------------- | ---------------------------------------------------------------- |
 | **Voice Actor**                | Talent providing voiceover work           | Showcase portfolio, manage jobs, receive scripts, track payments |
 | **Studio Engineer / Producer** | Person facilitating recording sessions    | Assign jobs, manage revisions, track recording progress          |
-| **Casting Director / Client**  | Person seeking voice talent for a project | Discover actors, review samples, manage casting sessions         |
+| **Casting Director / Client**  | Person seeking voice talent for a project | Discover talents, review samples, manage casting sessions        |
 
 ---
 

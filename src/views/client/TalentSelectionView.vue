@@ -104,28 +104,28 @@
               <div class="mb-4 flex items-start justify-between">
                 <div class="flex items-center space-x-4">
                   <Avatar
-                    :seed="application.voiceActorName"
-                    :src="getTalentAvatar(application.voiceActorId)"
-                    :alt="application.voiceActorName"
+                    :seed="application.voiceTalentName"
+                    :src="getTalentAvatar(application.voiceTalentId)"
+                    :alt="application.voiceTalentName"
                     size="md"
                   />
                   <div>
                     <h3 class="text-foreground text-lg font-semibold">
-                      {{ application.voiceActorName }}
+                      {{ application.voiceTalentName }}
                     </h3>
                     <p class="text-muted-foreground text-sm">
-                      {{ getTalentLocation(application.voiceActorId) }}
+                      {{ getTalentLocation(application.voiceTalentId) }}
                     </p>
                     <div class="mt-1 flex items-center space-x-2">
                       <div class="flex items-center space-x-1">
                         <StarIcon class="h-4 w-4 text-yellow-500" />
                         <span class="text-foreground text-sm font-medium">{{
-                          getTalentRating(application.voiceActorId)
+                          getTalentRating(application.voiceTalentId)
                         }}</span>
                       </div>
                       <span class="text-muted-foreground text-sm">•</span>
                       <span class="text-muted-foreground text-sm">{{
-                        getTalentExperience(application.voiceActorId)
+                        getTalentExperience(application.voiceTalentId)
                       }}</span>
                     </div>
                   </div>
@@ -183,12 +183,12 @@
                 <Button
                   variant="primary"
                   size="sm"
-                  :disabled="isTalentSelected(application.voiceActorId)"
+                  :disabled="isTalentSelected(application.voiceTalentId)"
                   icon="mdi:check"
                   @click="selectTalent(application)"
                   class="flex-1"
                 >
-                  {{ isTalentSelected(application.voiceActorId) ? 'Selected' : 'Select Talent' }}
+                  {{ isTalentSelected(application.voiceTalentId) ? 'Selected' : 'Select Talent' }}
                 </Button>
               </div>
             </div>
@@ -208,7 +208,7 @@
           <div>
             <h3 class="text-foreground text-lg font-semibold">Application Details</h3>
             <p class="text-muted-foreground text-sm">
-              Full application from {{ selectedApplication?.voiceActorName }}
+              Full application from {{ selectedApplication?.voiceTalentName }}
             </p>
           </div>
           <Button
@@ -223,28 +223,28 @@
           <!-- Talent Info -->
           <div class="flex items-center space-x-4">
             <Avatar
-              :seed="selectedApplication.voiceActorName"
-              :src="getTalentAvatar(selectedApplication.voiceActorId)"
-              :alt="selectedApplication.voiceActorName"
+              :seed="selectedApplication.voiceTalentName"
+              :src="getTalentAvatar(selectedApplication.voiceTalentId)"
+              :alt="selectedApplication.voiceTalentName"
               size="lg"
             />
             <div>
               <h3 class="text-foreground text-xl font-semibold">
-                {{ selectedApplication.voiceActorName }}
+                {{ selectedApplication.voiceTalentName }}
               </h3>
               <p class="text-muted-foreground">
-                {{ getTalentLocation(selectedApplication.voiceActorId) }}
+                {{ getTalentLocation(selectedApplication.voiceTalentId) }}
               </p>
               <div class="mt-2 flex items-center space-x-4">
                 <div class="flex items-center space-x-1">
                   <StarIcon class="h-4 w-4 text-yellow-500" />
                   <span class="text-foreground font-medium">{{
-                    getTalentRating(selectedApplication.voiceActorId)
+                    getTalentRating(selectedApplication.voiceTalentId)
                   }}</span>
                 </div>
                 <span class="text-muted-foreground">•</span>
                 <span class="text-muted-foreground">{{
-                  getTalentExperience(selectedApplication.voiceActorId)
+                  getTalentExperience(selectedApplication.voiceTalentId)
                 }}</span>
               </div>
             </div>
@@ -296,7 +296,7 @@
             <Button
               v-if="selectedApplication"
               variant="primary"
-              :disabled="isTalentSelected(selectedApplication.voiceActorId)"
+              :disabled="isTalentSelected(selectedApplication.voiceTalentId)"
               icon="mdi:check"
               @click="selectTalent(selectedApplication as any)"
             >
@@ -320,7 +320,7 @@ import { useJob, type Job } from '@/composables/useJob'
 import { useJobApplication } from '@/composables/useJobApplication'
 import type { Application } from '@/types/job-application'
 import { useToast } from '@/composables/useToast'
-import { mockVoiceActors } from '@/data/mock-voice-actor-data'
+import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
 // Close icon removed; using Button icon prop instead
 import UsersIcon from '~icons/mdi/account-group'
 import StarIcon from '~icons/mdi/star'
@@ -358,22 +358,22 @@ const sortedApplications = computed(() =>
 
 // Methods
 const getTalentAvatar = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.avatarUrl || ''
 }
 
 const getTalentLocation = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.location || 'Location not specified'
 }
 
 const getTalentRating = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.averageRating || 0
 }
 
 const getTalentExperience = (talentId: string) => {
-  const talent = mockVoiceActors.find((va) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.experience || 'Unknown'
 }
 
@@ -412,7 +412,7 @@ const selectTalent = (application: Application) => {
   showToast({
     type: 'success',
     title: 'Talent Selected',
-    message: `Contract awarded to ${application.voiceActorName} for "${job.value.title}"`,
+    message: `Contract awarded to ${application.voiceTalentName} for "${job.value.title}"`,
   })
   router.push('/client/jobs')
 }

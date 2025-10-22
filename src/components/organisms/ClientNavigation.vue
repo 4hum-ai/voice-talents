@@ -32,8 +32,8 @@
             size="sm"
             class="w-full justify-start"
             icon="mdi:account"
-            @click="switchToVoiceActor"
-            >Switch to Voice Actor</Button
+            @click="switchToVoiceTalent"
+            >Switch to Voice Talent</Button
           >
         </div>
       </div>
@@ -157,9 +157,9 @@ const navigationSections = computed(() => [
 ])
 
 // Methods
-const switchToVoiceActor = () => {
+const switchToVoiceTalent = () => {
   // Switch to talent mode and navigate to dashboard
-  console.log('Switching to voice actor view')
+  console.log('Switching to voice talent view')
   switchMode('talent')
   router.push('/talent/dashboard')
 }

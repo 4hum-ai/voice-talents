@@ -677,14 +677,14 @@ const submitRating = (ratingData: Record<string, unknown>) => {
 const getTalentName = (talentId: string) => {
   if (!talentId) return 'Unknown Talent'
   // Import mock data dynamically to avoid circular dependencies
-  const mockVoiceActors = [
+  const mockVoiceTalents = [
     { id: 'va-001', displayName: 'Sarah Johnson' },
     { id: 'va-002', displayName: 'Marcus Chen' },
     { id: 'va-003', displayName: 'Emma Rodriguez' },
     { id: 'va-004', displayName: 'Alex Thompson' },
     { id: 'va-005', displayName: 'Jessica Park' },
   ]
-  const talent = mockVoiceActors.find((va: Record<string, unknown>) => va.id === talentId)
+  const talent = mockVoiceTalents.find((va: Record<string, unknown>) => va.id === talentId)
   return talent?.displayName || 'Unknown Talent'
 }
 

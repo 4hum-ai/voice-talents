@@ -149,7 +149,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Project, ProjectAssignment } from '@/types/voice-actor'
+import type { Project, ProjectAssignment } from '@/types/voice-talent'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -180,7 +180,7 @@ defineEmits<{
 // Computed
 const myAssignment = computed(() => {
   return props.project.assignedActors.find(
-    (assignment) => assignment.voiceActorId === props.currentActorId,
+    (assignment) => assignment.voiceTalentId === props.currentActorId,
   )
 })
 

@@ -4,7 +4,7 @@
  */
 
 import type { BaseEntity } from './models'
-import type { VoiceType, ProjectType } from './voice-actor'
+import type { VoiceType, ProjectType } from './voice-talent'
 import type { CustomSample } from './job-application'
 
 // Voice Client Profile - Extended from base User
@@ -111,8 +111,8 @@ export type InvitationStatus = 'pending' | 'accepted' | 'declined' | 'expired'
 // Job Application - Voice actor applications to job postings
 export interface JobApplication extends BaseEntity {
   jobId: string
-  voiceActorId: string
-  voiceActorName: string
+  voiceTalentId: string
+  voiceTalentName: string
   status: ApplicationStatus
   appliedDate: string
   reviewedDate?: string
