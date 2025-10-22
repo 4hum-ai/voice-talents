@@ -159,7 +159,9 @@
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-muted-foreground">Last saved:</span>
-                      <span class="text-foreground">{{ formatDate(draft.lastSaved) }}</span>
+                      <span class="text-foreground">{{
+                        formatDate(draft.lastSaved || draft.updatedAt)
+                      }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-muted-foreground">Version:</span>
@@ -473,14 +475,16 @@
       :open="showRatingModal"
       :job-title="selectedJobForRating?.title || ''"
       :talent-id="selectedJobForRating?.selectedTalents?.[0] || ''"
-      :talent-name="getTalentName(selectedJobForRating?.selectedTalents?.[0])"
-      :project-type="selectedJobForRating?.projectType || ''"
-      :budget="selectedJobForRating?.budget"
+      :talent-name="getTalentName(selectedJobForRating?.selectedTalents?.[0] || '')"
+      :voice-type="selectedJobForRating?.projectType || ''"
+      :budget="selectedJobForRating?.budget || { min: 0, max: 0, currency: 'USD' }"
       :timeline="selectedJobForRating?.estimatedDuration || ''"
       :completed-date="selectedJobForRating?.closedDate || selectedJobForRating?.updatedAt || ''"
       @close="
-        showRatingModal = false
-        selectedJobForRating = null
+        () => {
+          showRatingModal = false
+          selectedJobForRating = null
+        }
       "
       @submit="submitRating"
     />
@@ -497,8 +501,9 @@ import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
-import { useJob } from '@/composables/useJob'
+import { useJob, type Job } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
+import type { JobPosting } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 // Icons removed; using Button icon prop for buttons
@@ -543,11 +548,11 @@ const selectedDraftId = ref<string | null>(null)
 
 // Confirmation modal state
 const showDiscardModal = ref(false)
-const draftToDiscard = ref<Record<string, unknown> | null>(null)
+const draftToDiscard = ref<Job | null>(null)
 
 // Rating modal state
 const showRatingModal = ref(false)
-const selectedJobForRating = ref<Record<string, unknown> | null>(null)
+const selectedJobForRating = ref<Job | null>(null)
 
 // Format date for display
 const formatDate = (dateString: string) => {
@@ -574,7 +579,7 @@ const editDraft = (draftId: string) => {
 }
 
 // Confirm discard draft
-const confirmDiscardDraft = (draft: Record<string, unknown>) => {
+const confirmDiscardDraft = (draft: Job) => {
   draftToDiscard.value = draft
   showDiscardModal.value = true
 }
@@ -582,7 +587,7 @@ const confirmDiscardDraft = (draft: Record<string, unknown>) => {
 // Discard draft
 const discardDraft = () => {
   if (draftToDiscard.value) {
-    const success = deleteDraft(draftToDiscard.value.id)
+    const success = deleteDraft(draftToDiscard.value.id || '')
     if (success) {
       showToast({
         type: 'success',
@@ -618,7 +623,7 @@ const closeJobCreationModal = () => {
   selectedDraftId.value = null
 }
 
-const handleJobCreated = (job: Record<string, unknown>) => {
+const handleJobCreated = (job: JobPosting) => {
   showToast({
     type: 'success',
     title: 'Job Published',

@@ -10,17 +10,25 @@
         <template #title>Client Settings</template>
         <template #subtitle>Manage your client account settings and preferences</template>
         <template #actions>
-          <ThemeToggle />
-          <Button variant="outline" size="sm" icon="mdi:refresh" @click="resetSettings">
-            Reset to Defaults
-          </Button>
+          <div class="flex items-center gap-3">
+            <ThemeToggle />
+            <Button
+              variant="primary"
+              size="md"
+              @click="saveSettings"
+              :disabled="isSaving"
+              :loading="isSaving"
+            >
+              {{ isSaving ? 'Saving...' : 'Save' }}
+            </Button>
+          </div>
         </template>
       </AppBar>
 
       <!-- Main Content Area -->
       <div class="px-4 py-8 pt-20 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
-          <form @submit.prevent="saveSettings" class="space-y-8">
+          <div class="space-y-8">
             <!-- Tab Navigation with Content -->
             <TabNavigation v-model="currentTab" variant="underline" size="md">
               <!-- Account Information Tab -->
@@ -61,27 +69,8 @@
                   @validation-change="updateTabValidation('social', $event)"
                 />
               </Tab>
-
-              <!-- Review & Save Tab -->
-              <Tab id="review" label="Review" :icon="CheckCircleIcon">
-                <ReviewAndSave :model-value="reviewData" />
-              </Tab>
             </TabNavigation>
-
-            <!-- Save Button -->
-            <div class="border-border flex justify-end border-t pt-6">
-              <Button
-                variant="primary"
-                size="lg"
-                @click="saveSettings"
-                :disabled="isSaving"
-                :loading="isSaving"
-              >
-                <SaveIcon class="mr-2 h-4 w-4" />
-                {{ isSaving ? 'Saving...' : 'Save Settings' }}
-              </Button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -89,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { VoiceClient } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
@@ -104,12 +93,10 @@ import {
   AccountInformation,
   JobPreferences,
   SocialLinks,
-  ReviewAndSave,
 } from '@/components/molecules/ClientSettings'
 import AccountIcon from '~icons/mdi/account'
 import CogIcon from '~icons/mdi/cog'
 import ShareVariantIcon from '~icons/mdi/share-variant'
-import CheckCircleIcon from '~icons/mdi/check-circle'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -146,16 +133,6 @@ const socialLinksData = reactive({
   facebook: '',
   twitter: '',
 })
-
-// Computed for review data
-const reviewData = computed(() => ({
-  ...accountData,
-  preferences: {
-    ...jobPreferencesData,
-  },
-  isPublic: jobPreferencesData.isPublic,
-  socialLinks: socialLinksData,
-}))
 
 // Legacy settings object for compatibility
 const settings = reactive<VoiceClient>({
@@ -230,7 +207,8 @@ const loadSettings = () => {
   // Load job preferences
   jobPreferencesData.autoApprove = client.preferences.autoApprove
   jobPreferencesData.requireNDA = client.preferences.requireNDA
-  jobPreferencesData.requirePortfolio = (client.preferences as Record<string, unknown>).requirePortfolio as boolean || true
+  jobPreferencesData.requirePortfolio =
+    ((client.preferences as Record<string, unknown>).requirePortfolio as boolean) || true
   jobPreferencesData.isPublic = client.isPublic
 
   // Load social links
@@ -279,12 +257,6 @@ const saveSettings = async () => {
   } finally {
     isSaving.value = false
   }
-}
-
-const resetSettings = () => {
-  loadSettings()
-  currentTab.value = 'account'
-  alert('Settings reset to default values.')
 }
 
 onMounted(() => {

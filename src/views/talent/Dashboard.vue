@@ -147,7 +147,7 @@
                     >
                       <span>{{ project.projectType }}</span>
                       <span>{{ formatDate(project.deadline) }}</span>
-                      <span>{{ getProjectProgress(project) }}% complete</span>
+                      <span>{{ getProjectProgress() }}% complete</span>
                     </div>
                   </div>
                   <div class="ml-4 flex-shrink-0">
@@ -158,12 +158,12 @@
                       class="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
                     >
                       <span>Progress</span>
-                      <span>{{ getProjectProgress(project) }}%</span>
+                      <span>{{ getProjectProgress() }}%</span>
                     </div>
                     <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                       <div
                         class="h-2 rounded-full bg-blue-600 transition-all duration-300"
-                        :style="{ width: `${getProjectProgress(project)}%` }"
+                        :style="{ width: `${getProjectProgress()}%` }"
                       />
                     </div>
                   </div>

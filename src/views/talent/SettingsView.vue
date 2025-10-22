@@ -6,7 +6,18 @@
         <template #title>Settings</template>
         <template #subtitle>Manage your account and preferences</template>
         <template #actions>
-          <ThemeToggle />
+          <div class="flex items-center gap-3">
+            <Button
+              variant="primary"
+              size="md"
+              @click="saveSettings"
+              :disabled="isSaving"
+              :loading="isSaving"
+            >
+              {{ isSaving ? 'Saving...' : 'Save' }}
+            </Button>
+            <ThemeToggle />
+          </div>
         </template>
       </AppBar>
 
@@ -57,6 +68,7 @@ import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
+import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import {
   AccountInformation,
@@ -65,10 +77,12 @@ import {
   DataExport,
 } from '@/components/molecules/TalentSettings'
 
-
 // Tab management
-const currentTab = ref('account')
+const activeTab = ref('account')
 const tabValidation = reactive<Record<string, boolean>>({})
+
+// Save state
+const isSaving = ref(false)
 
 // Account settings
 const accountSettings = reactive({
@@ -98,6 +112,32 @@ const updateTabValidation = (tabId: string, isValid: boolean) => {
   tabValidation[tabId] = isValid
 }
 
+// Save settings method
+const saveSettings = async () => {
+  isSaving.value = true
+
+  try {
+    // Save all settings to localStorage
+    const settings = {
+      account: accountSettings,
+      notifications: notificationSettings,
+      privacy: privacySettings,
+    }
+
+    localStorage.setItem('voiceact-settings', JSON.stringify(settings))
+
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    console.log('Settings saved successfully')
+  } catch (error) {
+    console.error('Error saving settings:', error)
+    alert('Failed to save settings. Please try again.')
+  } finally {
+    isSaving.value = false
+  }
+}
+
 // Load settings from localStorage
 onMounted(() => {
   const savedSettings = localStorage.getItem('voiceact-settings')
@@ -109,4 +149,3 @@ onMounted(() => {
   }
 })
 </script>
-

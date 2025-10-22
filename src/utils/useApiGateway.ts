@@ -114,6 +114,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       // Suppress toasts for intentional aborts
       if ((error as Error)?.name !== 'AbortError') {
         errorBus.emit({
+          error: String((error as Error)?.message ?? 'Request failed'),
           method: String(opts.method ?? 'GET'),
           path,
           message: String((error as Error)?.message ?? 'Request failed'),

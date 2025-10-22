@@ -8,9 +8,7 @@
           <Icon name="mdi:account-cog" class="h-8 w-8 text-white" />
         </div>
         <h2 class="text-foreground mb-2 text-2xl font-semibold">Account Settings</h2>
-        <p class="text-muted-foreground">
-          Manage your account information and security settings.
-        </p>
+        <p class="text-muted-foreground">Manage your account information and security settings.</p>
       </div>
 
       <div class="mx-auto max-w-2xl space-y-6">
@@ -29,10 +27,7 @@
         </div>
 
         <div>
-          <label
-            for="currentPassword"
-            class="text-foreground mb-2 block text-sm font-medium"
-          >
+          <label for="currentPassword" class="text-foreground mb-2 block text-sm font-medium">
             Current Password
           </label>
           <input
@@ -45,10 +40,7 @@
         </div>
 
         <div>
-          <label
-            for="newPassword"
-            class="text-foreground mb-2 block text-sm font-medium"
-          >
+          <label for="newPassword" class="text-foreground mb-2 block text-sm font-medium">
             New Password
           </label>
           <input
@@ -61,10 +53,7 @@
         </div>
 
         <div>
-          <label
-            for="confirmPassword"
-            class="text-foreground mb-2 block text-sm font-medium"
-          >
+          <label for="confirmPassword" class="text-foreground mb-2 block text-sm font-medium">
             Confirm New Password
           </label>
           <input
@@ -117,19 +106,28 @@ const { success, error } = useToast()
 const localAccountSettings = reactive<AccountSettings>({ ...props.modelValue })
 
 // Watch for external changes
-watch(() => props.modelValue, (newValue) => {
-  Object.assign(localAccountSettings, newValue)
-}, { deep: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    Object.assign(localAccountSettings, newValue)
+  },
+  { deep: true },
+)
 
 // Watch for local changes and emit
-watch(localAccountSettings, (newValue) => {
-  emit('update:modelValue', { ...newValue })
-  
-  // Basic validation
-  const isValid = newValue.email.length > 0 && 
-    (newValue.newPassword === '' || newValue.newPassword === newValue.confirmPassword)
-  emit('validation-change', isValid)
-}, { deep: true })
+watch(
+  localAccountSettings,
+  (newValue) => {
+    emit('update:modelValue', { ...newValue })
+
+    // Basic validation
+    const isValid =
+      newValue.email.length > 0 &&
+      (newValue.newPassword === '' || newValue.newPassword === newValue.confirmPassword)
+    emit('validation-change', isValid)
+  },
+  { deep: true },
+)
 
 const handleUpdate = () => {
   if (localAccountSettings.newPassword !== localAccountSettings.confirmPassword) {

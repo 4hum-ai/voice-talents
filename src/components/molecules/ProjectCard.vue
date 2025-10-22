@@ -80,8 +80,8 @@
         <div class="flex items-center justify-between text-sm">
           <span class="text-gray-500 dark:text-gray-400">Your Assignment</span>
           <StatusBadge
-            :status="mapAssignmentStatus(getMyAssignmentStatus(project))"
-            :variant="getAssignmentStatusVariant(getMyAssignmentStatus(project))"
+            :status="mapAssignmentStatus(getMyAssignmentStatus())"
+            :variant="getAssignmentStatusVariant(getMyAssignmentStatus())"
           />
         </div>
 
@@ -138,7 +138,7 @@
           </Button>
         </div>
         <ActionsMenu
-          :items="getProjectActions(project)"
+          :items="getProjectActions()"
           size="sm"
           @select="(action) => $emit('action', action, project)"
         />
@@ -209,7 +209,10 @@ const getPriorityVariant = (priority: string) => {
 }
 
 const getAssignmentStatusVariant = (status: string) => {
-  const variants: Record<string, string> = {
+  const variants: Record<
+    string,
+    'solid' | 'outline' | 'soft' | 'secondary' | 'success' | 'warning' | 'info' | 'destructive'
+  > = {
     assigned: 'soft',
     accepted: 'solid',
     in_progress: 'soft',

@@ -276,7 +276,8 @@
                             componentConfig.id !== 'dynamic-form-sidebar' &&
                             componentConfig.id !== 'file-upload-modal' &&
                             componentConfig.id !== 'filter-sidebar' &&
-                            componentConfig.id !== 'tab-navigation'
+                            componentConfig.id !== 'tab-navigation' &&
+                            componentConfig.id !== 'tab'
                           "
                           :is="componentConfig.component"
                           v-bind="componentConfig.props"
@@ -364,6 +365,17 @@
                         >
                           <p class="text-sm">
                             Click "Show Filter Sidebar" to test the FilterSidebar
+                          </p>
+                        </div>
+
+                        <!-- For individual Tab component, show explanation -->
+                        <div
+                          v-else-if="componentConfig.id === 'tab'"
+                          class="text-muted-foreground text-center"
+                        >
+                          <p class="text-sm">
+                            Tab components are used within TabNavigation. See the TabNavigation
+                            component above for a complete example.
                           </p>
                         </div>
                       </div>
@@ -702,6 +714,11 @@ const PROP_OPTIONS = {
     { value: 'danger', label: 'Danger' },
     { value: 'success', label: 'Success' },
     { value: 'warning', label: 'Warning' },
+    { value: 'pills', label: 'Pills' },
+    { value: 'underline', label: 'Underline' },
+  ],
+  tabVariant: [
+    { value: 'default', label: 'Default' },
     { value: 'pills', label: 'Pills' },
     { value: 'underline', label: 'Underline' },
   ],
@@ -1473,6 +1490,20 @@ const componentDefinitions: ComponentDefinition[] = [
       modelValue: 'tab1',
       variant: 'default',
       size: 'md',
+    },
+  },
+  {
+    id: 'tab',
+    title: 'Tab',
+    description: 'Individual tab component used within TabNavigation',
+    componentName: 'Tab',
+    component: Tab,
+    section: 'molecules',
+    defaultProps: {
+      id: 'sample-tab',
+      label: 'Sample Tab',
+      disabled: false,
+      badge: undefined,
     },
   },
   {

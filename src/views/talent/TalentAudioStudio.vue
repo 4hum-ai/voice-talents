@@ -587,8 +587,8 @@ const stopRecording = () => {
   }
 }
 
-const playRecording = (recording?: { name: string; url: string }) => {
-  success(recording ? `Playing ${recording.name}` : 'Playing recording')
+const playRecording = () => {
+  success('Playing recording')
 }
 
 const cutAudio = () => {

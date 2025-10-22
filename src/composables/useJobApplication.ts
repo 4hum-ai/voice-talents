@@ -84,7 +84,16 @@ export function useJobApplication() {
           bv = new Date(b.appliedDate).getTime()
           break
       }
-      return order === 'asc' ? (av > bv ? 1 : -1) : av < bv ? 1 : -1
+      // Type-safe comparison
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return order === 'asc' ? (av > bv ? 1 : -1) : av < bv ? 1 : -1
+      }
+
+      // Fallback for other types
+      const avStr = String(av || '')
+      const bvStr = String(bv || '')
+      const comparison = avStr.localeCompare(bvStr)
+      return order === 'asc' ? comparison : -comparison
     })
     return copy
   }

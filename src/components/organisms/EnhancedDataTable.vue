@@ -318,9 +318,23 @@ const sortedData = computed(() => {
     const aVal = getNestedValue(a, sortKey.value)
     const bVal = getNestedValue(b, sortKey.value)
 
-    if (aVal < bVal) return sortDirection.value === 'asc' ? -1 : 1
-    if (aVal > bVal) return sortDirection.value === 'asc' ? 1 : -1
-    return 0
+    // Type-safe comparison
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      const comparison = aVal.localeCompare(bVal)
+      return sortDirection.value === 'asc' ? comparison : -comparison
+    }
+
+    if (typeof aVal === 'number' && typeof bVal === 'number') {
+      if (aVal < bVal) return sortDirection.value === 'asc' ? -1 : 1
+      if (aVal > bVal) return sortDirection.value === 'asc' ? 1 : -1
+      return 0
+    }
+
+    // Fallback for other types
+    const aStr = String(aVal || '')
+    const bStr = String(bVal || '')
+    const comparison = aStr.localeCompare(bStr)
+    return sortDirection.value === 'asc' ? comparison : -comparison
   })
 })
 

@@ -5,6 +5,7 @@
 
 import type { BaseEntity } from './models'
 import type { VoiceType, ProjectType } from './voice-actor'
+import type { CustomSample } from './job-application'
 
 // Voice Client Profile - Extended from base User
 export interface VoiceClient extends BaseEntity {
@@ -53,6 +54,7 @@ export interface VoiceClient extends BaseEntity {
 export interface JobPosting extends BaseEntity {
   clientId: string
   clientName: string
+  campaignId?: string
   title: string
   description: string
   jobType: 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search'
@@ -79,7 +81,6 @@ export interface JobPosting extends BaseEntity {
   }
   deliverables: JobDeliverable[]
   files: JobFile[]
-  campaignId?: string
   isPublic: boolean
   applications: JobApplication[]
   selectedTalents: string[]
@@ -88,127 +89,24 @@ export interface JobPosting extends BaseEntity {
   createdDate: string
   publishedDate?: string
   closedDate?: string
+  lastSaved?: string
+  autoSaved?: boolean
+  version?: number
 }
 
-// Campaign - Different types of talent acquisition strategies
-export interface Campaign extends BaseEntity {
-  clientId: string
-  name: string
-  description: string
-  type: CampaignType
-  status: CampaignStatus
-  targetAudience: CampaignTarget
-  budget: {
-    total: number
-    spent: number
-    currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD'
-  }
-  timeline: {
-    startDate: string
-    endDate: string
-    duration: string
-  }
-  jobs: string[] // Job IDs
-  invitations: TalentInvitation[]
-  metrics: CampaignMetrics
-  settings: CampaignSettings
-  createdDate: string
-  launchedDate?: string
-  completedDate?: string
-}
-
-// Campaign Types
-export type CampaignType =
-  | 'fill_asap' // Open casting calls for immediate talent acquisition
-  | 'invite_specific' // Targeted invitations to preferred voice actors
-  | 'targeted_search' // Filter-based talent discovery
-  | 'custom' // Flexible targeting with specific requirements
-
-// Campaign Status
-export type CampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled'
-
-// Campaign Target Audience
-export interface CampaignTarget {
-  languages: string[]
-  accents?: string[]
-  voiceTypes: VoiceType[]
-  experience?: string[]
-  location?: string[]
-  availability?: string[]
-  minRating?: number
-  maxRate?: number
-  isVerified?: boolean
-  customCriteria?: string
-}
-
-// Campaign Metrics
-export interface CampaignMetrics {
-  totalViews: number
-  totalApplications: number
-  totalInvitations: number
-  responseRate: number
-  conversionRate: number
-  averageResponseTime: number
-  topPerformingJobs: string[]
-  talentEngagement: {
-    views: number
-    applications: number
-    shortlists: number
-    hires: number
-  }
-}
-
-// Campaign Settings
-export interface CampaignSettings {
-  autoApprove: boolean
-  requirePortfolio: boolean
-  requireCustomSample: boolean
-  allowMultipleApplications: boolean
-  notificationFrequency: 'immediate' | 'daily' | 'weekly'
-  privacyLevel: 'public' | 'private' | 'invite_only'
-  ndaRequired: boolean
-  contractTemplate?: string
-}
-
-// Talent Invitation - Direct invitations to specific voice actors
-export interface TalentInvitation extends BaseEntity {
-  campaignId: string
+// Job Invitation - Direct invitations to specific voice actors for jobs
+export interface JobInvitation extends BaseEntity {
   jobId: string
   clientId: string
-  clientName: string
-  voiceActorId: string
-  voiceActorName: string
-  status: InvitationStatus
+  voiceTalentId: string
   message?: string
-  customOffer?: {
-    rate: number
-    currency: string
-    timeline: string
-    specialTerms?: string
-  }
-  sentDate: string
-  respondedDate?: string
-  expiresDate?: string
-  response?: {
-    status: 'accepted' | 'declined' | 'counter_offer'
-    message?: string
-    counterOffer?: {
-      rate: number
-      currency: string
-      timeline: string
-      specialTerms?: string
-    }
-  }
+  status: InvitationStatus
+  invitedAt: string
+  respondedAt?: string
 }
 
 // Invitation Status
-export type InvitationStatus =
-  | 'sent'
-  | 'delivered'
-  | 'viewed'
-  | 'responded'
-  | 'expired'
-  | 'cancelled'
+export type InvitationStatus = 'pending' | 'accepted' | 'declined' | 'expired'
 
 // Job Application - Voice actor applications to job postings
 export interface JobApplication extends BaseEntity {
@@ -232,6 +130,8 @@ export interface JobApplication extends BaseEntity {
   // Personal Message
   coverLetter?: string
   relevantExperience?: string
+  personalNote?: string
+  proposedCost?: number
 
   // Client Review
   clientRating?: number
@@ -291,25 +191,6 @@ export interface JobFile extends BaseEntity {
   isPublic: boolean
 }
 
-// Custom Sample - Voice actor can create specific samples for a job
-export interface CustomSample extends BaseEntity {
-  applicationId: string
-  title: string
-  description?: string
-  audioUrl: string
-  duration: number
-  fileSize: number
-  format: 'mp3' | 'wav' | 'aac' | 'flac'
-  isPublic: boolean
-  tags: string[]
-  metadata: {
-    recordingQuality: 'standard' | 'professional' | 'broadcast'
-    equipment?: string
-    recordingLocation?: string
-    dateRecorded?: string
-  }
-}
-
 // Client Dashboard Statistics
 export interface ClientStats {
   totalJobs: number
@@ -328,7 +209,7 @@ export interface ClientStats {
 
 export interface ClientActivityItem {
   id: string
-  type: 'job' | 'application' | 'campaign' | 'invitation' | 'payment'
+  type: 'job' | 'application' | 'invitation' | 'payment'
   title: string
   description: string
   timestamp: string
@@ -363,7 +244,6 @@ export interface JobSearchFilters {
     from?: string
     to?: string
   }
-  campaignType?: CampaignType[]
 }
 
 // Re-export for external use

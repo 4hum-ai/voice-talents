@@ -149,12 +149,16 @@
                       <PlayIcon class="h-4 w-4" />
                     </Button>
                   </div>
-                  <p class="text-muted-foreground mb-2 text-sm">{{ customSample.description }}</p>
+                  <p class="text-muted-foreground mb-2 text-sm">
+                    {{ customSample.description || 'No description' }}
+                  </p>
                   <div class="flex items-center space-x-2">
-                    <Chip size="sm" variant="outline">{{ customSample.duration }}s</Chip>
-                    <Chip size="sm" variant="outline">{{ customSample.format.toUpperCase() }}</Chip>
+                    <Chip size="sm" variant="outline">{{ customSample.duration || 0 }}s</Chip>
+                    <Chip size="sm" variant="outline">{{
+                      customSample.format?.toUpperCase() || 'UNKNOWN'
+                    }}</Chip>
                     <span class="text-muted-foreground text-xs">{{
-                      formatFileSize(customSample.fileSize)
+                      formatFileSize(customSample.fileSize || 0)
                     }}</span>
                   </div>
                 </div>
@@ -209,6 +213,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { CastingSession, CastingProposal, VoiceSample } from '@/types/voice-actor'
+import type { CustomSample } from '@/types/job-application'
 import { mockData } from '@/data/mock-voice-actor-data'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
@@ -320,7 +325,7 @@ const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-const playCustomSample = (customSample: { title: string; url: string }) => {
+const playCustomSample = (customSample: CustomSample) => {
   // In real app, play audio
   console.log('Playing custom sample:', customSample.title)
 }
@@ -329,7 +334,6 @@ const playSample = (sample: VoiceSample) => {
   // In real app, this would play the audio sample
   console.log('Playing sample:', sample.title)
 }
-
 
 onMounted(() => {
   loadProposal()

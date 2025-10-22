@@ -7,9 +7,7 @@
         >
           <Icon name="mdi:bell" class="h-8 w-8 text-white" />
         </div>
-        <h2 class="text-foreground mb-2 text-2xl font-semibold">
-          Notification Preferences
-        </h2>
+        <h2 class="text-foreground mb-2 text-2xl font-semibold">Notification Preferences</h2>
         <p class="text-muted-foreground">
           Choose how you want to be notified about new opportunities and updates.
         </p>
@@ -20,9 +18,7 @@
           class="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-600"
         >
           <div>
-            <h3 class="text-foreground text-sm font-medium">
-              New Project Notifications
-            </h3>
+            <h3 class="text-foreground text-sm font-medium">New Project Notifications</h3>
             <p class="text-muted-foreground text-sm">
               Get notified when new projects match your profile
             </p>
@@ -44,9 +40,7 @@
         >
           <div>
             <h3 class="text-foreground text-sm font-medium">Message Notifications</h3>
-            <p class="text-muted-foreground text-sm">
-              Get notified when clients send you messages
-            </p>
+            <p class="text-muted-foreground text-sm">Get notified when clients send you messages</p>
           </div>
           <label class="relative inline-flex cursor-pointer items-center">
             <input
@@ -65,9 +59,7 @@
         >
           <div>
             <h3 class="text-foreground text-sm font-medium">Payment Notifications</h3>
-            <p class="text-muted-foreground text-sm">
-              Get notified about payments and invoices
-            </p>
+            <p class="text-muted-foreground text-sm">Get notified about payments and invoices</p>
           </div>
           <label class="relative inline-flex cursor-pointer items-center">
             <input
@@ -103,11 +95,7 @@
         </div>
 
         <div class="flex justify-end">
-          <Button
-            variant="primary"
-            @click="handleUpdate"
-            class="onboarding-button"
-          >
+          <Button variant="primary" @click="handleUpdate" class="onboarding-button">
             Save Preferences
           </Button>
         </div>
@@ -147,15 +135,23 @@ const { success } = useToast()
 const localNotificationSettings = reactive<NotificationSettings>({ ...props.modelValue })
 
 // Watch for external changes
-watch(() => props.modelValue, (newValue) => {
-  Object.assign(localNotificationSettings, newValue)
-}, { deep: true })
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    Object.assign(localNotificationSettings, newValue)
+  },
+  { deep: true },
+)
 
 // Watch for local changes and emit
-watch(localNotificationSettings, (newValue) => {
-  emit('update:modelValue', { ...newValue })
-  emit('validation-change', true) // Notifications are always valid
-}, { deep: true })
+watch(
+  localNotificationSettings,
+  (newValue) => {
+    emit('update:modelValue', { ...newValue })
+    emit('validation-change', true) // Notifications are always valid
+  },
+  { deep: true },
+)
 
 const handleUpdate = () => {
   // In a real app, this would make an API call

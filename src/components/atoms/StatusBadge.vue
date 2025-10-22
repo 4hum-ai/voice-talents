@@ -57,12 +57,31 @@ interface Props {
     | 'needs_review'
     | 'approved'
     | 'rejected'
+    | 'selected'
+    | 'under_review'
+    | 'shortlisted'
+    | 'submitted'
+    | 'in_progress'
+    | 'on_hold'
+    | 'delivered'
+    | 'revision_needed'
+    | 'accepted'
+    | 'declined'
+    | string
   /** Custom label text */
   label?: string
   /** Size variant */
   size?: 'sm' | 'md' | 'lg'
   /** Visual variant */
-  variant?: 'solid' | 'outline' | 'soft'
+  variant?:
+    | 'solid'
+    | 'outline'
+    | 'soft'
+    | 'secondary'
+    | 'success'
+    | 'warning'
+    | 'info'
+    | 'destructive'
   /** Whether to show status dot */
   showDot?: boolean
   /** Custom CSS classes */

@@ -27,11 +27,19 @@
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div>
                   <span class="text-muted-foreground text-sm">Budget:</span>
-                  <p class="text-foreground font-medium">{{ formatBudget(jobBudget) }}</p>
+                  <p class="text-foreground font-medium">
+                    {{
+                      formatBudget(
+                        jobBudget
+                          ? { max: jobBudget.max, currency: jobBudget.currency }
+                          : { max: 0, currency: 'USD' },
+                      )
+                    }}
+                  </p>
                 </div>
                 <div>
                   <span class="text-muted-foreground text-sm">Deadline:</span>
-                  <p class="text-foreground font-medium">{{ formatDeadline(jobDeadline) }}</p>
+                  <p class="text-foreground font-medium">{{ formatDeadline(jobDeadline || '') }}</p>
                 </div>
                 <div>
                   <span class="text-muted-foreground text-sm">Applications:</span>
@@ -308,7 +316,7 @@ import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 // Using lightweight in-view modal; no external dialog imports
-import { useJob } from '@/composables/useJob'
+import { useJob, type Job } from '@/composables/useJob'
 import { useJobApplication } from '@/composables/useJobApplication'
 import type { Application } from '@/types/job-application'
 import { useToast } from '@/composables/useToast'
@@ -327,7 +335,7 @@ const { getApplicationsByJobId, sortApplications } = useJobApplication()
 const { addToast: showToast } = useToast()
 
 // State
-const job = ref<Record<string, unknown> | null>(null)
+const job = ref<Job | null>(null)
 const applications = ref<Application[]>([])
 const selectedApplication = ref<Application | null>(null)
 const showApplicationDetail = ref(false)

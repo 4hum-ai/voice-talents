@@ -129,7 +129,7 @@
             <div class="bg-muted/50 space-y-2 rounded-lg p-4">
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">Project Type:</span>
-                <span class="text-foreground">{{ projectType }}</span>
+                <span class="text-foreground">{{ voiceType }}</span>
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">Budget:</span>
@@ -178,21 +178,22 @@ import { mockVoiceActors } from '@/data/mock-voice-actor-data'
 // Close icon removed; using Button icon prop instead
 // Star icon kept for rating stars in content
 import StarIcon from '~icons/mdi/star'
+import type { JobRatingModalProps } from '@/types/job-rating'
 
-interface Props {
-  open: boolean
-  jobTitle: string
-  talentId: string
-  talentName: string
-  projectType: string
-  budget: { min: number; max: number; currency: string }
-  timeline: string
-  completedDate: string
-}
+type Props = JobRatingModalProps
 
 interface Emits {
   (e: 'close'): void
-  (e: 'submit', rating: { overall: number; communication: number; quality: number; timeliness: number; comment: string }): void
+  (
+    e: 'submit',
+    rating: {
+      overall: number
+      communication: number
+      quality: number
+      timeliness: number
+      comment: string
+    },
+  ): void
 }
 
 const props = defineProps<Props>()
@@ -249,13 +250,11 @@ const talentLocation = computed(() => {
 // Methods
 const submitRating = () => {
   const ratingData = {
-    overallRating: rating.value,
-    detailedRatings: detailedRatings.value,
-    feedback: feedback.value,
-    recommendation: recommendation.value,
-    talentId: props.talentId,
-    jobTitle: props.jobTitle,
-    submittedAt: new Date().toISOString(),
+    overall: rating.value,
+    communication: detailedRatings.value.communication || 0,
+    quality: detailedRatings.value.quality || 0,
+    timeliness: detailedRatings.value.timeliness || 0,
+    comment: feedback.value,
   }
 
   emit('submit', ratingData)

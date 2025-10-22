@@ -2,10 +2,11 @@ import { computed, reactive } from 'vue'
 import type { JobPosting } from '@/types/voice-client'
 
 // Job interface extending JobPosting with additional metadata
-export interface Job extends Omit<JobPosting, 'status'> {
-  status: 'draft' | 'published' | 'completed'
-  lastSaved: string
-  autoSaved: boolean
+export interface Job extends JobPosting {
+  // Override status to include draft status
+  status: JobPosting['status'] | 'draft'
+  lastSaved?: string
+  autoSaved?: boolean
   version: number
 }
 
@@ -51,7 +52,7 @@ const initializeMockJobs = () => {
   import('@/data/mock-voice-client-data')
     .then(({ mockJobPostings }) => {
       // Convert JobPosting to Job format for ALL jobs (not just completed)
-      const mockJobs: Job[] = mockJobPostings.map((job: Record<string, unknown>) => ({
+      const mockJobs: Job[] = mockJobPostings.map((job: JobPosting) => ({
         ...job,
         lastSaved: job.closedDate || job.updatedAt || job.createdAt,
         autoSaved: false,

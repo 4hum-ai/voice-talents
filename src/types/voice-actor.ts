@@ -4,6 +4,7 @@
  */
 
 import type { BaseEntity } from './models'
+import type { CustomSample } from './job-application'
 
 // Voice Actor Profile - Extended from base User
 export interface VoiceActor extends BaseEntity {
@@ -144,44 +145,6 @@ export interface Recording extends BaseEntity {
   }
 }
 
-// Studio Management
-export interface Studio extends BaseEntity {
-  name: string
-  description: string
-  logoUrl?: string
-  website?: string
-  location: string
-  timezone: string
-  contactEmail: string
-  contactPhone?: string
-  specialties: string[]
-  languages: string[]
-  isVerified: boolean
-  totalProjects: number
-  activeProjects: number
-  averageRating: number
-  members: StudioMember[]
-  equipment: string[]
-  services: string[]
-  socialLinks: {
-    website?: string
-    linkedin?: string
-    twitter?: string
-  }
-}
-
-// Studio Member
-export interface StudioMember extends BaseEntity {
-  studioId: string
-  userId: string
-  name: string
-  email: string
-  role: 'owner' | 'producer' | 'engineer' | 'director' | 'manager'
-  permissions: string[]
-  joinedDate: string
-  isActive: boolean
-}
-
 // Reference Materials
 export interface ReferenceMaterial extends BaseEntity {
   assignmentId: string
@@ -263,20 +226,6 @@ export interface AssignmentFeedback extends BaseEntity {
   replyTo?: string
 }
 
-// Notification
-export interface Notification extends BaseEntity {
-  userId: string
-  type: NotificationType
-  title: string
-  message: string
-  isRead: boolean
-  readDate?: string
-  actionUrl?: string
-  metadata: Record<string, unknown>
-  priority: 'low' | 'medium' | 'high'
-  expiresAt?: string
-}
-
 // Casting Session
 export interface CastingSession extends BaseEntity {
   title: string
@@ -322,11 +271,9 @@ export interface CastingProposal extends BaseEntity {
   proposedTimeline: string // e.g., "2-3 weeks", "1 month"
   estimatedHours: number
 
-  // Custom Samples for this casting
-  customSamples: CustomSample[]
-
   // Existing samples from portfolio
   portfolioSampleIds: string[]
+  customSamples: CustomSample[]
 
   // Personal message to studio
   personalNote?: string
@@ -334,25 +281,6 @@ export interface CastingProposal extends BaseEntity {
   // Studio feedback
   studioFeedback?: string
   rejectionReason?: string
-}
-
-// Custom Sample - Voice actor can create specific samples for a casting
-export interface CustomSample extends BaseEntity {
-  proposalId: string
-  title: string
-  description?: string
-  audioUrl: string
-  duration: number
-  fileSize: number
-  format: 'mp3' | 'wav' | 'aac' | 'flac'
-  isPublic: boolean
-  tags: string[]
-  metadata: {
-    recordingQuality: 'standard' | 'professional' | 'broadcast'
-    equipment?: string
-    recordingLocation?: string
-    dateRecorded?: string
-  }
 }
 
 // Casting Submission - Legacy interface for backward compatibility
@@ -525,6 +453,7 @@ export interface ActivityItem {
   timestamp: string
   status?: string
   url?: string
+  icon?: string
 }
 
 // Search and Filter Types

@@ -6,11 +6,9 @@
 import type {
   VoiceClient,
   JobPosting,
-  Campaign,
-  TalentInvitation,
   JobApplication,
+  JobInvitation,
   ClientStats,
-  CustomSample,
 } from '@/types/voice-client'
 
 // Mock Voice Clients
@@ -151,7 +149,6 @@ export const mockVoiceClients: VoiceClient[] = [
   },
 ]
 
-
 // Mock Job Applications
 export const mockJobApplications: JobApplication[] = [
   // Job 001 - Multiple applications for tech commercial
@@ -269,6 +266,7 @@ export const mockJobApplications: JobApplication[] = [
     status: 'selected',
     appliedDate: '2024-01-14T14:00:00Z',
     reviewedDate: '2024-01-15T10:00:00Z',
+    proposedRate: 350,
     proposedCost: 12000,
     proposedCurrency: 'USD',
     proposedTimeline: '2-3 weeks',
@@ -294,6 +292,7 @@ export const mockJobApplications: JobApplication[] = [
     status: 'selected',
     appliedDate: '2023-12-25T10:00:00Z',
     reviewedDate: '2023-12-26T09:00:00Z',
+    proposedRate: 200,
     proposedCost: 4500,
     proposedCurrency: 'USD',
     proposedTimeline: '2 weeks',
@@ -318,6 +317,7 @@ export const mockJobApplications: JobApplication[] = [
     status: 'selected',
     appliedDate: '2023-12-20T11:00:00Z',
     reviewedDate: '2023-12-21T10:00:00Z',
+    proposedRate: 150,
     proposedCost: 3000,
     proposedCurrency: 'USD',
     proposedTimeline: '3 weeks',
@@ -342,6 +342,7 @@ export const mockJobApplications: JobApplication[] = [
     voiceActorName: 'Alex Thompson',
     status: 'under_review',
     appliedDate: '2024-01-19T14:20:00Z',
+    proposedRate: 180,
     proposedCost: 4000,
     proposedCurrency: 'USD',
     proposedTimeline: '1-2 weeks',
@@ -362,6 +363,7 @@ export const mockJobApplications: JobApplication[] = [
     voiceActorName: 'Jessica Park',
     status: 'under_review',
     appliedDate: '2024-01-20T09:45:00Z',
+    proposedRate: 160,
     proposedCost: 3600,
     proposedCurrency: 'USD',
     proposedTimeline: '1 week',
@@ -879,7 +881,7 @@ export const mockJobPostings: JobPosting[] = [
     totalApplications: 0,
     viewCount: 0,
     createdDate: '2024-01-18T10:00:00Z',
-    publishedDate: null,
+    publishedDate: undefined,
     createdAt: '2024-01-18T10:00:00Z',
     updatedAt: '2024-01-20T14:30:00Z',
     lastSaved: '2024-01-20T14:30:00Z',
@@ -895,7 +897,8 @@ export const mockJobInvitations: JobInvitation[] = [
     jobId: 'job-001',
     clientId: 'client-001',
     voiceTalentId: 'va-001',
-    message: "Hi Sarah! We're launching a new tech startup and would love to work with you on our commercial series. Your commercial samples are exactly what we're looking for - energetic and modern. Would you be interested?",
+    message:
+      "Hi Sarah! We're launching a new tech startup and would love to work with you on our commercial series. Your commercial samples are exactly what we're looking for - energetic and modern. Would you be interested?",
     status: 'accepted',
     invitedAt: '2024-01-15T10:00:00Z',
     respondedAt: '2024-01-16T15:00:00Z',
@@ -907,7 +910,8 @@ export const mockJobInvitations: JobInvitation[] = [
     jobId: 'job-002',
     clientId: 'client-002',
     voiceTalentId: 'va-003',
-    message: 'Hi Emma! We have an exciting e-learning project that would be perfect for your educational content expertise. The module is about digital marketing and we need someone who can keep learners engaged for 45 minutes.',
+    message:
+      'Hi Emma! We have an exciting e-learning project that would be perfect for your educational content expertise. The module is about digital marketing and we need someone who can keep learners engaged for 45 minutes.',
     status: 'accepted',
     invitedAt: '2024-01-15T10:00:00Z',
     respondedAt: '2024-01-15T11:00:00Z',
@@ -919,7 +923,8 @@ export const mockJobInvitations: JobInvitation[] = [
     jobId: 'job-003',
     clientId: 'client-003',
     voiceTalentId: 'va-002',
-    message: "Hi Marcus! We're developing a new animated series and your character voice work is exactly what we need. The lead character is a 25-year-old adventurer with great comedic timing.",
+    message:
+      "Hi Marcus! We're developing a new animated series and your character voice work is exactly what we need. The lead character is a 25-year-old adventurer with great comedic timing.",
     status: 'accepted',
     invitedAt: '2024-01-15T10:00:00Z',
     respondedAt: '2024-01-14T14:00:00Z',
@@ -927,7 +932,6 @@ export const mockJobInvitations: JobInvitation[] = [
     updatedAt: '2024-01-14T14:00:00Z',
   },
 ]
-
 
 // Mock Client Stats
 export const mockClientStats: ClientStats = {
@@ -963,7 +967,7 @@ export const mockClientStats: ClientStats = {
     },
     {
       id: 'client-activity-003',
-      type: 'campaign',
+      type: 'job',
       title: 'Campaign Launched',
       description: 'Launched "TechFlow Commercial Launch" campaign',
       timestamp: '2024-01-15T10:00:00Z',

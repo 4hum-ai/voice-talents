@@ -126,6 +126,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import type { AccountInformationData } from '@/types/onboarding'
 import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
@@ -187,11 +188,18 @@ const updateStepValidation = (step: number, isValid: boolean) => {
   console.log('canProceedToNext will be:', stepValidation[currentStep.value] ?? false)
 }
 
-const handleAccountDataUpdate = (newData: Record<string, unknown>) => {
+const handleAccountDataUpdate = (newData: AccountInformationData) => {
   console.log('handleAccountDataUpdate called with:', newData)
   // Update each field individually to ensure reactivity
   Object.keys(newData).forEach((key) => {
-    accountData[key as keyof typeof accountData] = newData[key]
+    if (key in accountData) {
+      const value = newData[key as keyof AccountInformationData]
+      if (key === 'companySize' && typeof value === 'string') {
+        accountData.companySize = value as 'startup' | 'small' | 'medium' | 'large' | 'enterprise'
+      } else if (key !== 'companySize') {
+        ;(accountData as Record<string, unknown>)[key] = value
+      }
+    }
   })
   console.log('Updated accountData:', accountData)
 }

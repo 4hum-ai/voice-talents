@@ -57,13 +57,6 @@
                 <Button
                   variant="outline"
                   class="w-full justify-start"
-                  icon="mdi:megaphone"
-                  @click="$router.push('/client/campaigns/create')"
-                  >Create Campaign</Button
-                >
-                <Button
-                  variant="outline"
-                  class="w-full justify-start"
                   icon="mdi:account-group"
                   @click="$router.push('/client/talents')"
                   >Talents</Button
@@ -271,7 +264,9 @@ const activeJobs = computed(() =>
 )
 
 const recentApplications = computed(() => {
-  const sorted = [...applications.value].sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime())
+  const sorted = [...applications.value].sort(
+    (a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime(),
+  )
   return sorted.slice(0, 3)
 })
 
@@ -344,7 +339,7 @@ const closeJobCreationModal = () => {
   showJobCreationModal.value = false
 }
 
-const handleJobCreated = (job: Record<string, unknown>) => {
+const handleJobCreated = (job: JobPosting) => {
   showToast({
     type: 'success',
     title: 'Job Published',

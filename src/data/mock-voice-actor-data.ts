@@ -7,11 +7,8 @@ import type {
   VoiceActor,
   VoiceSample,
   Project,
-  Studio,
-  Notification,
   CastingSession,
   CastingProposal,
-  CustomSample,
   VoiceActorStats,
 } from '@/types/voice-actor'
 
@@ -137,7 +134,7 @@ export const mockVoiceActors: VoiceActor[] = [
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=600&fit=crop&crop=face',
     languages: ['English'],
     accents: ['American'],
-    voiceTypes: ['commercial', 'narrator', 'tech'],
+    voiceTypes: ['commercial', 'narrator', 'announcer'],
     skills: ['Commercial VO', 'Tech Industry', 'Startup Marketing', 'Modern Delivery'],
     experience: 'intermediate',
     location: 'Seattle, WA',
@@ -173,7 +170,7 @@ export const mockVoiceActors: VoiceActor[] = [
       'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop&crop=face',
     languages: ['English', 'Korean'],
     accents: ['American'],
-    voiceTypes: ['commercial', 'character', 'modern'],
+    voiceTypes: ['commercial', 'character', 'animation'],
     skills: ['Modern Commercial', 'Digital Marketing', 'Gen Z Appeal', 'Startup VO'],
     experience: 'intermediate',
     location: 'Austin, TX',
@@ -197,105 +194,6 @@ export const mockVoiceActors: VoiceActor[] = [
     lastActive: '2024-01-20T10:15:00Z',
     createdAt: '2023-03-10T11:00:00Z',
     updatedAt: '2024-01-20T10:15:00Z',
-  },
-]
-
-// Mock Studios
-export const mockStudios: Studio[] = [
-  {
-    id: 'studio-001',
-    name: 'SoundWave Studios',
-    description:
-      'Premier voice-over production studio specializing in commercial, audiobook, and animation projects. State-of-the-art equipment and experienced producers.',
-    logoUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop',
-    website: 'https://soundwavestudios.com',
-    location: 'Los Angeles, CA',
-    timezone: 'America/Los_Angeles',
-    contactEmail: 'contact@soundwavestudios.com',
-    contactPhone: '+1-555-0123',
-    specialties: ['Commercial', 'Audiobook', 'Animation', 'Video Games'],
-    languages: ['English', 'Spanish', 'French'],
-    isVerified: true,
-    totalProjects: 156,
-    activeProjects: 12,
-    averageRating: 4.8,
-    members: [
-      {
-        id: 'member-001',
-        studioId: 'studio-001',
-        userId: 'user-studio-001',
-        name: 'David Kim',
-        email: 'david@soundwavestudios.com',
-        role: 'owner',
-        permissions: ['all'],
-        joinedDate: '2018-01-15T00:00:00Z',
-        isActive: true,
-        createdAt: '2018-01-15T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z',
-      },
-      {
-        id: 'member-002',
-        studioId: 'studio-001',
-        userId: 'user-studio-002',
-        name: 'Lisa Park',
-        email: 'lisa@soundwavestudios.com',
-        role: 'producer',
-        permissions: ['manage_projects', 'review_recordings'],
-        joinedDate: '2019-03-20T00:00:00Z',
-        isActive: true,
-        createdAt: '2019-03-20T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z',
-      },
-    ],
-    equipment: ['Neumann U87', 'Pro Tools HDX', 'SSL Console', 'Acoustic Treatment'],
-    services: ['Recording', 'Mixing', 'Mastering', 'Post-Production'],
-    socialLinks: {
-      website: 'https://soundwavestudios.com',
-      linkedin: 'soundwave-studios',
-    },
-    createdAt: '2018-01-15T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z',
-  },
-  {
-    id: 'studio-002',
-    name: 'Creative Audio Productions',
-    description:
-      'Full-service audio production company with expertise in corporate training, e-learning, and documentary narration.',
-    logoUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop',
-    website: 'https://creativeaudioproductions.com',
-    location: 'New York, NY',
-    timezone: 'America/New_York',
-    contactEmail: 'info@creativeaudioproductions.com',
-    contactPhone: '+1-555-0456',
-    specialties: ['Corporate Training', 'E-Learning', 'Documentary', 'Commercial'],
-    languages: ['English', 'Spanish', 'French', 'German'],
-    isVerified: true,
-    totalProjects: 89,
-    activeProjects: 8,
-    averageRating: 4.6,
-    members: [
-      {
-        id: 'member-003',
-        studioId: 'studio-002',
-        userId: 'user-studio-003',
-        name: 'Michael Torres',
-        email: 'michael@creativeaudioproductions.com',
-        role: 'owner',
-        permissions: ['all'],
-        joinedDate: '2020-06-10T00:00:00Z',
-        isActive: true,
-        createdAt: '2020-06-10T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z',
-      },
-    ],
-    equipment: ['Rode NT1', 'Logic Pro', 'Focusrite Interface', 'Sound Booth'],
-    services: ['Recording', 'Editing', 'Mixing', 'Script Writing'],
-    socialLinks: {
-      website: 'https://creativeaudioproductions.com',
-      linkedin: 'creative-audio-productions',
-    },
-    createdAt: '2020-06-10T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z',
   },
 ]
 
@@ -581,107 +479,6 @@ export const mockProjects: Project[] = [
   },
 ]
 
-// Mock Notifications
-export const mockNotifications: Notification[] = [
-  {
-    id: 'notif-001',
-    userId: 'va-001',
-    type: 'project_assigned',
-    title: 'New Project Assignment',
-    message: 'You\'ve been assigned to "Tech Startup Commercial Series" project. Due: Feb 10, 2024',
-    isRead: false,
-    actionUrl: '/projects/project-001',
-    metadata: {
-      projectId: 'project-001',
-      projectTitle: 'Tech Startup Commercial Series',
-      dueDate: '2024-02-10T17:00:00Z',
-    },
-    priority: 'high',
-    createdAt: '2024-01-10T09:00:00Z',
-    updatedAt: '2024-01-10T09:00:00Z',
-  },
-  {
-    id: 'notif-002',
-    userId: 'va-001',
-    type: 'message_received',
-    title: 'New Message from Studio',
-    message: 'Lisa Park from SoundWave Studios sent you a message about your current project.',
-    isRead: true,
-    readDate: '2024-01-10T10:30:00Z',
-    actionUrl: '/projects/project-001/messages',
-    metadata: {
-      senderId: 'user-studio-002',
-      senderName: 'Lisa Park',
-      projectId: 'project-001',
-    },
-    priority: 'medium',
-    createdAt: '2024-01-10T10:00:00Z',
-    updatedAt: '2024-01-10T10:30:00Z',
-  },
-  {
-    id: 'notif-003',
-    userId: 'va-001',
-    type: 'deadline_reminder',
-    title: 'Deadline Reminder',
-    message: 'Your project "Tech Startup Commercial Series" is due in 3 days.',
-    isRead: false,
-    actionUrl: '/projects/project-001',
-    metadata: {
-      projectId: 'project-001',
-      projectTitle: 'Tech Startup Commercial Series',
-      daysRemaining: 3,
-    },
-    priority: 'high',
-    createdAt: '2024-01-12T09:00:00Z',
-    updatedAt: '2024-01-12T09:00:00Z',
-  },
-]
-
-// Mock Custom Samples
-export const mockCustomSamples: CustomSample[] = [
-  {
-    id: 'custom-sample-001',
-    proposalId: 'proposal-001',
-    title: 'Character Demo - Adventurer',
-    description:
-      'Custom sample created specifically for the animated series casting call. Shows range and character development.',
-    audioUrl: 'https://example.com/audio/custom-sample-001.mp3',
-    duration: 60,
-    fileSize: 960000,
-    format: 'mp3',
-    isPublic: false,
-    tags: ['character', 'animation', 'adventurer', 'custom'],
-    metadata: {
-      recordingQuality: 'professional',
-      equipment: 'Neumann U87',
-      recordingLocation: 'Home Studio',
-      dateRecorded: '2024-01-16T14:00:00Z',
-    },
-    createdAt: '2024-01-16T14:00:00Z',
-    updatedAt: '2024-01-16T14:00:00Z',
-  },
-  {
-    id: 'custom-sample-002',
-    proposalId: 'proposal-002',
-    title: 'Commercial Demo - Tech Product',
-    description: 'Custom commercial sample showcasing modern, energetic delivery for tech startup.',
-    audioUrl: 'https://example.com/audio/custom-sample-002.mp3',
-    duration: 30,
-    fileSize: 480000,
-    format: 'mp3',
-    isPublic: false,
-    tags: ['commercial', 'tech', 'energetic', 'custom'],
-    metadata: {
-      recordingQuality: 'professional',
-      equipment: 'Rode NT1',
-      recordingLocation: 'Home Studio',
-      dateRecorded: '2024-01-17T10:00:00Z',
-    },
-    createdAt: '2024-01-17T10:00:00Z',
-    updatedAt: '2024-01-17T10:00:00Z',
-  },
-]
-
 // Mock Casting Proposals
 export const mockCastingProposals: CastingProposal[] = [
   {
@@ -695,7 +492,7 @@ export const mockCastingProposals: CastingProposal[] = [
     proposedCurrency: 'USD',
     proposedTimeline: '2-3 weeks',
     estimatedHours: 40,
-    customSamples: [mockCustomSamples[0]],
+    customSamples: [],
     portfolioSampleIds: ['sample-001', 'sample-002'],
     personalNote:
       "I'm very excited about this project! I have extensive experience with character voices and animation work. I can bring the perfect blend of adventure and humor to this character. I'm available to start immediately and can work within your timeline.",
@@ -713,7 +510,7 @@ export const mockCastingProposals: CastingProposal[] = [
     proposedCurrency: 'USD',
     proposedTimeline: '1 week',
     estimatedHours: 15,
-    customSamples: [mockCustomSamples[1]],
+    customSamples: [],
     portfolioSampleIds: ['sample-001'],
     personalNote:
       "I'd love to work on this tech startup commercial series. My energetic, modern delivery style would be perfect for your target demographic. I can deliver all 5 spots within a week.",
@@ -918,12 +715,49 @@ export const mockVoiceActorStats: VoiceActorStats = {
 // Export all mock data
 export const mockData = {
   voiceActors: mockVoiceActors,
-  studios: mockStudios,
   voiceSamples: mockVoiceSamples,
   projects: mockProjects,
-  notifications: mockNotifications,
   castingSessions: mockCastingSessions,
   castingProposals: mockCastingProposals,
-  customSamples: mockCustomSamples,
   voiceActorStats: mockVoiceActorStats,
+  projectMessages: [
+    {
+      id: 'msg-001',
+      projectId: 'proj-001',
+      senderName: 'Studio Manager',
+      content: 'Great work on the latest recording!',
+      createdAt: '2024-01-15T10:30:00Z',
+      isRead: false,
+    },
+    {
+      id: 'msg-002',
+      projectId: 'proj-002',
+      senderName: 'Client',
+      content: 'Please review the script changes.',
+      createdAt: '2024-01-14T15:45:00Z',
+      isRead: true,
+    },
+    {
+      id: 'msg-003',
+      projectId: 'proj-003',
+      senderName: 'Director',
+      content: 'The recording quality is excellent.',
+      createdAt: '2024-01-13T09:15:00Z',
+      isRead: true,
+    },
+  ],
+  studios: [
+    {
+      id: 'studio-001',
+      name: 'Premier Voice Studio',
+      location: 'Los Angeles, CA',
+      description: 'Professional recording studio with state-of-the-art equipment',
+    },
+    {
+      id: 'studio-002',
+      name: 'Creative Audio Works',
+      location: 'New York, NY',
+      description: 'Full-service audio production studio',
+    },
+  ],
 }

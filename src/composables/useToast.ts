@@ -1,11 +1,15 @@
 import { ref } from 'vue'
 
 interface ToastOptions {
+  id?: string
   type?: 'success' | 'error' | 'warning' | 'info'
   title?: string
   message?: string
+  body?: string
   duration?: number
+  timeout?: number
   persistent?: boolean
+  position?: string
   action?: {
     label: string
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
@@ -106,6 +110,7 @@ export function useToast() {
     addToast,
     removeToast,
     clearAllToasts,
+    push: addToast, // Alias for addToast
     success,
     error,
     warning,

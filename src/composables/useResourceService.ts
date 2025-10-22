@@ -392,7 +392,7 @@ export function useResourceService(base: string = 'movie/api') {
           id: rid,
           action: 'create',
           afterData: result,
-          at: Date.now(),
+          at: new Date().toISOString(),
         })
       } catch {
         /* ignore */
@@ -470,7 +470,7 @@ export function useResourceService(base: string = 'movie/api') {
           action: 'update',
           beforeData,
           afterData: result,
-          at: Date.now(),
+          at: new Date().toISOString(),
         })
       } catch {
         /* ignore */
@@ -542,7 +542,7 @@ export function useResourceService(base: string = 'movie/api') {
           id: String(id),
           action: 'delete',
           beforeData,
-          at: Date.now(),
+          at: new Date().toISOString(),
         })
       } catch {
         /* ignore */

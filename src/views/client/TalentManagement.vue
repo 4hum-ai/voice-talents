@@ -387,7 +387,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { VoiceActor } from '@/types/voice-actor'
+import type { VoiceActor, VoiceType } from '@/types/voice-actor'
 import { mockData } from '@/data/mock-voice-actor-data'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
@@ -442,7 +442,7 @@ const filteredTalents = computed(() => {
 
   if (selectedVoiceType.value) {
     filtered = filtered.filter((talent) =>
-      talent.voiceTypes.includes(selectedVoiceType.value as string),
+      talent.voiceTypes.includes(selectedVoiceType.value as VoiceType),
     )
   }
 

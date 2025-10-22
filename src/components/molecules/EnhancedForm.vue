@@ -92,7 +92,7 @@
           :id="field.name"
           :name="field.name"
           type="checkbox"
-          :checked="getFieldValue(field.name)"
+          :checked="getFieldValue(field.name) === 'true' || formData[field.name] === true"
           :required="field.required"
           :disabled="field.disabled"
           :class="checkboxClasses(field)"
@@ -305,7 +305,14 @@ const isValid = computed(() => {
 
 // Methods
 const getFieldValue = (name: string) => {
-  return formData[name] || ''
+  const value = formData[name]
+  if (value === undefined || value === null) {
+    return ''
+  }
+  if (typeof value === 'object' && Object.keys(value).length === 0) {
+    return ''
+  }
+  return String(value)
 }
 
 const updateField = (name: string, value: unknown) => {

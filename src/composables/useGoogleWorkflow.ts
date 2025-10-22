@@ -420,7 +420,7 @@ export function useGoogleWorkflow(name: string = 'workflows'): GoogleWorkflowSer
           id: workflowId,
           action: 'create',
           afterData: result,
-          at: Date.now(),
+          at: new Date().toISOString(),
         })
       } catch {
         /* ignore */
@@ -479,7 +479,7 @@ export function useGoogleWorkflow(name: string = 'workflows'): GoogleWorkflowSer
           action: 'update',
           beforeData,
           afterData: result,
-          at: Date.now(),
+          at: new Date().toISOString(),
         })
       } catch {
         /* ignore */
@@ -533,7 +533,7 @@ export function useGoogleWorkflow(name: string = 'workflows'): GoogleWorkflowSer
           id: workflowId,
           action: 'delete',
           beforeData,
-          at: Date.now(),
+          at: new Date().toISOString(),
         })
       } catch {
         /* ignore */

@@ -8,9 +8,7 @@
           <Icon name="mdi:database" class="h-8 w-8 text-white" />
         </div>
         <h2 class="text-foreground mb-2 text-2xl font-semibold">Data & Export</h2>
-        <p class="text-muted-foreground">
-          Manage your data and export your profile information.
-        </p>
+        <p class="text-muted-foreground">Manage your data and export your profile information.</p>
       </div>
 
       <div class="mx-auto max-w-2xl space-y-6">

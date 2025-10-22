@@ -66,7 +66,7 @@ let showTimer: number | null = null
 const { on } = useEventBus<HttpActivePayload>(EVENT_HTTP_ACTIVE)
 let offActive: (() => void) | null = null
 
-function handleActive(payload: { active: number }) {
+function handleActive(payload: HttpActivePayload) {
   if (!props.autoDetect) return
 
   active = Math.max(0, Number(payload?.active || 0))

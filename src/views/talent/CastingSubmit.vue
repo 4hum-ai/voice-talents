@@ -283,8 +283,8 @@ const proposal = ref<Partial<CastingProposal>>({
   proposedCost: 0,
   proposedCurrency: 'USD',
   proposedTimeline: '',
-  customSamples: [],
   personalNote: '',
+  customSamples: [],
 })
 
 // Form validation
@@ -369,23 +369,12 @@ const formatDate = (dateString: string) => {
 const addCustomSample = () => {
   proposal.value.customSamples?.push({
     id: `custom-${Date.now()}`,
-    proposalId: proposal.value.castingSessionId || '',
     title: '',
     description: '',
     audioUrl: '',
     duration: 0,
-    fileSize: 0,
     format: 'mp3',
-    isPublic: false,
-    tags: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    metadata: {
-      recordingQuality: 'professional',
-      equipment: '',
-      recordingLocation: '',
-      dateRecorded: new Date().toISOString(),
-    },
+    fileSize: 0,
   })
 }
 

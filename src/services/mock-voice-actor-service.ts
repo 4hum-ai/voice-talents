@@ -8,8 +8,6 @@ import type {
   VoiceSample,
   Project,
   ProjectAssignment,
-  Studio,
-  Notification,
   CastingSession,
   CastingSubmission,
   VoiceActorStats,
@@ -202,46 +200,6 @@ export class MockVoiceActorService {
     return updatedAssignment
   }
 
-  // Studio Management
-  async getStudios(): Promise<Studio[]> {
-    await delay()
-    return mockData.studios
-  }
-
-  async getStudio(id: string): Promise<Studio> {
-    await delay()
-    const studio = mockData.studios.find((s) => s.id === id)
-    if (!studio) throw new Error('Studio not found')
-    return studio
-  }
-
-  // Notifications
-  async getNotifications(userId: string): Promise<Notification[]> {
-    await delay()
-    return mockData.notifications.filter((n) => n.userId === userId)
-  }
-
-  async markNotificationAsRead(id: string): Promise<Notification> {
-    await delay()
-    const notification = mockData.notifications.find((n) => n.id === id)
-    if (!notification) throw new Error('Notification not found')
-
-    notification.isRead = true
-    notification.readDate = new Date().toISOString()
-
-    return notification
-  }
-
-  async markAllNotificationsAsRead(userId: string): Promise<void> {
-    await delay()
-    mockData.notifications
-      .filter((n) => n.userId === userId && !n.isRead)
-      .forEach((n) => {
-        n.isRead = true
-        n.readDate = new Date().toISOString()
-      })
-  }
-
   // Casting Sessions
   async getCastingSessions(): Promise<CastingSession[]> {
     await delay()
@@ -288,9 +246,7 @@ export class MockVoiceActorService {
   }
 
   // File Upload Simulation
-  async uploadFile(
-    file: File,
-  ): Promise<{ url: string; id: string }> {
+  async uploadFile(file: File): Promise<{ url: string; id: string }> {
     await delay(2000) // Simulate upload time
 
     // Generate mock file URL
@@ -311,7 +267,10 @@ export class MockVoiceActorService {
   }
 
   // Search and Discovery
-  async searchSamples(query: string, filters: Record<string, unknown> = {}): Promise<VoiceSample[]> {
+  async searchSamples(
+    query: string,
+    filters: Record<string, unknown> = {},
+  ): Promise<VoiceSample[]> {
     await delay()
     let results = [...mockData.voiceSamples]
 

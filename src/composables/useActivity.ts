@@ -126,7 +126,7 @@ export function useActivity() {
       resource: evt.resource,
       id: String(evt.id),
       action: evt.action,
-      at: evt.at,
+      at: evt.at ? new Date(evt.at).getTime() : Date.now(),
       beforeData: evt.beforeData,
       afterData: evt.afterData,
     })

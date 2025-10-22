@@ -368,10 +368,10 @@
                             <div class="flex items-center justify-between">
                               <div class="min-w-0 flex-1">
                                 <p class="text-foreground truncate text-sm font-medium">
-                                  {{ voiceSamples[voiceType.value].name }}
+                                  {{ voiceSamples[voiceType.value]?.fileName }}
                                 </p>
                                 <p class="text-muted-foreground text-sm">
-                                  {{ formatFileSize(voiceSamples[voiceType.value].size) }}
+                                  {{ formatFileSize(voiceSamples[voiceType.value]?.fileSize || 0) }}
                                 </p>
                               </div>
                               <Button
@@ -387,7 +387,7 @@
                             <!-- Audio Preview -->
                             <div>
                               <audio
-                                :src="voiceSamples[voiceType.value].previewUrl"
+                                :src="voiceSamples[voiceType.value]?.previewUrl"
                                 controls
                                 class="w-full"
                               />
@@ -404,7 +404,7 @@
                                 </label>
                                 <input
                                   :id="`title-${voiceType.value}`"
-                                  v-model="voiceSamples[voiceType.value].title"
+                                  v-model="voiceSamples[voiceType.value].description"
                                   type="text"
                                   :placeholder="`${voiceType.label} Demo`"
                                   class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
@@ -661,6 +661,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Media } from '@/types/models'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
@@ -689,7 +690,7 @@ const profileData = reactive({
 })
 
 // Voice samples data
-const voiceSamples = reactive<Record<string, unknown>>({})
+const voiceSamples = reactive<Record<string, Media>>({})
 const isDragOver = ref<string | null>(null)
 const avatarInput = ref<HTMLInputElement>()
 
@@ -887,15 +888,30 @@ const processFile = (file: File, voiceType: string) => {
   // Create preview URL
   const previewUrl = URL.createObjectURL(file)
 
-  // Store the file data
+  // Store the file data as Media object
   voiceSamples[voiceType] = {
-    file,
-    name: file.name,
-    size: file.size,
-    type: file.type,
-    previewUrl,
-    title: '',
+    id: `sample-${Date.now()}`,
+    type: 'recording' as const,
+    format: file.type.includes('mp3') ? ('mp3' as const) : ('wav' as const),
+    fileUrl: previewUrl,
+    fileName: file.name,
+    fileSize: file.size,
+    contentType: file.type,
+    duration: 0,
+    status: 'pending' as const,
+    language: 'en' as const,
+    relationships: [],
     description: '',
+    tags: [],
+    metadata: {},
+    thumbnailUrl: undefined,
+    previewUrl,
+    bucket: undefined,
+    path: undefined,
+    uploadUrl: undefined,
+    uploadExpiresAt: undefined,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }
 
   console.log('File processed successfully:', voiceSamples[voiceType])
