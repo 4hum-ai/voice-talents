@@ -14,14 +14,15 @@
             Select files on the left, set details on the right
           </p>
         </div>
-        <button
-          class="border-border text-foreground hover:bg-muted flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm"
-          aria-label="Close"
+        <Button
+          variant="outline"
+          size="sm"
+          shortcut="Escape"
+          icon="mdi:close"
           @click="$emit('close')"
         >
-          <CloseIcon class="h-4 w-4" aria-hidden="true" />
           Close
-        </button>
+        </Button>
       </div>
 
       <div class="grid h-[calc(100%-3rem)] grid-cols-1 sm:grid-cols-5">
@@ -249,7 +250,6 @@ import TagInput from '@/components/atoms/TagInput.vue'
 import Button from '@/components/atoms/Button.vue'
 
 // Icons
-import CloseIcon from '~icons/mdi/close'
 import CloudUploadIcon from '~icons/mdi/cloud-upload-outline'
 import FolderOpenIcon from '~icons/mdi/folder-open-outline'
 import VideoIcon from '~icons/mdi/video-outline'

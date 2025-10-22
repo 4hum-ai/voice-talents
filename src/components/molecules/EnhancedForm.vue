@@ -208,10 +208,22 @@
     <div
       class="flex items-center justify-end space-x-4 border-t border-gray-200 pt-6 dark:border-gray-700"
     >
-      <Button v-if="showCancel" variant="outline" @click="handleCancel" :disabled="loading">
+      <Button
+        v-if="showCancel"
+        variant="outline"
+        shortcut="Escape"
+        @click="handleCancel"
+        :disabled="loading"
+      >
         Cancel
       </Button>
-      <Button type="submit" variant="primary" :loading="loading" :disabled="!isValid || loading">
+      <Button
+        type="submit"
+        variant="primary"
+        shortcut="Enter"
+        :loading="loading"
+        :disabled="!isValid || loading"
+      >
         {{ submitText }}
       </Button>
     </div>

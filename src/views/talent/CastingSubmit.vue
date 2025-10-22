@@ -216,7 +216,9 @@
             <!-- Submit Actions -->
             <div class="border-border flex items-center justify-between border-t pt-6">
               <div class="flex items-center space-x-2">
-                <Button variant="outline" @click="$router.back()"> Cancel </Button>
+                <Button variant="outline" shortcut="Escape" @click="$router.back()">
+                  Cancel
+                </Button>
                 <span v-if="hasUnsavedChanges" class="text-muted-foreground text-xs">
                   • Unsaved changes
                 </span>
@@ -224,6 +226,7 @@
               <div class="flex space-x-3">
                 <Button
                   variant="outline"
+                  shortcut="Ctrl+S"
                   @click="saveDraft"
                   :disabled="isSubmitting || isSavingDraft"
                 >
@@ -233,6 +236,7 @@
                   variant="primary"
                   type="submit"
                   icon="mdi:send"
+                  shortcut="Enter"
                   :disabled="isSubmitting || isSavingDraft || !isFormValid"
                 >
                   {{ isSubmitting ? 'Submitting...' : 'Submit Proposal' }}

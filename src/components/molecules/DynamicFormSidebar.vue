@@ -206,13 +206,9 @@
               >
                 <div class="flex justify-end space-x-3">
                   <slot name="cancel-button" :handlers="{ close: () => $emit('close') }">
-                    <button
-                      type="button"
-                      class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-                      @click="$emit('close')"
-                    >
+                    <Button variant="outline" size="sm" shortcut="Escape" @click="$emit('close')">
                       Cancel
-                    </button>
+                    </Button>
                   </slot>
                   <slot
                     name="submit-button"
@@ -228,6 +224,7 @@
                       :loading="loading"
                       variant="danger"
                       size="sm"
+                      shortcut="Enter"
                       @click="handleSubmit"
                     >
                       {{ submitText }}

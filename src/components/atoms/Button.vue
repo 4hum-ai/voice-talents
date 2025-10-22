@@ -6,6 +6,7 @@
     :aria-label="ariaLabel"
     :aria-disabled="disabled || loading"
     @click="handleClick"
+    @keydown="handleKeydown"
   >
     <!-- Loading spinner -->
     <span
@@ -28,12 +29,18 @@
       <Icon :name="icon" :class="iconClasses" :size="iconPixelSize" aria-hidden="true" />
       <span :class="textClasses">
         <slot />
+        <span v-if="formattedShortcut" class="ml-1 text-xs opacity-70">
+          ({{ formattedShortcut }})
+        </span>
       </span>
     </template>
 
     <!-- Text only -->
     <span v-else-if="$slots.default" :class="textClasses">
       <slot />
+      <span v-if="formattedShortcut" class="ml-1 text-xs opacity-70">
+        ({{ formattedShortcut }})
+      </span>
     </span>
 
     <!-- Fallback for accessibility -->
@@ -74,6 +81,10 @@ interface Props {
   customClass?: string
   /** ARIA label for accessibility */
   ariaLabel?: string
+  /** Keyboard shortcut key (e.g., 'Escape', 'Enter', 'Ctrl+S') */
+  shortcut?: string
+  /** Whether to show shortcut in button label */
+  showShortcut?: boolean
 }
 
 interface Emits {
@@ -88,6 +99,7 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   rounded: false,
   fullWidth: false,
+  showShortcut: true,
 })
 
 const emit = defineEmits<Emits>()
@@ -178,4 +190,57 @@ const handleClick = (event: MouseEvent) => {
     emit('click', event)
   }
 }
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (props.disabled || props.loading || !props.shortcut) return
+
+  // Parse shortcut key
+  const shortcutKey = props.shortcut.toLowerCase()
+  const isCtrl = shortcutKey.includes('ctrl')
+  const isAlt = shortcutKey.includes('alt')
+  const isShift = shortcutKey.includes('shift')
+  const key = shortcutKey.replace(/^(ctrl\+|alt\+|shift\+)/, '')
+
+  // Check if the pressed key matches the shortcut
+  let matches = false
+
+  if (key === 'escape' && event.key === 'Escape') {
+    matches = true
+  } else if (key === 'enter' && event.key === 'Enter') {
+    matches = true
+  } else if (key === 'space' && event.code === 'Space') {
+    matches = true
+  } else if (key.length === 1 && event.key.toLowerCase() === key) {
+    matches = true
+  }
+
+  // Check modifier keys
+  if (matches) {
+    if (isCtrl && !event.ctrlKey) matches = false
+    if (isAlt && !event.altKey) matches = false
+    if (isShift && !event.shiftKey) matches = false
+    if (!isCtrl && event.ctrlKey) matches = false
+    if (!isAlt && event.altKey) matches = false
+    if (!isShift && event.shiftKey) matches = false
+  }
+
+  if (matches) {
+    event.preventDefault()
+    event.stopPropagation()
+    emit('click', event as unknown as MouseEvent)
+  }
+}
+
+// Format shortcut for display
+const formattedShortcut = computed(() => {
+  if (!props.shortcut || !props.showShortcut) return ''
+
+  return props.shortcut
+    .replace(/ctrl\+/gi, 'Ctrl+')
+    .replace(/alt\+/gi, 'Alt+')
+    .replace(/shift\+/gi, 'Shift+')
+    .replace(/escape/gi, 'Esc')
+    .replace(/enter/gi, 'Enter')
+    .replace(/space/gi, 'Space')
+})
 </script>

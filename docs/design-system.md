@@ -122,6 +122,79 @@ The Design System is available at `/admin/design` and requires authentication. I
 - **Documentation**: Living documentation of your component library
 - **Onboarding**: New team members can explore components interactively
 
+## Keyboard Shortcuts
+
+The application includes comprehensive keyboard shortcut support to improve user experience and accessibility.
+
+### Button Component Shortcuts
+
+The `Button` component supports keyboard shortcuts through the `shortcut` prop:
+
+```vue
+<Button shortcut="Escape" @click="handleCancel">Cancel</Button>
+<Button shortcut="Enter" @click="handleSubmit">Submit</Button>
+<Button shortcut="Ctrl+S" @click="handleSave">Save</Button>
+```
+
+### Supported Shortcut Formats
+
+- **Single Keys**: `Escape`, `Enter`, `Space`
+- **Letter Keys**: `s`, `c`, `d` (case-insensitive)
+- **Modifier Combinations**: `Ctrl+S`, `Alt+Enter`, `Shift+Escape`
+
+### Visual Indicators
+
+Buttons automatically display keyboard shortcuts in their labels when the `showShortcut` prop is enabled (default: true):
+
+```vue
+<!-- Shows "Cancel (Esc)" -->
+<Button shortcut="Escape">Cancel</Button>
+
+<!-- Shows "Save (Ctrl+S)" -->
+<Button shortcut="Ctrl+S">Save</Button>
+```
+
+### Common Shortcut Patterns
+
+#### Cancel Actions
+
+```vue
+<Button variant="outline" shortcut="Escape" @click="handleCancel">
+  Cancel
+</Button>
+```
+
+#### Submit Actions
+
+```vue
+<Button type="submit" shortcut="Enter" @click="handleSubmit">
+  Submit
+</Button>
+```
+
+#### Save Actions
+
+```vue
+<Button shortcut="Ctrl+S" @click="handleSave">
+  Save Draft
+</Button>
+```
+
+### Implementation Guidelines
+
+1. **Consistency**: Use the same shortcuts across similar actions
+   - `Escape` for all cancel/close actions
+   - `Enter` for all submit/confirm actions
+   - `Ctrl+S` for save actions
+
+2. **Accessibility**: Always provide visual indicators for shortcuts
+3. **Conflict Prevention**: Avoid conflicts with browser shortcuts
+4. **User Feedback**: Ensure shortcuts work as expected and provide feedback
+
+### Component Integration
+
+Keyboard shortcuts are automatically handled by the Button component and don't require additional event listeners. The shortcuts work when the button is focused or when the shortcut is pressed globally (depending on the context).
+
 ## Future Enhancements
 
 Potential improvements to consider:
@@ -132,3 +205,4 @@ Potential improvements to consider:
 - **Theme Switching**: Test components in different color schemes
 - **Responsive Testing**: View components at different screen sizes
 - **Export Examples**: Generate code snippets for documentation
+- **Keyboard Shortcut Testing**: Interactive testing of keyboard shortcuts in the design system

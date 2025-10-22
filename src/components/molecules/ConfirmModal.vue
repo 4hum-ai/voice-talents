@@ -27,13 +27,14 @@
       </div>
 
       <div class="mt-4 flex justify-end gap-2">
-        <Button variant="outline" size="sm" @click="$emit('cancel')">
+        <Button variant="outline" size="sm" shortcut="Escape" @click="$emit('cancel')">
           {{ cancelLabel || 'Cancel' }}
         </Button>
         <Button
           :disabled="!isConfirmEnabled"
           :variant="isConfirmEnabled ? 'danger' : 'default'"
           size="sm"
+          shortcut="Enter"
           @click="handleConfirm"
         >
           {{ confirmLabel || 'Confirm' }}
