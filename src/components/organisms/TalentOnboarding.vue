@@ -298,68 +298,45 @@
                 </div>
 
                 <div class="mx-auto max-w-4xl">
-                  <!-- Search/Filter Section -->
-                  <div class="mb-4">
-                    <div class="relative">
-                      <Icon
-                        name="mdi:magnify"
-                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
-                      />
-                      <input
-                        v-model="languageSearchQuery"
-                        type="text"
-                        placeholder="Search languages..."
-                        class="w-full rounded-lg border border-gray-200 bg-white px-10 py-2 text-sm placeholder-gray-500 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
-                      />
-                    </div>
-                  </div>
-
                   <!-- Language Grid -->
-                  <div
-                    class="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3 lg:grid-cols-4"
-                  >
-                    <label
-                      v-for="language in filteredLanguageOptions"
+                  <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                    <div
+                      v-for="language in languageOptions"
                       :key="language.value"
-                      class="group cursor-pointer"
+                      class="cursor-pointer rounded-lg border-2 border-gray-200 bg-white p-4 text-center transition-all hover:border-gray-300"
+                      :class="{
+                        'border-indigo-500 bg-indigo-50': profileData.languages.includes(
+                          language.value,
+                        ),
+                        'border-gray-200 bg-white': !profileData.languages.includes(language.value),
+                      }"
+                      @click="toggleLanguage(language.value)"
                     >
-                      <input
-                        v-model="profileData.languages"
-                        :value="language.value"
-                        type="checkbox"
-                        class="sr-only"
-                      />
-                      <div
-                        class="relative rounded-lg border border-gray-200 bg-white p-3 transition-colors group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 hover:border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:group-has-[:checked]:border-indigo-400 dark:group-has-[:checked]:bg-indigo-900/20"
-                      >
-                        <!-- Selection Checkmark -->
-                        <div
-                          class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-indigo-500 opacity-0 transition-opacity group-has-[:checked]:opacity-100"
-                        >
-                          <Icon name="mdi:check" class="h-3 w-3 text-white" />
-                        </div>
-
-                        <!-- Flag and Language Content -->
-                        <div class="flex items-center space-x-3">
-                          <!-- Flag -->
-                          <div class="h-6 w-8 overflow-hidden rounded">
-                            <CountryFlag
-                              :country-code="language.countryCode"
-                              size="sm"
-                              variant="rounded"
-                              class="h-full w-full grayscale transition-all group-has-[:checked]:grayscale-0"
-                            />
-                          </div>
-
-                          <!-- Language Label -->
-                          <span
-                            class="text-sm font-medium text-gray-700 transition-colors group-has-[:checked]:text-indigo-700 dark:text-gray-300 dark:group-has-[:checked]:text-indigo-300"
-                          >
-                            {{ language.label }}
-                          </span>
-                        </div>
+                      <!-- Flag as full background -->
+                      <div class="mb-3 h-16 w-full overflow-hidden rounded-lg">
+                        <CountryFlag
+                          :country-code="language.countryCode"
+                          size="lg"
+                          variant="rounded"
+                          class="h-full w-full"
+                          :class="{
+                            grayscale: !profileData.languages.includes(language.value),
+                            'grayscale-0': profileData.languages.includes(language.value),
+                          }"
+                        />
                       </div>
-                    </label>
+
+                      <!-- Language Label -->
+                      <span
+                        class="text-sm font-medium"
+                        :class="{
+                          'text-indigo-700': profileData.languages.includes(language.value),
+                          'text-gray-700': !profileData.languages.includes(language.value),
+                        }"
+                      >
+                        {{ language.label }}
+                      </span>
+                    </div>
                   </div>
 
                   <div
@@ -923,9 +900,6 @@ const pricingData = reactive({
   notes: '',
 })
 
-// Language search query
-const languageSearchQuery = ref('')
-
 // Options
 const voiceTypeOptions = [
   { value: 'narrator', label: 'Narrator', icon: 'mdi:book-open-variant', color: 'bg-blue-500' },
@@ -969,18 +943,6 @@ const selectedVoiceTypes = computed(() => {
   return voiceTypeOptions.filter((option) => profileData.voiceTypes.includes(option.value))
 })
 
-const filteredLanguageOptions = computed(() => {
-  if (!languageSearchQuery.value.trim()) {
-    return languageOptions
-  }
-
-  const query = languageSearchQuery.value.toLowerCase().trim()
-  return languageOptions.filter(
-    (language) =>
-      language.label.toLowerCase().includes(query) || language.value.toLowerCase().includes(query),
-  )
-})
-
 const canProceedToNext = computed(() => {
   switch (currentStep.value) {
     case 1:
@@ -1008,6 +970,15 @@ const canProceedToNext = computed(() => {
 const getVoiceTypeColor = (voiceTypeValue: string) => {
   const voiceType = voiceTypeOptions.find((vt) => vt.value === voiceTypeValue)
   return voiceType?.color || 'bg-gray-500'
+}
+
+const toggleLanguage = (languageValue: string) => {
+  const index = profileData.languages.indexOf(languageValue)
+  if (index > -1) {
+    profileData.languages.splice(index, 1)
+  } else {
+    profileData.languages.push(languageValue)
+  }
 }
 
 const nextStep = () => {
