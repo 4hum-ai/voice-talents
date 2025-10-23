@@ -73,7 +73,9 @@
                   <Icon name="mdi:microphone" class="h-16 w-16 text-white" />
                 </div>
                 <div>
-                  <h3 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceAct! 🎙️</h3>
+                  <h3 class="text-foreground mb-4 text-3xl font-bold">
+                    Welcome to VoiceTalents! 🎙️
+                  </h3>
                   <p class="text-muted-foreground mx-auto max-w-2xl text-lg">
                     Let's get you set up for success! We'll help you create a professional profile
                     that showcases your voice acting talent.
@@ -295,35 +297,92 @@
                   </p>
                 </div>
 
-                <div class="mx-auto max-w-4xl">
+                <div class="mx-auto max-w-5xl">
+                  <!-- Search/Filter Section -->
+                  <div class="mb-6">
+                    <div class="relative">
+                      <Icon
+                        name="mdi:magnify"
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        v-model="languageSearchQuery"
+                        type="text"
+                        placeholder="Search languages..."
+                        class="w-full rounded-lg border border-gray-200 bg-white px-10 py-3 text-sm placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Language Grid -->
                   <div
-                    class="grid max-h-96 grid-cols-1 gap-3 overflow-y-auto md:grid-cols-2 lg:grid-cols-3"
+                    class="grid max-h-96 grid-cols-1 gap-4 overflow-y-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                   >
-                    <label v-for="language in languageOptions" :key="language.value" class="group">
+                    <label
+                      v-for="language in filteredLanguageOptions"
+                      :key="language.value"
+                      class="group relative"
+                    >
                       <input
                         v-model="profileData.languages"
                         :value="language.value"
                         type="checkbox"
                         class="sr-only"
+                        :aria-describedby="`language-${language.value}-description`"
+                        :aria-label="`Select ${language.label} language`"
                       />
                       <div
-                        class="cursor-pointer rounded-lg border border-gray-200 p-3 transition-all duration-200 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 hover:border-gray-400 dark:border-gray-600 dark:group-has-[:checked]:bg-indigo-900/20 dark:hover:border-gray-500"
+                        class="relative cursor-pointer rounded-xl border-2 border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 group-has-[:checked]:shadow-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-indigo-300 hover:shadow-md dark:border-gray-600 dark:bg-gray-800 dark:group-has-[:checked]:border-indigo-400 dark:group-has-[:checked]:bg-indigo-900/30 dark:focus-within:ring-indigo-400 dark:hover:border-indigo-400"
+                        :id="`language-${language.value}-description`"
+                        role="checkbox"
+                        :aria-checked="profileData.languages.includes(language.value)"
+                        tabindex="0"
+                        @keydown.enter.prevent="
+                          ($event.target as HTMLElement).querySelector('input')?.click()
+                        "
+                        @keydown.space.prevent="
+                          ($event.target as HTMLElement).querySelector('input')?.click()
+                        "
                       >
-                        <div class="flex items-center">
-                          <div
-                            :class="`h-6 w-8 bg-gray-400 group-has-[:checked]:${getLanguageColor(language.value)} mr-3 flex items-center justify-center rounded transition-all duration-200`"
-                          >
-                            <CountryFlag
-                              :country-code="language.countryCode"
-                              size="sm"
-                              variant="rounded"
-                              class="h-4 w-6 grayscale transition-all duration-200 group-has-[:checked]:grayscale-0"
-                            />
-                          </div>
-                          <span class="text-foreground text-sm font-medium">{{
-                            language.label
-                          }}</span>
+                        <!-- Selection Checkmark -->
+                        <div
+                          class="absolute -top-1 -right-1 h-6 w-6 rounded-full bg-indigo-500 opacity-0 transition-all duration-300 group-has-[:checked]:opacity-100"
+                        >
+                          <Icon name="mdi:check" class="h-4 w-4 text-white" />
                         </div>
+
+                        <!-- Flag and Language Content -->
+                        <div class="flex flex-col items-center space-y-3">
+                          <!-- Flag Container -->
+                          <div class="relative">
+                            <div
+                              class="h-12 w-16 overflow-hidden rounded-lg shadow-sm transition-all duration-300 group-has-[:checked]:scale-105"
+                            >
+                              <CountryFlag
+                                :country-code="language.countryCode"
+                                size="md"
+                                variant="rounded"
+                                class="h-full w-full grayscale transition-all duration-300 group-has-[:checked]:grayscale-0"
+                              />
+                            </div>
+                            <!-- Flag overlay for selected state -->
+                            <div
+                              class="absolute inset-0 rounded-lg bg-indigo-500/20 opacity-0 transition-opacity duration-300 group-has-[:checked]:opacity-100"
+                            ></div>
+                          </div>
+
+                          <!-- Language Label -->
+                          <span
+                            class="text-center text-sm font-semibold text-gray-700 transition-colors duration-300 group-has-[:checked]:text-indigo-700 dark:text-gray-300 dark:group-has-[:checked]:text-indigo-300"
+                          >
+                            {{ language.label }}
+                          </span>
+                        </div>
+
+                        <!-- Hover Effect Overlay -->
+                        <div
+                          class="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                        ></div>
                       </div>
                     </label>
                   </div>
@@ -728,7 +787,9 @@
                   <Icon name="mdi:check" class="h-12 w-12 text-white" />
                 </div>
                 <div>
-                  <h3 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceAct! 🎉</h3>
+                  <h3 class="text-foreground mb-4 text-3xl font-bold">
+                    Welcome to VoiceTalents! 🎉
+                  </h3>
                   <p class="text-muted-foreground mx-auto max-w-2xl text-lg">
                     Your profile is complete and you're ready to start your voice acting journey.
                     Let's get you connected with amazing opportunities!
@@ -887,6 +948,9 @@ const pricingData = reactive({
   notes: '',
 })
 
+// Language search query
+const languageSearchQuery = ref('')
+
 // Options
 const voiceTypeOptions = [
   { value: 'narrator', label: 'Narrator', icon: 'mdi:book-open-variant', color: 'bg-blue-500' },
@@ -903,46 +967,24 @@ const voiceTypeOptions = [
 
 const languageOptions = [
   // English variants
-  { value: 'English (US)', label: 'English (US)', countryCode: 'us', color: 'bg-blue-500' },
-  { value: 'English (UK)', label: 'English (UK)', countryCode: 'gb', color: 'bg-red-500' },
-  { value: 'English (AU)', label: 'English (Australia)', countryCode: 'au', color: 'bg-green-500' },
-  { value: 'English (CA)', label: 'English (Canada)', countryCode: 'ca', color: 'bg-red-600' },
+  { value: 'English', label: 'English', countryCode: 'uk', color: 'bg-blue-500' },
 
   // ASEAN Countries
   { value: 'Vietnamese', label: 'Vietnamese', countryCode: 'vn', color: 'bg-red-500' },
   { value: 'Thai', label: 'Thai', countryCode: 'th', color: 'bg-red-600' },
-  { value: 'Indonesian', label: 'Indonesian', countryCode: 'id', color: 'bg-red-500' },
-  { value: 'Malay', label: 'Malay', countryCode: 'my', color: 'bg-blue-600' },
-  { value: 'Filipino', label: 'Filipino', countryCode: 'ph', color: 'bg-blue-500' },
-  { value: 'Burmese', label: 'Burmese', countryCode: 'mm', color: 'bg-yellow-500' },
-  { value: 'Khmer', label: 'Khmer', countryCode: 'kh', color: 'bg-blue-500' },
-  { value: 'Lao', label: 'Lao', countryCode: 'la', color: 'bg-red-500' },
-  { value: 'Tamil', label: 'Tamil', countryCode: 'lk', color: 'bg-orange-500' },
-  { value: 'Bengali', label: 'Bengali', countryCode: 'bd', color: 'bg-green-500' },
 
   // Other major languages
-  { value: 'Spanish', label: 'Spanish', countryCode: 'es', color: 'bg-red-500' },
   { value: 'French', label: 'French', countryCode: 'fr', color: 'bg-blue-500' },
   { value: 'German', label: 'German', countryCode: 'de', color: 'bg-yellow-500' },
   { value: 'Italian', label: 'Italian', countryCode: 'it', color: 'bg-green-500' },
-  { value: 'Portuguese', label: 'Portuguese', countryCode: 'pt', color: 'bg-green-600' },
   { value: 'Japanese', label: 'Japanese', countryCode: 'jp', color: 'bg-red-500' },
   { value: 'Korean', label: 'Korean', countryCode: 'kr', color: 'bg-blue-500' },
   {
-    value: 'Chinese (Mandarin)',
-    label: 'Chinese (Mandarin)',
+    value: 'Chinese',
+    label: 'Chinese',
     countryCode: 'cn',
     color: 'bg-red-500',
   },
-  {
-    value: 'Chinese (Cantonese)',
-    label: 'Chinese (Cantonese)',
-    countryCode: 'hk',
-    color: 'bg-red-500',
-  },
-  { value: 'Arabic', label: 'Arabic', countryCode: 'sa', color: 'bg-green-500' },
-  { value: 'Russian', label: 'Russian', countryCode: 'ru', color: 'bg-blue-500' },
-  { value: 'Hindi', label: 'Hindi', countryCode: 'in', color: 'bg-orange-500' },
 ]
 
 // Computed
@@ -950,6 +992,18 @@ const showOnboarding = computed(() => props.show)
 
 const selectedVoiceTypes = computed(() => {
   return voiceTypeOptions.filter((option) => profileData.voiceTypes.includes(option.value))
+})
+
+const filteredLanguageOptions = computed(() => {
+  if (!languageSearchQuery.value.trim()) {
+    return languageOptions
+  }
+
+  const query = languageSearchQuery.value.toLowerCase().trim()
+  return languageOptions.filter(
+    (language) =>
+      language.label.toLowerCase().includes(query) || language.value.toLowerCase().includes(query),
+  )
 })
 
 const canProceedToNext = computed(() => {
@@ -981,11 +1035,6 @@ const getVoiceTypeColor = (voiceTypeValue: string) => {
   return voiceType?.color || 'bg-gray-500'
 }
 
-const getLanguageColor = (languageValue: string) => {
-  const language = languageOptions.find((lang) => lang.value === languageValue)
-  return language?.color || 'bg-gray-500'
-}
-
 const nextStep = () => {
   if (currentStep.value < totalSteps && canProceedToNext.value) {
     transitionName.value = 'slide-left'
@@ -1014,7 +1063,7 @@ const completeOnboarding = async () => {
     // Use the new onboarding system
     completeTalentOnboarding(onboardingData)
 
-    success('Welcome to VoiceAct! Your profile is ready to go.')
+    success('Welcome to VoiceTalents! Your profile is ready to go.')
     emit('complete')
   } catch {
     error('Failed to complete onboarding. Please try again.')
