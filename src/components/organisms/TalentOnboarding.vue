@@ -297,9 +297,9 @@
                   </p>
                 </div>
 
-                <div class="mx-auto max-w-5xl">
+                <div class="mx-auto max-w-4xl">
                   <!-- Search/Filter Section -->
-                  <div class="mb-6">
+                  <div class="mb-4">
                     <div class="relative">
                       <Icon
                         name="mdi:magnify"
@@ -309,80 +309,55 @@
                         v-model="languageSearchQuery"
                         type="text"
                         placeholder="Search languages..."
-                        class="w-full rounded-lg border border-gray-200 bg-white px-10 py-3 text-sm placeholder-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                        class="w-full rounded-lg border border-gray-200 bg-white px-10 py-2 text-sm placeholder-gray-500 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
                       />
                     </div>
                   </div>
 
                   <!-- Language Grid -->
                   <div
-                    class="grid max-h-96 grid-cols-1 gap-4 overflow-y-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                    class="grid max-h-80 grid-cols-2 gap-2 overflow-y-auto md:grid-cols-3 lg:grid-cols-4"
                   >
                     <label
                       v-for="language in filteredLanguageOptions"
                       :key="language.value"
-                      class="group relative"
+                      class="group cursor-pointer"
                     >
                       <input
                         v-model="profileData.languages"
                         :value="language.value"
                         type="checkbox"
                         class="sr-only"
-                        :aria-describedby="`language-${language.value}-description`"
-                        :aria-label="`Select ${language.label} language`"
                       />
                       <div
-                        class="relative cursor-pointer rounded-xl border-2 border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 group-has-[:checked]:shadow-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-indigo-300 hover:shadow-md dark:border-gray-600 dark:bg-gray-800 dark:group-has-[:checked]:border-indigo-400 dark:group-has-[:checked]:bg-indigo-900/30 dark:focus-within:ring-indigo-400 dark:hover:border-indigo-400"
-                        :id="`language-${language.value}-description`"
-                        role="checkbox"
-                        :aria-checked="profileData.languages.includes(language.value)"
-                        tabindex="0"
-                        @keydown.enter.prevent="
-                          ($event.target as HTMLElement).querySelector('input')?.click()
-                        "
-                        @keydown.space.prevent="
-                          ($event.target as HTMLElement).querySelector('input')?.click()
-                        "
+                        class="relative rounded-lg border border-gray-200 bg-white p-3 transition-colors group-has-[:checked]:border-indigo-500 group-has-[:checked]:bg-indigo-50 hover:border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:group-has-[:checked]:border-indigo-400 dark:group-has-[:checked]:bg-indigo-900/20"
                       >
                         <!-- Selection Checkmark -->
                         <div
-                          class="absolute -top-1 -right-1 h-6 w-6 rounded-full bg-indigo-500 opacity-0 transition-all duration-300 group-has-[:checked]:opacity-100"
+                          class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-indigo-500 opacity-0 transition-opacity group-has-[:checked]:opacity-100"
                         >
-                          <Icon name="mdi:check" class="h-4 w-4 text-white" />
+                          <Icon name="mdi:check" class="h-3 w-3 text-white" />
                         </div>
 
                         <!-- Flag and Language Content -->
-                        <div class="flex flex-col items-center space-y-3">
-                          <!-- Flag Container -->
-                          <div class="relative">
-                            <div
-                              class="h-12 w-16 overflow-hidden rounded-lg shadow-sm transition-all duration-300 group-has-[:checked]:scale-105"
-                            >
-                              <CountryFlag
-                                :country-code="language.countryCode"
-                                size="md"
-                                variant="rounded"
-                                class="h-full w-full grayscale transition-all duration-300 group-has-[:checked]:grayscale-0"
-                              />
-                            </div>
-                            <!-- Flag overlay for selected state -->
-                            <div
-                              class="absolute inset-0 rounded-lg bg-indigo-500/20 opacity-0 transition-opacity duration-300 group-has-[:checked]:opacity-100"
-                            ></div>
+                        <div class="flex items-center space-x-3">
+                          <!-- Flag -->
+                          <div class="h-6 w-8 overflow-hidden rounded">
+                            <CountryFlag
+                              :country-code="language.countryCode"
+                              size="sm"
+                              variant="rounded"
+                              class="h-full w-full grayscale transition-all group-has-[:checked]:grayscale-0"
+                            />
                           </div>
 
                           <!-- Language Label -->
                           <span
-                            class="text-center text-sm font-semibold text-gray-700 transition-colors duration-300 group-has-[:checked]:text-indigo-700 dark:text-gray-300 dark:group-has-[:checked]:text-indigo-300"
+                            class="text-sm font-medium text-gray-700 transition-colors group-has-[:checked]:text-indigo-700 dark:text-gray-300 dark:group-has-[:checked]:text-indigo-300"
                           >
                             {{ language.label }}
                           </span>
                         </div>
-
-                        <!-- Hover Effect Overlay -->
-                        <div
-                          class="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                        ></div>
                       </div>
                     </label>
                   </div>
