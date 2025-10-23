@@ -6,14 +6,18 @@
       >
         <Icon name="mdi:account" class="h-8 w-8 text-white" />
       </div>
-      <h2 class="text-foreground mb-2 text-2xl font-bold">Account Information</h2>
-      <p class="text-muted-foreground">Set up your company details and contact information</p>
+      <h2 class="text-foreground mb-2 text-2xl font-bold">Let's Get to Know Your Company</h2>
+      <p class="text-muted-foreground">
+        Tell us about your company so we can help you find the perfect voice talent
+      </p>
     </div>
 
     <div class="bg-card border-border rounded-lg border p-8">
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div class="lg:col-span-2">
-          <label class="text-foreground mb-2 block text-sm font-medium"> Company Name * </label>
+          <label class="text-foreground mb-2 block text-sm font-medium">
+            What's your company name? *
+          </label>
           <input
             :value="modelValue.companyName"
             @input="updateField('companyName', ($event.target as HTMLInputElement).value)"
@@ -25,7 +29,9 @@
         </div>
 
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium"> Contact Name * </label>
+          <label class="text-foreground mb-2 block text-sm font-medium">
+            What should we call you? *
+          </label>
           <input
             :value="modelValue.contactName"
             @input="updateField('contactName', ($event.target as HTMLInputElement).value)"
@@ -37,7 +43,9 @@
         </div>
 
         <div>
-          <label class="text-foreground mb-2 block text-sm font-medium"> Email Address * </label>
+          <label class="text-foreground mb-2 block text-sm font-medium">
+            What's your email address? *
+          </label>
           <input
             :value="modelValue.email"
             @input="updateField('email', ($event.target as HTMLInputElement).value)"
@@ -72,7 +80,7 @@
 
         <div class="lg:col-span-2">
           <label class="text-foreground mb-2 block text-sm font-medium">
-            Company Description
+            Tell us about your company
           </label>
           <textarea
             :value="modelValue.description"

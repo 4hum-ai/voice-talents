@@ -6,8 +6,10 @@
       >
         <Icon name="mdi:cog" class="h-8 w-8 text-white" />
       </div>
-      <h2 class="text-foreground mb-2 text-2xl font-bold">Job Preferences</h2>
-      <p class="text-muted-foreground">Configure your workflow and approval settings</p>
+      <h2 class="text-foreground mb-2 text-2xl font-bold">How Would You Like to Work?</h2>
+      <p class="text-muted-foreground">
+        Let's set up your workflow preferences to make hiring voice talent smooth and easy
+      </p>
     </div>
 
     <div class="bg-card border-border rounded-lg border p-8">
@@ -16,7 +18,7 @@
           <div>
             <h3 class="text-foreground text-sm font-medium">Auto-approve Applications</h3>
             <p class="text-muted-foreground text-sm">
-              Automatically approve applications that meet your criteria
+              Automatically approve applications that meet your criteria (saves you time!)
             </p>
           </div>
           <input
@@ -31,7 +33,7 @@
           <div>
             <h3 class="text-foreground text-sm font-medium">Require NDA</h3>
             <p class="text-muted-foreground text-sm">
-              Require voice actors to sign an NDA before starting work
+              Require voice actors to sign an NDA before starting work (for confidential projects)
             </p>
           </div>
           <input
@@ -46,7 +48,7 @@
           <div>
             <h3 class="text-foreground text-sm font-medium">Require Portfolio</h3>
             <p class="text-muted-foreground text-sm">
-              Only allow voice actors with portfolios to apply
+              Only allow voice actors with portfolios to apply (ensures quality work)
             </p>
           </div>
           <input
@@ -64,7 +66,7 @@
           <div>
             <h3 class="text-foreground text-sm font-medium">Public Profile</h3>
             <p class="text-muted-foreground text-sm">
-              Make your client profile visible to voice actors
+              Make your client profile visible to voice actors (helps build trust)
             </p>
           </div>
           <input

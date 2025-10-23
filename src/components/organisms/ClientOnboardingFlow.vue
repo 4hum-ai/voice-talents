@@ -82,9 +82,9 @@
             >
               <Icon name="mdi:check-circle" class="h-10 w-10 text-white" />
             </div>
-            <h1 class="text-foreground mb-4 text-3xl font-bold">You're All Set!</h1>
+            <h1 class="text-foreground mb-4 text-3xl font-bold">You're All Set! 🎉</h1>
             <p class="text-muted-foreground mb-8 text-lg">
-              Your client account is ready. Start posting jobs and finding amazing voice talent.
+              Your client account is ready! Start posting jobs and finding amazing voice talent.
             </p>
           </div>
 

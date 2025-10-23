@@ -253,7 +253,7 @@
     </div>
 
     <!-- Talent Onboarding -->
-    <OnboardingFlow
+    <TalentOnboarding
       :show="showTalentOnboarding"
       @complete="completeTalentOnboarding"
       @skip="skipTalentOnboarding"
@@ -279,7 +279,7 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import OnboardingFlow from '@/components/organisms/OnboardingFlow.vue'
+import TalentOnboarding from '@/components/organisms/TalentOnboarding.vue'
 
 const router = useRouter()
 

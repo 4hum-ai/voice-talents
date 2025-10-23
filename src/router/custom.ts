@@ -6,7 +6,7 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../views/LandingPage.vue'),
-    meta: { title: 'VoiceAct - Voice Talent Platform', requiresAuth: false },
+    meta: { title: 'Voice Talent Platform', requiresAuth: false },
   },
 
   // Voice Actor Dashboard

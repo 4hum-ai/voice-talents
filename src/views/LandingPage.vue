@@ -6,11 +6,10 @@
         <div class="flex h-16 items-center justify-between">
           <div class="flex items-center space-x-2">
             <Icon name="mdi:microphone" class="text-primary h-8 w-8" />
-            <h1 class="text-foreground text-xl font-bold">VoiceAct.AI</h1>
+            <h1 class="text-foreground text-xl font-bold">VoiceTalents.AI</h1>
           </div>
           <div class="flex items-center space-x-4">
             <ThemeToggle />
-            <Button variant="ghost" size="sm" @click="$router.push('/auth')"> Sign In </Button>
           </div>
         </div>
       </div>
