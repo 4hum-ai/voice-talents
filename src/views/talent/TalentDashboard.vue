@@ -381,7 +381,7 @@ const mapActivityStatus = (status: string) => {
 
 // Onboarding methods
 const completeTalentOnboarding = () => {
-  success('Welcome to VoiceAct! Your talent profile is ready to go.')
+  success('Welcome to VoiceTalents! Your talent profile is ready to go.')
 }
 
 const skipTalentOnboarding = () => {

@@ -1,4 +1,4 @@
-# 🎙️ VoiceAct — Product Requirements Document (PRD)
+# 🎙️ VoiceTalents — Product Requirements Document (PRD)
 
 ## 1. 📘 Overview
 

@@ -197,9 +197,9 @@
                   <div class="flex items-center justify-between">
                     <span class="text-muted-foreground text-sm">Account Holder:</span>
                     <div class="flex items-center space-x-2">
-                      <span class="text-sm font-medium">VoiceAct Platform</span>
+                      <span class="text-sm font-medium">VoiceTalents Platform</span>
                       <button
-                        @click="copyToClipboard('VoiceAct Platform')"
+                        @click="copyToClipboard('VoiceTalents Platform')"
                         class="text-primary hover:text-primary/80 transition-colors"
                       >
                         <IconMdiContentCopy class="h-4 w-4" />

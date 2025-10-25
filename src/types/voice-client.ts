@@ -1,5 +1,4 @@
 /**
- * VoiceAct - Voice Client Management App
  * TypeScript interfaces for voice client domain models
  */
 

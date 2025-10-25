@@ -5,7 +5,7 @@
 
 import { computed } from 'vue'
 
-export interface ProjectTypeConfig {
+export interface JobType {
   id: string
   label: string
   category: 'commercial' | 'entertainment' | 'educational' | 'corporate' | 'media'
@@ -54,7 +54,7 @@ export interface ProjectTypeConfig {
 }
 
 export function useJobType() {
-  const projectTypeConfigs: Record<string, ProjectTypeConfig> = {
+  const projectTypeConfigs: Record<string, JobType> = {
     // Commercial & Advertising
     commercial: {
       id: 'commercial',
@@ -826,13 +826,58 @@ export function useJobType() {
   }
 
   // Computed properties for easy access
-  const getConfig = (projectType: string): ProjectTypeConfig | null => {
+  const getConfig = (projectType: string): JobType | null => {
     return projectTypeConfigs[projectType] || null
   }
 
-  const getConfigsByCategory = (category: string): ProjectTypeConfig[] => {
+  const getConfigsByCategory = (category: string): JobType[] => {
     return Object.values(projectTypeConfigs).filter((config) => config.category === category)
   }
+
+  // Helper functions for job type display
+  const getJobTypeIcon = (jobTypeId: string): string => {
+    const iconMap: Record<string, string> = {
+      commercial: 'mdi:tv',
+      film_character_dubbing: 'mdi:account-voice',
+      e_learning: 'mdi:school',
+      podcast: 'mdi:podcast',
+      audiobook_narrator: 'mdi:book-music',
+      film_narration: 'mdi:filmstrip',
+      documentary_voice: 'mdi:document-text',
+      character_voice: 'mdi:animation',
+      phone_system: 'mdi:phone',
+      other: 'mdi:microphone',
+    }
+    return iconMap[jobTypeId] || 'mdi:microphone'
+  }
+
+  const getJobTypeColor = (jobTypeId: string): string => {
+    const colorMap: Record<string, string> = {
+      commercial: 'bg-green-500',
+      film_character_dubbing: 'bg-purple-500',
+      e_learning: 'bg-blue-500',
+      podcast: 'bg-pink-500',
+      audiobook_narrator: 'bg-indigo-500',
+      film_narration: 'bg-orange-500',
+      documentary_voice: 'bg-teal-500',
+      character_voice: 'bg-red-500',
+      phone_system: 'bg-gray-500',
+      other: 'bg-yellow-500',
+    }
+    return colorMap[jobTypeId] || 'bg-gray-500'
+  }
+
+  // Computed variable for available job types (for onboarding)
+  const availableJobTypes = computed(() => {
+    return Object.values(projectTypeConfigs).map((config) => ({
+      value: config.id,
+      label: config.label,
+      category: config.category,
+      description: config.description,
+      icon: getJobTypeIcon(config.id),
+      color: getJobTypeColor(config.id),
+    }))
+  })
 
   const getAllConfigs = computed(() => Object.values(projectTypeConfigs))
 
@@ -883,6 +928,7 @@ export function useJobType() {
     // Data
     projectTypeConfigs,
     getAllConfigs,
+    availableJobTypes,
 
     // Getters
     getConfig,

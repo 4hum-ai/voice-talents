@@ -355,7 +355,7 @@ const handleJobCreated = (job: JobPosting) => {
 
 // Client onboarding methods
 const completeClientOnboarding = () => {
-  success('Welcome to VoiceAct! Your client profile is ready to go.')
+  success('Welcome to VoiceTalents! Your client profile is ready to go.')
 }
 
 const skipClientOnboarding = () => {

@@ -1,6 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
 
-// VoiceAct - Voice Actor Management App Routes
 export const customRoutes: RouteRecordRaw[] = [
   // Landing Page
   {
@@ -16,8 +15,8 @@ export const customRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/talent/dashboard',
-    component: () => import('../views/talent/Dashboard.vue'),
-    meta: { title: 'VoiceAct Dashboard', requiresAuth: true, keepAlive: true },
+    component: () => import('../views/talent/TalentDashboard.vue'),
+    meta: { title: 'VoiceTalents Dashboard', requiresAuth: true, keepAlive: true },
   },
 
   // Voice Actor Profile Management

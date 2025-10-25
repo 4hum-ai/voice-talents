@@ -190,6 +190,6 @@ const handleLogout = async () => {
 
 onMounted(() => {
   // In real app, fetch current actor and stats from API
-  console.log('VoiceAct navigation loaded')
+  console.log('VoiceTalents navigation loaded')
 })
 </script>

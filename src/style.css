@@ -497,9 +497,9 @@
   }
 }
 
-/* VoiceAct Specific Styles */
+/* VoiceTalents Specific Styles */
 @layer components {
-  /* VoiceAct Brand Colors */
+  /* VoiceTalents Brand Colors */
   .voiceact-primary {
     @apply bg-purple-600 text-white;
   }
@@ -735,7 +735,7 @@
 }
 
 @layer utilities {
-  /* VoiceAct Utility Classes */
+  /* VoiceTalents Utility Classes */
   .voiceact-gradient {
     background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
   }

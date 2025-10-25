@@ -1,5 +1,5 @@
 /**
- * VoiceAct Mock Data - Voice Client
+ * VoiceTalents Mock Data - Voice Client
  * Comprehensive mock data for all voice client entities
  */
 
