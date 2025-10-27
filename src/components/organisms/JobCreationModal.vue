@@ -329,8 +329,7 @@ const loadDraftData = (draftId: string) => {
     currentDraftId.value = draft.id
 
     // Populate form with draft data
-    jobForm.voiceType =
-      (draft.jobType as 'talent_only' | 'ai_synthesis' | 'hybrid_approach') || 'talent_only'
+    jobForm.voiceType = draft.voiceType || 'talent_only'
     selectedVoiceType.value = jobForm.voiceType
     jobForm.title = draft.title
     jobForm.description = draft.description

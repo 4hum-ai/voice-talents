@@ -477,8 +477,7 @@
       :talent-id="selectedJobForRating?.selectedTalents?.[0] || ''"
       :talent-name="getTalentName(selectedJobForRating?.selectedTalents?.[0] || '')"
       :voice-type="selectedJobForRating?.projectType || ''"
-      :budget="selectedJobForRating?.budget || { min: 0, max: 0, currency: 'USD' }"
-      :timeline="selectedJobForRating?.estimatedDuration || ''"
+      :budget="selectedJobForRating?.budget || { max: 0, currency: 'USD' }"
       :completed-date="selectedJobForRating?.closedDate || selectedJobForRating?.updatedAt || ''"
       @close="
         () => {
@@ -691,31 +690,13 @@ const getTalentName = (talentId: string) => {
 // Download delivery for completed jobs
 const downloadDelivery = (jobId: string) => {
   const job = clientCompletedJobs.value.find((j) => j.id === jobId)
-  if (job && job.deliverables && job.deliverables.length > 0) {
-    const deliverable = job.deliverables[0]
-    if (deliverable.files && deliverable.files.length > 0) {
-      // In a real app, this would trigger actual file downloads
-      deliverable.files.forEach((fileUrl: string, index: number) => {
-        const link = document.createElement('a')
-        link.href = fileUrl
-        link.download = `deliverable-${jobId}-${index + 1}`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      })
-
-      showToast({
-        type: 'success',
-        title: 'Download Started',
-        message: `Downloading ${deliverable.files.length} file(s) from "${deliverable.title}"`,
-      })
-    } else {
-      showToast({
-        type: 'warning',
-        title: 'No Files Available',
-        message: 'No deliverable files found for this job.',
-      })
-    }
+  if (job) {
+    // In a real app, this would trigger actual file downloads
+    showToast({
+      type: 'info',
+      title: 'Download Started',
+      message: `Downloading deliverables for "${job.title}"`,
+    })
   } else {
     showToast({
       type: 'warning',

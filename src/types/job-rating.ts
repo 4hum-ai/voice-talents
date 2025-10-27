@@ -8,9 +8,8 @@ export interface JobRating {
   jobTitle: string
   talentId: string
   talentName: string
-  voiceType: string // Changed from projectType to voiceType
+  voiceType: string
   budget: Budget
-  timeline: string
   completedDate: string
 }
 
@@ -19,9 +18,8 @@ export interface JobRatingModalProps {
   jobTitle: string
   talentId: string
   talentName: string
-  voiceType: string // Changed from projectType to voiceType
+  voiceType: string
   budget: Budget
-  timeline: string
   completedDate: string
   onClose?: () => void
 }

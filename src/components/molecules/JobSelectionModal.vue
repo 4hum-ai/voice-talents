@@ -100,10 +100,7 @@
                         <div>
                           <span class="text-muted-foreground">Budget:</span>
                           <span class="text-foreground ml-1 font-medium">
-                            ${{ job.budget.min.toLocaleString() }} - ${{
-                              job.budget.max.toLocaleString()
-                            }}
-                            {{ job.budget.currency }}
+                            ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
                           </span>
                         </div>
                         <div>
@@ -113,9 +110,9 @@
                           </span>
                         </div>
                         <div>
-                          <span class="text-muted-foreground">Duration:</span>
+                          <span class="text-muted-foreground">Voice Type:</span>
                           <span class="text-foreground ml-1 font-medium">
-                            {{ job.estimatedDuration }}
+                            {{ job.voiceType }}
                           </span>
                         </div>
                         <div>
@@ -129,35 +126,18 @@
                       <div class="mt-3">
                         <div class="text-muted-foreground mb-1 text-xs">Requirements</div>
                         <div class="flex flex-wrap gap-1">
+                          <Chip size="sm" variant="outline">
+                            {{ job.requirements.language }}
+                          </Chip>
+                          <Chip size="sm" variant="secondary">
+                            {{ job.requirements.voiceType }}
+                          </Chip>
                           <Chip
-                            v-for="language in job.requirements.languages.slice(0, 3)"
-                            :key="language"
+                            v-if="job.requirements.gender !== 'any'"
                             size="sm"
                             variant="outline"
                           >
-                            {{ language }}
-                          </Chip>
-                          <Chip
-                            v-for="voiceType in job.requirements.voiceTypes.slice(0, 2)"
-                            :key="voiceType"
-                            size="sm"
-                            variant="secondary"
-                          >
-                            {{ formatVoiceType(voiceType) }}
-                          </Chip>
-                          <Chip
-                            v-if="
-                              job.requirements.languages.length > 3 ||
-                              job.requirements.voiceTypes.length > 2
-                            "
-                            size="sm"
-                            variant="outline"
-                          >
-                            +{{
-                              job.requirements.languages.length -
-                              3 +
-                              (job.requirements.voiceTypes.length - 2)
-                            }}
+                            {{ job.requirements.gender }}
                           </Chip>
                         </div>
                       </div>
@@ -214,7 +194,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import type { VoiceTalent } from '@/types/voice-talent'
-import type { JobPosting } from '@/types/voice-client'
+import type { JobPosting } from '@/types//voice-client'
 import { mockJobPostings } from '@/data/mock-voice-client-data'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
@@ -301,10 +281,6 @@ const formatJobStatus = (status: string) => {
 
 const formatPriority = (priority: string) => {
   return priority.charAt(0).toUpperCase() + priority.slice(1)
-}
-
-const formatVoiceType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
 }
 
 const formatDate = (dateString: string) => {

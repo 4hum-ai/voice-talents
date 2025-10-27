@@ -136,10 +136,6 @@
                 <span class="text-foreground">{{ formatBudget(budget) }}</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Timeline:</span>
-                <span class="text-foreground">{{ timeline }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
                 <span class="text-muted-foreground">Completed:</span>
                 <span class="text-foreground">{{ formatDate(completedDate) }}</span>
               </div>

@@ -53,39 +53,59 @@ export interface VoiceClient extends BaseEntity {
 export interface JobPosting extends BaseEntity {
   clientId: string
   clientName: string
-  campaignId?: string
   title: string
   description: string
-  jobType: 'open_casting' | 'invite_only' | 'urgent_fill' | 'targeted_search'
-  projectType: ProjectType
+  voiceType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  projectType: string
   status: JobStatus
   priority: 'low' | 'medium' | 'high' | 'urgent'
   budget: {
-    min: number
     max: number
     currency: 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND'
   }
   deadline: string
-  startDate?: string
-  estimatedDuration: string // e.g., "2-3 weeks", "1 month"
   requirements: {
-    languages: string[]
-    accents?: string[]
-    voiceTypes: VoiceType[]
-    ageRange?: string
-    gender?: 'male' | 'female' | 'non-binary' | 'any'
-    experience?: 'beginner' | 'intermediate' | 'advanced' | 'professional'
-    specialInstructions?: string
-    quality: 'standard' | 'professional' | 'broadcast'
+    language: string
+    voiceType: VoiceType
+    gender: 'male' | 'female' | 'non-binary' | 'any'
+    specialInstructions: string
+    deliveryFormat: string
+    revisionRounds: string
   }
-  deliverables: JobDeliverable[]
-  files: JobFile[]
+  files: {
+    script?: File
+    referenceAudio?: File
+    additional?: File[]
+  }
+  talentOptions: {
+    isPublic: boolean
+    pickOwn: boolean
+    selectedTalents: string[]
+  }
+  aiSettings?: {
+    voiceModel: string
+    voiceStyle: string
+    emotion: string
+    speed: 'slow' | 'normal' | 'fast'
+    pitch: 'low' | 'normal' | 'high'
+  }
+  premiumFeatures: {
+    talentOutreach: boolean
+    aiMatching: boolean
+    autoPrompts: boolean
+  }
+  paymentDetails: {
+    method: 'direct' | 'online'
+  }
   isPublic: boolean
-  applications: JobApplication[]
-  selectedTalents: string[]
-  totalApplications: number
-  viewCount: number
-  createdDate: string
+  requirePortfolio: boolean
+
+  // Runtime fields (populated after creation)
+  applications?: JobApplication[]
+  selectedTalents?: string[]
+  totalApplications?: number
+  viewCount?: number
+  createdDate?: string
   publishedDate?: string
   closedDate?: string
   lastSaved?: string
@@ -162,33 +182,6 @@ export type JobStatus =
   | 'closed'
   | 'completed'
   | 'cancelled'
-
-// Job Deliverable
-export interface JobDeliverable extends BaseEntity {
-  jobId: string
-  title: string
-  description: string
-  type: 'final_audio' | 'raw_files' | 'processed_audio' | 'documentation'
-  status: 'pending' | 'in_progress' | 'completed' | 'approved'
-  dueDate: string
-  completedDate?: string
-  files: string[]
-  notes?: string
-}
-
-// Job File
-export interface JobFile extends BaseEntity {
-  jobId: string
-  title: string
-  type: 'script' | 'reference' | 'contract' | 'other'
-  fileUrl: string
-  fileName: string
-  fileSize?: number
-  description?: string
-  uploadedBy: string
-  uploadedDate: string
-  isPublic: boolean
-}
 
 // Client Dashboard Statistics
 export interface ClientStats {

@@ -43,9 +43,8 @@
                   <div v-if="castingSession.budget" class="flex justify-between">
                     <span class="text-muted-foreground">Budget Range:</span>
                     <span class="text-foreground">
-                      ${{ castingSession.budget.min.toLocaleString() }} - ${{
-                        castingSession.budget.max.toLocaleString()
-                      }}
+                      ${{ castingSession.budget.max.toLocaleString() }}
+                      {{ castingSession.budget.currency }}
                     </span>
                   </div>
                 </div>
@@ -62,7 +61,7 @@
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">Voice Types:</span>
                     <span class="text-foreground">{{
-                      castingSession.requirements.voiceTypes.map(formatVoiceType).join(', ')
+                      castingSession.requirements.voiceTypes.join(', ')
                     }}</span>
                   </div>
                   <div v-if="castingSession.requirements.experience" class="flex justify-between">
@@ -353,11 +352,6 @@ const loadCastingSession = () => {
 const formatProjectType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
 }
-
-const formatVoiceType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-
 const formatExperience = (experience: string) => {
   return experience.charAt(0).toUpperCase() + experience.slice(1)
 }

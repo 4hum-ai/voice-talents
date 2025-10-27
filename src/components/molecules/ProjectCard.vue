@@ -112,7 +112,7 @@
             size="sm"
             variant="outline"
           >
-            {{ formatVoiceType(voiceType) }}
+            {{ voiceType }}
           </Chip>
         </div>
       </div>
@@ -241,11 +241,6 @@ const formatProjectType = (type: string) => {
 const formatPriority = (priority: string) => {
   return priority.charAt(0).toUpperCase() + priority.slice(1)
 }
-
-const formatVoiceType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-
 const mapProjectStatus = (status: string) => {
   const statusMap: Record<string, string> = {
     open: 'active',

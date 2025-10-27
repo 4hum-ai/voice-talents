@@ -137,9 +137,7 @@
                         {{ job.totalApplications }} applications
                       </span>
                       <span class="text-foreground font-medium">
-                        ${{ (job.budget?.min ?? 0).toLocaleString() }} - ${{
-                          (job.budget?.max ?? 0).toLocaleString()
-                        }}
+                        ${{ (job.budget?.max ?? 0).toLocaleString() }}
                       </span>
                     </div>
                   </div>

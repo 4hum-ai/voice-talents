@@ -183,7 +183,7 @@
                       size="sm"
                       variant="outline"
                     >
-                      {{ formatVoiceType(voiceType) }}
+                      {{ voiceType }}
                     </Chip>
                   </div>
                 </div>
@@ -579,11 +579,6 @@ const formatDate = (dateString: string) => {
 const formatProjectType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
 }
-
-const formatVoiceType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-
 const shareCasting = (session: CastingSession) => {
   const url = `${window.location.origin}/casting/${session.id}`
   if (navigator.share) {

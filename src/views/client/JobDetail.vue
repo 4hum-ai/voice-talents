@@ -58,6 +58,10 @@
                       <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
                     </div>
                     <div class="flex justify-between">
+                      <span class="text-muted-foreground">Voice Type:</span>
+                      <span class="text-foreground">{{ formatVoiceType(job.voiceType) }}</span>
+                    </div>
+                    <div class="flex justify-between">
                       <span class="text-muted-foreground">Deadline:</span>
                       <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
                     </div>
@@ -78,42 +82,52 @@
                   <h3 class="text-foreground mb-3 font-medium">Voice Requirements</h3>
                   <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Style:</span>
-                      <span class="text-foreground">{{ job.voiceStyle || 'Professional' }}</span>
+                      <span class="text-muted-foreground">Language:</span>
+                      <span class="text-foreground">{{ job.requirements.language }}</span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Pace:</span>
-                      <span class="text-foreground">{{ job.pace || 'Medium' }}</span>
+                      <span class="text-muted-foreground">Voice Type:</span>
+                      <span class="text-foreground">{{ job.requirements.voiceType }}</span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Tone:</span>
-                      <span class="text-foreground">{{ job.tone || 'Friendly' }}</span>
+                      <span class="text-muted-foreground">Gender:</span>
+                      <span class="text-foreground">{{ job.requirements.gender }}</span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Duration:</span>
-                      <span class="text-foreground">{{ job.duration || '2-3 minutes' }}</span>
+                      <span class="text-muted-foreground">Delivery Format:</span>
+                      <span class="text-foreground">{{ job.requirements.deliveryFormat }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Revisions:</span>
+                      <span class="text-foreground">{{ job.requirements.revisionRounds }}</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 class="text-foreground mb-3 font-medium">Talent Information</h3>
+                  <h3 class="text-foreground mb-3 font-medium">Talent Options</h3>
                   <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Assigned:</span>
-                      <span class="text-foreground">{{ job.talentName || 'Not assigned' }}</span>
+                      <span class="text-muted-foreground">Visibility:</span>
+                      <span class="text-foreground">{{
+                        job.talentOptions.isPublic ? 'Public' : 'Private'
+                      }}</span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Experience:</span>
-                      <span class="text-foreground">{{ job.talentExperience || '5+ years' }}</span>
+                      <span class="text-muted-foreground">Selection:</span>
+                      <span class="text-foreground">{{
+                        job.talentOptions.pickOwn ? 'Specific Talent' : 'Open Casting'
+                      }}</span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Languages:</span>
-                      <span class="text-foreground">{{ job.talentLanguages || 'English' }}</span>
+                      <span class="text-muted-foreground">Selected:</span>
+                      <span class="text-foreground"
+                        >{{ job.talentOptions.selectedTalents.length }} talent(s)</span
+                      >
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-muted-foreground">Rating:</span>
-                      <span class="text-foreground">{{ job.talentRating || '4.8/5' }}</span>
+                      <span class="text-muted-foreground">Portfolio Required:</span>
+                      <span class="text-foreground">{{ job.requirePortfolio ? 'Yes' : 'No' }}</span>
                     </div>
                   </div>
                 </div>
@@ -178,38 +192,31 @@
             </div>
 
             <!-- Project Files -->
-            <div
-              v-if="job.projectFiles"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
+            <div v-if="job.files" class="bg-card border-border rounded-lg border p-6 shadow-sm">
               <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
               <div class="space-y-4">
                 <!-- Script File -->
                 <div
-                  v-if="job.projectFiles.script"
+                  v-if="job.files.script"
                   class="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
                 >
                   <div class="flex items-center space-x-3">
                     <FileDocumentIcon class="h-8 w-8 text-blue-600" />
                     <div>
                       <h4 class="text-foreground font-medium">
-                        {{ job.projectFiles.script.name }}
+                        {{ job.files.script.name }}
                       </h4>
                       <p class="text-muted-foreground text-sm">
-                        {{ formatFileSize(job.projectFiles.script.size) }} • Script
+                        {{ formatFileSize(job.files.script.size) }} • Script
                       </p>
                     </div>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      @click="downloadFile(job.projectFiles.script)"
-                    >
+                    <Button variant="outline" size="sm" @click="downloadFile(job.files.script)">
                       <DownloadIcon class="mr-2 h-4 w-4" />
                       Download
                     </Button>
-                    <Button variant="outline" size="sm" @click="viewFile(job.projectFiles.script)">
+                    <Button variant="outline" size="sm" @click="viewFile(job.files.script)">
                       <EyeIcon class="mr-2 h-4 w-4" />
                       View
                     </Button>
@@ -218,17 +225,17 @@
 
                 <!-- Reference Audio -->
                 <div
-                  v-if="job.projectFiles.referenceAudio"
+                  v-if="job.files.referenceAudio"
                   class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
                 >
                   <div class="flex items-center space-x-3">
                     <AudioIcon class="h-8 w-8 text-green-600" />
                     <div>
                       <h4 class="text-foreground font-medium">
-                        {{ job.projectFiles.referenceAudio.name }}
+                        {{ job.files.referenceAudio.name }}
                       </h4>
                       <p class="text-muted-foreground text-sm">
-                        {{ formatFileSize(job.projectFiles.referenceAudio.size) }} • Reference Audio
+                        {{ formatFileSize(job.files.referenceAudio.size) }} • Reference Audio
                       </p>
                     </div>
                   </div>
@@ -240,7 +247,7 @@
                     <Button
                       variant="outline"
                       size="sm"
-                      @click="downloadFile(job.projectFiles.referenceAudio)"
+                      @click="downloadFile(job.files.referenceAudio)"
                     >
                       <DownloadIcon class="mr-2 h-4 w-4" />
                       Download
@@ -250,12 +257,12 @@
 
                 <!-- Additional Files -->
                 <div
-                  v-if="job.projectFiles.additional && job.projectFiles.additional.length > 0"
+                  v-if="job.files.additional && job.files.additional.length > 0"
                   class="space-y-3"
                 >
                   <h4 class="text-foreground font-medium">Additional Files</h4>
                   <div
-                    v-for="(file, index) in job.projectFiles.additional"
+                    v-for="(file, index) in job.files.additional"
                     :key="index"
                     class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800/50"
                   >
@@ -371,6 +378,20 @@ import {
   formatFileSize,
 } from '@/types/job-detail'
 
+// Additional formatting function for voice type
+const formatVoiceType = (type: string) => {
+  switch (type) {
+    case 'talent_only':
+      return 'Talent Only'
+    case 'ai_synthesis':
+      return 'AI Synthesis'
+    case 'hybrid_approach':
+      return 'Hybrid Approach'
+    default:
+      return type
+  }
+}
+
 // Icons
 import EditIcon from '~icons/mdi/pencil'
 import CheckIcon from '~icons/mdi/check'
@@ -460,23 +481,39 @@ const loadJobData = () => {
       clientName: 'Acme Studios',
       title: 'Product Commercial Voice Over',
       description: 'Professional voice over for product commercial',
-      jobType: 'open_casting',
+      voiceType: 'talent_only',
       projectType: 'commercial',
       status: 'active',
       priority: 'medium',
-      budget: { min: 1000, max: 2000, currency: 'USD' },
+      budget: { max: 2000, currency: 'USD' },
       deadline: '2024-12-25',
-      estimatedDuration: '2-3 weeks',
       requirements: {
-        languages: ['English'],
-        voiceTypes: ['commercial'],
+        language: 'English',
+        voiceType: 'commercial',
         gender: 'any',
-        experience: 'professional',
         specialInstructions: 'Professional voice over for product commercial',
-        quality: 'professional',
+        deliveryFormat: 'mp3_44khz',
+        revisionRounds: '1',
       },
-      deliverables: [],
-      files: [],
+      files: {
+        script: undefined,
+        referenceAudio: undefined,
+        additional: undefined,
+      },
+      talentOptions: {
+        isPublic: true,
+        pickOwn: false,
+        selectedTalents: [],
+      },
+      premiumFeatures: {
+        talentOutreach: false,
+        aiMatching: false,
+        autoPrompts: false,
+      },
+      paymentDetails: {
+        method: 'direct',
+      },
+      requirePortfolio: true,
       isPublic: true,
       applications: [],
       selectedTalents: [],

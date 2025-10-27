@@ -150,7 +150,7 @@ export class MockVoiceTalentService {
 
     if (filters.languages?.length) {
       results = results.filter((project) =>
-        filters.languages!.some((lang) => project.requirements.languages.includes(lang)),
+        project.requirements.languages.some((lang) => filters.languages!.includes(lang)),
       )
     }
 
