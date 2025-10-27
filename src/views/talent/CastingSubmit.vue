@@ -8,7 +8,7 @@
       <!-- Header -->
       <AppBar :show-back="true" @back="$router.back()">
         <template #title>Submit Proposal</template>
-        <template #subtitle>{{ castingSession?.title }}</template>
+        <template #subtitle>{{ job?.title }}</template>
         <template #actions>
           <ThemeToggle />
         </template>
@@ -17,10 +17,7 @@
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
           <!-- Casting Session Overview -->
-          <div
-            v-if="castingSession"
-            class="bg-card border-border mb-8 rounded-lg border p-6 shadow-sm"
-          >
+          <div v-if="job" class="bg-card border-border mb-8 rounded-lg border p-6 shadow-sm">
             <h2 class="text-foreground mb-4 text-lg font-semibold">Casting Call Details</h2>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
@@ -28,23 +25,20 @@
                 <div class="space-y-2 text-sm">
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">Client:</span>
-                    <span class="text-foreground">{{ castingSession.clientName }}</span>
+                    <span class="text-foreground">{{ job.clientName }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">Type:</span>
-                    <span class="text-foreground">{{
-                      formatProjectType(castingSession.projectType)
-                    }}</span>
+                    <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">Deadline:</span>
-                    <span class="text-foreground">{{ formatDate(castingSession.deadline) }}</span>
+                    <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
                   </div>
-                  <div v-if="castingSession.budget" class="flex justify-between">
+                  <div v-if="job.budget" class="flex justify-between">
                     <span class="text-muted-foreground">Budget Range:</span>
                     <span class="text-foreground">
-                      ${{ castingSession.budget.max.toLocaleString() }}
-                      {{ castingSession.budget.currency }}
+                      ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
                     </span>
                   </div>
                 </div>
@@ -53,29 +47,19 @@
                 <h3 class="text-foreground mb-2 font-medium">Requirements</h3>
                 <div class="space-y-2 text-sm">
                   <div class="flex justify-between">
-                    <span class="text-muted-foreground">Languages:</span>
-                    <span class="text-foreground">{{
-                      castingSession.requirements.languages.join(', ')
-                    }}</span>
+                    <span class="text-muted-foreground">Language:</span>
+                    <span class="text-foreground">{{ job.requirements.language }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-muted-foreground">Voice Types:</span>
-                    <span class="text-foreground">{{
-                      castingSession.requirements.voiceTypes.join(', ')
-                    }}</span>
-                  </div>
-                  <div v-if="castingSession.requirements.experience" class="flex justify-between">
-                    <span class="text-muted-foreground">Experience:</span>
-                    <span class="text-foreground">{{
-                      formatExperience(castingSession.requirements.experience)
-                    }}</span>
+                    <span class="text-muted-foreground">Voice Type:</span>
+                    <span class="text-foreground">{{ job.requirements.voiceType }}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="border-border mt-4 border-t pt-4">
               <h3 class="text-foreground mb-2 font-medium">Description</h3>
-              <p class="text-muted-foreground text-sm">{{ castingSession.description }}</p>
+              <p class="text-muted-foreground text-sm">{{ job.description }}</p>
             </div>
           </div>
 
@@ -90,21 +74,21 @@
                     Proposed Cost (USD)
                   </label>
                   <input
-                    v-model="proposal.proposedCost"
+                    v-model="proposal.proposedRate"
                     type="number"
                     min="0"
                     step="100"
                     :class="[
                       'w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none',
-                      formErrors.proposedCost
+                      formErrors.proposedRate
                         ? 'border-red-500 bg-red-50 focus:ring-red-500'
                         : 'border-border bg-background text-foreground focus:ring-primary',
                     ]"
                     placeholder="Enter your proposed cost"
                     required
                   />
-                  <p v-if="formErrors.proposedCost" class="mt-1 text-xs text-red-500">
-                    {{ formErrors.proposedCost }}
+                  <p v-if="formErrors.proposedRate" class="mt-1 text-xs text-red-500">
+                    {{ formErrors.proposedRate }}
                   </p>
                 </div>
                 <div>
@@ -252,8 +236,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { CastingSession, CastingProposal } from '@/types/voice-talent'
-import { mockData } from '@/data/mock-voice-talent-data'
+import type { JobPosting, JobApplication } from '@/types/voice-client'
+import { mockJobPostings } from '@/data/mock-voice-client-data'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import Button from '@/components/atoms/Button.vue'
@@ -271,31 +255,34 @@ const { success, error, warning } = useToast()
 const currentUserId = authStore.user?.id || 'va-001'
 
 // State
-const castingSession = ref<CastingSession | null>(null)
+const job = ref<JobPosting | null>(null)
 const isSubmitting = ref(false)
 const isSavingDraft = ref(false)
 const formErrors = ref<Record<string, string>>({})
 const hasUnsavedChanges = ref(false)
 
 // Proposal form data
-const proposal = ref<Partial<CastingProposal>>({
-  castingSessionId: route.params.id as string,
+const proposal = ref<Partial<JobApplication>>({
+  jobId: route.params.id as string,
   voiceTalentId: currentUserId,
-  voiceTalentName: authStore.user?.displayName || authStore.user?.email || 'Voice Talent', // Get from auth store
-  status: 'draft',
-  proposedCost: 0,
+  voiceTalentName: authStore.user?.displayName || authStore.user?.email || 'Voice Talent',
+  status: 'submitted',
+  appliedDate: new Date().toISOString(),
+  proposedRate: 0,
   proposedCurrency: 'USD',
   proposedTimeline: '',
-  personalNote: '',
+  estimatedHours: 0,
+  portfolioSampleIds: [],
   customSamples: [],
+  personalNote: '',
 })
 
 // Form validation
 const isFormValid = computed(() => {
   const errors: Record<string, string> = {}
 
-  if (!proposal.value.proposedCost || proposal.value.proposedCost <= 0) {
-    errors.proposedCost = 'Please enter a valid proposed cost'
+  if (!proposal.value.proposedRate || proposal.value.proposedRate <= 0) {
+    errors.proposedRate = 'Please enter a valid proposed rate'
   }
 
   if (!proposal.value.proposedTimeline?.trim()) {
@@ -303,7 +290,7 @@ const isFormValid = computed(() => {
   }
 
   if (!proposal.value.personalNote?.trim()) {
-    errors.personalNote = 'Please add a personal note to the studio'
+    errors.personalNote = 'Please add a personal note to the client'
   }
 
   return Object.keys(errors).length === 0
@@ -314,8 +301,8 @@ watch(isFormValid, () => {
   // Update formErrors when validation state changes
   const errors: Record<string, string> = {}
 
-  if (!proposal.value.proposedCost || proposal.value.proposedCost <= 0) {
-    errors.proposedCost = 'Please enter a valid proposed cost'
+  if (!proposal.value.proposedRate || proposal.value.proposedRate <= 0) {
+    errors.proposedRate = 'Please enter a valid proposed rate'
   }
 
   if (!proposal.value.proposedTimeline?.trim()) {
@@ -323,7 +310,7 @@ watch(isFormValid, () => {
   }
 
   if (!proposal.value.personalNote?.trim()) {
-    errors.personalNote = 'Please add a personal note to the studio'
+    errors.personalNote = 'Please add a personal note to the client'
   }
 
   formErrors.value = errors
@@ -339,21 +326,21 @@ watch(
 )
 
 // Methods
-const loadCastingSession = () => {
-  const session = mockData.castingSessions.find((s) => s.id === route.params.id)
-  if (session) {
-    castingSession.value = session
-    proposal.value.castingSessionId = session.id
+const loadJobData = () => {
+  const jobId = route.params.id as string
+  const jobData = mockJobPostings.find((j) => j.id === jobId)
+
+  if (jobData) {
+    job.value = jobData
+    proposal.value.jobId = jobData.id
   } else {
+    error('Job not found')
     router.push('/talent/casting')
   }
 }
 
 const formatProjectType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-const formatExperience = (experience: string) => {
-  return experience.charAt(0).toUpperCase() + experience.slice(1)
 }
 
 const formatDate = (dateString: string) => {
@@ -443,6 +430,6 @@ const submitProposal = async () => {
 }
 
 onMounted(() => {
-  loadCastingSession()
+  loadJobData()
 })
 </script>

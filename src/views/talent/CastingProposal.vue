@@ -8,7 +8,7 @@
       <!-- Header -->
       <AppBar :show-back="true" @back="$router.back()">
         <template #title>My Proposal</template>
-        <template #subtitle>{{ castingSession?.title }}</template>
+        <template #subtitle>{{ job?.title }}</template>
         <template #actions>
           <StatusBadge
             :status="getProposalStatusInfo().status"
@@ -22,7 +22,7 @@
 
       <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
-          <div v-if="proposal && castingSession" class="space-y-8">
+          <div v-if="proposal && job" class="space-y-8">
             <!-- Proposal Status -->
             <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
               <div class="mb-4 flex items-center justify-between">
@@ -37,7 +37,7 @@
               <div class="grid grid-cols-1 gap-6 text-sm md:grid-cols-2">
                 <div>
                   <span class="text-muted-foreground">Submitted:</span>
-                  <span class="text-foreground ml-2">{{ formatDate(proposal.submittedDate) }}</span>
+                  <span class="text-foreground ml-2">{{ formatDate(proposal.appliedDate) }}</span>
                 </div>
                 <div v-if="proposal.reviewedDate">
                   <span class="text-muted-foreground">Last Updated:</span>
@@ -45,12 +45,12 @@
                 </div>
               </div>
               <div
-                v-if="proposal.studioFeedback"
+                v-if="proposal.clientFeedback"
                 class="mt-4 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20"
               >
                 <h4 class="mb-2 font-medium text-blue-900 dark:text-blue-100">Studio Feedback</h4>
                 <p class="text-sm text-blue-800 dark:text-blue-200">
-                  {{ proposal.studioFeedback }}
+                  {{ proposal.clientFeedback }}
                 </p>
               </div>
               <div
@@ -71,7 +71,7 @@
                 <div>
                   <h3 class="text-foreground mb-2 font-medium">Proposed Cost</h3>
                   <p class="text-foreground text-2xl font-bold">
-                    ${{ proposal.proposedCost.toLocaleString() }} {{ proposal.proposedCurrency }}
+                    ${{ proposal.proposedRate.toLocaleString() }} {{ proposal.proposedCurrency }}
                   </p>
                 </div>
                 <div>
@@ -97,34 +97,13 @@
                   :key="sampleId"
                   class="flex items-center space-x-3"
                 >
-                  <div v-if="getSampleById(sampleId)" class="flex-1">
+                  <div class="flex-1">
                     <div class="flex items-center justify-between">
                       <div>
-                        <h4 class="text-foreground text-sm font-medium">
-                          {{ getSampleById(sampleId)?.title }}
-                        </h4>
-                        <p class="text-muted-foreground text-xs">
-                          {{ getSampleById(sampleId)?.description }}
-                        </p>
-                        <div class="mt-1 flex items-center space-x-2">
-                          <Chip size="sm" variant="outline">{{
-                            formatVoiceType(getSampleById(sampleId)?.voiceType || '')
-                          }}</Chip>
-                          <Chip size="sm" variant="outline">{{
-                            getSampleById(sampleId)?.genre
-                          }}</Chip>
-                          <span class="text-muted-foreground text-xs"
-                            >{{ getSampleById(sampleId)?.duration }}s</span
-                          >
-                        </div>
+                        <h4 class="text-foreground text-sm font-medium">Sample {{ sampleId }}</h4>
+                        <p class="text-muted-foreground text-xs">Portfolio sample</p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        @click="playSample(getSampleById(sampleId)!)"
-                      >
-                        <PlayIcon class="h-4 w-4" />
-                      </Button>
+                      <Button variant="outline" size="sm" icon="mdi:play"> Play </Button>
                     </div>
                   </div>
                 </div>
@@ -145,7 +124,7 @@
                 >
                   <div class="mb-3 flex items-center justify-between">
                     <h4 class="text-foreground text-sm font-medium">{{ customSample.title }}</h4>
-                    <Button variant="ghost" size="sm" @click="playCustomSample(customSample)">
+                    <Button variant="ghost" size="sm" icon="mdi:play">
                       <PlayIcon class="h-4 w-4" />
                     </Button>
                   </div>
@@ -178,10 +157,7 @@
 
             <!-- Actions -->
             <div class="border-border flex items-center justify-center space-x-4 border-t pt-6">
-              <Button
-                variant="outline"
-                @click="$router.push(`/talent/casting/${castingSession.id}`)"
-              >
+              <Button variant="outline" @click="$router.push(`/talent/jobs/${job.id}/casting`)">
                 <EyeIcon class="mr-2 h-4 w-4" />
                 View Casting Details
               </Button>
@@ -212,9 +188,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { CastingSession, CastingProposal, VoiceSample } from '@/types/voice-talent'
-import type { CustomSample } from '@/types/job-application'
-import { mockData } from '@/data/mock-voice-talent-data'
+import type { JobPosting, JobApplication } from '@/types/voice-client'
+import { mockJobPostings } from '@/data/mock-voice-client-data'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -233,19 +208,23 @@ const router = useRouter()
 const currentUserId = 'va-001'
 
 // State
-const castingSession = ref<CastingSession | null>(null)
-const proposal = ref<CastingProposal | null>(null)
+const job = ref<JobPosting | null>(null)
+const proposal = ref<JobApplication | null>(null)
 
 // Methods
 const loadProposal = () => {
-  const session = mockData.castingSessions.find((s) => s.id === route.params.id)
-  if (session) {
-    castingSession.value = session
-    const userProposal = session.proposals.find((p) => p.voiceTalentId === currentUserId)
-    if (userProposal) {
-      proposal.value = userProposal
+  const jobId = route.params.id as string
+  const jobData = mockJobPostings.find((j) => j.id === jobId)
+
+  if (jobData) {
+    job.value = jobData
+    // Find the user's application for this job
+    const userApplication = jobData.applications?.find((app) => app.voiceTalentId === currentUserId)
+    if (userApplication) {
+      proposal.value = userApplication
     } else {
-      router.push(`/talent/casting/${route.params.id}`)
+      // No application found, redirect to casting view
+      router.push(`/talent/jobs/${jobId}/casting`)
     }
   } else {
     router.push('/talent/casting')
@@ -301,14 +280,6 @@ const getProposalStatusInfo = () => {
   }
 }
 
-const getSampleById = (sampleId: string): VoiceSample | undefined => {
-  return mockData.voiceSamples.find((sample) => sample.id === sampleId)
-}
-
-const formatVoiceType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
-}
-
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     month: 'short',
@@ -323,16 +294,6 @@ const formatFileSize = (bytes: number) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-const playCustomSample = (customSample: CustomSample) => {
-  // In real app, play audio
-  console.log('Playing custom sample:', customSample.title)
-}
-
-const playSample = (sample: VoiceSample) => {
-  // In real app, this would play the audio sample
-  console.log('Playing sample:', sample.title)
 }
 
 onMounted(() => {
