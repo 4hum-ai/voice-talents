@@ -96,8 +96,8 @@
             class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
           >
             <div
-              v-for="session in filteredCastingSessions"
-              :key="session.id"
+              v-for="job in filteredCastingSessions"
+              :key="job.id"
               class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
             >
               <!-- Casting Header -->
@@ -105,29 +105,26 @@
                 <div class="mb-3 flex items-start justify-between">
                   <div class="flex-1">
                     <h3 class="text-foreground mb-1 text-lg font-semibold">
-                      {{ session.title }}
+                      {{ job.title }}
                     </h3>
                     <p class="text-muted-foreground text-sm">
-                      {{ session.clientName }}
-                    </p>
-                    <p v-if="session.studioId" class="text-muted-foreground text-sm">
-                      via {{ getStudioName(session.studioId) }}
+                      {{ job.clientName }}
                     </p>
                   </div>
                   <div class="ml-4 flex-shrink-0 space-y-2">
-                    <StatusBadge :status="getCastingSessionStatus(session)" />
+                    <StatusBadge :status="getJobStatus(job)" />
                     <StatusBadge
-                      :status="getProposalStatusInfo(session).status"
-                      :variant="getProposalStatusInfo(session).variant"
+                      :status="getProposalStatusInfo(job).status"
+                      :variant="getProposalStatusInfo(job).variant"
                       size="sm"
                     >
-                      {{ getProposalStatusInfo(session).label }}
+                      {{ getProposalStatusInfo(job).label }}
                     </StatusBadge>
                   </div>
                 </div>
 
                 <p class="text-muted-foreground line-clamp-2 text-sm">
-                  {{ session.description }}
+                  {{ job.description }}
                 </p>
               </div>
 
@@ -137,30 +134,28 @@
                   <div class="flex items-center justify-between text-sm">
                     <span class="text-muted-foreground">Type</span>
                     <Chip size="sm" variant="secondary">
-                      {{ formatProjectType(session.projectType) }}
+                      {{ formatProjectType(job.projectType) }}
                     </Chip>
                   </div>
 
                   <div class="flex items-center justify-between text-sm">
                     <span class="text-muted-foreground">Budget</span>
                     <span class="text-foreground font-medium">
-                      ${{ session.budget?.min.toLocaleString() }} - ${{
-                        session.budget?.max.toLocaleString()
-                      }}
+                      ${{ job.budget?.max.toLocaleString() }}
                     </span>
                   </div>
 
                   <div class="flex items-center justify-between text-sm">
                     <span class="text-muted-foreground">Deadline</span>
                     <span class="text-foreground font-medium">
-                      {{ formatDate(session.deadline) }}
+                      {{ formatDate(job.deadline) }}
                     </span>
                   </div>
 
                   <div class="flex items-center justify-between text-sm">
                     <span class="text-muted-foreground">Submissions</span>
                     <span class="text-foreground font-medium">
-                      {{ session.submissions.length }}
+                      {{ job.totalApplications || 0 }}
                     </span>
                   </div>
                 </div>
@@ -169,21 +164,11 @@
                 <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
                   <div class="text-muted-foreground mb-2 text-xs">Requirements</div>
                   <div class="flex flex-wrap gap-1">
-                    <Chip
-                      v-for="language in session.requirements.languages"
-                      :key="language"
-                      size="sm"
-                      variant="outline"
-                    >
-                      {{ language }}
+                    <Chip size="sm" variant="outline">
+                      {{ job.requirements.language }}
                     </Chip>
-                    <Chip
-                      v-for="voiceType in session.requirements.voiceTypes"
-                      :key="voiceType"
-                      size="sm"
-                      variant="outline"
-                    >
-                      {{ voiceType }}
+                    <Chip size="sm" variant="outline">
+                      {{ job.requirements.voiceType }}
                     </Chip>
                   </div>
                 </div>
@@ -197,22 +182,17 @@
                       variant="ghost"
                       size="sm"
                       icon="mdi:eye"
-                      @click="$router.push(`/talent/casting/${session.id}`)"
+                      @click="$router.push(`/talent/jobs/${job.id}/casting`)"
                     />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon="mdi:share"
-                      @click="shareCasting(session)"
-                    />
+                    <Button variant="ghost" size="sm" icon="mdi:share" @click="shareCasting(job)" />
                   </div>
                   <Button
-                    v-if="!getUserProposalStatus(session)"
+                    v-if="!getUserProposalStatus(job)"
                     variant="primary"
                     size="sm"
                     icon="mdi:send"
-                    @click="$router.push(`/talent/casting/${session.id}/submit`)"
-                    :disabled="session.status !== 'open'"
+                    @click="$router.push(`/talent/jobs/${job.id}/casting/submit`)"
+                    :disabled="job.status !== 'published' && job.status !== 'active'"
                   >
                     Apply
                   </Button>
@@ -221,8 +201,8 @@
                     variant="outline"
                     size="sm"
                     icon="mdi:eye"
-                    @click="$router.push(`/talent/casting/${session.id}/proposal`)"
-                    :disabled="session.status !== 'open'"
+                    @click="$router.push(`/talent/jobs/${job.id}/casting/proposal`)"
+                    :disabled="job.status !== 'published' && job.status !== 'active'"
                   >
                     View Proposal
                   </Button>
@@ -281,50 +261,45 @@
                   class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800"
                 >
                   <tr
-                    v-for="session in filteredCastingSessions"
-                    :key="session.id"
+                    v-for="job in filteredCastingSessions"
+                    :key="job.id"
                     class="hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div class="text-foreground text-sm font-medium">
-                          {{ session.title }}
+                          {{ job.title }}
                         </div>
                         <div class="text-muted-foreground line-clamp-2 text-sm">
-                          {{ session.description }}
+                          {{ job.description }}
                         </div>
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-foreground text-sm">
-                        {{ session.clientName }}
-                      </div>
-                      <div v-if="session.studioId" class="text-muted-foreground text-sm">
-                        {{ getStudioName(session.studioId) }}
+                        {{ job.clientName }}
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <Chip size="sm" variant="secondary">
-                        {{ formatProjectType(session.projectType) }}
+                        {{ formatProjectType(job.projectType) }}
                       </Chip>
                     </td>
                     <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
-                      ${{ session.budget?.min.toLocaleString() }} - ${{
-                        session.budget?.max.toLocaleString()
-                      }}
+                      ${{ job.budget?.max.toLocaleString() }}
                     </td>
                     <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
-                      {{ formatDate(session.deadline) }}
+                      {{ formatDate(job.deadline) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="space-y-1">
-                        <StatusBadge :status="getCastingSessionStatus(session)" />
+                        <StatusBadge :status="getJobStatus(job)" />
                         <StatusBadge
-                          :status="getProposalStatusInfo(session).status"
-                          :variant="getProposalStatusInfo(session).variant"
+                          :status="getProposalStatusInfo(job).status"
+                          :variant="getProposalStatusInfo(job).variant"
                           size="sm"
                         >
-                          {{ getProposalStatusInfo(session).label }}
+                          {{ getProposalStatusInfo(job).label }}
                         </StatusBadge>
                       </div>
                     </td>
@@ -334,23 +309,23 @@
                           variant="ghost"
                           size="sm"
                           icon="mdi:eye"
-                          @click="$router.push(`/talent/casting/${session.id}`)"
+                          @click="$router.push(`/talent/jobs/${job.id}/casting`)"
                         />
                         <Button
-                          v-if="!getUserProposalStatus(session)"
+                          v-if="!getUserProposalStatus(job)"
                           variant="primary"
                           size="sm"
                           icon="mdi:send"
-                          @click="$router.push(`/talent/casting/${session.id}/submit`)"
-                          :disabled="session.status !== 'open'"
+                          @click="$router.push(`/talent/jobs/${job.id}/casting/submit`)"
+                          :disabled="job.status !== 'published' && job.status !== 'active'"
                         />
                         <Button
                           v-else
                           variant="outline"
                           size="sm"
                           icon="mdi:eye"
-                          @click="$router.push(`/talent/casting/${session.id}/proposal`)"
-                          :disabled="session.status !== 'open'"
+                          @click="$router.push(`/talent/jobs/${job.id}/casting/proposal`)"
+                          :disabled="job.status !== 'published' && job.status !== 'active'"
                         />
                       </div>
                     </td>
@@ -367,8 +342,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import type { CastingSession, CastingProposal } from '@/types/voice-talent'
-import { mockData } from '@/data/mock-voice-talent-data'
+import type { JobPosting } from '@/types/voice-client'
+import { mockJobPostings } from '@/data/mock-voice-client-data'
 import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
@@ -389,7 +364,9 @@ const selectedLanguage = ref('')
 const selectedExperience = ref('')
 
 // Mock data - in real app, this would come from API
-const castingSessions = ref<CastingSession[]>(mockData.castingSessions)
+const castingSessions = ref<JobPosting[]>(
+  mockJobPostings.filter((job) => job.status === 'published' || job.status === 'active'),
+)
 
 // Current user ID - in real app, this would come from auth store
 const currentUserId = 'va-001'
@@ -401,79 +378,85 @@ const filteredCastingSessions = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(
-      (session) =>
-        session.title.toLowerCase().includes(query) ||
-        session.clientName.toLowerCase().includes(query) ||
-        session.description.toLowerCase().includes(query),
+      (job) =>
+        job.title.toLowerCase().includes(query) ||
+        job.clientName.toLowerCase().includes(query) ||
+        job.description.toLowerCase().includes(query),
     )
   }
 
   if (selectedType.value) {
-    filtered = filtered.filter((session) => session.projectType === selectedType.value)
+    filtered = filtered.filter((job) => job.projectType === selectedType.value)
   }
 
   if (selectedLanguage.value) {
-    filtered = filtered.filter((session) =>
-      session.requirements.languages.includes(selectedLanguage.value),
-    )
+    filtered = filtered.filter((job) => job.requirements.language === selectedLanguage.value)
   }
 
   if (selectedExperience.value) {
-    filtered = filtered.filter(
-      (session) => session.requirements.experience === selectedExperience.value,
-    )
+    // Note: JobPosting requirements don't have experience field
+    // This filter would need to be implemented differently in real app
+    // filtered = filtered.filter((job) => job.requirements.experience === selectedExperience.value)
   }
 
   return filtered
 })
 
 const openCastingCount = computed(
-  () => castingSessions.value.filter((s) => s.status === 'open').length,
+  () =>
+    castingSessions.value.filter((job) => job.status === 'published' || job.status === 'active')
+      .length,
 )
 
 const mySubmissionsCount = computed(() => {
-  return castingSessions.value.reduce((count, session) => {
-    const proposal = getUserProposalStatus(session)
-    return count + (proposal && proposal.status !== 'draft' ? 1 : 0)
+  return castingSessions.value.reduce((count, job) => {
+    const proposal = getUserProposalStatus(job)
+    return count + (proposal ? 1 : 0)
   }, 0)
 })
 
 const shortlistedCount = computed(() => {
-  return castingSessions.value.reduce((count, session) => {
-    const proposal = getUserProposalStatus(session)
+  return castingSessions.value.reduce((count, job) => {
+    const proposal = getUserProposalStatus(job)
     return count + (proposal && proposal.status === 'shortlisted' ? 1 : 0)
   }, 0)
 })
 
 const selectedCount = computed(() => {
-  return castingSessions.value.reduce((count, session) => {
-    const proposal = getUserProposalStatus(session)
+  return castingSessions.value.reduce((count, job) => {
+    const proposal = getUserProposalStatus(job)
     return count + (proposal && proposal.status === 'selected' ? 1 : 0)
   }, 0)
 })
 
 // Get user's proposal status for a casting session
-const getUserProposalStatus = (session: CastingSession): CastingProposal | null => {
-  return session.proposals.find((proposal) => proposal.voiceTalentId === currentUserId) || null
+const getUserProposalStatus = (job: JobPosting) => {
+  // In real app, this would check if user has applied to this job
+  return job.applications?.find((app) => app.voiceTalentId === currentUserId) || null
 }
 
-// Get casting session status for StatusBadge
-const getCastingSessionStatus = (session: CastingSession) => {
-  switch (session.status) {
-    case 'open':
+// Get job status for StatusBadge
+const getJobStatus = (job: JobPosting) => {
+  switch (job.status) {
+    case 'published':
+    case 'active':
       return 'active'
+    case 'paused':
+      return 'inactive'
     case 'closed':
       return 'inactive'
     case 'completed':
       return 'completed'
+    case 'cancelled':
+      return 'rejected'
     default:
       return 'draft'
   }
 }
 
 // Get proposal status badge info
-const getProposalStatusInfo = (session: CastingSession) => {
-  const proposal = getUserProposalStatus(session)
+const getProposalStatusInfo = (job: JobPosting) => {
+  const proposal = getUserProposalStatus(job)
   if (!proposal) {
     return {
       status: 'draft' as const,
@@ -563,11 +546,6 @@ const refreshCasting = () => {
   console.log('Refreshing casting calls...')
 }
 
-const getStudioName = (studioId: string) => {
-  const studio = mockData.studios.find((s) => s.id === studioId)
-  return studio?.name || 'Unknown Studio'
-}
-
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     month: 'short',
@@ -579,12 +557,12 @@ const formatDate = (dateString: string) => {
 const formatProjectType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')
 }
-const shareCasting = (session: CastingSession) => {
-  const url = `${window.location.origin}/casting/${session.id}`
+const shareCasting = (job: JobPosting) => {
+  const url = `${window.location.origin}/talent/jobs/${job.id}/casting`
   if (navigator.share) {
     navigator.share({
-      title: session.title,
-      text: session.description,
+      title: job.title,
+      text: job.description,
       url: url,
     })
   } else {

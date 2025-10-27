@@ -30,24 +30,24 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'My Profile', requiresAuth: true },
   },
 
-  // Casting & Opportunities
+  // Casting & Opportunities (unified with jobs)
   {
     path: '/talent/casting',
     component: () => import('../views/talent/CastingView.vue'),
     meta: { title: 'Casting Opportunities', requiresAuth: true },
   },
   {
-    path: '/talent/casting/:id',
-    component: () => import('../views/talent/CastingDetail.vue'),
-    meta: { title: 'Casting Details', requiresAuth: true },
+    path: '/talent/jobs/:id/casting',
+    component: () => import('../views/talent/TalentJobDetail.vue'),
+    meta: { title: 'Job Details', requiresAuth: true },
   },
   {
-    path: '/talent/casting/:id/submit',
+    path: '/talent/jobs/:id/casting/submit',
     component: () => import('../views/talent/CastingSubmit.vue'),
     meta: { title: 'Submit Proposal', requiresAuth: true },
   },
   {
-    path: '/talent/casting/:id/proposal',
+    path: '/talent/jobs/:id/casting/proposal',
     component: () => import('../views/talent/CastingProposal.vue'),
     meta: { title: 'View Proposal', requiresAuth: true },
   },

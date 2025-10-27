@@ -11,10 +11,35 @@
         <template #subtitle>{{ job?.clientName || 'Client Project' }}</template>
         <template #actions>
           <ThemeToggle />
-          <Button variant="outline" size="sm" icon="mdi:microphone" @click="goToAudioStudio"
-            >Audio Studio</Button
-          >
           <Button
+            v-if="isCastingContext"
+            variant="outline"
+            size="sm"
+            icon="mdi:share"
+            @click="shareJob"
+          >
+            Share
+          </Button>
+          <Button
+            v-if="isCastingContext"
+            variant="primary"
+            size="sm"
+            icon="mdi:send"
+            @click="applyToJob"
+          >
+            Apply Now
+          </Button>
+          <Button
+            v-if="!isCastingContext"
+            variant="outline"
+            size="sm"
+            icon="mdi:microphone"
+            @click="goToAudioStudio"
+          >
+            Audio Studio
+          </Button>
+          <Button
+            v-if="!isCastingContext"
             variant="primary"
             size="sm"
             icon="mdi:send"
@@ -35,11 +60,15 @@
                   <div class="mb-4 flex items-center space-x-3">
                     <StatusBadge :status="getJobStatusDisplay(job.status)" />
                     <StatusBadge
+                      v-if="!isCastingContext"
                       :status="getProgressStatus(job.progress)"
                       :variant="getProgressVariant(job.progress)"
                       size="sm"
                     >
                       {{ job.progress }}% Complete
+                    </StatusBadge>
+                    <StatusBadge v-if="isCastingContext" status="active" size="sm">
+                      Open for Applications
                     </StatusBadge>
                   </div>
                   <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
@@ -363,6 +392,9 @@ const router = useRouter()
 const { success, error } = useToast()
 const { getJob } = useJob()
 
+// Determine context - casting vs assigned job
+const isCastingContext = computed(() => route.path.includes('/casting'))
+
 // Job data - load from useJob composable or create mock data
 const job = ref<JobDetail | null>(null)
 
@@ -628,6 +660,25 @@ const canSubmit = computed(() => recordedSegmentsCount.value > 0 || job.value?.f
 // Navigation methods
 const goToAudioStudio = () => {
   router.push(`/talent/jobs/${route.params.id}/studio`)
+}
+
+// Casting context methods
+const shareJob = () => {
+  const url = `${window.location.origin}/talent/jobs/${route.params.id}/casting`
+  if (navigator.share) {
+    navigator.share({
+      title: job.value?.title || 'Job Opportunity',
+      text: job.value?.description || 'Check out this voice acting opportunity',
+      url: url,
+    })
+  } else {
+    navigator.clipboard.writeText(url)
+    success('Job link copied to clipboard')
+  }
+}
+
+const applyToJob = () => {
+  router.push(`/talent/jobs/${route.params.id}/casting/submit`)
 }
 
 // Audio methods
