@@ -123,7 +123,32 @@
                   </div>
                 </div>
 
-                <div>
+                <!-- Application Status (Casting Context Only) -->
+                <div v-if="isCastingContext">
+                  <h3 class="text-foreground mb-3 font-medium">Application Status</h3>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Status:</span>
+                      <StatusBadge
+                        :status="getApplicationStatus().status"
+                        :variant="getApplicationStatus().variant"
+                        size="sm"
+                      >
+                        {{ getApplicationStatus().label }}
+                      </StatusBadge>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Applications:</span>
+                      <span class="text-foreground">{{ job.totalApplications || 0 }} total</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-muted-foreground">Deadline:</span>
+                      <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="!isCastingContext">
                   <h3 class="text-foreground mb-3 font-medium">Recording Info</h3>
                   <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
@@ -147,7 +172,7 @@
                   </div>
                 </div>
 
-                <div>
+                <div v-if="!isCastingContext">
                   <h3 class="text-foreground mb-3 font-medium">Progress</h3>
                   <div class="space-y-3">
                     <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
@@ -293,7 +318,10 @@
             </div>
 
             <!-- Deliverables -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+            <div
+              v-if="!isCastingContext"
+              class="bg-card border-border rounded-lg border p-6 shadow-sm"
+            >
               <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
               <div class="space-y-4">
                 <div
@@ -679,6 +707,35 @@ const shareJob = () => {
 
 const applyToJob = () => {
   router.push(`/talent/jobs/${route.params.id}/casting/submit`)
+}
+
+// Get application status for casting context
+const getApplicationStatus = () => {
+  if (!job.value) {
+    return { status: 'draft', label: 'Not Applied', variant: 'outline' as const }
+  }
+
+  // Check if user has applied to this job
+  const application = job.value.applications?.find((app) => app.voiceTalentId === 'va-001') // Mock user ID
+
+  if (!application) {
+    return { status: 'draft', label: 'Not Applied', variant: 'outline' as const }
+  }
+
+  switch (application.status) {
+    case 'submitted':
+      return { status: 'pending', label: 'Applied', variant: 'outline' as const }
+    case 'under_review':
+      return { status: 'processing', label: 'Under Review', variant: 'outline' as const }
+    case 'shortlisted':
+      return { status: 'success', label: 'Shortlisted', variant: 'outline' as const }
+    case 'selected':
+      return { status: 'success', label: 'Selected', variant: 'solid' as const }
+    case 'rejected':
+      return { status: 'rejected', label: 'Not Selected', variant: 'outline' as const }
+    default:
+      return { status: 'draft', label: 'Unknown', variant: 'outline' as const }
+  }
 }
 
 // Audio methods

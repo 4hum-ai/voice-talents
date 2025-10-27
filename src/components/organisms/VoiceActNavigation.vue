@@ -118,6 +118,7 @@ const activeItemId = computed(() => {
   const path = route.path
   if (path === '/talent/dashboard') return 'dashboard'
   if (path.startsWith('/talent/profile')) return 'profile'
+  if (path.startsWith('/talent/jobs') && path.includes('/casting')) return 'casting'
   if (path.startsWith('/talent/jobs')) return 'jobs'
   if (path.startsWith('/talent/projects')) return 'projects'
   if (path.startsWith('/talent/casting')) return 'casting'
