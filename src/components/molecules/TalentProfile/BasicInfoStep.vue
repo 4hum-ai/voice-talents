@@ -8,7 +8,7 @@
       </div>
       <h3 class="text-foreground mb-2 text-2xl font-semibold">Let's Get to Know You</h3>
       <p class="text-muted-foreground">
-        Tell us about yourself so clients can find and connect with you.
+        Share your voice qualities so clients can find the perfect match for their projects.
       </p>
     </div>
 
@@ -85,14 +85,14 @@
       <!-- Bio -->
       <div>
         <label for="bio" class="text-foreground mb-2 block text-sm font-medium">
-          Tell us about yourself *
+          Describe your voice *
         </label>
         <textarea
           id="bio"
           :value="props.profileData.bio"
           required
           rows="4"
-          placeholder="Share your voice acting experience, specialties, and what makes you unique..."
+          placeholder="Describe your voice tone, range, style, characteristics, accents, or any unique vocal qualities that set you apart..."
           class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
           @input="emit('update', { bio: ($event.target as HTMLTextAreaElement).value })"
         />
