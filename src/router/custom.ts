@@ -42,11 +42,6 @@ export const customRoutes: RouteRecordRaw[] = [
     meta: { title: 'Job Details', requiresAuth: true },
   },
   {
-    path: '/talent/jobs/:id/casting/submit',
-    component: () => import('../views/talent/CastingSubmit.vue'),
-    meta: { title: 'Submit Proposal', requiresAuth: true },
-  },
-  {
     path: '/talent/jobs/:id/casting/proposal',
     component: () => import('../views/talent/CastingProposal.vue'),
     meta: { title: 'View Proposal', requiresAuth: true },

@@ -191,7 +191,7 @@
                     variant="primary"
                     size="sm"
                     icon="mdi:send"
-                    @click="$router.push(`/talent/jobs/${job.id}/casting/submit`)"
+                    @click="openSubmitModal(job.id)"
                     :disabled="job.status !== 'published' && job.status !== 'active'"
                   >
                     Apply
@@ -316,7 +316,7 @@
                           variant="primary"
                           size="sm"
                           icon="mdi:send"
-                          @click="$router.push(`/talent/jobs/${job.id}/casting/submit`)"
+                          @click="openSubmitModal(job.id)"
                           :disabled="job.status !== 'published' && job.status !== 'active'"
                         />
                         <Button
@@ -337,11 +337,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Casting Submit Modal -->
+    <CastingSubmit
+      :is-open="showSubmitModal"
+      :job-id="selectedJobId"
+      @close="handleCloseSubmitModal"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import CastingSubmit from './CastingSubmit.vue'
 import type { JobPosting } from '@/types/voice-client'
 import { mockJobPostings } from '@/data/mock-voice-client-data'
 import Button from '@/components/atoms/Button.vue'
@@ -362,6 +370,8 @@ const searchQuery = ref('')
 const selectedType = ref('')
 const selectedLanguage = ref('')
 const selectedExperience = ref('')
+const showSubmitModal = ref(false)
+const selectedJobId = ref('')
 
 // Mock data - in real app, this would come from API
 const castingSessions = ref<JobPosting[]>(
@@ -568,6 +578,18 @@ const shareCasting = (job: JobPosting) => {
   } else {
     navigator.clipboard.writeText(url)
   }
+}
+
+// Modal handlers
+const openSubmitModal = (jobId: string) => {
+  selectedJobId.value = jobId
+  showSubmitModal.value = true
+}
+
+const handleCloseSubmitModal = () => {
+  showSubmitModal.value = false
+  // Optionally refresh the list to show updated proposal status
+  refreshCasting()
 }
 
 onMounted(() => {

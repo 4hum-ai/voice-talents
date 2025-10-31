@@ -378,6 +378,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Casting Submit Modal -->
+    <CastingSubmit
+      v-if="isCastingContext"
+      :is-open="showSubmitModal"
+      :job-id="route.params.id as string"
+      @close="handleCloseSubmitModal"
+    />
   </div>
 </template>
 
@@ -386,6 +394,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
+import CastingSubmit from './CastingSubmit.vue'
 // import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
@@ -422,6 +431,9 @@ const { getJob } = useJob()
 
 // Determine context - casting vs assigned job
 const isCastingContext = computed(() => route.path.includes('/casting'))
+
+// Modal state
+const showSubmitModal = ref(false)
 
 // Job data - load from useJob composable or create mock data
 const job = ref<JobDetail | null>(null)
@@ -706,7 +718,13 @@ const shareJob = () => {
 }
 
 const applyToJob = () => {
-  router.push(`/talent/jobs/${route.params.id}/casting/submit`)
+  showSubmitModal.value = true
+}
+
+const handleCloseSubmitModal = () => {
+  showSubmitModal.value = false
+  // Optionally reload job data to show updated application status
+  loadJobData()
 }
 
 // Get application status for casting context
