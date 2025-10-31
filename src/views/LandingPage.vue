@@ -1,5 +1,6 @@
 <template>
   <div class="from-background to-muted/50 flex min-h-screen flex-col bg-gradient-to-br">
+    <CookieConsentBanner />
     <!-- Minimal Header -->
     <header class="border-border bg-background/80 border-b backdrop-blur-sm">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -62,6 +63,7 @@ import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import CookieConsentBanner from '@/components/molecules/CookieConsentBanner.vue'
 
 const router = useRouter()
 

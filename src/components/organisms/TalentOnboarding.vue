@@ -68,45 +68,53 @@
               <!-- Step 1: Welcome -->
               <WelcomeStep v-if="currentStep === 1" />
 
-              <!-- Step 2: Basic Info -->
-              <BasicInfoStep
+              <!-- Step 2: Agreement & Age Verification -->
+              <AgreementStep
                 v-if="currentStep === 2"
-                :profile-data="profileData"
-                @update="updateProfileData"
+                :model-value="agreementData"
+                @update:model-value="Object.assign(agreementData, $event)"
+                @validation-change="updateStepValidation(2, $event)"
               />
 
-              <!-- Step 3: Voice Types -->
-              <VoiceTypesStep
+              <!-- Step 3: Basic Info -->
+              <BasicInfoStep
                 v-if="currentStep === 3"
                 :profile-data="profileData"
                 @update="updateProfileData"
               />
 
-              <!-- Step 4: Languages -->
-              <LanguagesStep
+              <!-- Step 4: Voice Types -->
+              <VoiceTypesStep
                 v-if="currentStep === 4"
                 :profile-data="profileData"
                 @update="updateProfileData"
               />
 
-              <!-- Step 5: Upload Voice Samples -->
-              <VoiceSamplesStep
+              <!-- Step 5: Languages -->
+              <LanguagesStep
                 v-if="currentStep === 5"
+                :profile-data="profileData"
+                @update="updateProfileData"
+              />
+
+              <!-- Step 6: Upload Voice Samples -->
+              <VoiceSamplesStep
+                v-if="currentStep === 6"
                 :profile-data="profileData"
                 :voice-samples="voiceSamples"
                 @update="updateVoiceSamples"
               />
 
-              <!-- Step 6: Pricing & Rates -->
+              <!-- Step 7: Pricing & Rates -->
               <PricingStep
-                v-if="currentStep === 6"
+                v-if="currentStep === 7"
                 :profile-data="profileData"
                 :pricing-data="pricingData"
                 @update="updatePricingData"
               />
 
-              <!-- Step 7: Completion -->
-              <CompletionStep v-if="currentStep === 7" />
+              <!-- Step 8: Completion -->
+              <CompletionStep v-if="currentStep === 8" />
             </div>
           </Transition>
         </div>
@@ -122,6 +130,7 @@ import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import WelcomeStep from '@/components/molecules/TalentProfile/WelcomeStep.vue'
+import AgreementStep from '@/components/molecules/TalentProfile/AgreementStep.vue'
 import BasicInfoStep from '@/components/molecules/TalentProfile/BasicInfoStep.vue'
 import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.vue'
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
@@ -148,8 +157,15 @@ const { completeTalentOnboarding } = useOnboarding()
 
 // State
 const currentStep = ref(1)
-const totalSteps = 7
+const totalSteps = 8
 const transitionName = ref('slide-left')
+
+// Agreement data
+const agreementData = reactive({
+  isAgeVerified: false,
+  acceptedTerms: false,
+  acceptedPlatformAgreement: false,
+})
 
 // Profile data
 const profileData = reactive({
@@ -204,25 +220,38 @@ const pricingData = reactive({
 // Computed
 const showOnboarding = computed(() => props.show)
 
+// Step validation state
+const stepValidation = reactive<Record<number, boolean>>({})
+
+const updateStepValidation = (step: number, isValid: boolean) => {
+  stepValidation[step] = isValid
+}
+
 const canProceedToNext = computed(() => {
   switch (currentStep.value) {
     case 1:
       return true // Welcome step
     case 2:
-      return profileData.displayName && profileData.bio && profileData.location
+      return (
+        agreementData.isAgeVerified &&
+        agreementData.acceptedTerms &&
+        agreementData.acceptedPlatformAgreement
+      )
     case 3:
-      return profileData.voiceTypes.length > 0
+      return profileData.displayName && profileData.bio && profileData.location
     case 4:
-      return profileData.languages.length > 0
+      return profileData.voiceTypes.length > 0
     case 5:
+      return profileData.languages.length > 0
+    case 6:
       // Allow proceeding if at least one voice type has a sample uploaded
       return Object.keys(voiceSamples).length > 0
-    case 6:
+    case 7:
       // Require at least one job type rate to be set
       return Object.values(pricingData.jobTypeRates).some(
         (rate) => rate && rate !== '' && parseFloat(rate) > 0,
       )
-    case 7:
+    case 8:
       return true // Completion
     default:
       return false
@@ -262,6 +291,7 @@ const completeOnboarding = async () => {
   try {
     // Save all onboarding data
     const onboardingData = {
+      agreement: agreementData,
       profile: profileData,
       voiceSamples: voiceSamples,
       preferences: preferencesData,

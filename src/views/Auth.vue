@@ -118,7 +118,22 @@
         <!-- Footer section -->
         <div class="mt-6 border-t border-gray-200/50 pt-4 sm:mt-8 sm:pt-6 dark:border-gray-700/50">
           <p class="px-2 text-center text-xs text-gray-500 dark:text-gray-400">
-            By signing in, you agree to our terms of service and privacy policy
+            By signing in, you agree to our
+            <RouterLink
+              to="/terms"
+              target="_blank"
+              class="text-primary hover:text-primary/80 underline"
+            >
+              terms of service
+            </RouterLink>
+            and
+            <RouterLink
+              to="/privacy"
+              target="_blank"
+              class="text-primary hover:text-primary/80 underline"
+            >
+              privacy policy
+            </RouterLink>
           </p>
         </div>
       </div>
@@ -133,7 +148,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
