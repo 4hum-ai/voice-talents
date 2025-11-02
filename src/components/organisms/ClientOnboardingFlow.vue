@@ -77,12 +77,21 @@
           />
         </div>
 
-        <!-- Step 3: Agreement & Legal Requirements (Final Step) -->
+        <!-- Step 3: Project Types -->
         <div v-if="currentStep === 3" class="space-y-8">
+          <ClientProjectTypesStep
+            :model-value="projectTypesData"
+            @update:model-value="handleProjectTypesUpdate"
+            @validation-change="updateStepValidation(3, $event)"
+          />
+        </div>
+
+        <!-- Step 4: Agreement & Legal Requirements (Final Step) -->
+        <div v-if="currentStep === 4" class="space-y-8">
           <ClientAgreementStep
             :model-value="agreementData"
             @update:model-value="Object.assign(agreementData, $event)"
-            @validation-change="updateStepValidation(3, $event)"
+            @validation-change="updateStepValidation(4, $event)"
           />
         </div>
       </div>
@@ -97,7 +106,11 @@ import type { AccountInformationData } from '@/types/onboarding'
 import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import { AccountInformation, ClientAgreementStep } from '@/components/molecules/ClientSettings'
+import {
+  AccountInformation,
+  ClientAgreementStep,
+  ClientProjectTypesStep,
+} from '@/components/molecules/ClientSettings'
 
 const router = useRouter()
 const {
@@ -112,7 +125,7 @@ const {
 // State
 const showOnboarding = ref(false)
 const currentStep = ref(1)
-const totalSteps = ref(3)
+const totalSteps = ref(4)
 const stepValidation = reactive<Record<number, boolean>>({})
 
 // Agreement data
@@ -134,8 +147,11 @@ const accountData = reactive({
   description: '',
 })
 
+// Project types data
+const projectTypesData = reactive<string[]>([])
+
 // Legacy onboarding data for compatibility
-const onboardingData = ref({
+const onboardingData = ref<Record<string, unknown>>({
   companyName: '',
   contactName: '',
   email: '',
@@ -167,6 +183,12 @@ const handleAccountDataUpdate = (newData: AccountInformationData) => {
     }
   })
   console.log('Updated accountData:', accountData)
+}
+
+const handleProjectTypesUpdate = (newTypes: string[]) => {
+  projectTypesData.length = 0
+  projectTypesData.push(...newTypes)
+  console.log('Updated projectTypesData:', projectTypesData)
 }
 
 // Computed
@@ -206,6 +228,7 @@ const completeOnboarding = () => {
     autoApprove: false,
     requireNDA: false,
     requirePortfolio: true,
+    projectTypes: [...projectTypesData], // Store selected project types
   }
 
   // Save onboarding data
