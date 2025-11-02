@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useJobType } from '@/composables/useJobType'
 import Icon from '@/components/atoms/Icon.vue'
 
@@ -123,6 +123,9 @@ const toggleProjectType = (projectTypeValue: string) => {
     // Add if not selected
     localProjectTypes.value.push(projectTypeValue)
   }
+
+  // Explicitly emit validation change after toggle
+  emit('validation-change', isValid.value)
 }
 
 const getProjectTypeColor = (projectTypeValue: string) => {
@@ -130,6 +133,10 @@ const getProjectTypeColor = (projectTypeValue: string) => {
   return projectType?.color || 'bg-blue-500'
 }
 
-// Emit initial validation state
-emit('validation-change', isValid.value)
+// Emit initial validation state using nextTick to ensure parent is ready
+onMounted(() => {
+  nextTick(() => {
+    emit('validation-change', isValid.value)
+  })
+})
 </script>
