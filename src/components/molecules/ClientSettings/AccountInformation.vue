@@ -12,83 +12,93 @@
       </p>
     </div>
 
-    <div class="bg-card border-border rounded-lg border p-8">
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div class="lg:col-span-2">
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            What's your company name? *
-          </label>
-          <input
-            :value="modelValue.companyName"
-            @input="updateField('companyName', ($event.target as HTMLInputElement).value)"
-            type="text"
-            required
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="Your Company Name"
-          />
-        </div>
+    <div class="bg-card border-border space-y-8 rounded-lg border p-8">
+      <!-- About the Company Section -->
+      <div>
+        <h3 class="text-foreground mb-4 text-lg font-semibold">About the Company</h3>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div class="lg:col-span-2">
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              What's your company name? *
+            </label>
+            <input
+              :value="modelValue.companyName"
+              @input="updateField('companyName', ($event.target as HTMLInputElement).value)"
+              type="text"
+              required
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+              placeholder="Your Company Name"
+            />
+          </div>
 
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            What should we call you? *
-          </label>
-          <input
-            :value="modelValue.contactName"
-            @input="updateField('contactName', ($event.target as HTMLInputElement).value)"
-            type="text"
-            required
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="Your Full Name"
-          />
-        </div>
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium"> Website </label>
+            <input
+              :value="modelValue.website"
+              @input="updateField('website', ($event.target as HTMLInputElement).value)"
+              type="url"
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+              placeholder="https://yourcompany.com"
+            />
+          </div>
 
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            What's your email address? *
-          </label>
-          <input
-            :value="modelValue.email"
-            @input="updateField('email', ($event.target as HTMLInputElement).value)"
-            type="email"
-            required
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="your@email.com"
-          />
+          <div class="lg:col-span-2">
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              Tell us about your company
+            </label>
+            <textarea
+              :value="modelValue.description"
+              @input="updateField('description', ($event.target as HTMLTextAreaElement).value)"
+              rows="3"
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+              placeholder="Brief description of your company and what you do..."
+            />
+          </div>
         </div>
+      </div>
 
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium"> Phone Number </label>
-          <input
-            :value="modelValue.phone"
-            @input="updateField('phone', ($event.target as HTMLInputElement).value)"
-            type="tel"
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="+1 (555) 123-4567"
-          />
-        </div>
+      <!-- About You Section -->
+      <div>
+        <h3 class="text-foreground mb-4 text-lg font-semibold">About You</h3>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              What should we call you? *
+            </label>
+            <input
+              :value="modelValue.contactName"
+              @input="updateField('contactName', ($event.target as HTMLInputElement).value)"
+              type="text"
+              required
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+              placeholder="Your Full Name"
+            />
+          </div>
 
-        <div>
-          <label class="text-foreground mb-2 block text-sm font-medium"> Website </label>
-          <input
-            :value="modelValue.website"
-            @input="updateField('website', ($event.target as HTMLInputElement).value)"
-            type="url"
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="https://yourcompany.com"
-          />
-        </div>
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              What's your email address? *
+            </label>
+            <input
+              :value="modelValue.email"
+              @input="updateField('email', ($event.target as HTMLInputElement).value)"
+              type="email"
+              required
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+              placeholder="your@email.com"
+            />
+          </div>
 
-        <div class="lg:col-span-2">
-          <label class="text-foreground mb-2 block text-sm font-medium">
-            Tell us about your company
-          </label>
-          <textarea
-            :value="modelValue.description"
-            @input="updateField('description', ($event.target as HTMLTextAreaElement).value)"
-            rows="3"
-            class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
-            placeholder="Brief description of your company and what you do..."
-          />
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium"> Phone Number </label>
+            <input
+              :value="modelValue.phone"
+              @input="updateField('phone', ($event.target as HTMLInputElement).value)"
+              type="tel"
+              class="border-border focus:ring-primary w-full rounded-md border px-3 py-2 focus:ring-2 focus:outline-none"
+              placeholder="+1 (555) 123-4567"
+            />
+          </div>
         </div>
       </div>
     </div>
