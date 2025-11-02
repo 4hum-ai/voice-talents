@@ -143,12 +143,8 @@ const props = withDefaults(defineProps<Props>(), {
   searchPlaceholder: 'Search options...',
   languages: () => [
     { value: 'en', label: 'English', description: 'Native English' },
-    { value: 'es', label: 'Spanish', description: 'Español' },
     { value: 'fr', label: 'French', description: 'Français' },
     { value: 'de', label: 'German', description: 'Deutsch' },
-    { value: 'it', label: 'Italian', description: 'Italiano' },
-    { value: 'pt', label: 'Portuguese', description: 'Português' },
-    { value: 'ru', label: 'Russian', description: 'Русский' },
     { value: 'ja', label: 'Japanese', description: '日本語' },
     { value: 'ko', label: 'Korean', description: '한국어' },
     { value: 'zh', label: 'Chinese', description: '中文' },

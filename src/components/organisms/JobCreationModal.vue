@@ -30,24 +30,37 @@
           </div>
         </div>
 
-        <!-- Right: Close and Next/Save -->
+        <!-- Right: Close and Next -->
         <div class="flex items-center space-x-3">
-          <!-- Draft Status Indicator -->
-          <div v-if="currentDraftId" class="text-muted-foreground flex items-center text-sm">
-            <div class="mr-2 h-2 w-2 rounded-full bg-blue-500"></div>
-            Draft saved
-            <span v-if="lastAutoSave" class="ml-1">
-              {{ formatTime(lastAutoSave) }}
-            </span>
+          <!-- Auto-save Status Indicator (subtle) -->
+          <div
+            v-if="currentDraftId && lastAutoSave"
+            class="text-muted-foreground flex items-center text-xs"
+          >
+            <div class="mr-2 h-1.5 w-1.5 rounded-full bg-green-500"></div>
+            Saved {{ formatTime(lastAutoSave) }}
           </div>
 
-          <Button variant="outline" size="sm" @click="saveDraft" :disabled="isSavingDraft">
-            <Icon name="mdi:content-save" class="mr-2 h-6 w-6" />
-            {{ isSavingDraft ? 'Saving...' : 'Save Draft' }}
+          <Button
+            v-if="currentStep < totalSteps"
+            variant="primary"
+            :disabled="!canProceedToNext"
+            @click="nextStep"
+          >
+            Next
+            <Icon name="mdi:chevron-right" class="ml-2 h-4 w-4" />
           </Button>
-
+          <Button
+            v-if="currentStep === totalSteps"
+            variant="primary"
+            @click="publishJobHandler"
+            :disabled="isSubmitting"
+          >
+            {{ isSubmitting ? 'Processing...' : 'Publish Job' }}
+            <Icon name="mdi:rocket-launch" class="ml-2 h-4 w-4" />
+          </Button>
           <Button variant="ghost" size="sm" @click="closeModal">
-            <Icon name="mdi:close" class="h-6 w-6" />
+            <Icon name="mdi:close" class="h-5 w-5" />
           </Button>
         </div>
       </div>
@@ -55,16 +68,15 @@
 
     <!-- Main Content Area -->
     <div class="mx-auto max-w-7xl">
-      <div class="mx-auto py-8">
+      <div class="mx-auto py-8 pt-20">
         <!-- Step Content -->
         <Transition :name="transitionName" mode="out-in">
           <div :key="currentStep" class="min-h-[600px]">
             <!-- Step 1: Voice Type Selection -->
             <JobTypeStep
               v-if="currentStep === 1"
-              :job-type="jobForm.voiceType"
+              :job-type="selectedVoiceType || undefined"
               @update:job-type="selectVoiceType"
-              @next="handleVoiceTypeNext"
             />
 
             <!-- Step 2: Basic Information & Requirements (All Types) -->
@@ -77,8 +89,6 @@
               v-model:deadline="jobForm.deadline"
               v-model:files="jobForm.files"
               :voice-type="selectedVoiceType"
-              @next="nextStep"
-              @previous="previousStep"
             />
 
             <!-- Step 3: Talent Options (All Types) -->
@@ -88,8 +98,6 @@
               v-model:ai-settings="jobForm.aiSettings"
               v-model:premium-features="jobForm.premiumFeatures"
               :voice-type="selectedVoiceType"
-              @next="nextStep"
-              @previous="previousStep"
             />
 
             <!-- Step 4: Review & Payment (All Types) -->
@@ -97,9 +105,6 @@
               v-if="currentStep === 4"
               :job-form="jobForm as any"
               :voice-type="selectedVoiceType"
-              @publish="publishJobHandler"
-              @previous="previousStep"
-              @save-draft="saveDraft"
               :is-submitting="isSubmitting"
             />
           </div>
@@ -153,7 +158,7 @@ const totalSteps = computed(() => {
 })
 const transitionName = ref('slide-left')
 const isSubmitting = ref(false)
-const isSavingDraft = ref(false)
+// isSavingDraft removed - using auto-save only
 const currentDraftId = ref<string | null>(null)
 const lastAutoSave = ref<Date | null>(null)
 const autoSaveInterval = ref<number | null>(null)
@@ -177,15 +182,16 @@ const jobForm = reactive({
     max: 0,
     currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND',
   },
-  deadline: '',
+  deadline: '', // Will be auto-set to 7 days in BasicInfoRequirementsStep
   requirements: {
     language: '',
     voiceType: '' as VoiceType,
     gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
+    ageRange: undefined as string | undefined,
     specialInstructions: '',
     deliveryFormat: '',
     deliveryTimeline: '',
-    revisionRounds: '',
+    revisionRounds: '1', // Auto-set to 1
   },
   files: {
     script: undefined as File | undefined,
@@ -232,19 +238,16 @@ const stepValidation = computed(() => {
   }
 })
 
+// Can proceed to next step (for top navigation button)
+const canProceedToNext = computed(() => {
+  return stepValidation.value[currentStep.value as keyof typeof stepValidation.value]?.() ?? false
+})
+
 // Methods
 const selectVoiceType = (type: 'talent_only' | 'ai_synthesis' | 'hybrid_approach') => {
   selectedVoiceType.value = type
   jobForm.voiceType = type
   // Don't change currentStep - let user navigate manually
-}
-
-const handleVoiceTypeNext = () => {
-  // This method is called when user clicks "Continue" in JobTypeStep
-  // Move to step 2 (Basic Information)
-  if (selectedVoiceType.value) {
-    currentStep.value = 2
-  }
 }
 
 const nextStep = () => {
@@ -253,7 +256,16 @@ const nextStep = () => {
     stepValidation.value[currentStep.value as keyof typeof stepValidation.value]?.()
   ) {
     transitionName.value = 'slide-left'
-    currentStep.value++
+
+    // Handle step 1: ensure voice type is set
+    if (currentStep.value === 1) {
+      if (selectedVoiceType.value) {
+        jobForm.voiceType = selectedVoiceType.value
+        currentStep.value++
+      }
+    } else {
+      currentStep.value++
+    }
   }
 }
 
@@ -264,36 +276,7 @@ const previousStep = () => {
   }
 }
 
-const saveDraft = async () => {
-  isSavingDraft.value = true
-
-  try {
-    const draft = saveDraftToStorage(
-      jobForm as Record<string, unknown>,
-      currentClient.value.id,
-      currentClient.value.companyName,
-      currentDraftId.value || undefined,
-    )
-
-    currentDraftId.value = draft.id
-    lastAutoSave.value = new Date()
-
-    showToast({
-      type: 'success',
-      title: 'Draft Saved',
-      message: 'Your job draft has been saved successfully.',
-    })
-  } catch (error) {
-    console.error('Error saving draft:', error)
-    showToast({
-      type: 'error',
-      title: 'Save Failed',
-      message: 'Failed to save draft. Please try again.',
-    })
-  } finally {
-    isSavingDraft.value = false
-  }
-}
+// Manual save removed - using auto-save only
 
 const autoSaveHandler = () => {
   if (jobForm.title.trim() || jobForm.description.trim()) {
@@ -342,6 +325,7 @@ const loadDraftData = (draftId: string) => {
       voiceType:
         ((draft.requirements as Record<string, unknown>).voiceType as VoiceType) || 'commercial',
       gender: draft.requirements.gender || 'any',
+      ageRange: (draft.requirements as Record<string, unknown>).ageRange as string | undefined,
       specialInstructions: draft.requirements.specialInstructions || '',
       deliveryFormat:
         ((draft.requirements as Record<string, unknown>).deliveryFormat as string) || '',
@@ -441,9 +425,10 @@ const resetForm = () => {
       language: '',
       voiceType: '' as VoiceType,
       gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
+      ageRange: undefined as string | undefined,
       specialInstructions: '',
       deliveryFormat: '',
-      revisionRounds: '',
+      revisionRounds: '1',
     },
     files: {
       script: undefined as File | undefined,

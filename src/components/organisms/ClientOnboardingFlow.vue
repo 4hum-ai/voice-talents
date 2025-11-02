@@ -126,7 +126,13 @@ const {
 const showOnboarding = ref(false)
 const currentStep = ref(1)
 const totalSteps = ref(4)
-const stepValidation = reactive<Record<number, boolean>>({})
+// Use a Map-like approach with explicit refs for better reactivity tracking
+const stepValidation = reactive({
+  1: false,
+  2: false,
+  3: false,
+  4: false,
+} as Record<number, boolean>)
 
 // Agreement data
 const agreementData = reactive({
@@ -164,11 +170,21 @@ const onboardingData = ref<Record<string, unknown>>({
 // Methods
 const updateStepValidation = (step: number, isValid: boolean) => {
   console.log(`updateStepValidation called - Step ${step} validation:`, isValid)
+
+  // Ensure the property exists in the reactive object to help Vue track it
+  if (!(step in stepValidation)) {
+    // Initialize the property if it doesn't exist
+    stepValidation[step] = false
+  }
+
+  // Update the value
   stepValidation[step] = isValid
-  console.log('Current stepValidation after update:', { ...stepValidation })
+
+  // Force reactivity by accessing the object
+  console.log('Current stepValidation after update:', JSON.parse(JSON.stringify(stepValidation)))
   console.log('Current step:', currentStep.value)
-  console.log('Step validation value:', stepValidation[currentStep.value])
-  console.log('canProceedToNext will be:', stepValidation[currentStep.value] ?? false)
+  console.log('Step validation value for current step:', stepValidation[currentStep.value])
+  console.log('stepValidation object keys:', Object.keys(stepValidation))
 }
 
 const handleAccountDataUpdate = (newData: AccountInformationData) => {
@@ -193,14 +209,19 @@ const handleProjectTypesUpdate = (newTypes: string[]) => {
   console.log('Updated projectTypesData:', projectTypesData)
 }
 
-// Computed
+// Computed - track both currentStep and stepValidation explicitly
 const canProceedToNext = computed(() => {
-  const result = stepValidation[currentStep.value] ?? false
+  // Access both to ensure reactivity tracking
+  const step = currentStep.value
+  const validation = stepValidation[step]
+  const result = validation ?? false
   console.log(
-    `canProceedToNext for step ${currentStep.value}:`,
+    `canProceedToNext for step ${step}:`,
     result,
-    'stepValidation:',
-    stepValidation,
+    'stepValidation[step]:',
+    validation,
+    'Full stepValidation:',
+    { ...stepValidation },
   )
   return result
 })

@@ -46,6 +46,16 @@
                   </div>
                   <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
                   <p class="text-muted-foreground mb-4">{{ job.description }}</p>
+                  <div class="mt-4">
+                    <RouterLink
+                      :to="getAgreementTemplateUrl"
+                      target="_blank"
+                      class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm"
+                    >
+                      <FileDocumentIcon class="h-4 w-4" />
+                      View Agreement Template
+                    </RouterLink>
+                  </div>
                 </div>
               </div>
 
@@ -360,7 +370,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, RouterLink } from 'vue-router'
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
@@ -413,6 +423,16 @@ const { getJob } = useJob()
 
 // Job data - load from useJob composable or create mock data
 const job = ref<JobDetail | null>(null)
+
+// Determine agreement template URL based on job type
+const getAgreementTemplateUrl = computed(() => {
+  if (!job.value) return '/content/agreement-template-service'
+
+  if (job.value.voiceType === 'ai_synthesis') {
+    return '/content/agreement-template-royalty'
+  }
+  return '/content/agreement-template-service'
+})
 
 // Load job data
 const loadJobData = () => {

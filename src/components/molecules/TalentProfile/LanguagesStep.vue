@@ -92,19 +92,9 @@ const languageOptions = [
 
   // ASEAN Countries
   { value: 'Vietnamese', label: 'Vietnamese', countryCode: 'vn', color: 'bg-red-500' },
-  { value: 'Thai', label: 'Thai', countryCode: 'th', color: 'bg-red-600' },
 
   // Other major languages
-  { value: 'French', label: 'French', countryCode: 'fr', color: 'bg-blue-500' },
   { value: 'German', label: 'German', countryCode: 'de', color: 'bg-yellow-500' },
-  { value: 'Japanese', label: 'Japanese', countryCode: 'jp', color: 'bg-red-500' },
-  { value: 'Korean', label: 'Korean', countryCode: 'kr', color: 'bg-blue-500' },
-  {
-    value: 'Chinese',
-    label: 'Chinese',
-    countryCode: 'cn',
-    color: 'bg-red-500',
-  },
 ]
 
 const toggleLanguage = (languageValue: string) => {

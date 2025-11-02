@@ -13,7 +13,7 @@
     </div>
 
     <!-- Cards Grid -->
-    <div class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
+    <div class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
       <div v-for="type in jobTypes" :key="type.value" class="group relative">
         <input
           :id="type.value"
@@ -59,17 +59,6 @@
             <p class="text-muted-foreground leading-relaxed">{{ type.description }}</p>
           </div>
 
-          <!-- Pricing -->
-          <div class="border-border/50 mt-auto border-t pt-6">
-            <div>
-              <span class="text-muted-foreground text-sm font-medium">Starting from</span>
-              <div class="text-foreground text-2xl font-bold">{{ type.pricing }}</div>
-              <div v-if="type.value === 'ai_synthesis'" class="mt-2">
-                <div class="text-xs font-medium text-green-600">✓ Includes talent fees</div>
-              </div>
-            </div>
-          </div>
-
           <!-- Hover Effect Overlay -->
           <div
             class="from-primary/5 pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -77,44 +66,29 @@
         </label>
       </div>
     </div>
-
-    <!-- Continue Button -->
-    <div class="flex justify-center">
-      <Button
-        variant="primary"
-        size="lg"
-        @click="handleNext"
-        :disabled="!localJobType"
-        class="rounded-xl px-12 py-4 text-lg font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
-      >
-        Continue to Next Step
-        <Icon name="mdi:arrow-right" class="ml-2 h-5 w-5" />
-      </Button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import Button from '@/components/atoms/Button.vue'
+import { ref, watch } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
 import AccountIcon from '~icons/mdi/account'
 import RobotIcon from '~icons/mdi/robot'
-import AccountGroupIcon from '~icons/mdi/account-group'
 
 interface Props {
-  jobType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  jobType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
 }
 
 interface Emits {
   (e: 'update:jobType', value: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'): void
-  (e: 'next'): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const localJobType = ref(props.jobType || 'hybrid_approach')
+const localJobType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | undefined>(
+  props.jobType || undefined,
+)
 
 // Voice Approach Types with enhanced descriptions and features
 const jobTypes = [
@@ -124,33 +98,20 @@ const jobTypes = [
     description:
       'Work directly with skilled voice actors for authentic, personalized performances that bring your content to life',
     icon: AccountIcon,
-    pricing: '$15/hr',
-  },
-  {
-    value: 'hybrid_approach',
-    label: 'Hybrid Approach',
-    description:
-      'Combine AI efficiency with human expertise for the perfect balance of speed, quality, and cost-effectiveness',
-    icon: AccountGroupIcon,
-    pricing: '$10/hr',
   },
   {
     value: 'ai_synthesis',
-    label: 'AI Voice',
+    label: 'Licensed AI Voice',
     description:
       'Leverage cutting-edge AI technology powered by licensed talent voices, ensuring creators are fairly compensated',
     icon: RobotIcon,
-    pricing: '$5/hr',
   },
 ]
 
-const handleNext = () => {
-  if (localJobType.value) {
-    // Ensure the selection is emitted before proceeding
-    emit('update:jobType', localJobType.value)
-    emit('next')
+// Emit updates when selection changes (only if a value is selected)
+watch(localJobType, (newValue) => {
+  if (newValue && (newValue === 'talent_only' || newValue === 'ai_synthesis')) {
+    emit('update:jobType', newValue)
   }
-}
-
-// Note: We only emit updates when Continue is clicked, not on selection change
+})
 </script>

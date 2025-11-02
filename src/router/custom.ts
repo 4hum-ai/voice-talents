@@ -118,16 +118,4 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/admin/Design.vue'),
     meta: { title: 'Design System', requiresAuth: true },
   },
-
-  // Legal Pages
-  {
-    path: '/terms',
-    component: () => import('../views/TermsView.vue'),
-    meta: { title: 'Terms of Service', requiresAuth: false },
-  },
-  {
-    path: '/privacy',
-    component: () => import('../views/PrivacyView.vue'),
-    meta: { title: 'Privacy Policy', requiresAuth: false },
-  },
 ]

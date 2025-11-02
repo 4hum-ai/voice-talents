@@ -146,6 +146,38 @@
                 </div>
               </div>
 
+              <!-- Agreement Template Reference -->
+              <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+                <h2 class="text-foreground mb-4 text-lg font-semibold">Agreement Reference</h2>
+                <div
+                  class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20"
+                >
+                  <div class="flex items-start gap-3">
+                    <Icon
+                      name="mdi:information"
+                      class="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400"
+                    />
+                    <div class="flex-1">
+                      <p class="mb-2 text-sm font-medium text-blue-800 dark:text-blue-200">
+                        Review Agreement Template:
+                      </p>
+                      <RouterLink
+                        :to="getAgreementTemplateUrl"
+                        target="_blank"
+                        class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm underline"
+                      >
+                        <Icon name="mdi:open-in-new" class="h-4 w-4" />
+                        View Agreement Template
+                      </RouterLink>
+                      <p class="mt-2 text-xs text-blue-700 dark:text-blue-300">
+                        When your proposal is approved, a digital agreement will be automatically
+                        created based on this template.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Personal Note -->
               <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
                 <h2 class="text-foreground mb-4 text-lg font-semibold">Personal Note to Studio</h2>
@@ -204,11 +236,13 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import type { JobPosting, JobApplication } from '@/types/voice-client'
 import { mockJobPostings } from '@/data/mock-voice-client-data'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import Button from '@/components/atoms/Button.vue'
+import Icon from '@/components/atoms/Icon.vue'
 
 interface Props {
   isOpen: boolean
@@ -288,6 +322,18 @@ watch(isFormValid, () => {
   }
 
   formErrors.value = errors
+})
+
+// Determine agreement template URL based on job type
+const getAgreementTemplateUrl = computed(() => {
+  if (!job.value) return '/content/agreement-template-service'
+
+  // In real app, check job.voiceType
+  // ai_synthesis = royalty, talent_only/hybrid = service
+  if (job.value.voiceType === 'ai_synthesis') {
+    return '/content/agreement-template-royalty'
+  }
+  return '/content/agreement-template-service'
 })
 
 // Watch for form changes

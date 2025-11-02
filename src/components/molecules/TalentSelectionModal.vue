@@ -16,8 +16,8 @@
         <Button variant="ghost" size="sm" icon="mdi:close" @click="$emit('close')" />
       </div>
 
-      <!-- Content -->
-      <div class="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
+      <!-- Content (hide when showing agreement review) -->
+      <div v-if="!showAgreementReview" class="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
         <div v-if="applications.length === 0" class="py-12 text-center">
           <UserIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
           <h3 class="text-foreground mb-2 text-lg font-medium">No Applications Yet</h3>
@@ -205,8 +205,23 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div class="border-border flex items-center justify-between border-t p-6">
+      <!-- Agreement Review Step -->
+      <div v-if="showAgreementReview" class="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
+        <AgreementReviewStep
+          :agreement-type="agreementType"
+          :agreement-data="agreementData"
+          :accepted="agreementAccepted"
+          @update:accepted="agreementAccepted = $event"
+          @approve="finalizeApproval"
+          @cancel="showAgreementReview = false"
+        />
+      </div>
+
+      <!-- Footer (only show if not in agreement review) -->
+      <div
+        v-if="!showAgreementReview"
+        class="border-border flex items-center justify-between border-t p-6"
+      >
         <div class="text-muted-foreground text-sm">
           <span v-if="selectedApplication">
             Selected:
@@ -222,7 +237,7 @@
             variant="primary"
             :disabled="!selectedApplication"
             icon="mdi:check"
-            @click="approveTalent"
+            @click="startApprovalProcess"
             >Approve & Award Contract</Button
           >
         </div>
@@ -237,6 +252,7 @@ import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
+import AgreementReviewStep from '@/components/molecules/AgreementReviewStep.vue'
 import { useToast } from '@/composables/useToast'
 import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
 import type { JobApplication } from '@/types/voice-client'
@@ -266,6 +282,8 @@ const { addToast: showToast } = useToast()
 // State
 const selectedApplication = ref<JobApplication | null>(null)
 const sortBy = ref('appliedDate')
+const showAgreementReview = ref(false)
+const agreementAccepted = ref(false)
 
 // Sort options
 const sortOptions = [
@@ -310,8 +328,49 @@ const selectApplication = (application: JobApplication) => {
   selectedApplication.value = application
 }
 
-const approveTalent = () => {
+// Determine agreement type based on job (this would come from job data in real app)
+// For now, assume service agreement (talent_only) unless specified
+const agreementType = computed<'service' | 'royalty'>(() => {
+  // In real app, check job.voiceType
+  // ai_synthesis = royalty, talent_only/hybrid = service
+  return 'service' // Default to service agreement
+})
+
+// Prepare agreement data for review
+const agreementData = computed(() => {
+  if (!selectedApplication.value) {
+    return {
+      projectTitle: props.jobTitle,
+      clientName: 'Your Company', // In real app, get from auth/store
+      talentName: '',
+      amount: 0,
+      currency: 'USD',
+      timeline: '',
+      revisionRounds: undefined, // Would come from job requirements
+    }
+  }
+  const app = selectedApplication.value
+  return {
+    projectTitle: props.jobTitle,
+    clientName: 'Your Company', // In real app, get from auth/store
+    talentName: app.voiceTalentName || '',
+    amount: app.proposedRate || 0,
+    currency: app.proposedCurrency || 'USD',
+    timeline: app.proposedTimeline || '',
+    revisionRounds: undefined, // Would come from job requirements
+  }
+})
+
+const startApprovalProcess = () => {
   if (!selectedApplication.value) return
+
+  // Show agreement review step
+  showAgreementReview.value = true
+  agreementAccepted.value = false
+}
+
+const finalizeApproval = () => {
+  if (!selectedApplication.value || !agreementAccepted.value) return
 
   emit('approve', selectedApplication.value)
   showToast({
@@ -319,7 +378,13 @@ const approveTalent = () => {
     title: 'Talent Approved',
     message: `Contract awarded to ${selectedApplication.value.voiceTalentName}`,
   })
+
+  // Close modal
+  showAgreementReview.value = false
+  emit('close')
 }
+
+// Legacy method for backward compatibility - removed as unused
 
 const viewTalentProfile = () => {
   // In a real app, this would navigate to talent profile

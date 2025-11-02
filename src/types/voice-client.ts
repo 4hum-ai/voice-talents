@@ -68,6 +68,7 @@ export interface JobPosting extends BaseEntity {
     language: string
     voiceType: VoiceType
     gender: 'male' | 'female' | 'non-binary' | 'any'
+    ageRange?: string
     specialInstructions: string
     deliveryFormat: string
     revisionRounds: string

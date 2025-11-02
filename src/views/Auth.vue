@@ -120,7 +120,7 @@
           <p class="px-2 text-center text-xs text-gray-500 dark:text-gray-400">
             By signing in, you agree to our
             <RouterLink
-              to="/terms"
+              to="/content/terms-of-service"
               target="_blank"
               class="text-primary hover:text-primary/80 underline"
             >
@@ -128,7 +128,7 @@
             </RouterLink>
             and
             <RouterLink
-              to="/privacy"
+              to="/content/privacy-policy"
               target="_blank"
               class="text-primary hover:text-primary/80 underline"
             >

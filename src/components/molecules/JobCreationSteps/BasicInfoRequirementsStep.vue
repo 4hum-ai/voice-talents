@@ -76,6 +76,19 @@
               />
             </div>
 
+            <!-- Age Range -->
+            <div>
+              <label for="ageRange" class="text-foreground mb-2 block text-sm font-medium">
+                Age Range
+              </label>
+              <SelectInput
+                id="ageRange"
+                v-model="localRequirements.ageRange"
+                :options="ageRangeOptions"
+                placeholder="Select age range"
+              />
+            </div>
+
             <!-- Project Deadline -->
             <div>
               <label for="deadline" class="text-foreground mb-2 block text-sm font-medium">
@@ -105,7 +118,7 @@
             </div>
 
             <!-- Revision Rounds -->
-            <div class="md:col-span-2">
+            <div>
               <label for="revisionRounds" class="text-foreground mb-2 block text-sm font-medium">
                 Revision Rounds
               </label>
@@ -227,23 +240,11 @@
         </div>
       </div>
     </div>
-
-    <div class="mt-8 flex justify-between">
-      <Button variant="outline" size="lg" @click="emit('previous')">
-        <Icon name="mdi:arrow-left" class="mr-2 h-6 w-6" />
-        Previous
-      </Button>
-      <Button variant="primary" size="lg" @click="emit('next')" :disabled="!isStepValid">
-        Continue
-        <Icon name="mdi:arrow-right" class="ml-2 h-6 w-6" />
-      </Button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import Button from '@/components/atoms/Button.vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import FileUpload from '@/components/atoms/FileUpload.vue'
 import Icon from '@/components/atoms/Icon.vue'
@@ -254,6 +255,7 @@ interface Requirements {
   language: string
   voiceType: VoiceType
   gender: 'male' | 'female' | 'non-binary' | 'any'
+  ageRange?: string
   specialInstructions: string
   deliveryFormat: string
   deliveryTimeline: string
@@ -281,20 +283,26 @@ interface Emits {
   (e: 'update:requirements', value: Requirements): void
   (e: 'update:deadline', value: string): void
   (e: 'update:files', value: ProjectFiles): void
-  (e: 'next'): void
-  (e: 'previous'): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+// Helper function to get date 7 days from now
+const getDateIn7Days = () => {
+  const date = new Date()
+  date.setDate(date.getDate() + 7)
+  return date.toISOString().split('T')[0] // Format as YYYY-MM-DD
+}
 
 const localTitle = ref(props.title)
 const localProjectType = ref(props.projectType)
 const localRequirements = ref<Requirements>({
   ...props.requirements,
   deliveryFormat: props.requirements.deliveryFormat || 'mp3_44khz', // Default to ElevenLabs MP3
+  revisionRounds: props.requirements.revisionRounds || '1', // Auto-set to 1
 })
-const localDeadline = ref(props.deadline)
+const localDeadline = ref(props.deadline || getDateIn7Days()) // Auto-set to 7 days from now
 const localFiles = ref<ProjectFiles>({ ...props.files })
 
 // Use job type configuration composable
@@ -335,6 +343,16 @@ const genderOptions = [
   { value: 'non-binary', label: 'Non-binary' },
 ]
 
+const ageRangeOptions = [
+  { value: 'child', label: 'Child (5-12 years)' },
+  { value: 'teen', label: 'Teen (13-17 years)' },
+  { value: 'young_adult', label: 'Young Adult (18-25 years)' },
+  { value: 'adult', label: 'Adult (26-40 years)' },
+  { value: 'mature', label: 'Mature (41-60 years)' },
+  { value: 'senior', label: 'Senior (60+ years)' },
+  { value: 'any', label: 'Any Age' },
+]
+
 const deliveryFormatOptions = [
   { value: 'mp3_44khz', label: 'MP3 (44.1kHz)' },
   { value: 'wav_44khz', label: 'WAV (44.1kHz, 16-bit)' },
@@ -370,15 +388,7 @@ const getVoiceTypeLabel = () => {
   }
 }
 
-// Validation
-const isStepValid = computed(() => {
-  return (
-    !!localTitle.value.trim() &&
-    !!localProjectType.value &&
-    !!localRequirements.value.language &&
-    !!localDeadline.value
-  )
-})
+// Validation is handled by parent modal
 
 // Dynamic file upload handler
 const handleFileUpload = (fileId: string, file: File | File[]) => {
@@ -403,6 +413,7 @@ watch(
 watch(localDeadline, (newValue) => {
   emit('update:deadline', newValue)
 })
+
 watch(
   localFiles,
   (newValue) => {
@@ -417,6 +428,16 @@ watch(localProjectType, (newType, oldType) => {
     // Clear all files when project type changes
     localFiles.value = {}
     emit('update:files', localFiles.value)
+  }
+})
+
+// Emit initial auto-set values on mount
+onMounted(() => {
+  if (!props.deadline && localDeadline.value) {
+    emit('update:deadline', localDeadline.value)
+  }
+  if (!props.requirements.revisionRounds && localRequirements.value.revisionRounds) {
+    emit('update:requirements', { ...localRequirements.value })
   }
 })
 </script>

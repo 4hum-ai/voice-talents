@@ -23,6 +23,12 @@ export const genericRoutes: RouteRecordRaw[] = [
     component: () => import('../views/NotFound.vue'),
     meta: { title: 'Not Found' },
   },
+  // Content Pages (Legal, etc.)
+  {
+    path: '/content/:slug',
+    component: () => import('../views/Content.vue'),
+    meta: { requiresAuth: false },
+  },
   {
     path: '/:pathMatch(.*)*',
     component: () => import('../views/NotFound.vue'),

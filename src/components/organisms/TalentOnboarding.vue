@@ -68,53 +68,50 @@
               <!-- Step 1: Welcome -->
               <WelcomeStep v-if="currentStep === 1" />
 
-              <!-- Step 2: Agreement & Age Verification -->
-              <AgreementStep
+              <!-- Step 2: Basic Info -->
+              <BasicInfoStep
                 v-if="currentStep === 2"
-                :model-value="agreementData"
-                @update:model-value="Object.assign(agreementData, $event)"
-                @validation-change="updateStepValidation(2, $event)"
+                :profile-data="profileData"
+                @update="updateProfileData"
               />
 
-              <!-- Step 3: Basic Info -->
-              <BasicInfoStep
+              <!-- Step 3: Voice Types -->
+              <VoiceTypesStep
                 v-if="currentStep === 3"
                 :profile-data="profileData"
                 @update="updateProfileData"
               />
 
-              <!-- Step 4: Voice Types -->
-              <VoiceTypesStep
+              <!-- Step 4: Languages -->
+              <LanguagesStep
                 v-if="currentStep === 4"
                 :profile-data="profileData"
                 @update="updateProfileData"
               />
 
-              <!-- Step 5: Languages -->
-              <LanguagesStep
-                v-if="currentStep === 5"
-                :profile-data="profileData"
-                @update="updateProfileData"
-              />
-
-              <!-- Step 6: Upload Voice Samples -->
+              <!-- Step 5: Upload Voice Samples -->
               <VoiceSamplesStep
-                v-if="currentStep === 6"
+                v-if="currentStep === 5"
                 :profile-data="profileData"
                 :voice-samples="voiceSamples"
                 @update="updateVoiceSamples"
               />
 
-              <!-- Step 7: Pricing & Rates -->
+              <!-- Step 6: Pricing & Rates -->
               <PricingStep
-                v-if="currentStep === 7"
+                v-if="currentStep === 6"
                 :profile-data="profileData"
                 :pricing-data="pricingData"
                 @update="updatePricingData"
               />
 
-              <!-- Step 8: Completion -->
-              <CompletionStep v-if="currentStep === 8" />
+              <!-- Step 7: Agreement & Legal Requirements (Final Step) -->
+              <AgreementStep
+                v-if="currentStep === 7"
+                :model-value="agreementData"
+                @update:model-value="Object.assign(agreementData, $event)"
+                @validation-change="updateStepValidation(7, $event)"
+              />
             </div>
           </Transition>
         </div>
@@ -136,7 +133,6 @@ import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
 import VoiceSamplesStep from '@/components/molecules/TalentProfile/VoiceSamplesStep.vue'
 import PricingStep from '@/components/molecules/TalentProfile/PricingStep.vue'
-import CompletionStep from '@/components/molecules/TalentProfile/CompletionStep.vue'
 
 interface Props {
   show?: boolean
@@ -157,7 +153,7 @@ const { completeTalentOnboarding } = useOnboarding()
 
 // State
 const currentStep = ref(1)
-const totalSteps = 8
+const totalSteps = 7
 const transitionName = ref('slide-left')
 
 // Agreement data
@@ -232,27 +228,26 @@ const canProceedToNext = computed(() => {
     case 1:
       return true // Welcome step
     case 2:
+      return profileData.displayName && profileData.bio && profileData.location
+    case 3:
+      return profileData.voiceTypes.length > 0
+    case 4:
+      return profileData.languages.length > 0
+    case 5:
+      // Allow proceeding if at least one voice type has a sample uploaded
+      return Object.keys(voiceSamples).length > 0
+    case 6:
+      // Require at least one job type rate to be set
+      return Object.values(pricingData.jobTypeRates).some(
+        (rate) => rate && rate !== '' && parseFloat(rate) > 0,
+      )
+    case 7:
+      // Final step: Agreement - must accept all terms
       return (
         agreementData.isAgeVerified &&
         agreementData.acceptedTerms &&
         agreementData.acceptedPlatformAgreement
       )
-    case 3:
-      return profileData.displayName && profileData.bio && profileData.location
-    case 4:
-      return profileData.voiceTypes.length > 0
-    case 5:
-      return profileData.languages.length > 0
-    case 6:
-      // Allow proceeding if at least one voice type has a sample uploaded
-      return Object.keys(voiceSamples).length > 0
-    case 7:
-      // Require at least one job type rate to be set
-      return Object.values(pricingData.jobTypeRates).some(
-        (rate) => rate && rate !== '' && parseFloat(rate) > 0,
-      )
-    case 8:
-      return true // Completion
     default:
       return false
   }

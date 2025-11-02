@@ -204,26 +204,12 @@
         </div>
       </div>
     </div>
-
-    <div class="mt-8 flex justify-between">
-      <Button variant="outline" size="lg" @click="emit('previous')">
-        <IconMdiArrowLeft class="mr-2 h-4 w-4" />
-        Previous
-      </Button>
-      <Button variant="primary" size="lg" @click="emit('next')">
-        Continue
-        <IconMdiArrowRight class="ml-2 h-4 w-4" />
-      </Button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import Button from '@/components/atoms/Button.vue'
 import IconMdiStar from '~icons/mdi/star'
-import IconMdiArrowLeft from '~icons/mdi/arrow-left'
-import IconMdiArrowRight from '~icons/mdi/arrow-right'
 
 interface TalentOptions {
   isPublic: boolean
@@ -256,8 +242,6 @@ interface Emits {
   (e: 'update:talentOptions', value: TalentOptions): void
   (e: 'update:aiSettings', value: AISettings): void
   (e: 'update:premiumFeatures', value: PremiumFeatures): void
-  (e: 'next'): void
-  (e: 'previous'): void
 }
 
 const props = defineProps<Props>()
@@ -326,13 +310,6 @@ const mockTalentList = [
     specialty: 'Presentation Voice',
     rating: '4.7',
     projects: 145,
-  },
-  {
-    id: 'talent-9',
-    name: 'Rachel Brown',
-    specialty: 'Phone System Voice',
-    rating: '4.8',
-    projects: 112,
   },
   {
     id: 'talent-10',

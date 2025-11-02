@@ -4,9 +4,24 @@
 
 **Effective Date:** January 2025
 
+> **📋 Important Notice:** VoiceTalents.AI now has separate Terms of Service documents for different user types. Please select the appropriate terms based on how you use the Platform:
+>
+> - **[Terms of Service for Clients](/content/terms-of-service-clients)** - If you are posting jobs and hiring voice talents
+> - **[Terms of Service for Voice Talents](/content/terms-of-service-talents)** - If you are a voice talent offering your services
+>
+> If you use the Platform as both a client and talent, you must agree to both sets of terms.
+>
+> The general terms below apply to all users, but you should also review the role-specific terms linked above.
+
+---
+
+## General Terms (Applicable to All Users)
+
+The following general terms apply to all users of VoiceTalents.AI. For role-specific terms, please refer to the links above.
+
 ## 1. Acceptance of Terms
 
-By accessing and using VoiceTalents.AI ("Platform", "Service", "we", "us", or "our"), you accept and agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use the Platform.
+By accessing and using VoiceTalents.AI ("Platform", "Service", "we", "us", or "our"), you accept and agree to be bound by these Terms of Service ("Terms") and the applicable role-specific terms. If you do not agree to these Terms, you may not access or use the Platform.
 
 ## 2. Description of Service
 

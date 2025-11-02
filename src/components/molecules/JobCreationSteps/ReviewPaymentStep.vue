@@ -3,6 +3,16 @@
     <div class="mb-8 text-center">
       <h1 class="text-foreground mb-4 text-3xl font-bold">Step 4: Review & Payment</h1>
       <p class="text-muted-foreground text-lg">Review your project details and complete payment</p>
+      <div class="mt-4 flex justify-center gap-4">
+        <RouterLink
+          :to="getTemplateUrl"
+          target="_blank"
+          class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm underline"
+        >
+          <Icon name="mdi:file-document" class="h-4 w-4" />
+          View Agreement Template Reference
+        </RouterLink>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -252,42 +262,15 @@
             </div>
           </div>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="space-y-3">
-          <Button
-            variant="primary"
-            size="lg"
-            @click="emit('publish')"
-            :disabled="isSubmitting"
-            class="w-full"
-          >
-            <Icon v-if="isSubmitting" name="mdi:loading" class="mr-2 h-4 w-4 animate-spin" />
-            <Icon v-else name="mdi:bank-transfer" class="mr-2 h-4 w-4" />
-            {{ isSubmitting ? 'Processing...' : `Complete Bank Transfer - $${totalCost}` }}
-          </Button>
-
-          <Button variant="outline" size="lg" @click="emit('save-draft')" class="w-full">
-            <Icon name="mdi:content-save" class="mr-2 h-4 w-4" />
-            Save as Draft
-          </Button>
-        </div>
       </div>
-    </div>
-
-    <!-- Navigation -->
-    <div class="mt-8 flex justify-between">
-      <Button variant="outline" size="lg" @click="emit('previous')">
-        <Icon name="mdi:arrow-left" class="mr-2 h-4 w-4" />
-        Previous
-      </Button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import Button from '@/components/atoms/Button.vue'
+import { RouterLink } from 'vue-router'
+import Icon from '@/components/atoms/Icon.vue'
 import { useToast } from '@/composables/useToast'
 import IconMdiContentCopy from '~icons/mdi/content-copy'
 import IconMdiFileDocument from '~icons/mdi/file-document'
@@ -340,14 +323,7 @@ interface Props {
   isSubmitting: boolean
 }
 
-interface Emits {
-  (e: 'publish'): void
-  (e: 'previous'): void
-  (e: 'save-draft'): void
-}
-
 const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
 
 const { success, error } = useToast()
 
@@ -445,5 +421,17 @@ const hasFiles = computed(() => {
     props.jobForm.files.referenceAudio ||
     (props.jobForm.files.additional && props.jobForm.files.additional.length > 0)
   )
+})
+
+// Determine agreement template URL based on voice type
+const getTemplateUrl = computed(() => {
+  // talent_only = Service Agreement
+  // ai_synthesis = Royalty Agreement
+  // hybrid_approach = Both (show Service as primary)
+  if (props.voiceType === 'ai_synthesis') {
+    return '/content/agreement-template-royalty'
+  }
+  // Default to service agreement for talent_only and hybrid
+  return '/content/agreement-template-service'
 })
 </script>
