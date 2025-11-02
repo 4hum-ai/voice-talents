@@ -55,68 +55,35 @@
     <!-- Main Content -->
     <div class="h-full overflow-y-auto pt-20">
       <div class="mx-auto max-w-4xl px-6 py-8">
-        <!-- Step 1: Welcome & Company Info -->
+        <!-- Step 1: About Your Company -->
         <div v-if="currentStep === 1" class="space-y-8">
           <AccountInformation
             :model-value="accountData"
-            :required-fields="['companyName', 'contactName', 'email']"
+            :required-fields="['companyName']"
+            mode="company"
             @validation-change="updateStepValidation(1, $event)"
             @update:modelValue="handleAccountDataUpdate"
           />
         </div>
 
-        <!-- Step 2: Workflow Preferences -->
+        <!-- Step 2: About You -->
         <div v-if="currentStep === 2" class="space-y-8">
-          <JobPreferences
-            v-model="jobPreferencesData"
-            :show-public-profile="false"
+          <AccountInformation
+            :model-value="accountData"
+            :required-fields="['contactName', 'email']"
+            mode="personal"
             @validation-change="updateStepValidation(2, $event)"
+            @update:modelValue="handleAccountDataUpdate"
           />
         </div>
 
-        <!-- Step 3: Complete Setup -->
+        <!-- Step 3: Agreement & Legal Requirements (Final Step) -->
         <div v-if="currentStep === 3" class="space-y-8">
-          <div class="text-center">
-            <div
-              class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600"
-            >
-              <Icon name="mdi:check-circle" class="h-10 w-10 text-white" />
-            </div>
-            <h1 class="text-foreground mb-4 text-3xl font-bold">You're All Set! 🎉</h1>
-            <p class="text-muted-foreground mb-8 text-lg">
-              Your client account is ready! Start posting jobs and finding amazing voice talent.
-            </p>
-          </div>
-
-          <div class="bg-card rounded-lg p-8 shadow-lg">
-            <h2 class="text-foreground mb-6 text-xl font-semibold">What's Next?</h2>
-
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div class="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-600">
-                <Icon name="mdi:plus-circle" class="mx-auto mb-3 h-8 w-8 text-blue-600" />
-                <h3 class="text-foreground mb-2 font-medium">Post Your First Job</h3>
-                <p class="text-muted-foreground text-sm">
-                  Create a job posting to find voice talents
-                </p>
-              </div>
-
-              <div class="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-600">
-                <Icon name="mdi:account-group" class="mx-auto mb-3 h-8 w-8 text-green-600" />
-                <h3 class="text-foreground mb-2 font-medium">Browse Talent</h3>
-                <p class="text-muted-foreground text-sm">
-                  Discover voice talents in our talent pool
-                </p>
-              </div>
-
-              <div class="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-600">
-                <Icon name="mdi:email" class="mx-auto mb-3 h-8 w-8 text-purple-600" />
-                <h3 class="text-foreground mb-2 font-medium">Send Invitations</h3>
-                <p class="text-muted-foreground text-sm">
-                  Invite specific voice talents to your projects
-                </p>
-              </div>
-            </div>
-          </div>
+          <ClientAgreementStep
+            :model-value="agreementData"
+            @update:model-value="Object.assign(agreementData, $event)"
+            @validation-change="updateStepValidation(3, $event)"
+          />
         </div>
       </div>
     </div>
@@ -130,7 +97,7 @@ import type { AccountInformationData } from '@/types/onboarding'
 import { useOnboarding } from '@/composables/useOnboarding'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import { AccountInformation, JobPreferences } from '@/components/molecules/ClientSettings'
+import { AccountInformation, ClientAgreementStep } from '@/components/molecules/ClientSettings'
 
 const router = useRouter()
 const {
@@ -148,6 +115,11 @@ const currentStep = ref(1)
 const totalSteps = ref(3)
 const stepValidation = reactive<Record<number, boolean>>({})
 
+// Agreement data
+const agreementData = reactive({
+  acceptedTerms: false,
+})
+
 // Component data structures
 const accountData = reactive({
   companyName: '',
@@ -160,13 +132,6 @@ const accountData = reactive({
   industry: '',
   companySize: 'small' as 'startup' | 'small' | 'medium' | 'large' | 'enterprise',
   description: '',
-})
-
-const jobPreferencesData = reactive({
-  autoApprove: false,
-  requireNDA: false,
-  requirePortfolio: true,
-  isPublic: false,
 })
 
 // Legacy onboarding data for compatibility
@@ -238,9 +203,9 @@ const completeOnboarding = () => {
     contactName: accountData.contactName,
     email: accountData.email,
     industry: accountData.industry,
-    autoApprove: jobPreferencesData.autoApprove,
-    requireNDA: jobPreferencesData.requireNDA,
-    requirePortfolio: jobPreferencesData.requirePortfolio,
+    autoApprove: false,
+    requireNDA: false,
+    requirePortfolio: true,
   }
 
   // Save onboarding data

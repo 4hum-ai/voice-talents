@@ -4,17 +4,40 @@
       <div
         class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600"
       >
-        <Icon name="mdi:account" class="h-8 w-8 text-white" />
+        <Icon
+          :name="
+            mode === 'company'
+              ? 'mdi:office-building'
+              : mode === 'personal'
+                ? 'mdi:account'
+                : 'mdi:account'
+          "
+          class="h-8 w-8 text-white"
+        />
       </div>
-      <h2 class="text-foreground mb-2 text-2xl font-bold">Let's Get to Know Your Company</h2>
+      <h2 class="text-foreground mb-2 text-2xl font-bold">
+        {{
+          mode === 'company'
+            ? 'About Your Company'
+            : mode === 'personal'
+              ? 'About You'
+              : "Let's Get to Know You"
+        }}
+      </h2>
       <p class="text-muted-foreground">
-        Tell us about your company so we can help you find the perfect voice talent
+        {{
+          mode === 'company'
+            ? 'Tell us about your company so we can help you find the perfect voice talent'
+            : mode === 'personal'
+              ? 'Let us know how to reach you and who you are'
+              : 'Tell us about your company so we can help you find the perfect voice talent'
+        }}
       </p>
     </div>
 
     <div class="bg-card border-border space-y-8 rounded-lg border p-8">
       <!-- About the Company Section -->
-      <div>
+      <div v-if="mode === 'company' || mode === 'both'">
         <h3 class="text-foreground mb-4 text-lg font-semibold">About the Company</h3>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div class="lg:col-span-2">
@@ -58,7 +81,7 @@
       </div>
 
       <!-- About You Section -->
-      <div>
+      <div v-if="mode === 'personal' || mode === 'both'">
         <h3 class="text-foreground mb-4 text-lg font-semibold">About You</h3>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div>
@@ -122,9 +145,12 @@ interface AccountInformationData {
   description: string
 }
 
+type SectionMode = 'company' | 'personal' | 'both'
+
 interface Props {
   modelValue: AccountInformationData
   requiredFields?: string[]
+  mode?: SectionMode
 }
 
 interface Emits {
@@ -134,6 +160,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   requiredFields: () => ['companyName', 'contactName', 'email'],
+  mode: 'both',
 })
 
 const emit = defineEmits<Emits>()
