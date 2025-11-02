@@ -165,7 +165,9 @@ const onboardingData = ref<Record<string, unknown>>({
 const updateStepValidation = (step: number, isValid: boolean) => {
   console.log(`updateStepValidation called - Step ${step} validation:`, isValid)
   stepValidation[step] = isValid
-  console.log('Current stepValidation after update:', stepValidation)
+  console.log('Current stepValidation after update:', { ...stepValidation })
+  console.log('Current step:', currentStep.value)
+  console.log('Step validation value:', stepValidation[currentStep.value])
   console.log('canProceedToNext will be:', stepValidation[currentStep.value] ?? false)
 }
 
