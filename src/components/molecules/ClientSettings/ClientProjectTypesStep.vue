@@ -96,8 +96,11 @@ const isValid = computed(() => localProjectTypes.value.length > 0)
 watch(
   localProjectTypes,
   (newTypes) => {
+    console.log('Watch triggered - Types:', newTypes, 'isValid:', isValid.value)
     emit('update:modelValue', newTypes)
-    emit('validation-change', isValid.value)
+    nextTick(() => {
+      emit('validation-change', isValid.value)
+    })
   },
   { deep: true },
 )
@@ -124,8 +127,17 @@ const toggleProjectType = (projectTypeValue: string) => {
     localProjectTypes.value.push(projectTypeValue)
   }
 
-  // Explicitly emit validation change after toggle
-  emit('validation-change', isValid.value)
+  // Use nextTick to ensure computed value has updated before emitting
+  nextTick(() => {
+    const newIsValid = localProjectTypes.value.length > 0
+    console.log(
+      'toggleProjectType - Emitting validation:',
+      newIsValid,
+      'Types:',
+      localProjectTypes.value,
+    )
+    emit('validation-change', newIsValid)
+  })
 }
 
 const getProjectTypeColor = (projectTypeValue: string) => {
@@ -133,9 +145,19 @@ const getProjectTypeColor = (projectTypeValue: string) => {
   return projectType?.color || 'bg-blue-500'
 }
 
-// Emit initial validation state using nextTick to ensure parent is ready
+// Emit initial validation state immediately (like AccountInformation does)
+console.log('ClientProjectTypesStep - Emitting initial validation state:', isValid.value)
+emit('validation-change', isValid.value)
+
+// Also emit in onMounted to ensure parent receives it
 onMounted(() => {
   nextTick(() => {
+    console.log(
+      'onMounted - Emitting validation:',
+      isValid.value,
+      'Types:',
+      localProjectTypes.value,
+    )
     emit('validation-change', isValid.value)
   })
 })
