@@ -111,8 +111,13 @@ watch(
   (newValue) => {
     if (newValue) {
       localProjectTypes.value = [...newValue]
+      // Re-emit validation after syncing
+      nextTick(() => {
+        emit('validation-change', isValid.value)
+      })
     }
   },
+  { immediate: true },
 )
 
 // Methods
