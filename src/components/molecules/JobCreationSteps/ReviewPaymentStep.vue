@@ -140,19 +140,12 @@
             <div v-if="premiumFees > 0" class="border-border border-t pt-3">
               <div class="text-muted-foreground mb-2 text-sm font-medium">Premium Features:</div>
               <div
-                v-if="jobForm.premiumFeatures.talentOutreach"
+                v-for="featureDetail in enabledPremiumFeatures"
+                :key="featureDetail.id"
                 class="flex justify-between text-sm"
               >
-                <span class="text-muted-foreground">Talent Outreach:</span>
-                <span class="font-medium">$25</span>
-              </div>
-              <div v-if="jobForm.premiumFeatures.aiMatching" class="flex justify-between text-sm">
-                <span class="text-muted-foreground">AI Matching:</span>
-                <span class="font-medium">$15</span>
-              </div>
-              <div v-if="jobForm.premiumFeatures.autoPrompts" class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Auto Prompts:</span>
-                <span class="font-medium">$10</span>
+                <span class="text-muted-foreground">{{ featureDetail.label }}:</span>
+                <span class="font-medium">${{ featureDetail.price }}</span>
               </div>
             </div>
 
@@ -272,6 +265,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import Icon from '@/components/atoms/Icon.vue'
 import { useToast } from '@/composables/useToast'
+import { getPremiumFeatureById } from '@/composables/usePremiumFeatures'
 import IconMdiContentCopy from '~icons/mdi/content-copy'
 import IconMdiFileDocument from '~icons/mdi/file-document'
 import IconMdiFileMusic from '~icons/mdi/file-music'
@@ -377,12 +371,28 @@ const revisionFees = computed(() => {
   return rounds * 10 // $10 per revision
 })
 
+// Get enabled premium features with details
+const enabledPremiumFeatures = computed(() => {
+  const features: Array<{ id: string; label: string; price: number }> = []
+
+  if (props.jobForm.premiumFeatures.talentOutreach) {
+    const feature = getPremiumFeatureById('talentOutreach')
+    if (feature) features.push(feature)
+  }
+  if (props.jobForm.premiumFeatures.aiMatching) {
+    const feature = getPremiumFeatureById('aiMatching')
+    if (feature) features.push(feature)
+  }
+  if (props.jobForm.premiumFeatures.autoPrompts) {
+    const feature = getPremiumFeatureById('autoPrompts')
+    if (feature) features.push(feature)
+  }
+
+  return features
+})
+
 const premiumFees = computed(() => {
-  let fees = 0
-  if (props.jobForm.premiumFeatures.talentOutreach) fees += 25
-  if (props.jobForm.premiumFeatures.aiMatching) fees += 15
-  if (props.jobForm.premiumFeatures.autoPrompts) fees += 10
-  return fees
+  return enabledPremiumFeatures.value.reduce((sum, feature) => sum + feature.price, 0)
 })
 
 const totalCost = computed(() => {

@@ -98,6 +98,7 @@
               v-model:ai-settings="jobForm.aiSettings"
               v-model:premium-features="jobForm.premiumFeatures"
               :voice-type="selectedVoiceType"
+              :requirements="jobForm.requirements"
             />
 
             <!-- Step 4: Review & Payment (All Types) -->

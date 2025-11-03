@@ -5,10 +5,11 @@
       <h1
         class="text-foreground from-foreground to-foreground/80 mb-4 bg-gradient-to-r bg-clip-text text-4xl font-bold"
       >
-        Step 1: Choose Your Voice Approach
+        Step 1: How Do You Want to Involve Voice Talent?
       </h1>
       <p class="text-muted-foreground mx-auto max-w-2xl text-xl leading-relaxed">
-        Select the perfect approach for your voice content creation needs
+        Choose how you want to work with voice talent - license with AI for instant delivery or
+        professional service for personalized quality
       </p>
     </div>
 
@@ -56,7 +57,23 @@
           <!-- Title and Description -->
           <div class="mb-6">
             <h3 class="text-foreground mb-3 text-2xl font-bold">{{ type.label }}</h3>
-            <p class="text-muted-foreground leading-relaxed">{{ type.description }}</p>
+            <p class="text-muted-foreground mb-4 leading-relaxed">{{ type.description }}</p>
+
+            <!-- Benefits -->
+            <div v-if="type.benefits" class="flex flex-wrap gap-2">
+              <span
+                v-for="benefit in type.benefits"
+                :key="benefit"
+                class="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium"
+                :class="
+                  localJobType === type.value
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-muted/50 text-muted-foreground'
+                "
+              >
+                {{ benefit }}
+              </span>
+            </div>
           </div>
 
           <!-- Hover Effect Overlay -->
@@ -73,7 +90,7 @@
 import { ref, watch } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
 import AccountIcon from '~icons/mdi/account'
-import RobotIcon from '~icons/mdi/robot'
+import CopyrightIcon from '~icons/mdi/copyright'
 
 interface Props {
   jobType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
@@ -90,21 +107,27 @@ const localJobType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | un
   props.jobType || undefined,
 )
 
-// Voice Approach Types with enhanced descriptions and features
+// Voice Approach Types with enhanced descriptions and benefits
 const jobTypes = [
   {
     value: 'talent_only',
-    label: 'Professional Talent',
-    description:
-      'Work directly with skilled voice actors for authentic, personalized performances that bring your content to life',
+    label: 'Professional Service',
+    description: 'Work directly with skilled voice actors for authentic, personalized performances',
     icon: AccountIcon,
+    benefits: [
+      'High Quality',
+      'Emotional Depth',
+      'Personalized Performance',
+      'Creative Collaboration',
+    ],
   },
   {
     value: 'ai_synthesis',
     label: 'Licensed AI Voice',
     description:
-      'Leverage cutting-edge AI technology powered by licensed talent voices, ensuring creators are fairly compensated',
-    icon: RobotIcon,
+      'License AI voices trained on licensed talent voices, ensuring fair compensation for creators',
+    icon: CopyrightIcon,
+    benefits: ['Instant Creation', '24/7 Availability', 'Cost Effective', 'Consistent Quality'],
   },
 ]
 

@@ -14,11 +14,13 @@
 
         <label
           class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-4 transition-colors"
+          :class="isVisibilityDisabled ? 'cursor-not-allowed opacity-50' : ''"
         >
           <input
             v-model="localTalentOptions.isPublic"
             type="checkbox"
-            class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded"
+            :disabled="isVisibilityDisabled"
+            class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded disabled:cursor-not-allowed"
           />
           <div class="flex-1">
             <div class="flex items-center space-x-3">
@@ -32,9 +34,12 @@
                 <p class="text-muted-foreground text-sm">Open to all talent</p>
               </div>
             </div>
-            <p class="text-muted-foreground mt-2 text-sm">
+            <p v-if="!isVisibilityDisabled" class="text-muted-foreground mt-2 text-sm">
               Post publicly and let talent apply to your project. Uncheck for private invitation
               only.
+            </p>
+            <p v-else class="text-muted-foreground mt-2 text-sm">
+              Not available for AI voice projects (instant delivery).
             </p>
           </div>
         </label>
@@ -73,9 +78,34 @@
         <!-- Talent Selection List -->
         <div v-if="localTalentOptions.pickOwn" class="mt-4">
           <h4 class="text-md text-foreground mb-4 font-medium">Available Talents</h4>
+
+          <!-- Filter Chips -->
+          <div v-if="activeFilters.length > 0" class="mb-4 flex flex-wrap gap-2">
+            <div
+              v-for="filter in activeFilters"
+              :key="filter.key"
+              class="bg-primary/10 text-primary flex items-center gap-2 rounded-full px-3 py-1 text-sm"
+            >
+              <span class="font-medium">{{ filter.label }}:</span>
+              <span>{{ filter.value }}</span>
+              <button
+                @click="clearFilter(filter.key)"
+                class="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+              >
+                <Icon name="mdi:close" class="h-3 w-3" />
+              </button>
+            </div>
+            <button
+              @click="clearAllFilters"
+              class="text-muted-foreground hover:text-foreground text-sm underline"
+            >
+              Clear all
+            </button>
+          </div>
+
           <div class="grid max-h-96 grid-cols-1 gap-4 overflow-y-auto md:grid-cols-2">
             <div
-              v-for="talent in mockTalentList"
+              v-for="talent in filteredTalentList"
               :key="talent.id"
               class="border-border hover:bg-muted/30 flex items-center space-x-3 rounded-lg border p-3 transition-colors"
             >
@@ -130,67 +160,22 @@
         <h3 class="text-foreground mb-4 text-lg font-semibold">Premium Features</h3>
 
         <div class="space-y-4">
-          <!-- Talent Outreach -->
           <label
+            v-for="feature in availablePremiumFeatures"
+            :key="feature.id"
             class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-4 transition-colors"
           >
             <input
-              v-model="localPremiumFeatures.talentOutreach"
+              v-model="localPremiumFeatures[feature.id as keyof PremiumFeatures]"
               type="checkbox"
               class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded"
             />
             <div class="flex-1">
               <div class="flex items-center justify-between">
-                <h4 class="text-foreground font-medium">Talent Outreach</h4>
-                <span class="text-primary text-sm font-semibold">+$25</span>
+                <h4 class="text-foreground font-medium">{{ feature.label }}</h4>
+                <span class="text-primary text-sm font-semibold">+${{ feature.price }}</span>
               </div>
-              <p class="text-muted-foreground mt-1 text-sm">
-                Our casting manager will reach out to top talent on your behalf and handle initial
-                negotiations
-              </p>
-            </div>
-          </label>
-
-          <!-- AI Matching -->
-          <label
-            class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-4 transition-colors"
-          >
-            <input
-              v-model="localPremiumFeatures.aiMatching"
-              type="checkbox"
-              class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded"
-            />
-            <div class="flex-1">
-              <div class="flex items-center justify-between">
-                <h4 class="text-foreground font-medium">AI Matching</h4>
-                <span class="text-primary text-sm font-semibold">+$15</span>
-              </div>
-              <p class="text-muted-foreground mt-1 text-sm">
-                Use AI to automatically match your project with the most suitable talent based on
-                voice characteristics and experience
-              </p>
-            </div>
-          </label>
-
-          <!-- Auto Prompts -->
-          <label
-            v-if="voiceType === 'ai_synthesis' || voiceType === 'hybrid_approach'"
-            class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-4 transition-colors"
-          >
-            <input
-              v-model="localPremiumFeatures.autoPrompts"
-              type="checkbox"
-              class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded"
-            />
-            <div class="flex-1">
-              <div class="flex items-center justify-between">
-                <h4 class="text-foreground font-medium">Auto Prompts</h4>
-                <span class="text-primary text-sm font-semibold">+$10</span>
-              </div>
-              <p class="text-muted-foreground mt-1 text-sm">
-                Automatically generate optimized prompts and tags for your transcripts to improve AI
-                voice generation quality
-              </p>
+              <p class="text-muted-foreground mt-1 text-sm">{{ feature.description }}</p>
             </div>
           </label>
         </div>
@@ -209,7 +194,10 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import Icon from '@/components/atoms/Icon.vue'
 import IconMdiStar from '~icons/mdi/star'
+import { getAvailablePremiumFeatures } from '@/composables/usePremiumFeatures'
+import type { VoiceType } from '@/types/voice-talent'
 
 interface TalentOptions {
   isPublic: boolean
@@ -231,11 +219,23 @@ interface PremiumFeatures {
   autoPrompts: boolean
 }
 
+interface Requirements {
+  language: string
+  voiceType: VoiceType
+  gender: 'male' | 'female' | 'non-binary' | 'any'
+  ageRange?: string
+  specialInstructions: string
+  deliveryFormat: string
+  deliveryTimeline: string
+  revisionRounds: string
+}
+
 interface Props {
   talentOptions: TalentOptions
   aiSettings: AISettings
   premiumFeatures: PremiumFeatures
   voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  requirements?: Requirements
 }
 
 interface Emits {
@@ -250,6 +250,72 @@ const emit = defineEmits<Emits>()
 const localTalentOptions = ref<TalentOptions>({ ...props.talentOptions })
 const localAISettings = ref<AISettings>({ ...props.aiSettings })
 const localPremiumFeatures = ref<PremiumFeatures>({ ...props.premiumFeatures })
+
+// Computed: Is visibility disabled for AI
+const isVisibilityDisabled = computed(() => {
+  return props.voiceType === 'ai_synthesis'
+})
+
+// Computed: Get available premium features based on voice type
+const availablePremiumFeatures = computed(() => {
+  if (!props.voiceType) return []
+  return getAvailablePremiumFeatures(props.voiceType)
+})
+
+// Filter chips based on requirements
+const activeFilters = computed(() => {
+  if (!props.requirements) return []
+  const filters: Array<{ key: string; label: string; value: string }> = []
+
+  if (props.requirements.language) {
+    const languageLabel =
+      props.requirements.language.charAt(0).toUpperCase() + props.requirements.language.slice(1)
+    filters.push({ key: 'language', label: 'Language', value: languageLabel })
+  }
+
+  if (props.requirements.gender && props.requirements.gender !== 'any') {
+    const genderLabel =
+      props.requirements.gender.charAt(0).toUpperCase() + props.requirements.gender.slice(1)
+    filters.push({ key: 'gender', label: 'Gender', value: genderLabel })
+  }
+
+  if (props.requirements.ageRange && props.requirements.ageRange !== 'any') {
+    const ageRangeLabel =
+      props.requirements.ageRange
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ') || props.requirements.ageRange
+    filters.push({ key: 'ageRange', label: 'Age Range', value: ageRangeLabel })
+  }
+
+  if (props.requirements.voiceType) {
+    filters.push({
+      key: 'voiceType',
+      label: 'Voice Type',
+      value: props.requirements.voiceType,
+    })
+  }
+
+  return filters
+})
+
+// Filter clearing functions (for UI, actual filtering would be done on backend)
+const clearFilter = (key: string) => {
+  // This would typically clear the requirement, but for now just show the UI
+  // In a real implementation, this would update the requirements
+  console.log('Clear filter:', key)
+}
+
+const clearAllFilters = () => {
+  // In a real implementation, this would clear all filters from requirements
+  console.log('Clear all filters')
+}
+
+// Mock filtered talent list (in real app, this would come from backend with filters applied)
+const filteredTalentList = computed(() => {
+  // For now, return all talents. In real app, filter based on activeFilters
+  return mockTalentList
+})
 
 // Options
 
@@ -334,14 +400,36 @@ const getVoiceTypeLabel = () => {
   }
 }
 
-// Premium features cost calculation
+// Premium features cost calculation using config
 const totalPremiumCost = computed(() => {
   let cost = 0
-  if (localPremiumFeatures.value.talentOutreach) cost += 25
-  if (localPremiumFeatures.value.aiMatching) cost += 15
-  if (localPremiumFeatures.value.autoPrompts) cost += 10
+  availablePremiumFeatures.value.forEach((feature) => {
+    if (localPremiumFeatures.value[feature.id as keyof PremiumFeatures]) {
+      cost += feature.price
+    }
+  })
   return cost
 })
+
+// Watch for voice type changes and disable/enable features accordingly
+watch(
+  () => props.voiceType,
+  (newType) => {
+    // Disable visibility for AI
+    if (newType === 'ai_synthesis') {
+      localTalentOptions.value.isPublic = false
+    }
+
+    // Disable premium features that aren't available for this approach
+    availablePremiumFeatures.value.forEach((feature) => {
+      const isAvailable = feature.availableFor.includes(newType || 'talent_only')
+      if (!isAvailable) {
+        localPremiumFeatures.value[feature.id as keyof PremiumFeatures] = false
+      }
+    })
+  },
+  { immediate: true },
+)
 
 // Watch for changes and emit updates
 watch(
