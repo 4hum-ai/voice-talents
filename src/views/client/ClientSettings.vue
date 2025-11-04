@@ -4,9 +4,9 @@
     <ClientNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header with Stepper -->
-      <AppBar :show-back="true" @back="goBack">
+      <AppBar :show-back="true" :show-menu="true" @back="goBack" @menu="toggleSidebar">
         <template #title>Client Settings</template>
         <template #subtitle>Manage your client account settings and preferences</template>
         <template #actions>
@@ -89,6 +89,7 @@ import Button from '@/components/atoms/Button.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import {
   AccountInformation,
   JobPreferences,
@@ -100,6 +101,7 @@ import ShareVariantIcon from '~icons/mdi/share-variant'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // State
 const isSaving = ref(false)

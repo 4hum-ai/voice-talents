@@ -7,6 +7,14 @@
   >
     <div class="flex items-center justify-between px-4 py-3">
       <div class="flex min-w-0 items-center gap-3">
+        <IconButton
+          v-if="showMenu"
+          aria-label="Toggle menu"
+          class="lg:hidden"
+          @click="$emit('menu')"
+        >
+          <MenuIcon class="h-5 w-5" />
+        </IconButton>
         <IconButton v-if="showBack" aria-label="Go back" @click="$emit('back')">
           <ChevronLeftIcon class="h-5 w-5" />
         </IconButton>
@@ -33,10 +41,13 @@
 import { computed, useSlots } from 'vue'
 import IconButton from '@/components/atoms/IconButton.vue'
 import ChevronLeftIcon from '~icons/mdi/chevron-left'
+import MenuIcon from '~icons/mdi/menu'
 
 interface Props {
   loading?: boolean
   showBack?: boolean
+  /** Whether to show the hamburger menu button (for mobile sidebar toggle) */
+  showMenu?: boolean
   /** Whether the AppBar should be fixed at the top of the viewport */
   fixed?: boolean
 }
@@ -44,10 +55,14 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   loading: false,
   showBack: false,
+  showMenu: false,
   fixed: true,
 })
 
-defineEmits(['back'])
+defineEmits<{
+  back: []
+  menu: []
+}>()
 
 const slots = useSlots()
 const hasLeftSlot = computed(() => Boolean(slots.left))

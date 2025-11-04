@@ -18,7 +18,7 @@ export interface JobRatingModalProps {
   jobTitle: string
   talentId: string
   talentName: string
-  voiceType: string
+  voiceType: 'talent_only' | 'ai_synthesis' | 'hybrid_approach' | string
   budget: Budget
   completedDate: string
   onClose?: () => void

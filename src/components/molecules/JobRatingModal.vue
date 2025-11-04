@@ -53,46 +53,13 @@
             </div>
           </div>
 
-          <!-- Detailed Ratings -->
-          <div class="space-y-4">
-            <h4 class="text-foreground font-medium">Detailed Ratings</h4>
-            <div class="space-y-4">
-              <div
-                v-for="criteria in ratingCriteria"
-                :key="criteria.key"
-                class="flex items-center justify-between"
-              >
-                <div>
-                  <div class="text-foreground font-medium">{{ criteria.label }}</div>
-                  <div class="text-muted-foreground text-sm">{{ criteria.description }}</div>
-                </div>
-                <div class="flex space-x-1">
-                  <button
-                    v-for="star in 5"
-                    :key="star"
-                    @click="detailedRatings[criteria.key] = star"
-                    class="transition-colors hover:scale-110"
-                  >
-                    <StarIcon
-                      :class="[
-                        'h-6 w-6',
-                        star <= (detailedRatings[criteria.key] || 0)
-                          ? 'fill-current text-yellow-500'
-                          : 'text-gray-300 hover:text-yellow-400',
-                      ]"
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <!-- Feedback Section -->
           <div class="space-y-4">
             <h4 class="text-foreground font-medium">Written Feedback</h4>
             <Textarea
               v-model="feedback"
-              placeholder="Share your experience working with this talent. What did they do well? Any areas for improvement?"
+              placeholder="Share your experience with this service. What did you like? Any areas for improvement?"
               :rows="4"
               class="w-full"
             />
@@ -123,24 +90,6 @@
             </div>
           </div>
 
-          <!-- Project Summary -->
-          <div class="space-y-4">
-            <h4 class="text-foreground font-medium">Project Summary</h4>
-            <div class="bg-muted/50 space-y-2 rounded-lg p-4">
-              <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Project Type:</span>
-                <span class="text-foreground">{{ voiceType }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Budget:</span>
-                <span class="text-foreground">{{ formatBudget(budget) }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-muted-foreground">Completed:</span>
-                <span class="text-foreground">{{ formatDate(completedDate) }}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -156,7 +105,7 @@
             :disabled="rating === 0 || !recommendation"
             icon="mdi:star"
             @click="submitRating"
-            >Submit Review</Button
+            >Submit</Button
           >
         </div>
       </div>
@@ -203,34 +152,34 @@ const detailedRatings = ref<Record<string, number>>({})
 const feedback = ref('')
 const recommendation = ref('')
 
-// Rating criteria
-const ratingCriteria = [
-  {
-    key: 'quality',
-    label: 'Audio Quality',
-    description: 'Professional recording quality and clarity',
-  },
-  {
-    key: 'delivery',
-    label: 'Delivery & Timing',
-    description: 'Met deadlines and delivery expectations',
-  },
-  {
-    key: 'communication',
-    label: 'Communication',
-    description: 'Clear, responsive, and professional communication',
-  },
-  {
-    key: 'creativity',
-    label: 'Creativity & Interpretation',
-    description: 'Brought creativity and understood project vision',
-  },
-  {
-    key: 'collaboration',
-    label: 'Collaboration',
-    description: 'Easy to work with and open to feedback',
-  },
-]
+// Rating criteria (kept for future use or documentation)
+// const ratingCriteria = [
+//   {
+//     key: 'quality',
+//     label: 'Audio Quality',
+//     description: 'Professional recording quality and clarity',
+//   },
+//   {
+//     key: 'delivery',
+//     label: 'Delivery & Timing',
+//     description: 'Met deadlines and delivery expectations',
+//   },
+//   {
+//     key: 'communication',
+//     label: 'Communication',
+//     description: 'Clear, responsive, and professional communication',
+//   },
+//   {
+//     key: 'creativity',
+//     label: 'Creativity & Interpretation',
+//     description: 'Brought creativity and understood project vision',
+//   },
+//   {
+//     key: 'collaboration',
+//     label: 'Collaboration',
+//     description: 'Easy to work with and open to feedback',
+//   },
+// ]
 
 // Computed
 const talentAvatar = computed(() => {
@@ -268,23 +217,23 @@ const submitRating = () => {
   recommendation.value = ''
 }
 
-// Helper functions
-const formatBudget = (budget: { max: number; currency: string }) => {
-  if (!budget || !budget.max) return 'Not specified'
-  const symbols: Record<string, string> = {
-    USD: '$',
-    EUR: '€',
-    GBP: '£',
-    CAD: 'C$',
-    AUD: 'A$',
-    VND: '₫',
-  }
-  const symbol = symbols[budget.currency] || '$'
-  return `${symbol}${budget.max.toLocaleString()}`
-}
+// Helper functions (kept for future use)
+// const formatBudget = (budget: { max: number; currency: string }) => {
+//   if (!budget || !budget.max) return 'Not specified'
+//   const symbols: Record<string, string> = {
+//     USD: '$',
+//     EUR: '€',
+//     GBP: '£',
+//     CAD: 'C$',
+//     AUD: 'A$',
+//     VND: '₫',
+//   }
+//   const symbol = symbols[budget.currency] || '$'
+//   return `${symbol}${budget.max.toLocaleString()}`
+// }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString()
-}
+// const formatDate = (dateString: string) => {
+//   const date = new Date(dateString)
+//   return date.toLocaleDateString()
+// }
 </script>

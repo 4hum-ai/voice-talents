@@ -4,9 +4,9 @@
     <ClientNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>Job Management</template>
         <template #subtitle>Manage your voice acting job postings</template>
         <template #actions>
@@ -476,7 +476,7 @@
       :job-title="selectedJobForRating?.title || ''"
       :talent-id="selectedJobForRating?.selectedTalents?.[0] || ''"
       :talent-name="getTalentName(selectedJobForRating?.selectedTalents?.[0] || '')"
-      :voice-type="selectedJobForRating?.projectType || ''"
+      :voice-type="selectedJobForRating?.voiceType || 'talent_only'"
       :budget="selectedJobForRating?.budget || { max: 0, currency: 'USD' }"
       :completed-date="selectedJobForRating?.closedDate || selectedJobForRating?.updatedAt || ''"
       @close="
@@ -502,6 +502,7 @@ import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
 import { useJob, type Job } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
+import { useSidebar } from '@/composables/useSidebar'
 import type { JobPosting } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import BriefcaseIcon from '~icons/mdi/briefcase'
@@ -520,6 +521,7 @@ const {
   reloadMockData,
 } = useJob()
 const { addToast: showToast } = useToast()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])

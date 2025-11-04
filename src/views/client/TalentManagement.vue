@@ -4,9 +4,9 @@
     <ClientNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>Talent Management</template>
         <template #subtitle>Browse and invite voice talents for your projects</template>
         <template #actions>
@@ -401,9 +401,12 @@ import SelectInput from '@/components/atoms/SelectInput.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobSelectionModal from '@/components/molecules/JobSelectionModal.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import AccountGroupIcon from '~icons/mdi/account-group'
 import StarIcon from '~icons/mdi/star'
 // Icons removed; using Button icon prop for buttons
+
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')

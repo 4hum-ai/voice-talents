@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar>
+      <AppBar :show-menu="true" @menu="toggleSidebar">
         <template #title>Dashboard</template>
         <template #subtitle
           >Welcome back! Here's what's happening with your voice acting career today.</template
@@ -270,6 +270,7 @@ import { mockData } from '@/data/mock-voice-talent-data'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useToast } from '@/composables/useToast'
 import { useAuthStore } from '@/stores/auth'
+import { useSidebar } from '@/composables/useSidebar'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
@@ -287,6 +288,7 @@ const router = useRouter()
 const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
 const { success } = useToast()
 const authStore = useAuthStore()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Use authenticated user data instead of mock data
 // const currentActor = computed(() => ({

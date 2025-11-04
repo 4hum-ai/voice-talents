@@ -1,24 +1,15 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <ClientNavigation />
+  <ClientLayout>
+    <template #title>Client Dashboard</template>
+    <template #subtitle>Welcome back, {{ currentClient?.contactName }}</template>
+    <template #actions>
+      <ThemeToggle />
+      <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal"
+        >Create Job</Button
+      >
+    </template>
 
-    <!-- Main Content -->
-    <div class="flex-1">
-      <!-- Header -->
-      <AppBar>
-        <template #title>Client Dashboard</template>
-        <template #subtitle>Welcome back, {{ currentClient?.contactName }}</template>
-        <template #actions>
-          <ThemeToggle />
-          <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal"
-            >Create Job</Button
-          >
-        </template>
-      </AppBar>
-
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
+    <div class="mx-auto max-w-7xl">
           <!-- Stats Overview -->
           <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             <MetricCard
@@ -195,8 +186,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
     <!-- Job Creation Modal -->
     <JobCreationModal
@@ -212,15 +201,14 @@
       @skip="skipClientOnboarding"
       @close="closeClientOnboarding"
     />
-  </div>
+  </ClientLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { ClientStats, JobPosting, JobApplication } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
+import ClientLayout from '@/layouts/ClientLayout.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'

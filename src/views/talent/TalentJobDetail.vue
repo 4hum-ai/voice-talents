@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>{{ job?.title || 'Job Details' }}</template>
         <template #subtitle>{{ job?.clientName || 'Client Project' }}</template>
         <template #actions>
@@ -401,6 +401,7 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
 import { useJob } from '@/composables/useJob'
+import { useSidebar } from '@/composables/useSidebar'
 import type { JobDetail } from '@/types/job-detail'
 import {
   getJobStatusDisplay,
@@ -428,6 +429,7 @@ const route = useRoute()
 const router = useRouter()
 const { success, error } = useToast()
 const { getJob } = useJob()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Determine context - casting vs assigned job
 const isCastingContext = computed(() => route.path.includes('/casting'))

@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>My Jobs</template>
         <template #subtitle>View and manage your assigned voice acting jobs</template>
         <template #actions>
@@ -249,8 +249,11 @@ import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import BriefcaseIcon from '~icons/mdi/briefcase'
 // Icons removed; using Button icon prop for buttons
+
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Mock data - in real app, this would come from API
 const jobs = ref([

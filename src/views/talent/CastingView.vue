@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>Casting Opportunities</template>
         <template #subtitle>Discover and apply to voice acting projects</template>
         <template #actions>
@@ -362,7 +362,10 @@ import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import ViewToggle from '@/components/molecules/ViewToggle.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import MegaphoneIcon from '~icons/mdi/megaphone'
+
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')

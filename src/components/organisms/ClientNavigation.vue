@@ -3,8 +3,11 @@
     title="VoiceAct.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
-    :fixed="false"
-    :default-collapsed="false"
+    :fixed="true"
+    :default-collapsed="sidebarCollapsed"
+    :is-open="sidebarOpen"
+    @close="close"
+    @update:collapsed="sidebarCollapsed = $event"
   >
     <template #header>
       <div class="p-4">
@@ -86,6 +89,7 @@ import type { ClientStats } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuthStore } from '@/stores/auth'
+import { useSidebar } from '@/composables/useSidebar'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
@@ -97,6 +101,7 @@ const router = useRouter()
 const route = useRoute()
 const { switchMode } = useOnboarding()
 const authStore = useAuthStore()
+const { sidebarOpen, sidebarCollapsed, close } = useSidebar()
 
 // Use authenticated user data instead of mock data
 const currentClient = computed(() => ({

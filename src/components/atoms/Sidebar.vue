@@ -1,9 +1,20 @@
 <template>
+  <!-- Mobile backdrop overlay -->
+  <div
+    v-if="isOpen && isMobile"
+    class="bg-background/80 fixed inset-0 z-40 lg:hidden"
+    @click="$emit('close')"
+  />
+
   <aside
     :class="[
       'bg-card border-border flex flex-col border-r transition-all duration-300 ease-in-out',
       collapsed ? 'w-16' : 'w-72',
-      fixed ? 'fixed top-0 left-0 z-30 h-screen' : 'relative h-screen',
+      fixed ? 'fixed top-0 left-0 z-50 h-screen' : 'relative h-screen',
+      // Mobile: hidden by default, visible when open, overlay style
+      isMobile ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0',
+      // Desktop: always visible
+      'lg:translate-x-0',
     ]"
   >
     <!-- Header -->
@@ -13,7 +24,7 @@
         <span v-if="subtitle" class="text-muted-foreground truncate text-sm">{{ subtitle }}</span>
       </div>
       <button
-        @click="collapsed = !collapsed"
+        @click="toggleCollapsed"
         class="text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0 rounded-md p-2 transition-colors"
         :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
       >
@@ -95,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Component } from 'vue'
+import { ref, watch, onMounted, onUnmounted, type Component } from 'vue'
 import IconChevronLeft from '~icons/mdi/chevron-left'
 
 interface SidebarItem {
@@ -126,18 +137,59 @@ interface Props {
   fixed?: boolean
   /** Whether the sidebar starts collapsed */
   defaultCollapsed?: boolean
+  /** Whether the sidebar is open (for mobile) */
+  isOpen?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   fixed: false,
   defaultCollapsed: false,
+  isOpen: false,
 })
 
 const collapsed = ref(props.defaultCollapsed)
 
+// Sync with prop changes
+watch(() => props.defaultCollapsed, (newValue) => {
+  collapsed.value = newValue
+})
+
+// Check if we're on mobile (client-side only)
+const isMobile = ref(false)
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 1024 // lg breakpoint
+}
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
+
+const emit = defineEmits<{
+  close: []
+  'update:collapsed': [value: boolean]
+}>()
+
+const toggleCollapsed = () => {
+  collapsed.value = !collapsed.value
+  emit('update:collapsed', collapsed.value)
+}
+
 const handleItemClick = (item: SidebarItem) => {
   if (item.action) {
     item.action()
+    // Close sidebar on mobile after navigation
+    if (isMobile.value && props.isOpen) {
+      // Small delay to allow navigation to start
+      setTimeout(() => {
+        emit('close')
+      }, 100)
+    }
   }
 }
 </script>

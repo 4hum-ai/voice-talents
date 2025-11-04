@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>{{ castingSession?.title }}</template>
         <template #subtitle>{{ castingSession?.clientName }}</template>
         <template #actions>
@@ -203,13 +203,16 @@ import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import ShareIcon from '~icons/mdi/share'
 import SendIcon from '~icons/mdi/send'
+
 import EyeIcon from '~icons/mdi/eye'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'
 
 const route = useRoute()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Current user ID - in real app, this would come from auth store
 const currentUserId = 'va-001'

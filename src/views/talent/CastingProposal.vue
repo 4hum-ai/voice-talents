@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>My Proposal</template>
         <template #subtitle>{{ job?.title }}</template>
         <template #actions>
@@ -196,7 +196,10 @@ import Chip from '@/components/atoms/Chip.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import PlayIcon from '~icons/mdi/play'
+
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 import EyeIcon from '~icons/mdi/eye'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'

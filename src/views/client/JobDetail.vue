@@ -4,9 +4,9 @@
     <ClientNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>{{ job?.title || 'Job Details' }}</template>
         <template #subtitle>{{ job?.talentName || 'Voice Actor Project' }}</template>
         <template #actions>
@@ -377,6 +377,7 @@ import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
+import { useSidebar } from '@/composables/useSidebar'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
 import {
@@ -419,6 +420,7 @@ import AttachmentIcon from '~icons/mdi/attachment'
 
 const route = useRoute()
 const { success } = useToast()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 const { getJob } = useJob()
 
 // Job data - load from useJob composable or create mock data

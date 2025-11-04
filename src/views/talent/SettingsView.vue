@@ -1,8 +1,8 @@
 <template>
   <div class="bg-background flex min-h-screen">
     <VoiceActNavigation />
-    <div class="flex-1">
-      <AppBar :show-back="true" @back="$router.back()">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>Settings</template>
         <template #subtitle>Manage your account and preferences</template>
         <template #actions>
@@ -76,6 +76,10 @@ import {
   PrivacySettings,
   DataExport,
 } from '@/components/molecules/TalentSettings'
+
+import { useSidebar } from '@/composables/useSidebar'
+
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Tab management
 const activeTab = ref('account')

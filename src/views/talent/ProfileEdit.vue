@@ -4,9 +4,9 @@
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>My Profile</template>
         <template #subtitle>Manage your professional information and voice samples</template>
         <template #actions>
@@ -96,9 +96,11 @@ import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vu
 import VoiceSamplesStep from '@/components/molecules/TalentProfile/VoiceSamplesStep.vue'
 import PricingStep from '@/components/molecules/TalentProfile/PricingStep.vue'
 import { useToast } from '@/composables/useToast'
+import { useSidebar } from '@/composables/useSidebar'
 
 const router = useRouter()
 const { success, error } = useToast()
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Tab management
 const activeTab = ref('basic')

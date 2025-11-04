@@ -196,102 +196,230 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Application Detail Modal (lightweight, no external dialog dependency) -->
-    <div
-      v-if="showApplicationDetail"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      @click.self="showApplicationDetail = false"
-    >
-      <div class="bg-background border-border w-full max-w-3xl rounded-lg border shadow-lg">
-        <div class="border-border flex items-center justify-between border-b p-4">
-          <div>
-            <h3 class="text-foreground text-lg font-semibold">Application Details</h3>
-            <p class="text-muted-foreground text-sm">
-              Full application from {{ selectedApplication?.voiceTalentName }}
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            icon="mdi:close"
-            @click="showApplicationDetail = false"
-          />
-        </div>
-
-        <div v-if="selectedApplication" class="space-y-6 p-6">
-          <!-- Talent Info -->
-          <div class="flex items-center space-x-4">
-            <Avatar
-              :seed="selectedApplication.voiceTalentName"
-              :src="getTalentAvatar(selectedApplication.voiceTalentId)"
-              :alt="selectedApplication.voiceTalentName"
-              size="lg"
+    <!-- Application Detail Sidebar (slide-over from right) -->
+    <Transition name="sidebar">
+      <div v-if="showApplicationDetail" class="fixed inset-0 z-50 flex overflow-hidden">
+        <!-- Backdrop -->
+        <div
+          class="fixed inset-0 bg-black/50"
+          @click="showApplicationDetail = false"
+        />
+        
+        <!-- Sidebar Panel -->
+        <div class="bg-background border-border relative ml-auto flex h-full w-full flex-col border-l shadow-xl sm:w-[600px] lg:w-[700px]">
+          <!-- Header -->
+          <div class="border-border flex flex-shrink-0 items-center justify-between border-b p-4 sm:p-6">
+            <div class="min-w-0 flex-1">
+              <h3 class="text-foreground text-lg font-semibold sm:text-xl">Application Details</h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon="mdi:close"
+              @click="showApplicationDetail = false"
+              class="ml-4 flex-shrink-0"
             />
-            <div>
-              <h3 class="text-foreground text-xl font-semibold">
-                {{ selectedApplication.voiceTalentName }}
-              </h3>
-              <p class="text-muted-foreground">
-                {{ getTalentLocation(selectedApplication.voiceTalentId) }}
-              </p>
-              <div class="mt-2 flex items-center space-x-4">
-                <div class="flex items-center space-x-1">
-                  <StarIcon class="h-4 w-4 text-yellow-500" />
-                  <span class="text-foreground font-medium">{{
-                    getTalentRating(selectedApplication.voiceTalentId)
-                  }}</span>
-                </div>
-                <span class="text-muted-foreground">•</span>
-                <span class="text-muted-foreground">{{
-                  getTalentExperience(selectedApplication.voiceTalentId)
-                }}</span>
-              </div>
-            </div>
           </div>
 
-          <!-- Proposal Details -->
-          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <h4 class="text-foreground mb-2 font-medium">Proposed Cost</h4>
-              <p class="text-foreground text-lg font-semibold">
-                {{
-                  formatBudget({
-                    max: selectedApplication.proposedCost,
-                    currency: selectedApplication.proposedCurrency,
-                  })
-                }}
-              </p>
-            </div>
-            <div>
-              <h4 class="text-foreground mb-2 font-medium">Timeline</h4>
-              <p class="text-foreground">{{ selectedApplication.proposedTimeline }}</p>
-            </div>
+          <!-- Content with Tabs -->
+          <div v-if="selectedApplication" class="flex flex-1 flex-col overflow-hidden">
+            <TabNavigation v-model="activeTab" variant="underline" size="md" class="border-border flex-shrink-0 border-b px-4 sm:px-6">
+              <!-- Tab Content Container with Scroll -->
+              <div class="flex-1 overflow-y-auto">
+                <!-- Overview Tab -->
+                <Tab id="overview" label="Overview">
+                  <div class="space-y-6 p-4 sm:p-6">
+                    <!-- Talent Info -->
+                  <div class="flex items-center space-x-4">
+                    <Avatar
+                      :seed="selectedApplication.voiceTalentName"
+                      :src="getTalentAvatar(selectedApplication.voiceTalentId)"
+                      :alt="selectedApplication.voiceTalentName"
+                      size="lg"
+                    />
+                    <div>
+                      <h3 class="text-foreground text-xl font-semibold">
+                        {{ selectedApplication.voiceTalentName }}
+                      </h3>
+                      <p class="text-muted-foreground">
+                        {{ getTalentLocation(selectedApplication.voiceTalentId) }}
+                      </p>
+                      <div class="mt-2 flex items-center space-x-4">
+                        <div class="flex items-center space-x-1">
+                          <StarIcon class="h-4 w-4 text-yellow-500" />
+                          <span class="text-foreground font-medium">{{
+                            getTalentRating(selectedApplication.voiceTalentId)
+                          }}</span>
+                        </div>
+                        <span class="text-muted-foreground">•</span>
+                        <span class="text-muted-foreground">{{
+                          getTalentExperience(selectedApplication.voiceTalentId)
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Voice Quality Description -->
+                  <div>
+                    <h4 class="text-foreground mb-2 font-medium">Voice Quality Description</h4>
+                    <p class="text-muted-foreground">
+                      {{ getVoiceQualityDescription(selectedApplication.voiceTalentId) }}
+                    </p>
+                  </div>
+
+                  <!-- Portfolio Sample Voices -->
+                  <div v-if="getPortfolioSamples((selectedApplication as any).portfolioSampleIds || []).length > 0">
+                    <h4 class="text-foreground mb-3 font-medium">Portfolio Sample Voices</h4>
+                    <div class="space-y-3">
+                      <div
+                        v-for="sample in getPortfolioSamples((selectedApplication as any).portfolioSampleIds || [])"
+                        :key="sample.id"
+                        class="border-border rounded-md border p-3"
+                      >
+                        <div class="mb-2">
+                          <div class="text-foreground mb-1 text-sm font-medium">{{ sample.title }}</div>
+                          <div class="text-muted-foreground mb-2 text-xs">{{ sample.description }}</div>
+                          <div class="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <span>{{ sample.voiceType }}</span>
+                            <span>•</span>
+                            <span>{{ sample.tone }}</span>
+                            <span v-if="sample.accent">•</span>
+                            <span v-if="sample.accent">{{ sample.accent }}</span>
+                          </div>
+                        </div>
+                        <audio :src="sample.audioUrl" controls class="w-full" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Custom Samples (Showcases) -->
+                  <div v-if="selectedApplication.customSamples?.length">
+                    <h4 class="text-foreground mb-3 font-medium">Custom Samples</h4>
+                    <div class="space-y-3">
+                      <div
+                        v-for="sample in selectedApplication.customSamples"
+                        :key="sample.id"
+                        class="border-border rounded-md border p-3"
+                      >
+                        <div class="text-foreground mb-1 text-sm font-medium">{{ sample.title }}</div>
+                        <div class="text-muted-foreground mb-2 text-xs">{{ sample.description }}</div>
+                        <audio :src="sample.audioUrl" controls class="w-full" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Proposal Details -->
+                  <div class="border-border rounded-md border p-4">
+                    <h4 class="text-foreground mb-3 font-medium">Proposal Details</h4>
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div>
+                        <h5 class="text-muted-foreground mb-1 text-xs">Proposed Cost</h5>
+                        <p class="text-foreground text-lg font-semibold">
+                          {{
+                            formatBudget({
+                              max: selectedApplication.proposedCost,
+                              currency: selectedApplication.proposedCurrency,
+                            })
+                          }}
+                        </p>
+                      </div>
+                      <div>
+                        <h5 class="text-muted-foreground mb-1 text-xs">Timeline</h5>
+                        <p class="text-foreground">{{ selectedApplication.proposedTimeline }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Personal Note -->
+                  <div>
+                    <h4 class="text-foreground mb-2 font-medium">Personal Note</h4>
+                    <p class="text-muted-foreground whitespace-pre-wrap">
+                      {{ selectedApplication.personalNote }}
+                    </p>
+                  </div>
+                  </div>
+                </Tab>
+
+                <!-- Reviews Tab -->
+                <Tab id="reviews" label="Reviews" :badge="getRatingDistribution(selectedApplication.voiceTalentId).totalRatings">
+                  <div class="space-y-6 p-4 sm:p-6">
+                    <!-- Rating Distribution -->
+                    <div>
+                    <h4 class="text-foreground mb-3 font-medium">Rating Distribution</h4>
+                    <div class="space-y-2">
+                      <div
+                        v-for="star in [5, 4, 3, 2, 1]"
+                        :key="star"
+                        class="flex items-center space-x-3"
+                      >
+                        <div class="flex w-16 items-center space-x-1">
+                          <span class="text-foreground text-sm">{{ star }}</span>
+                          <StarIcon class="h-4 w-4 text-yellow-500" />
+                        </div>
+                        <div class="flex-1">
+                          <div class="h-2 overflow-hidden rounded-full bg-gray-200">
+                            <div
+                              class="h-full rounded-full bg-yellow-500"
+                              :style="{
+                                width: `${
+                                  (getRatingDistribution(selectedApplication.voiceTalentId).distribution[
+                                    star as 1 | 2 | 3 | 4 | 5
+                                  ] /
+                                    getRatingDistribution(selectedApplication.voiceTalentId).totalRatings) *
+                                  100
+                                }%`,
+                              }"
+                            />
+                          </div>
+                        </div>
+                        <div class="text-muted-foreground w-12 text-right text-sm">
+                          {{
+                            getRatingDistribution(selectedApplication.voiceTalentId).distribution[
+                              star as 1 | 2 | 3 | 4 | 5
+                            ]
+                          }}
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-muted-foreground mt-2 text-xs">
+                      Based on {{ getRatingDistribution(selectedApplication.voiceTalentId).totalRatings }} total ratings
+                    </p>
+                  </div>
+
+                  <!-- Written Feedbacks -->
+                  <div v-if="getTalentFeedbacks(selectedApplication.voiceTalentId).length > 0">
+                    <h4 class="text-foreground mb-3 font-medium">Client Feedback</h4>
+                    <div class="space-y-4">
+                      <div
+                        v-for="feedback in getTalentFeedbacks(selectedApplication.voiceTalentId)"
+                        :key="feedback.id"
+                        class="border-border rounded-md border p-4"
+                      >
+                        <div class="mb-2 flex items-start justify-between">
+                          <div>
+                            <div class="text-foreground font-medium">{{ feedback.fromClient }}</div>
+                            <div class="text-muted-foreground text-sm">{{ feedback.jobTitle }}</div>
+                          </div>
+                          <div class="flex items-center space-x-1">
+                            <StarIcon class="h-4 w-4 text-yellow-500" />
+                            <span class="text-foreground text-sm font-medium">{{ feedback.rating }}</span>
+                          </div>
+                        </div>
+                        <p class="text-muted-foreground text-sm">{{ feedback.feedback }}</p>
+                        <div class="text-muted-foreground mt-2 text-xs">{{ feedback.date }}</div>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </Tab>
+              </div>
+            </TabNavigation>
           </div>
 
-          <!-- Personal Note -->
-          <div>
-            <h4 class="text-foreground mb-2 font-medium">Personal Note</h4>
-            <p class="text-muted-foreground whitespace-pre-wrap">
-              {{ selectedApplication.personalNote }}
-            </p>
-          </div>
-          <!-- Showcases -->
-          <div v-if="selectedApplication.customSamples?.length">
-            <h4 class="text-foreground mb-2 font-medium">Showcases</h4>
-            <div class="space-y-3">
-              <div
-                v-for="sample in selectedApplication.customSamples"
-                :key="sample.id"
-                class="border-border rounded-md border p-3"
-              >
-                <div class="text-foreground mb-1 text-sm font-medium">{{ sample.title }}</div>
-                <div class="text-muted-foreground mb-2 text-xs">{{ sample.description }}</div>
-                <audio :src="sample.audioUrl" controls class="w-full" />
-              </div>
-            </div>
-          </div>
-          <div class="border-border flex items-center justify-end space-x-2 border-t p-4">
+          <!-- Footer Actions -->
+          <div class="border-border flex flex-shrink-0 items-center justify-end space-x-3 border-t p-4 sm:p-6">
             <Button variant="outline" @click="showApplicationDetail = false">Close</Button>
             <Button
               v-if="selectedApplication"
@@ -305,8 +433,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </Transition>
 </template>
 
 <script setup lang="ts">
@@ -315,12 +442,15 @@ import { useRoute, useRouter } from 'vue-router'
 import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
+import TabNavigation from '@/components/molecules/TabNavigation.vue'
+import Tab from '@/components/molecules/Tab.vue'
 // Using lightweight in-view modal; no external dialog imports
 import { useJob, type Job } from '@/composables/useJob'
 import { useJobApplication } from '@/composables/useJobApplication'
 import type { Application } from '@/types/job-application'
 import { useToast } from '@/composables/useToast'
-import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
+import { mockVoiceTalents, mockVoiceSamples } from '@/data/mock-voice-talent-data'
+import type { VoiceSample } from '@/types/voice-talent'
 // Close icon removed; using Button icon prop instead
 import UsersIcon from '~icons/mdi/account-group'
 import StarIcon from '~icons/mdi/star'
@@ -339,6 +469,7 @@ const job = ref<Job | null>(null)
 const applications = ref<Application[]>([])
 const selectedApplication = ref<Application | null>(null)
 const showApplicationDetail = ref(false)
+const activeTab = ref('overview')
 const sortBy = ref<'date' | 'rate' | 'rating' | 'timeline'>('date')
 const sortOrder = ref<'asc' | 'desc'>('desc')
 
@@ -375,6 +506,84 @@ const getTalentRating = (talentId: string) => {
 const getTalentExperience = (talentId: string) => {
   const talent = mockVoiceTalents.find((va) => va.id === talentId)
   return talent?.experience || 'Unknown'
+}
+
+const getPortfolioSamples = (sampleIds: string[]): VoiceSample[] => {
+  if (!sampleIds || sampleIds.length === 0) return []
+  return mockVoiceSamples.filter((sample) => sampleIds.includes(sample.id))
+}
+
+// Mock rating distribution data - in real app, this would come from API
+const getRatingDistribution = (talentId: string) => {
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
+  const avgRating = talent?.averageRating || 0
+  // Generate realistic distribution based on average rating
+  const totalRatings = 42 // Mock total rating count
+  const distribution = {
+    5: Math.round((avgRating >= 4.5 ? 0.6 : avgRating >= 4.0 ? 0.5 : avgRating >= 3.5 ? 0.4 : 0.3) * totalRatings),
+    4: Math.round((avgRating >= 4.5 ? 0.3 : avgRating >= 4.0 ? 0.35 : avgRating >= 3.5 ? 0.35 : 0.3) * totalRatings),
+    3: Math.round((avgRating >= 4.5 ? 0.08 : avgRating >= 4.0 ? 0.12 : avgRating >= 3.5 ? 0.2 : 0.25) * totalRatings),
+    2: Math.round((avgRating >= 4.5 ? 0.02 : avgRating >= 4.0 ? 0.03 : avgRating >= 3.5 ? 0.05 : 0.1) * totalRatings),
+    1: Math.round((avgRating >= 4.5 ? 0 : avgRating >= 4.0 ? 0 : avgRating >= 3.5 ? 0 : 0.05) * totalRatings),
+  }
+  return { distribution, totalRatings }
+}
+
+// Mock feedback data - in real app, this would come from AssignmentFeedback or Rating API
+const getTalentFeedbacks = (talentId: string) => {
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
+  if (!talent) return []
+  
+  const talentName = talent.displayName
+  const firstName = talentName.split(' ')[0]
+  
+  // Generate mock feedbacks based on talent's average rating
+  const feedbacks = [
+    {
+      id: 'feedback-1',
+      fromClient: 'TechFlow Inc.',
+      rating: 5,
+      feedback: `Excellent work! ${talentName} delivered high-quality recordings that exceeded our expectations. ${firstName === 'Sarah' ? 'Her' : firstName === 'Marcus' ? 'His' : 'Their'} warm, professional voice was perfect for our brand.`,
+      date: '2024-01-10',
+      jobTitle: 'Tech Startup Commercial Series',
+    },
+    {
+      id: 'feedback-2',
+      fromClient: 'EduTech Solutions',
+      rating: 4,
+      feedback: `Great narration quality. ${talentName}'s clear delivery kept learners engaged throughout the entire module. Would definitely work with again.`,
+      date: '2023-12-15',
+      jobTitle: 'E-Learning Module',
+    },
+    {
+      id: 'feedback-3',
+      fromClient: 'Creative Studios',
+      rating: 5,
+      feedback: `Outstanding character voices and versatility. ${talentName} brought our characters to life with authentic emotion and consistency.`,
+      date: '2023-11-20',
+      jobTitle: 'Animation Project',
+    },
+  ]
+  
+  // Adjust feedbacks based on actual rating
+  if (talent.averageRating < 4.5) {
+    feedbacks[0].rating = 4
+    feedbacks[0].feedback = `Good quality work. Professional delivery and met all project requirements.`
+  }
+  
+  return feedbacks
+}
+
+const getVoiceQualityDescription = (talentId: string) => {
+  const talent = mockVoiceTalents.find((va) => va.id === talentId)
+  if (!talent) return ''
+  
+  // Build description from bio and skills
+  const skills = talent.skills.join(', ')
+  const bio = talent.bio
+  const voiceTypes = talent.voiceTypes.join(', ')
+  
+  return `${bio} Specializes in ${skills}. Experienced in ${voiceTypes} voice work.`
 }
 
 const formatBudget = (budget: { max: number; currency: string }) => {
@@ -420,6 +629,7 @@ const selectTalent = (application: Application) => {
 const viewApplication = (applicationId: string) => {
   selectedApplication.value = applications.value.find((app) => app.id === applicationId) || null
   showApplicationDetail.value = true
+  activeTab.value = 'overview' // Reset to overview tab when opening
 }
 
 // Load job data
@@ -448,3 +658,28 @@ watch(
   (newId) => loadJob(newId as string),
 )
 </script>
+
+<style scoped>
+.sidebar-enter-active,
+.sidebar-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-enter-active > div:last-child,
+.sidebar-leave-active > div:last-child {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-enter-from,
+.sidebar-leave-to {
+  opacity: 0;
+}
+
+.sidebar-enter-from > div:last-child {
+  transform: translateX(100%);
+}
+
+.sidebar-leave-to > div:last-child {
+  transform: translateX(100%);
+}
+</style>

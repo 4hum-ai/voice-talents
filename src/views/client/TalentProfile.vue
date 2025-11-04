@@ -4,9 +4,9 @@
     <ClientNavigation />
 
     <!-- Main Content -->
-    <div class="flex-1">
+    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
       <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
+      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
         <template #title>Talent Profile</template>
         <template #subtitle>View voice actor profile and portfolio</template>
         <template #actions>
@@ -33,5 +33,8 @@
 import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import { useSidebar } from '@/composables/useSidebar'
 import AccountGroupIcon from '~icons/mdi/account-group'
+
+const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 </script>
