@@ -5,9 +5,12 @@
   <GlobalUploadBar />
   <router-view v-slot="{ Component, route }">
     <KeepAlive :include="cachedViews">
-      <component :is="Layout" v-if="Layout && layoutName !== 'none'">
-        <component :is="Component" :key="route.path" />
-      </component>
+      <LayoutRenderer
+        v-if="Layout && layoutName !== 'none' && Component"
+        :layout="Layout"
+        :component="Component"
+        :route="route"
+      />
       <component v-else :is="Component" :key="route.path" />
     </KeepAlive>
     <div
@@ -28,9 +31,36 @@ import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue'
 import GlobalProgressBar from '@/components/organisms/GlobalProgressBar.vue'
 import GlobalUploadBar from '@/components/organisms/GlobalUploadBar.vue'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
-import { computed, defineAsyncComponent } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, h } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUiConfig } from '@/composables/useUiConfig'
+
+// Component to render layout with view and forward slots
+const LayoutRenderer = defineComponent({
+  props: {
+    layout: { type: Object, required: true },
+    component: { type: Object, required: true },
+    route: { type: Object, required: true },
+  },
+  setup(props) {
+    return () => {
+      // Create a fragment to render the view component and capture its slots
+      const viewComponent = h(props.component, { key: props.route.path })
+
+      // Render layout with view as default slot
+      // Note: In Vue 3, slots from dynamically rendered components need special handling
+      return h(
+        props.layout,
+        {
+          key: props.route.path,
+        },
+        {
+          default: () => viewComponent,
+        },
+      )
+    }
+  },
+})
 
 const cachedViews = ['Dashboard', 'ItemListView', 'ItemDetailView']
 

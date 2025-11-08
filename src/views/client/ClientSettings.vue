@@ -49,7 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import Button from '@/components/atoms/Button.vue'
+import { useToast } from '@/composables/useToast'
+
+const { setActions } = useLayoutSlots()
+const { success } = useToast()
 import type { VoiceClient } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import { useAuthStore } from '@/stores/auth'
@@ -202,7 +209,35 @@ const loadSettings = () => {
   })
 }
 
+// Save settings function
+const saveSettings = () => {
+  // In real app, this would save to backend
+  const settingsToSave = {
+    account: accountData,
+    preferences: jobPreferencesData,
+    social: socialLinksData,
+  }
+  localStorage.setItem('voiceact-client-settings', JSON.stringify(settingsToSave))
+  success('Settings saved successfully!')
+}
+
 onMounted(() => {
+  // Set actions (title/subtitle come from route meta)
+  setActions(
+    h('div', { class: 'flex items-center gap-2' }, [
+      h(ThemeToggle),
+      h(
+        Button,
+        {
+          variant: 'primary',
+          size: 'sm',
+          onClick: saveSettings,
+        },
+        () => 'Save',
+      ),
+    ]),
+  )
+
   loadSettings()
 })
 </script>

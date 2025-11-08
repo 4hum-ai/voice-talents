@@ -63,15 +63,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import Card from '@/components/atoms/Card.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
+import Button from '@/components/atoms/Button.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import BasicInfoStep from '@/components/molecules/TalentProfile/BasicInfoStep.vue'
 import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.vue'
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
 import VoiceSamplesStep from '@/components/molecules/TalentProfile/VoiceSamplesStep.vue'
 import PricingStep from '@/components/molecules/TalentProfile/PricingStep.vue'
+import { useToast } from '@/composables/useToast'
+
+const { setActions } = useLayoutSlots()
+const { success } = useToast()
 
 // Tab management
 const activeTab = ref('basic')
@@ -123,8 +130,35 @@ const updatePricingData = (data: Partial<typeof pricingData>) => {
   Object.assign(pricingData, data)
 }
 
-// Load existing data on mount
+// Save profile function
+const saveProfile = () => {
+  // Save to localStorage (in real app, this would save to backend)
+  const dataToSave = {
+    profileData,
+    pricingData,
+    voiceSamples,
+  }
+  localStorage.setItem('voiceact-onboarding-data', JSON.stringify(dataToSave))
+  success('Profile saved successfully!')
+}
+
+// Set layout actions (title/subtitle come from route meta)
 onMounted(() => {
+  setActions(
+    h('div', { class: 'flex items-center gap-2' }, [
+      h(ThemeToggle),
+      h(
+        Button,
+        {
+          variant: 'primary',
+          size: 'sm',
+          onClick: saveProfile,
+        },
+        () => 'Save',
+      ),
+    ]),
+  )
+
   // Try to load from localStorage (from onboarding)
   const savedData = localStorage.getItem('voiceact-onboarding-data')
   if (savedData) {

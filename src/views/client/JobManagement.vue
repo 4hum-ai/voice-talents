@@ -423,9 +423,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import Button from '@/components/atoms/Button.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
@@ -438,6 +440,8 @@ import BriefcaseIcon from '~icons/mdi/briefcase'
 import ChevronDownIcon from '~icons/mdi/chevron-down'
 import ChevronRightIcon from '~icons/mdi/chevron-right'
 // Star icon used as button icon via prop
+
+const { setActions } = useLayoutSlots()
 
 const router = useRouter()
 const {
@@ -666,4 +670,23 @@ const getCurrencySymbol = (currency: string) => {
   }
   return symbols[currency] || '$'
 }
+
+onMounted(() => {
+  // Set actions (title/subtitle come from route meta)
+  setActions(
+    h('div', { class: 'flex items-center gap-2' }, [
+      h(ThemeToggle),
+      h(
+        Button,
+        {
+          variant: 'primary',
+          size: 'sm',
+          icon: 'mdi:plus',
+          onClick: openJobCreationModal,
+        },
+        () => 'Create Job',
+      ),
+    ]),
+  )
+})
 </script>

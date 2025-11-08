@@ -232,8 +232,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import type { VoiceTalentStats } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
 import { useOnboarding } from '@/composables/useOnboarding'
@@ -248,6 +250,7 @@ import Icon from '@/components/atoms/Icon.vue'
 import TalentOnboarding from '@/components/organisms/TalentOnboarding.vue'
 
 const router = useRouter()
+const { setActions } = useLayoutSlots()
 
 // Onboarding logic
 const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
@@ -359,6 +362,9 @@ const closeTalentOnboarding = () => {
 }
 
 onMounted(() => {
+  // Set actions (title/subtitle come from route meta)
+  setActions(h(ThemeToggle))
+
   // Set user mode to talent when accessing talent dashboard
   setUserMode('talent')
 

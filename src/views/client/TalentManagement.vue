@@ -366,7 +366,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+
+const { setActions } = useLayoutSlots()
 import type { VoiceTalent, VoiceType } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
 import MetricCard from '@/components/molecules/MetricCard.vue'
@@ -528,6 +532,9 @@ const viewPortfolio = (talent: VoiceTalent) => {
 }
 
 onMounted(() => {
+  // Set actions (title/subtitle come from route meta)
+  setActions(h(ThemeToggle))
+
   // In real app, fetch talents from API
   console.log('Talent management loaded')
 })

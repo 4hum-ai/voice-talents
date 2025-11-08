@@ -93,12 +93,6 @@
             ></div>
           </label>
         </div>
-
-        <div class="flex justify-end">
-          <Button variant="primary" @click="handleUpdate" class="onboarding-button">
-            Save Preferences
-          </Button>
-        </div>
       </div>
     </Card>
   </div>
@@ -107,9 +101,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import Card from '@/components/atoms/Card.vue'
-import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import { useToast } from '@/composables/useToast'
 
 interface NotificationSettings {
   newProjects: boolean
@@ -129,7 +121,6 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
-const { success } = useToast()
 
 // Local reactive copy
 const localNotificationSettings = reactive<NotificationSettings>({ ...props.modelValue })
@@ -152,11 +143,6 @@ watch(
   },
   { deep: true },
 )
-
-const handleUpdate = () => {
-  // In a real app, this would make an API call
-  success('Notification preferences updated successfully')
-}
 </script>
 
 <style scoped>

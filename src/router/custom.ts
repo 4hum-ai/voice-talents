@@ -17,7 +17,8 @@ export const customRoutes: RouteRecordRaw[] = [
     path: '/talent/dashboard',
     component: () => import('../views/talent/TalentDashboard.vue'),
     meta: {
-      title: 'VoiceTalents Dashboard',
+      title: 'Dashboard',
+      subtitle: "Welcome back! Here's what's happening with your voice acting career today.",
       requiresAuth: true,
       keepAlive: true,
       layout: 'talent',
@@ -30,12 +31,22 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/talent/profile/edit',
     component: () => import('../views/talent/ProfileEdit.vue'),
-    meta: { title: 'My Profile', requiresAuth: true, layout: 'talent' },
+    meta: {
+      title: 'Edit Profile',
+      subtitle: 'Update your profile information, voice samples, and pricing',
+      requiresAuth: true,
+      layout: 'talent',
+    },
   },
   {
     path: '/talent/casting',
     component: () => import('../views/talent/CastingView.vue'),
-    meta: { title: 'Casting Opportunities', requiresAuth: true, layout: 'talent' },
+    meta: {
+      title: 'Casting Opportunities',
+      subtitle: 'Discover new voice acting projects and apply to casting calls',
+      requiresAuth: true,
+      layout: 'talent',
+    },
   },
   {
     path: '/talent/jobs/:id/casting',
@@ -50,7 +61,12 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/talent/jobs',
     component: () => import('../views/talent/JobManagement.vue'),
-    meta: { title: 'My Jobs', requiresAuth: true, layout: 'talent' },
+    meta: {
+      title: 'My Jobs',
+      subtitle: 'Manage your assigned voice acting projects',
+      requiresAuth: true,
+      layout: 'talent',
+    },
   },
   {
     path: '/talent/jobs/:id',
@@ -65,7 +81,12 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/talent/settings',
     component: () => import('../views/talent/SettingsView.vue'),
-    meta: { title: 'Settings', requiresAuth: true, layout: 'talent' },
+    meta: {
+      title: 'Settings',
+      subtitle: 'Manage your account settings, notifications, and privacy preferences',
+      requiresAuth: true,
+      layout: 'talent',
+    },
   },
 
   // Voice Client Routes
@@ -76,12 +97,24 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/client/dashboard',
     component: () => import('../views/client/ClientDashboard.vue'),
-    meta: { title: 'Client Dashboard', requiresAuth: true, role: 'client', layout: 'client' },
+    meta: {
+      title: 'Client Dashboard',
+      subtitle: 'Welcome back!', // Will be dynamically set with user name in view
+      requiresAuth: true,
+      role: 'client',
+      layout: 'client',
+    },
   },
   {
     path: '/client/jobs',
     component: () => import('../views/client/JobManagement.vue'),
-    meta: { title: 'Job Management', requiresAuth: true, role: 'client', layout: 'client' },
+    meta: {
+      title: 'Job Management',
+      subtitle: 'Create and manage your voice acting job postings',
+      requiresAuth: true,
+      role: 'client',
+      layout: 'client',
+    },
   },
   {
     path: '/client/jobs/:id',
@@ -96,7 +129,13 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/client/talents',
     component: () => import('../views/client/TalentManagement.vue'),
-    meta: { title: 'Talent Management', requiresAuth: true, role: 'client', layout: 'client' },
+    meta: {
+      title: 'Talent Management',
+      subtitle: 'Browse and manage voice talents for your projects',
+      requiresAuth: true,
+      role: 'client',
+      layout: 'client',
+    },
   },
   {
     path: '/client/talents/:id',
@@ -106,7 +145,13 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/client/settings',
     component: () => import('../views/client/ClientSettings.vue'),
-    meta: { title: 'Client Settings', requiresAuth: true, role: 'client', layout: 'client' },
+    meta: {
+      title: 'Settings',
+      subtitle: 'Manage your account settings, job preferences, and social links',
+      requiresAuth: true,
+      role: 'client',
+      layout: 'client',
+    },
   },
 
   // Admin/Design System (keeping existing)

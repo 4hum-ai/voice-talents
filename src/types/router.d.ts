@@ -6,6 +6,8 @@ declare module 'vue-router' {
     layout?: 'talent' | 'client' | 'default' | 'none'
     /** Page title */
     title?: string
+    /** Page subtitle/description */
+    subtitle?: string
     /** Whether authentication is required */
     requiresAuth?: boolean
     /** Whether to keep the component alive */

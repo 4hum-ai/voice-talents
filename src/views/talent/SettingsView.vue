@@ -39,15 +39,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
+import Button from '@/components/atoms/Button.vue'
+import { useToast } from '@/composables/useToast'
 import {
   AccountInformation,
   NotificationPreferences,
   PrivacySettings,
   DataExport,
 } from '@/components/molecules/TalentSettings'
+
+const { setActions } = useLayoutSlots()
+const { success } = useToast()
 
 // Tab management
 const activeTab = ref('account')
@@ -81,8 +88,36 @@ const updateTabValidation = (tabId: string, isValid: boolean) => {
   tabValidation[tabId] = isValid
 }
 
+// Save settings function
+const saveSettings = () => {
+  // In real app, this would save to backend
+  const settingsToSave = {
+    account: accountSettings,
+    notifications: notificationSettings,
+    privacy: privacySettings,
+  }
+  localStorage.setItem('voiceact-settings', JSON.stringify(settingsToSave))
+  success('Settings saved successfully!')
+}
+
 // Load settings from localStorage
 onMounted(() => {
+  // Set actions (title/subtitle come from route meta)
+  setActions(
+    h('div', { class: 'flex items-center gap-2' }, [
+      h(ThemeToggle),
+      h(
+        Button,
+        {
+          variant: 'primary',
+          size: 'sm',
+          onClick: saveSettings,
+        },
+        () => 'Save',
+      ),
+    ]),
+  )
+
   const savedSettings = localStorage.getItem('voiceact-settings')
   if (savedSettings) {
     const settings = JSON.parse(savedSettings)

@@ -64,12 +64,6 @@
             class="w-full rounded-lg border border-gray-300 px-4 py-3 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           />
         </div>
-
-        <div class="flex justify-end">
-          <Button variant="primary" @click="handleUpdate" class="onboarding-button">
-            Update Account
-          </Button>
-        </div>
       </div>
     </Card>
   </div>
@@ -78,9 +72,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import Card from '@/components/atoms/Card.vue'
-import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import { useToast } from '@/composables/useToast'
 
 interface AccountSettings {
   email: string
@@ -100,7 +92,6 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
-const { success, error } = useToast()
 
 // Local reactive copy
 const localAccountSettings = reactive<AccountSettings>({ ...props.modelValue })
@@ -128,21 +119,6 @@ watch(
   },
   { deep: true },
 )
-
-const handleUpdate = () => {
-  if (localAccountSettings.newPassword !== localAccountSettings.confirmPassword) {
-    error('New passwords do not match')
-    return
-  }
-
-  // In a real app, this would make an API call
-  success('Account settings updated successfully')
-
-  // Clear password fields
-  localAccountSettings.currentPassword = ''
-  localAccountSettings.newPassword = ''
-  localAccountSettings.confirmPassword = ''
-}
 </script>
 
 <style scoped>

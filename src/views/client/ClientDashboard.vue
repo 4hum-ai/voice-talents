@@ -196,16 +196,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
+import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import type { ClientStats, JobPosting, JobApplication } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
+import { useAuthStore } from '@/stores/auth'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
+
+const { setActions, setSubtitle } = useLayoutSlots()
+const authStore = useAuthStore()
 // Keep these icons: used as standalone elements in empty states
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import EmailIcon from '~icons/mdi/email'
@@ -333,6 +339,26 @@ const closeClientOnboarding = () => {
 }
 
 onMounted(() => {
+  // Update subtitle dynamically with user name
+  setSubtitle(`Welcome back, ${authStore.user?.displayName || authStore.user?.email || 'there'}`)
+
+  // Set actions (title comes from route meta)
+  setActions(
+    h('div', { class: 'flex items-center gap-2' }, [
+      h(ThemeToggle),
+      h(
+        Button,
+        {
+          variant: 'primary',
+          size: 'sm',
+          icon: 'mdi:plus',
+          onClick: openJobCreationModal,
+        },
+        () => 'Create Job',
+      ),
+    ]),
+  )
+
   // Set user mode to client when accessing client dashboard
   setUserMode('client')
 

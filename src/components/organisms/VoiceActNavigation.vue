@@ -3,7 +3,6 @@
     title="VoiceAct.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
-    :fixed="false"
     :default-collapsed="sidebarCollapsed"
     :is-open="sidebarOpen"
     @close="close"
