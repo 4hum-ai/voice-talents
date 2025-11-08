@@ -1,117 +1,272 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <VoiceActNavigation />
+  <div>
+    <div class="mx-auto max-w-7xl">
+      <!-- Filters and Search -->
+      <div class="mb-8">
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <div class="flex-1">
+            <SearchInput
+              v-model="searchQuery"
+              placeholder="Search casting calls by title, client, or description..."
+              @update:model-value="handleSearch"
+            />
+          </div>
+          <div class="flex gap-2">
+            <SelectInput
+              v-model="selectedType"
+              :options="typeOptions"
+              placeholder="All Types"
+              class="w-40"
+            />
+            <SelectInput
+              v-model="selectedLanguage"
+              :options="languageOptions"
+              placeholder="All Languages"
+              class="w-40"
+            />
+            <SelectInput
+              v-model="selectedExperience"
+              :options="experienceOptions"
+              placeholder="All Experience"
+              class="w-40"
+            />
+          </div>
+        </div>
+      </div>
 
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>Casting Opportunities</template>
-        <template #subtitle>Discover and apply to voice acting projects</template>
-        <template #actions>
-          <ThemeToggle />
-          <ViewToggle v-model="viewMode" />
-          <Button variant="primary" size="sm" icon="mdi:refresh" @click="refreshCasting"
-            >Refresh</Button
-          >
-        </template>
-      </AppBar>
+      <!-- Stats Overview -->
+      <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <MetricCard
+          title="Open Casting Calls"
+          :value="openCastingCount"
+          icon="mdi:megaphone"
+          color="blue"
+        />
+        <MetricCard
+          title="My Submissions"
+          :value="mySubmissionsCount"
+          icon="mdi:clipboard-check"
+          color="green"
+        />
+        <MetricCard title="Shortlisted" :value="shortlistedCount" icon="mdi:star" color="yellow" />
+        <MetricCard title="Selected" :value="selectedCount" icon="mdi:trophy" color="purple" />
+      </div>
 
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
-          <!-- Filters and Search -->
-          <div class="mb-8">
-            <div class="flex flex-col gap-4 sm:flex-row">
+      <!-- Casting Calls Grid/List -->
+      <div v-if="filteredCastingSessions.length === 0" class="py-12 text-center">
+        <MegaphoneIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 class="text-foreground mb-2 text-lg font-medium">No casting calls found</h3>
+        <p class="text-muted-foreground mb-6">
+          {{
+            searchQuery
+              ? 'Try adjusting your search criteria'
+              : 'Check back later for new opportunities'
+          }}
+        </p>
+        <Button variant="primary" icon="mdi:refresh" @click="refreshCasting">Refresh</Button>
+      </div>
+
+      <!-- Grid View -->
+      <div
+        v-else-if="viewMode === 'grid'"
+        class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+      >
+        <div
+          v-for="job in filteredCastingSessions"
+          :key="job.id"
+          class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+        >
+          <!-- Casting Header -->
+          <div class="border-b border-gray-200 p-6 dark:border-gray-700">
+            <div class="mb-3 flex items-start justify-between">
               <div class="flex-1">
-                <SearchInput
-                  v-model="searchQuery"
-                  placeholder="Search casting calls by title, client, or description..."
-                  @update:model-value="handleSearch"
-                />
+                <h3 class="text-foreground mb-1 text-lg font-semibold">
+                  {{ job.title }}
+                </h3>
+                <p class="text-muted-foreground text-sm">
+                  {{ job.clientName }}
+                </p>
               </div>
-              <div class="flex gap-2">
-                <SelectInput
-                  v-model="selectedType"
-                  :options="typeOptions"
-                  placeholder="All Types"
-                  class="w-40"
-                />
-                <SelectInput
-                  v-model="selectedLanguage"
-                  :options="languageOptions"
-                  placeholder="All Languages"
-                  class="w-40"
-                />
-                <SelectInput
-                  v-model="selectedExperience"
-                  :options="experienceOptions"
-                  placeholder="All Experience"
-                  class="w-40"
-                />
+              <div class="ml-4 flex-shrink-0 space-y-2">
+                <StatusBadge :status="getJobStatus(job)" />
+                <StatusBadge
+                  :status="getProposalStatusInfo(job).status"
+                  :variant="getProposalStatusInfo(job).variant"
+                  size="sm"
+                >
+                  {{ getProposalStatusInfo(job).label }}
+                </StatusBadge>
+              </div>
+            </div>
+
+            <p class="text-muted-foreground line-clamp-2 text-sm">
+              {{ job.description }}
+            </p>
+          </div>
+
+          <!-- Casting Details -->
+          <div class="p-6">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Type</span>
+                <Chip size="sm" variant="secondary">
+                  {{ formatProjectType(job.projectType) }}
+                </Chip>
+              </div>
+
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Budget</span>
+                <span class="text-foreground font-medium">
+                  ${{ job.budget?.max.toLocaleString() }}
+                </span>
+              </div>
+
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Deadline</span>
+                <span class="text-foreground font-medium">
+                  {{ formatDate(job.deadline) }}
+                </span>
+              </div>
+
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Submissions</span>
+                <span class="text-foreground font-medium">
+                  {{ job.totalApplications || 0 }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Requirements -->
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <div class="text-muted-foreground mb-2 text-xs">Requirements</div>
+              <div class="flex flex-wrap gap-1">
+                <Chip size="sm" variant="outline">
+                  {{ job.requirements.language }}
+                </Chip>
+                <Chip size="sm" variant="outline">
+                  {{ job.requirements.voiceType }}
+                </Chip>
               </div>
             </div>
           </div>
 
-          <!-- Stats Overview -->
-          <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-            <MetricCard
-              title="Open Casting Calls"
-              :value="openCastingCount"
-              icon="mdi:megaphone"
-              color="blue"
-            />
-            <MetricCard
-              title="My Submissions"
-              :value="mySubmissionsCount"
-              icon="mdi:clipboard-check"
-              color="green"
-            />
-            <MetricCard
-              title="Shortlisted"
-              :value="shortlistedCount"
-              icon="mdi:star"
-              color="yellow"
-            />
-            <MetricCard title="Selected" :value="selectedCount" icon="mdi:trophy" color="purple" />
+          <!-- Actions -->
+          <div class="px-6 pb-6">
+            <div class="flex items-center justify-between">
+              <div class="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon="mdi:eye"
+                  @click="$router.push(`/talent/jobs/${job.id}/casting`)"
+                />
+                <Button variant="ghost" size="sm" icon="mdi:share" @click="shareCasting(job)" />
+              </div>
+              <Button
+                v-if="!getUserProposalStatus(job)"
+                variant="primary"
+                size="sm"
+                icon="mdi:send"
+                @click="openSubmitModal(job.id)"
+                :disabled="job.status !== 'published' && job.status !== 'active'"
+              >
+                Apply
+              </Button>
+              <Button
+                v-else
+                variant="outline"
+                size="sm"
+                icon="mdi:eye"
+                @click="$router.push(`/talent/jobs/${job.id}/casting/proposal`)"
+                :disabled="job.status !== 'published' && job.status !== 'active'"
+              >
+                View Proposal
+              </Button>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Casting Calls Grid/List -->
-          <div v-if="filteredCastingSessions.length === 0" class="py-12 text-center">
-            <MegaphoneIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">No casting calls found</h3>
-            <p class="text-muted-foreground mb-6">
-              {{
-                searchQuery
-                  ? 'Try adjusting your search criteria'
-                  : 'Check back later for new opportunities'
-              }}
-            </p>
-            <Button variant="primary" icon="mdi:refresh" @click="refreshCasting">Refresh</Button>
-          </div>
-
-          <!-- Grid View -->
-          <div
-            v-else-if="viewMode === 'grid'"
-            class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            <div
-              v-for="job in filteredCastingSessions"
-              :key="job.id"
-              class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
-            >
-              <!-- Casting Header -->
-              <div class="border-b border-gray-200 p-6 dark:border-gray-700">
-                <div class="mb-3 flex items-start justify-between">
-                  <div class="flex-1">
-                    <h3 class="text-foreground mb-1 text-lg font-semibold">
+      <!-- List View -->
+      <div
+        v-else
+        class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Casting Call
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Client / Studio
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Type
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Budget
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Deadline
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+              <tr
+                v-for="job in filteredCastingSessions"
+                :key="job.id"
+                class="hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div>
+                    <div class="text-foreground text-sm font-medium">
                       {{ job.title }}
-                    </h3>
-                    <p class="text-muted-foreground text-sm">
-                      {{ job.clientName }}
-                    </p>
+                    </div>
+                    <div class="text-muted-foreground line-clamp-2 text-sm">
+                      {{ job.description }}
+                    </div>
                   </div>
-                  <div class="ml-4 flex-shrink-0 space-y-2">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-foreground text-sm">
+                    {{ job.clientName }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <Chip size="sm" variant="secondary">
+                    {{ formatProjectType(job.projectType) }}
+                  </Chip>
+                </td>
+                <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
+                  ${{ job.budget?.max.toLocaleString() }}
+                </td>
+                <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
+                  {{ formatDate(job.deadline) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="space-y-1">
                     <StatusBadge :status="getJobStatus(job)" />
                     <StatusBadge
                       :status="getProposalStatusInfo(job).status"
@@ -121,219 +276,36 @@
                       {{ getProposalStatusInfo(job).label }}
                     </StatusBadge>
                   </div>
-                </div>
-
-                <p class="text-muted-foreground line-clamp-2 text-sm">
-                  {{ job.description }}
-                </p>
-              </div>
-
-              <!-- Casting Details -->
-              <div class="p-6">
-                <div class="space-y-3">
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-muted-foreground">Type</span>
-                    <Chip size="sm" variant="secondary">
-                      {{ formatProjectType(job.projectType) }}
-                    </Chip>
-                  </div>
-
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-muted-foreground">Budget</span>
-                    <span class="text-foreground font-medium">
-                      ${{ job.budget?.max.toLocaleString() }}
-                    </span>
-                  </div>
-
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-muted-foreground">Deadline</span>
-                    <span class="text-foreground font-medium">
-                      {{ formatDate(job.deadline) }}
-                    </span>
-                  </div>
-
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-muted-foreground">Submissions</span>
-                    <span class="text-foreground font-medium">
-                      {{ job.totalApplications || 0 }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Requirements -->
-                <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
-                  <div class="text-muted-foreground mb-2 text-xs">Requirements</div>
-                  <div class="flex flex-wrap gap-1">
-                    <Chip size="sm" variant="outline">
-                      {{ job.requirements.language }}
-                    </Chip>
-                    <Chip size="sm" variant="outline">
-                      {{ job.requirements.voiceType }}
-                    </Chip>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="px-6 pb-6">
-                <div class="flex items-center justify-between">
-                  <div class="flex space-x-2">
+                </td>
+                <td class="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                  <div class="flex items-center space-x-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       icon="mdi:eye"
                       @click="$router.push(`/talent/jobs/${job.id}/casting`)"
                     />
-                    <Button variant="ghost" size="sm" icon="mdi:share" @click="shareCasting(job)" />
+                    <Button
+                      v-if="!getUserProposalStatus(job)"
+                      variant="primary"
+                      size="sm"
+                      icon="mdi:send"
+                      @click="openSubmitModal(job.id)"
+                      :disabled="job.status !== 'published' && job.status !== 'active'"
+                    />
+                    <Button
+                      v-else
+                      variant="outline"
+                      size="sm"
+                      icon="mdi:eye"
+                      @click="$router.push(`/talent/jobs/${job.id}/casting/proposal`)"
+                      :disabled="job.status !== 'published' && job.status !== 'active'"
+                    />
                   </div>
-                  <Button
-                    v-if="!getUserProposalStatus(job)"
-                    variant="primary"
-                    size="sm"
-                    icon="mdi:send"
-                    @click="openSubmitModal(job.id)"
-                    :disabled="job.status !== 'published' && job.status !== 'active'"
-                  >
-                    Apply
-                  </Button>
-                  <Button
-                    v-else
-                    variant="outline"
-                    size="sm"
-                    icon="mdi:eye"
-                    @click="$router.push(`/talent/jobs/${job.id}/casting/proposal`)"
-                    :disabled="job.status !== 'published' && job.status !== 'active'"
-                  >
-                    View Proposal
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- List View -->
-          <div
-            v-else
-            class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800"
-          >
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Casting Call
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Client / Studio
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Type
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Budget
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Deadline
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Status
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-300"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody
-                  class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800"
-                >
-                  <tr
-                    v-for="job in filteredCastingSessions"
-                    :key="job.id"
-                    class="hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div class="text-foreground text-sm font-medium">
-                          {{ job.title }}
-                        </div>
-                        <div class="text-muted-foreground line-clamp-2 text-sm">
-                          {{ job.description }}
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-foreground text-sm">
-                        {{ job.clientName }}
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <Chip size="sm" variant="secondary">
-                        {{ formatProjectType(job.projectType) }}
-                      </Chip>
-                    </td>
-                    <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
-                      ${{ job.budget?.max.toLocaleString() }}
-                    </td>
-                    <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
-                      {{ formatDate(job.deadline) }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="space-y-1">
-                        <StatusBadge :status="getJobStatus(job)" />
-                        <StatusBadge
-                          :status="getProposalStatusInfo(job).status"
-                          :variant="getProposalStatusInfo(job).variant"
-                          size="sm"
-                        >
-                          {{ getProposalStatusInfo(job).label }}
-                        </StatusBadge>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                      <div class="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon="mdi:eye"
-                          @click="$router.push(`/talent/jobs/${job.id}/casting`)"
-                        />
-                        <Button
-                          v-if="!getUserProposalStatus(job)"
-                          variant="primary"
-                          size="sm"
-                          icon="mdi:send"
-                          @click="openSubmitModal(job.id)"
-                          :disabled="job.status !== 'published' && job.status !== 'active'"
-                        />
-                        <Button
-                          v-else
-                          variant="outline"
-                          size="sm"
-                          icon="mdi:eye"
-                          @click="$router.push(`/talent/jobs/${job.id}/casting/proposal`)"
-                          :disabled="job.status !== 'published' && job.status !== 'active'"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -358,14 +330,7 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
-import ViewToggle from '@/components/molecules/ViewToggle.vue'
-import { useSidebar } from '@/composables/useSidebar'
 import MegaphoneIcon from '~icons/mdi/megaphone'
-
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')

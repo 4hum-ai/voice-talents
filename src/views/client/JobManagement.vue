@@ -1,453 +1,385 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <ClientNavigation />
-
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>Job Management</template>
-        <template #subtitle>Manage your voice acting job postings</template>
-        <template #actions>
-          <div class="flex items-center space-x-2">
-            <div
-              class="border-border bg-background flex items-center space-x-1 rounded-lg border p-1"
+  <div>
+    <div class="mx-auto max-w-7xl">
+      <!-- List View -->
+      <div v-if="viewMode === 'list'">
+        <!-- Live Jobs Section -->
+        <div v-if="clientLiveJobs.length > 0" class="mb-8">
+          <div class="mb-4 flex items-center justify-between">
+            <button
+              @click="toggleGroup('live')"
+              class="hover:text-primary flex items-center space-x-2 text-left"
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                icon="mdi:view-list"
-                @click="viewMode = 'list'"
-                :class="{ 'bg-primary text-primary-foreground': viewMode === 'list' }"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                icon="mdi:view-grid"
-                @click="viewMode = 'kanban'"
-                :class="{ 'bg-primary text-primary-foreground': viewMode === 'kanban' }"
-              />
-            </div>
-            <ThemeToggle />
-            <Button
-              variant="outline"
-              size="sm"
-              icon="mdi:refresh"
-              @click="reloadMockData"
-              title="Reload Mock Data"
-              >Reload Data</Button
-            >
-            <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal"
-              >Create Job</Button
-            >
-          </div>
-        </template>
-      </AppBar>
-
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
-          <!-- List View -->
-          <div v-if="viewMode === 'list'">
-            <!-- Live Jobs Section -->
-            <div v-if="clientLiveJobs.length > 0" class="mb-8">
-              <div class="mb-4 flex items-center justify-between">
-                <button
-                  @click="toggleGroup('live')"
-                  class="hover:text-primary flex items-center space-x-2 text-left"
-                >
-                  <ChevronDownIcon
-                    v-if="!collapsedGroups.has('live')"
-                    class="h-4 w-4 transition-transform"
-                  />
-                  <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
-                  <h2 class="text-foreground text-lg font-semibold">Live Jobs</h2>
-                  <span class="text-muted-foreground text-sm"
-                    >{{ clientLiveJobs.length }} job{{
-                      clientLiveJobs.length !== 1 ? 's' : ''
-                    }}</span
-                  >
-                </button>
-              </div>
-
-              <div
+              <ChevronDownIcon
                 v-if="!collapsedGroups.has('live')"
-                class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                class="h-4 w-4 transition-transform"
+              />
+              <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
+              <h2 class="text-foreground text-lg font-semibold">Live Jobs</h2>
+              <span class="text-muted-foreground text-sm"
+                >{{ clientLiveJobs.length }} job{{ clientLiveJobs.length !== 1 ? 's' : '' }}</span
               >
-                <div
-                  v-for="job in clientLiveJobs"
-                  :key="job.id"
-                  class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-green-500/20 hover:shadow-md"
-                >
-                  <!-- Job Title -->
-                  <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
-                    {{ job.title || 'Untitled Job' }}
-                  </h3>
-
-                  <!-- Key Info -->
-                  <div class="mb-3 space-y-1 text-sm">
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Budget:</span>
-                      <span class="text-foreground font-medium">{{
-                        formatBudget(job.budget)
-                      }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Deadline:</span>
-                      <span class="text-foreground">{{ formatDeadline(job.deadline) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Applications:</span>
-                      <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Action Button -->
-                  <Button
-                    icon="mdi:eye"
-                    variant="outline"
-                    size="sm"
-                    @click="viewLiveJob(job.id)"
-                    class="w-full group-hover:border-green-200 group-hover:bg-green-50 group-hover:text-green-700 dark:group-hover:border-green-800 dark:group-hover:bg-green-950 dark:group-hover:text-green-300"
-                  >
-                    View & Approve
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Draft Jobs Section -->
-            <div v-if="clientDrafts.length > 0" class="mb-8">
-              <div class="mb-4 flex items-center justify-between">
-                <button
-                  @click="toggleGroup('drafts')"
-                  class="hover:text-primary flex items-center space-x-2 text-left"
-                >
-                  <ChevronDownIcon
-                    v-if="!collapsedGroups.has('drafts')"
-                    class="h-4 w-4 transition-transform"
-                  />
-                  <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
-                  <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
-                  <span class="text-muted-foreground text-sm"
-                    >{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span
-                  >
-                </button>
-              </div>
-
-              <div
-                v-if="!collapsedGroups.has('drafts')"
-                class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                <div
-                  v-for="draft in clientDrafts"
-                  :key="draft.id"
-                  class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-orange-500/20 hover:shadow-md"
-                >
-                  <!-- Job Title -->
-                  <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
-                    {{ draft.title || 'Untitled Job' }}
-                  </h3>
-
-                  <!-- Key Info -->
-                  <div class="mb-3 space-y-1 text-sm">
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Budget:</span>
-                      <span class="text-foreground font-medium">{{
-                        formatBudget(draft.budget)
-                      }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Last saved:</span>
-                      <span class="text-foreground">{{
-                        formatDate(draft.lastSaved || draft.updatedAt)
-                      }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Version:</span>
-                      <span class="text-foreground">v{{ draft.version || 1 }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Action Buttons -->
-                  <div class="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon="mdi:pencil"
-                      @click="editDraft(draft.id)"
-                      class="flex-1 group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700 dark:group-hover:border-orange-800 dark:group-hover:bg-orange-950 dark:group-hover:text-orange-300"
-                    >
-                      Continue
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon="mdi:trash-can"
-                      @click="confirmDiscardDraft(draft)"
-                      class="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Completed Jobs Section -->
-            <div v-if="clientCompletedJobs.length > 0" class="mb-8">
-              <div class="mb-4 flex items-center justify-between">
-                <button
-                  @click="toggleGroup('completed')"
-                  class="hover:text-primary flex items-center space-x-2 text-left"
-                >
-                  <ChevronDownIcon
-                    v-if="!collapsedGroups.has('completed')"
-                    class="h-4 w-4 transition-transform"
-                  />
-                  <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
-                  <h2 class="text-foreground text-lg font-semibold">Completed Jobs</h2>
-                  <span class="text-muted-foreground text-sm"
-                    >{{ clientCompletedJobs.length }} job{{
-                      clientCompletedJobs.length !== 1 ? 's' : ''
-                    }}</span
-                  >
-                </button>
-              </div>
-
-              <div
-                v-if="!collapsedGroups.has('completed')"
-                class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-              >
-                <div
-                  v-for="job in clientCompletedJobs"
-                  :key="job.id"
-                  class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-blue-500/20 hover:shadow-md"
-                >
-                  <!-- Job Title -->
-                  <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
-                    {{ job.title || 'Untitled Job' }}
-                  </h3>
-
-                  <!-- Key Info -->
-                  <div class="mb-3 space-y-1 text-sm">
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Budget:</span>
-                      <span class="text-foreground font-medium">{{
-                        formatBudget(job.budget)
-                      }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Completed:</span>
-                      <span class="text-foreground">{{
-                        formatDate(job.closedDate || job.updatedAt)
-                      }}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <span class="text-muted-foreground">Talent:</span>
-                      <span class="text-foreground"
-                        >{{ job.selectedTalents?.length || 0 }} selected</span
-                      >
-                    </div>
-                  </div>
-
-                  <!-- Action Buttons -->
-                  <div class="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon="mdi:download"
-                      @click="downloadDelivery(job.id)"
-                      class="flex-1 group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:text-blue-700 dark:group-hover:border-blue-800 dark:group-hover:bg-blue-950 dark:group-hover:text-blue-300"
-                    >
-                      Download
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon="mdi:star"
-                      @click="rateTalent(job.id)"
-                      class="group-hover:border-yellow-200 group-hover:bg-yellow-50 group-hover:text-yellow-700 dark:group-hover:border-yellow-800 dark:group-hover:bg-yellow-950 dark:group-hover:text-yellow-300"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            </button>
           </div>
 
-          <!-- Kanban View -->
-          <div v-else-if="viewMode === 'kanban'" class="space-y-6">
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <!-- Live Jobs Column -->
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-foreground text-lg font-semibold">Live Jobs</h3>
-                  <span
-                    class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
-                  >
-                    {{ clientLiveJobs.length }}
-                  </span>
-                </div>
-                <div class="space-y-3">
-                  <div
-                    v-for="job in clientLiveJobs"
-                    :key="job.id"
-                    class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-green-500/20 hover:shadow-md"
-                  >
-                    <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
-                      {{ job.title || 'Untitled Job' }}
-                    </h4>
-                    <div class="mb-3 space-y-1 text-sm">
-                      <div class="flex justify-between">
-                        <span class="text-muted-foreground">Budget:</span>
-                        <span class="text-foreground font-medium">{{
-                          formatBudget(job.budget)
-                        }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-muted-foreground">Applications:</span>
-                        <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon="mdi:eye"
-                      @click="viewLiveJob(job.id)"
-                      class="w-full"
-                    >
-                      View & Approve
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Draft Jobs Column -->
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-foreground text-lg font-semibold">Draft Jobs</h3>
-                  <span
-                    class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                  >
-                    {{ clientDrafts.length }}
-                  </span>
-                </div>
-                <div class="space-y-3">
-                  <div
-                    v-for="draft in clientDrafts"
-                    :key="draft.id"
-                    class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-orange-500/20 hover:shadow-md"
-                  >
-                    <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
-                      {{ draft.title || 'Untitled Job' }}
-                    </h4>
-                    <div class="mb-3 space-y-1 text-sm">
-                      <div class="flex justify-between">
-                        <span class="text-muted-foreground">Budget:</span>
-                        <span class="text-foreground font-medium">{{
-                          formatBudget(draft.budget)
-                        }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-muted-foreground">Version:</span>
-                        <span class="text-foreground">v{{ draft.version || 1 }}</span>
-                      </div>
-                    </div>
-                    <div class="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        icon="mdi:pencil"
-                        @click="editDraft(draft.id)"
-                        class="flex-1"
-                      >
-                        Continue
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon="mdi:trash-can"
-                        @click="confirmDiscardDraft(draft)"
-                        class="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Completed Jobs Column -->
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-foreground text-lg font-semibold">Completed Jobs</h3>
-                  <span
-                    class="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                  >
-                    {{ clientCompletedJobs.length }}
-                  </span>
-                </div>
-                <div class="space-y-3">
-                  <div
-                    v-for="job in clientCompletedJobs"
-                    :key="job.id"
-                    class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-blue-500/20 hover:shadow-md"
-                  >
-                    <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
-                      {{ job.title || 'Untitled Job' }}
-                    </h4>
-                    <div class="mb-3 space-y-1 text-sm">
-                      <div class="flex justify-between">
-                        <span class="text-muted-foreground">Budget:</span>
-                        <span class="text-foreground font-medium">{{
-                          formatBudget(job.budget)
-                        }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-muted-foreground">Completed:</span>
-                        <span class="text-foreground">{{
-                          formatDate(job.closedDate || job.updatedAt)
-                        }}</span>
-                      </div>
-                    </div>
-                    <div class="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        icon="mdi:download"
-                        @click="downloadDelivery(job.id)"
-                        class="flex-1"
-                      >
-                        Download
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        icon="mdi:star"
-                        @click="rateTalent(job.id)"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Empty State -->
-          <div
-            v-if="
-              clientDrafts.length === 0 &&
-              clientLiveJobs.length === 0 &&
-              clientCompletedJobs.length === 0
-            "
-            class="py-12 text-center"
-          >
-            <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">No Jobs Yet</h3>
-            <p class="text-muted-foreground mb-6">
-              Start creating your first job posting or save a draft to continue later
-            </p>
-            <Button variant="primary" icon="mdi:plus" @click="openJobCreationModal"
-              >Create Your First Job</Button
+          <div v-if="!collapsedGroups.has('live')" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div
+              v-for="job in clientLiveJobs"
+              :key="job.id"
+              class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-green-500/20 hover:shadow-md"
             >
+              <!-- Job Title -->
+              <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
+                {{ job.title || 'Untitled Job' }}
+              </h3>
+
+              <!-- Key Info -->
+              <div class="mb-3 space-y-1 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Budget:</span>
+                  <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Deadline:</span>
+                  <span class="text-foreground">{{ formatDeadline(job.deadline) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Applications:</span>
+                  <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
+                </div>
+              </div>
+
+              <!-- Action Button -->
+              <Button
+                icon="mdi:eye"
+                variant="outline"
+                size="sm"
+                @click="viewLiveJob(job.id)"
+                class="w-full group-hover:border-green-200 group-hover:bg-green-50 group-hover:text-green-700 dark:group-hover:border-green-800 dark:group-hover:bg-green-950 dark:group-hover:text-green-300"
+              >
+                View & Approve
+              </Button>
+            </div>
           </div>
         </div>
+
+        <!-- Draft Jobs Section -->
+        <div v-if="clientDrafts.length > 0" class="mb-8">
+          <div class="mb-4 flex items-center justify-between">
+            <button
+              @click="toggleGroup('drafts')"
+              class="hover:text-primary flex items-center space-x-2 text-left"
+            >
+              <ChevronDownIcon
+                v-if="!collapsedGroups.has('drafts')"
+                class="h-4 w-4 transition-transform"
+              />
+              <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
+              <h2 class="text-foreground text-lg font-semibold">Draft Jobs</h2>
+              <span class="text-muted-foreground text-sm"
+                >{{ clientDrafts.length }} draft{{ clientDrafts.length !== 1 ? 's' : '' }}</span
+              >
+            </button>
+          </div>
+
+          <div
+            v-if="!collapsedGroups.has('drafts')"
+            class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            <div
+              v-for="draft in clientDrafts"
+              :key="draft.id"
+              class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-orange-500/20 hover:shadow-md"
+            >
+              <!-- Job Title -->
+              <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
+                {{ draft.title || 'Untitled Job' }}
+              </h3>
+
+              <!-- Key Info -->
+              <div class="mb-3 space-y-1 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Budget:</span>
+                  <span class="text-foreground font-medium">{{ formatBudget(draft.budget) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Last saved:</span>
+                  <span class="text-foreground">{{
+                    formatDate(draft.lastSaved || draft.updatedAt)
+                  }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Version:</span>
+                  <span class="text-foreground">v{{ draft.version || 1 }}</span>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon="mdi:pencil"
+                  @click="editDraft(draft.id)"
+                  class="flex-1 group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-orange-700 dark:group-hover:border-orange-800 dark:group-hover:bg-orange-950 dark:group-hover:text-orange-300"
+                >
+                  Continue
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon="mdi:trash-can"
+                  @click="confirmDiscardDraft(draft)"
+                  class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Jobs Section -->
+        <div v-if="clientCompletedJobs.length > 0" class="mb-8">
+          <div class="mb-4 flex items-center justify-between">
+            <button
+              @click="toggleGroup('completed')"
+              class="hover:text-primary flex items-center space-x-2 text-left"
+            >
+              <ChevronDownIcon
+                v-if="!collapsedGroups.has('completed')"
+                class="h-4 w-4 transition-transform"
+              />
+              <ChevronRightIcon v-else class="h-4 w-4 transition-transform" />
+              <h2 class="text-foreground text-lg font-semibold">Completed Jobs</h2>
+              <span class="text-muted-foreground text-sm"
+                >{{ clientCompletedJobs.length }} job{{
+                  clientCompletedJobs.length !== 1 ? 's' : ''
+                }}</span
+              >
+            </button>
+          </div>
+
+          <div
+            v-if="!collapsedGroups.has('completed')"
+            class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            <div
+              v-for="job in clientCompletedJobs"
+              :key="job.id"
+              class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-blue-500/20 hover:shadow-md"
+            >
+              <!-- Job Title -->
+              <h3 class="text-foreground mb-2 line-clamp-2 text-base font-semibold">
+                {{ job.title || 'Untitled Job' }}
+              </h3>
+
+              <!-- Key Info -->
+              <div class="mb-3 space-y-1 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Budget:</span>
+                  <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Completed:</span>
+                  <span class="text-foreground">{{
+                    formatDate(job.closedDate || job.updatedAt)
+                  }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Talent:</span>
+                  <span class="text-foreground"
+                    >{{ job.selectedTalents?.length || 0 }} selected</span
+                  >
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon="mdi:download"
+                  @click="downloadDelivery(job.id)"
+                  class="flex-1 group-hover:border-blue-200 group-hover:bg-blue-50 group-hover:text-blue-700 dark:group-hover:border-blue-800 dark:group-hover:bg-blue-950 dark:group-hover:text-blue-300"
+                >
+                  Download
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon="mdi:star"
+                  @click="rateTalent(job.id)"
+                  class="group-hover:border-yellow-200 group-hover:bg-yellow-50 group-hover:text-yellow-700 dark:group-hover:border-yellow-800 dark:group-hover:bg-yellow-950 dark:group-hover:text-yellow-300"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kanban View -->
+      <div v-else-if="viewMode === 'kanban'" class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <!-- Live Jobs Column -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-foreground text-lg font-semibold">Live Jobs</h3>
+              <span
+                class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
+              >
+                {{ clientLiveJobs.length }}
+              </span>
+            </div>
+            <div class="space-y-3">
+              <div
+                v-for="job in clientLiveJobs"
+                :key="job.id"
+                class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-green-500/20 hover:shadow-md"
+              >
+                <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
+                  {{ job.title || 'Untitled Job' }}
+                </h4>
+                <div class="mb-3 space-y-1 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">Budget:</span>
+                    <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">Applications:</span>
+                    <span class="text-foreground">{{ job.totalApplications || 0 }}</span>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon="mdi:eye"
+                  @click="viewLiveJob(job.id)"
+                  class="w-full"
+                >
+                  View & Approve
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Draft Jobs Column -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-foreground text-lg font-semibold">Draft Jobs</h3>
+              <span
+                class="rounded-full bg-orange-100 px-2 py-1 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+              >
+                {{ clientDrafts.length }}
+              </span>
+            </div>
+            <div class="space-y-3">
+              <div
+                v-for="draft in clientDrafts"
+                :key="draft.id"
+                class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-orange-500/20 hover:shadow-md"
+              >
+                <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
+                  {{ draft.title || 'Untitled Job' }}
+                </h4>
+                <div class="mb-3 space-y-1 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">Budget:</span>
+                    <span class="text-foreground font-medium">{{
+                      formatBudget(draft.budget)
+                    }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">Version:</span>
+                    <span class="text-foreground">v{{ draft.version || 1 }}</span>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon="mdi:pencil"
+                    @click="editDraft(draft.id)"
+                    class="flex-1"
+                  >
+                    Continue
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="mdi:trash-can"
+                    @click="confirmDiscardDraft(draft)"
+                    class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Completed Jobs Column -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-foreground text-lg font-semibold">Completed Jobs</h3>
+              <span
+                class="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+              >
+                {{ clientCompletedJobs.length }}
+              </span>
+            </div>
+            <div class="space-y-3">
+              <div
+                v-for="job in clientCompletedJobs"
+                :key="job.id"
+                class="bg-card border-border group rounded-lg border p-4 transition-all duration-200 hover:border-blue-500/20 hover:shadow-md"
+              >
+                <h4 class="text-foreground mb-2 line-clamp-2 font-medium">
+                  {{ job.title || 'Untitled Job' }}
+                </h4>
+                <div class="mb-3 space-y-1 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">Budget:</span>
+                    <span class="text-foreground font-medium">{{ formatBudget(job.budget) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">Completed:</span>
+                    <span class="text-foreground">{{
+                      formatDate(job.closedDate || job.updatedAt)
+                    }}</span>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon="mdi:download"
+                    @click="downloadDelivery(job.id)"
+                    class="flex-1"
+                  >
+                    Download
+                  </Button>
+                  <Button variant="outline" size="sm" icon="mdi:star" @click="rateTalent(job.id)" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div
+        v-if="
+          clientDrafts.length === 0 &&
+          clientLiveJobs.length === 0 &&
+          clientCompletedJobs.length === 0
+        "
+        class="py-12 text-center"
+      >
+        <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 class="text-foreground mb-2 text-lg font-medium">No Jobs Yet</h3>
+        <p class="text-muted-foreground mb-6">
+          Start creating your first job posting or save a draft to continue later
+        </p>
+        <Button variant="primary" icon="mdi:plus" @click="openJobCreationModal"
+          >Create Your First Job</Button
+        >
       </div>
     </div>
 
@@ -493,16 +425,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
 import { useJob, type Job } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
-import { useSidebar } from '@/composables/useSidebar'
 import type { JobPosting } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import BriefcaseIcon from '~icons/mdi/briefcase'
@@ -518,10 +446,8 @@ const {
   getPublishedJobsByClient,
   getCompletedJobsByClient,
   refreshJobs,
-  reloadMockData,
 } = useJob()
 const { addToast: showToast } = useToast()
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])

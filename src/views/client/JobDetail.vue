@@ -1,368 +1,330 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <ClientNavigation />
-
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>{{ job?.title || 'Job Details' }}</template>
-        <template #subtitle>{{ job?.talentName || 'Voice Actor Project' }}</template>
-        <template #actions>
-          <ThemeToggle />
-          <Button
-            variant="outline"
-            size="sm"
-            @click="requestRevision"
-            :disabled="!canRequestRevision"
-          >
-            <EditIcon class="mr-2 h-4 w-4" />
-            Request Revision
-          </Button>
-          <Button variant="primary" size="sm" @click="approveWork" :disabled="!canApprove">
-            <CheckIcon class="mr-2 h-4 w-4" />
-            Approve Work
-          </Button>
-        </template>
-      </AppBar>
-
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
-          <div v-if="job" class="space-y-8">
-            <!-- Job Overview -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <div class="mb-6 flex items-start justify-between">
-                <div class="flex-1">
-                  <div class="mb-4 flex items-center space-x-3">
-                    <StatusBadge :status="getJobStatusDisplay(job.status)" />
-                    <StatusBadge
-                      :status="getProgressStatus(job.progress)"
-                      :variant="getProgressVariant(job.progress)"
-                      size="sm"
-                    >
-                      {{ job.progress }}% Complete
-                    </StatusBadge>
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
-                  <p class="text-muted-foreground mb-4">{{ job.description }}</p>
-                  <div class="mt-4">
-                    <RouterLink
-                      :to="getAgreementTemplateUrl"
-                      target="_blank"
-                      class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm"
-                    >
-                      <FileDocumentIcon class="h-4 w-4" />
-                      View Agreement Template
-                    </RouterLink>
-                  </div>
-                </div>
+  <div>
+    <div class="mx-auto max-w-7xl">
+      <div v-if="job" class="space-y-8">
+        <!-- Job Overview -->
+        <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <div class="mb-6 flex items-start justify-between">
+            <div class="flex-1">
+              <div class="mb-4 flex items-center space-x-3">
+                <StatusBadge :status="getJobStatusDisplay(job.status)" />
+                <StatusBadge
+                  :status="getProgressStatus(job.progress)"
+                  :variant="getProgressVariant(job.progress)"
+                  size="sm"
+                >
+                  {{ job.progress }}% Complete
+                </StatusBadge>
               </div>
+              <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
+              <p class="text-muted-foreground mb-4">{{ job.description }}</p>
+              <div class="mt-4">
+                <RouterLink
+                  :to="getAgreementTemplateUrl"
+                  target="_blank"
+                  class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm"
+                >
+                  <FileDocumentIcon class="h-4 w-4" />
+                  View Agreement Template
+                </RouterLink>
+              </div>
+            </div>
+          </div>
 
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
-                <div>
-                  <h3 class="text-foreground mb-3 font-medium">Project Details</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Type:</span>
-                      <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Voice Type:</span>
-                      <span class="text-foreground">{{ formatVoiceType(job.voiceType) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Deadline:</span>
-                      <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Budget:</span>
-                      <span class="text-foreground font-medium text-green-600">
-                        ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Created:</span>
-                      <span class="text-foreground">{{ formatDate(job.createdAt) }}</span>
-                    </div>
-                  </div>
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <div>
+              <h3 class="text-foreground mb-3 font-medium">Project Details</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Type:</span>
+                  <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
                 </div>
-
-                <div>
-                  <h3 class="text-foreground mb-3 font-medium">Voice Requirements</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Language:</span>
-                      <span class="text-foreground">{{ job.requirements.language }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Voice Type:</span>
-                      <span class="text-foreground">{{ job.requirements.voiceType }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Gender:</span>
-                      <span class="text-foreground">{{ job.requirements.gender }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Delivery Format:</span>
-                      <span class="text-foreground">{{ job.requirements.deliveryFormat }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Revisions:</span>
-                      <span class="text-foreground">{{ job.requirements.revisionRounds }}</span>
-                    </div>
-                  </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Voice Type:</span>
+                  <span class="text-foreground">{{ formatVoiceType(job.voiceType) }}</span>
                 </div>
-
-                <div>
-                  <h3 class="text-foreground mb-3 font-medium">Talent Options</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Visibility:</span>
-                      <span class="text-foreground">{{
-                        job.talentOptions.isPublic ? 'Public' : 'Private'
-                      }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Selection:</span>
-                      <span class="text-foreground">{{
-                        job.talentOptions.pickOwn ? 'Specific Talent' : 'Open Casting'
-                      }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Selected:</span>
-                      <span class="text-foreground"
-                        >{{ job.talentOptions.selectedTalents.length }} talent(s)</span
-                      >
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Portfolio Required:</span>
-                      <span class="text-foreground">{{ job.requirePortfolio ? 'Yes' : 'No' }}</span>
-                    </div>
-                  </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Deadline:</span>
+                  <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
                 </div>
-
-                <div>
-                  <h3 class="text-foreground mb-3 font-medium">Progress</h3>
-                  <div class="space-y-3">
-                    <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                      <div
-                        class="h-3 rounded-full bg-blue-600 transition-all duration-300"
-                        :style="{ width: `${job.progress}%` }"
-                      ></div>
-                    </div>
-                    <div class="text-center text-sm">
-                      <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
-                    </div>
-                    <div class="text-center">
-                      <Button variant="outline" size="sm" @click="viewProgress" class="w-full">
-                        <EyeIcon class="mr-2 h-4 w-4" />
-                        View Progress
-                      </Button>
-                    </div>
-                  </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Budget:</span>
+                  <span class="text-foreground font-medium text-green-600">
+                    ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Created:</span>
+                  <span class="text-foreground">{{ formatDate(job.createdAt) }}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Client Notes -->
-            <div
-              v-if="job.clientNotes && job.clientNotes.length > 0"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Your Notes</h3>
-              <div class="space-y-3">
-                <div
-                  v-for="(note, index) in job.clientNotes"
-                  :key="index"
-                  class="flex items-start space-x-3"
-                >
-                  <LightbulbIcon class="mt-0.5 h-5 w-5 text-yellow-500" />
-                  <p class="text-muted-foreground">{{ note }}</p>
+            <div>
+              <h3 class="text-foreground mb-3 font-medium">Voice Requirements</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Language:</span>
+                  <span class="text-foreground">{{ job.requirements.language }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Voice Type:</span>
+                  <span class="text-foreground">{{ job.requirements.voiceType }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Gender:</span>
+                  <span class="text-foreground">{{ job.requirements.gender }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Delivery Format:</span>
+                  <span class="text-foreground">{{ job.requirements.deliveryFormat }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Revisions:</span>
+                  <span class="text-foreground">{{ job.requirements.revisionRounds }}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Talent Notes -->
-            <div
-              v-if="job.talentNotes && job.talentNotes.length > 0"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Talent Notes</h3>
-              <div class="space-y-3">
-                <div
-                  v-for="(note, index) in job.talentNotes"
-                  :key="index"
-                  class="flex items-start space-x-3"
-                >
-                  <MessageIcon class="mt-0.5 h-5 w-5 text-blue-500" />
-                  <p class="text-muted-foreground">{{ note }}</p>
+            <div>
+              <h3 class="text-foreground mb-3 font-medium">Talent Options</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Visibility:</span>
+                  <span class="text-foreground">{{
+                    job.talentOptions.isPublic ? 'Public' : 'Private'
+                  }}</span>
                 </div>
-              </div>
-            </div>
-
-            <!-- Project Files -->
-            <div v-if="job.files" class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
-              <div class="space-y-4">
-                <!-- Script File -->
-                <div
-                  v-if="job.files.script"
-                  class="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
-                >
-                  <div class="flex items-center space-x-3">
-                    <FileDocumentIcon class="h-8 w-8 text-blue-600" />
-                    <div>
-                      <h4 class="text-foreground font-medium">
-                        {{ job.files.script.name }}
-                      </h4>
-                      <p class="text-muted-foreground text-sm">
-                        {{ formatFileSize(job.files.script.size) }} • Script
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" @click="downloadFile(job.files.script)">
-                      <DownloadIcon class="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                    <Button variant="outline" size="sm" @click="viewFile(job.files.script)">
-                      <EyeIcon class="mr-2 h-4 w-4" />
-                      View
-                    </Button>
-                  </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Selection:</span>
+                  <span class="text-foreground">{{
+                    job.talentOptions.pickOwn ? 'Specific Talent' : 'Open Casting'
+                  }}</span>
                 </div>
-
-                <!-- Reference Audio -->
-                <div
-                  v-if="job.files.referenceAudio"
-                  class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
-                >
-                  <div class="flex items-center space-x-3">
-                    <AudioIcon class="h-8 w-8 text-green-600" />
-                    <div>
-                      <h4 class="text-foreground font-medium">
-                        {{ job.files.referenceAudio.name }}
-                      </h4>
-                      <p class="text-muted-foreground text-sm">
-                        {{ formatFileSize(job.files.referenceAudio.size) }} • Reference Audio
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" @click="playReferenceAudio">
-                      <PlayIcon class="mr-2 h-4 w-4" />
-                      Play
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      @click="downloadFile(job.files.referenceAudio)"
-                    >
-                      <DownloadIcon class="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                  </div>
-                </div>
-
-                <!-- Additional Files -->
-                <div
-                  v-if="job.files.additional && job.files.additional.length > 0"
-                  class="space-y-3"
-                >
-                  <h4 class="text-foreground font-medium">Additional Files</h4>
-                  <div
-                    v-for="(file, index) in job.files.additional"
-                    :key="index"
-                    class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800/50"
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Selected:</span>
+                  <span class="text-foreground"
+                    >{{ job.talentOptions.selectedTalents.length }} talent(s)</span
                   >
-                    <div class="flex items-center space-x-3">
-                      <AttachmentIcon class="h-6 w-6 text-gray-600" />
-                      <div>
-                        <h5 class="text-foreground text-sm font-medium">{{ file.name }}</h5>
-                        <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" @click="downloadFile(file)">
-                        <DownloadIcon class="mr-2 h-4 w-4" />
-                        Download
-                      </Button>
-                    </div>
-                  </div>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Portfolio Required:</span>
+                  <span class="text-foreground">{{ job.requirePortfolio ? 'Yes' : 'No' }}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Deliverables -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
-              <div class="space-y-4">
-                <div
-                  v-if="job.finalAudio"
-                  class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
-                >
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <AudioIcon class="h-8 w-8 text-green-600" />
-                      <div>
-                        <h4 class="text-foreground font-medium">{{ job.finalAudio.name }}</h4>
-                        <p class="text-muted-foreground text-sm">
-                          {{ job.finalAudio.duration }} • {{ job.finalAudio.size }}
-                        </p>
-                        <p class="text-muted-foreground text-xs">
-                          Submitted {{ formatDate(job.finalAudio.submittedAt) }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" @click="playFinalAudio">
-                        <PlayIcon class="mr-2 h-4 w-4" />
-                        Play
-                      </Button>
-                      <Button variant="outline" size="sm" @click="downloadFinalAudio">
-                        <DownloadIcon class="mr-2 h-4 w-4" />
-                        Download
-                      </Button>
-                      <Button variant="outline" size="sm" @click="requestRevision">
-                        <EditIcon class="mr-2 h-4 w-4" />
-                        Request Revision
-                      </Button>
-                      <Button variant="primary" size="sm" @click="approveWork">
-                        <CheckIcon class="mr-2 h-4 w-4" />
-                        Approve
-                      </Button>
-                    </div>
-                  </div>
+            <div>
+              <h3 class="text-foreground mb-3 font-medium">Progress</h3>
+              <div class="space-y-3">
+                <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                  <div
+                    class="h-3 rounded-full bg-blue-600 transition-all duration-300"
+                    :style="{ width: `${job.progress}%` }"
+                  ></div>
                 </div>
-                <div v-else class="py-8 text-center">
-                  <ClockIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-                  <h4 class="text-foreground mb-2 font-medium">Awaiting deliverables</h4>
-                  <p class="text-muted-foreground mb-4">
-                    The talent is working on your project. You'll be notified when work is
-                    submitted.
-                  </p>
-                  <Button variant="outline" @click="contactTalent">
-                    <MessageIcon class="mr-2 h-4 w-4" />
-                    Contact Talent
+                <div class="text-center text-sm">
+                  <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
+                </div>
+                <div class="text-center">
+                  <Button variant="outline" size="sm" @click="viewProgress" class="w-full">
+                    <EyeIcon class="mr-2 h-4 w-4" />
+                    View Progress
                   </Button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div v-else class="py-12 text-center">
-            <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">Job not found</h3>
-            <p class="text-muted-foreground mb-6">
-              The job you're looking for doesn't exist or you don't have access to it.
-            </p>
-            <Button variant="primary" @click="$router.push('/client/jobs')">
-              <ArrowLeftIcon class="mr-2 h-4 w-4" />
-              Back to My Jobs
-            </Button>
+        <!-- Client Notes -->
+        <div
+          v-if="job.clientNotes && job.clientNotes.length > 0"
+          class="bg-card border-border rounded-lg border p-6 shadow-sm"
+        >
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Your Notes</h3>
+          <div class="space-y-3">
+            <div
+              v-for="(note, index) in job.clientNotes"
+              :key="index"
+              class="flex items-start space-x-3"
+            >
+              <LightbulbIcon class="mt-0.5 h-5 w-5 text-yellow-500" />
+              <p class="text-muted-foreground">{{ note }}</p>
+            </div>
           </div>
         </div>
+
+        <!-- Talent Notes -->
+        <div
+          v-if="job.talentNotes && job.talentNotes.length > 0"
+          class="bg-card border-border rounded-lg border p-6 shadow-sm"
+        >
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Talent Notes</h3>
+          <div class="space-y-3">
+            <div
+              v-for="(note, index) in job.talentNotes"
+              :key="index"
+              class="flex items-start space-x-3"
+            >
+              <MessageIcon class="mt-0.5 h-5 w-5 text-blue-500" />
+              <p class="text-muted-foreground">{{ note }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Files -->
+        <div v-if="job.files" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
+          <div class="space-y-4">
+            <!-- Script File -->
+            <div
+              v-if="job.files.script"
+              class="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
+            >
+              <div class="flex items-center space-x-3">
+                <FileDocumentIcon class="h-8 w-8 text-blue-600" />
+                <div>
+                  <h4 class="text-foreground font-medium">
+                    {{ job.files.script.name }}
+                  </h4>
+                  <p class="text-muted-foreground text-sm">
+                    {{ formatFileSize(job.files.script.size) }} • Script
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Button variant="outline" size="sm" @click="downloadFile(job.files.script)">
+                  <DownloadIcon class="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+                <Button variant="outline" size="sm" @click="viewFile(job.files.script)">
+                  <EyeIcon class="mr-2 h-4 w-4" />
+                  View
+                </Button>
+              </div>
+            </div>
+
+            <!-- Reference Audio -->
+            <div
+              v-if="job.files.referenceAudio"
+              class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+            >
+              <div class="flex items-center space-x-3">
+                <AudioIcon class="h-8 w-8 text-green-600" />
+                <div>
+                  <h4 class="text-foreground font-medium">
+                    {{ job.files.referenceAudio.name }}
+                  </h4>
+                  <p class="text-muted-foreground text-sm">
+                    {{ formatFileSize(job.files.referenceAudio.size) }} • Reference Audio
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Button variant="outline" size="sm" @click="playReferenceAudio">
+                  <PlayIcon class="mr-2 h-4 w-4" />
+                  Play
+                </Button>
+                <Button variant="outline" size="sm" @click="downloadFile(job.files.referenceAudio)">
+                  <DownloadIcon class="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+              </div>
+            </div>
+
+            <!-- Additional Files -->
+            <div v-if="job.files.additional && job.files.additional.length > 0" class="space-y-3">
+              <h4 class="text-foreground font-medium">Additional Files</h4>
+              <div
+                v-for="(file, index) in job.files.additional"
+                :key="index"
+                class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800/50"
+              >
+                <div class="flex items-center space-x-3">
+                  <AttachmentIcon class="h-6 w-6 text-gray-600" />
+                  <div>
+                    <h5 class="text-foreground text-sm font-medium">{{ file.name }}</h5>
+                    <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" @click="downloadFile(file)">
+                    <DownloadIcon class="mr-2 h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deliverables -->
+        <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
+          <div class="space-y-4">
+            <div
+              v-if="job.finalAudio"
+              class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <AudioIcon class="h-8 w-8 text-green-600" />
+                  <div>
+                    <h4 class="text-foreground font-medium">{{ job.finalAudio.name }}</h4>
+                    <p class="text-muted-foreground text-sm">
+                      {{ job.finalAudio.duration }} • {{ job.finalAudio.size }}
+                    </p>
+                    <p class="text-muted-foreground text-xs">
+                      Submitted {{ formatDate(job.finalAudio.submittedAt) }}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" @click="playFinalAudio">
+                    <PlayIcon class="mr-2 h-4 w-4" />
+                    Play
+                  </Button>
+                  <Button variant="outline" size="sm" @click="downloadFinalAudio">
+                    <DownloadIcon class="mr-2 h-4 w-4" />
+                    Download
+                  </Button>
+                  <Button variant="outline" size="sm" @click="requestRevision">
+                    <EditIcon class="mr-2 h-4 w-4" />
+                    Request Revision
+                  </Button>
+                  <Button variant="primary" size="sm" @click="approveWork">
+                    <CheckIcon class="mr-2 h-4 w-4" />
+                    Approve
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div v-else class="py-8 text-center">
+              <ClockIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+              <h4 class="text-foreground mb-2 font-medium">Awaiting deliverables</h4>
+              <p class="text-muted-foreground mb-4">
+                The talent is working on your project. You'll be notified when work is submitted.
+              </p>
+              <Button variant="outline" @click="contactTalent">
+                <MessageIcon class="mr-2 h-4 w-4" />
+                Contact Talent
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="py-12 text-center">
+        <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 class="text-foreground mb-2 text-lg font-medium">Job not found</h3>
+        <p class="text-muted-foreground mb-6">
+          The job you're looking for doesn't exist or you don't have access to it.
+        </p>
+        <Button variant="primary" @click="$router.push('/client/jobs')">
+          <ArrowLeftIcon class="mr-2 h-4 w-4" />
+          Back to My Jobs
+        </Button>
       </div>
     </div>
   </div>
@@ -371,13 +333,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
-import { useSidebar } from '@/composables/useSidebar'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
 import {
@@ -420,7 +378,6 @@ import AttachmentIcon from '~icons/mdi/attachment'
 
 const route = useRoute()
 const { success } = useToast()
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 const { getJob } = useJob()
 
 // Job data - load from useJob composable or create mock data
@@ -596,11 +553,6 @@ const loadJobData = () => {
     }
   }
 }
-
-// Computed
-const canRequestRevision = computed(() => job.value?.finalAudio && job.value.status !== 'completed')
-
-const canApprove = computed(() => job.value?.finalAudio && job.value.status !== 'completed')
 
 // Action methods
 const requestRevision = () => {

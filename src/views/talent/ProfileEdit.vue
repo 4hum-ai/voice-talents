@@ -1,80 +1,62 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <VoiceActNavigation />
+  <div>
+    <div class="mx-auto max-w-4xl">
+      <!-- Tab Navigation with Content -->
+      <div class="mb-8">
+        <TabNavigation v-model="activeTab" variant="underline" size="lg">
+          <!-- Basic Information Tab -->
+          <Tab id="basic" label="Basic Info">
+            <div class="space-y-8">
+              <Card class="p-6">
+                <BasicInfoStep :profile-data="profileData" @update="updateProfileData" />
+              </Card>
+            </div>
+          </Tab>
 
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>My Profile</template>
-        <template #subtitle>Manage your professional information and voice samples</template>
-        <template #actions>
-          <ThemeToggle />
-          <Button variant="primary" size="sm" @click="saveProfile"> Save Profile </Button>
-        </template>
-      </AppBar>
+          <!-- Voice Types Tab -->
+          <Tab id="voice-types" label="Voice Types">
+            <div class="space-y-8">
+              <Card class="p-6">
+                <VoiceTypesStep :profile-data="profileData" @update="updateProfileData" />
+              </Card>
+            </div>
+          </Tab>
 
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-4xl">
-          <!-- Tab Navigation with Content -->
-          <div class="mb-8">
-            <TabNavigation v-model="activeTab" variant="underline" size="lg">
-              <!-- Basic Information Tab -->
-              <Tab id="basic" label="Basic Info">
-                <div class="space-y-8">
-                  <Card class="p-6">
-                    <BasicInfoStep :profile-data="profileData" @update="updateProfileData" />
-                  </Card>
-                </div>
-              </Tab>
+          <!-- Languages Tab -->
+          <Tab id="languages" label="Languages">
+            <div class="space-y-8">
+              <Card class="p-6">
+                <LanguagesStep :profile-data="profileData" @update="updateProfileData" />
+              </Card>
+            </div>
+          </Tab>
 
-              <!-- Voice Types Tab -->
-              <Tab id="voice-types" label="Voice Types">
-                <div class="space-y-8">
-                  <Card class="p-6">
-                    <VoiceTypesStep :profile-data="profileData" @update="updateProfileData" />
-                  </Card>
-                </div>
-              </Tab>
+          <!-- Voice Samples Tab -->
+          <Tab id="voice-samples" label="Voice Samples">
+            <div class="space-y-8">
+              <Card class="p-6">
+                <VoiceSamplesStep
+                  :profile-data="profileData"
+                  :voice-samples="voiceSamples"
+                  @update="updateVoiceSamples"
+                />
+              </Card>
+            </div>
+          </Tab>
 
-              <!-- Languages Tab -->
-              <Tab id="languages" label="Languages">
-                <div class="space-y-8">
-                  <Card class="p-6">
-                    <LanguagesStep :profile-data="profileData" @update="updateProfileData" />
-                  </Card>
-                </div>
-              </Tab>
-
-              <!-- Voice Samples Tab -->
-              <Tab id="voice-samples" label="Voice Samples">
-                <div class="space-y-8">
-                  <Card class="p-6">
-                    <VoiceSamplesStep
-                      :profile-data="profileData"
-                      :voice-samples="voiceSamples"
-                      @update="updateVoiceSamples"
-                    />
-                  </Card>
-                </div>
-              </Tab>
-
-              <!-- Pricing & Rates Tab -->
-              <Tab id="pricing" label="Pricing & Rates">
-                <div class="space-y-8">
-                  <Card class="p-6">
-                    <PricingStep
-                      :profile-data="profileData"
-                      :pricing-data="pricingData"
-                      @update="updatePricingData"
-                    />
-                  </Card>
-                </div>
-              </Tab>
-            </TabNavigation>
-          </div>
-        </div>
+          <!-- Pricing & Rates Tab -->
+          <Tab id="pricing" label="Pricing & Rates">
+            <div class="space-y-8">
+              <Card class="p-6">
+                <PricingStep
+                  :profile-data="profileData"
+                  :pricing-data="pricingData"
+                  @update="updatePricingData"
+                />
+              </Card>
+            </div>
+          </Tab>
+        </TabNavigation>
       </div>
     </div>
   </div>
@@ -82,12 +64,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
 import Card from '@/components/atoms/Card.vue'
-import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import BasicInfoStep from '@/components/molecules/TalentProfile/BasicInfoStep.vue'
@@ -95,12 +72,6 @@ import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
 import VoiceSamplesStep from '@/components/molecules/TalentProfile/VoiceSamplesStep.vue'
 import PricingStep from '@/components/molecules/TalentProfile/PricingStep.vue'
-import { useToast } from '@/composables/useToast'
-import { useSidebar } from '@/composables/useSidebar'
-
-const router = useRouter()
-const { success, error } = useToast()
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Tab management
 const activeTab = ref('basic')
@@ -173,40 +144,6 @@ onMounted(() => {
     }
   }
 })
-
-const saveProfile = () => {
-  try {
-    // Validate required fields
-    if (!profileData.displayName || !profileData.bio || !profileData.location) {
-      error('Please fill in all required fields')
-      return
-    }
-
-    if (profileData.voiceTypes.length === 0) {
-      error('Please select at least one voice type')
-      return
-    }
-
-    if (profileData.languages.length === 0) {
-      error('Please select at least one language')
-      return
-    }
-
-    // Save to localStorage (in real app, this would be sent to API)
-    const profileUpdate = {
-      profileData,
-      pricingData,
-      voiceSamples,
-      updatedAt: new Date().toISOString(),
-    }
-
-    localStorage.setItem('voiceact-profile-data', JSON.stringify(profileUpdate))
-    success('Profile updated successfully!')
-    router.push('/')
-  } catch {
-    error('Failed to save profile. Please try again.')
-  }
-}
 </script>
 
 <style scoped>

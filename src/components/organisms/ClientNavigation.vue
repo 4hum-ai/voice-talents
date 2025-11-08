@@ -3,7 +3,6 @@
     title="VoiceAct.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
-    :fixed="true"
     :default-collapsed="sidebarCollapsed"
     :is-open="sidebarOpen"
     @close="close"
@@ -26,18 +25,6 @@
               {{ authStore.user?.email }}
             </p>
           </div>
-        </div>
-
-        <!-- Role Switcher -->
-        <div class="border-border mt-3 border-t pt-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="w-full justify-start"
-            icon="mdi:account"
-            @click="switchToVoiceTalent"
-            >Switch to Voice Talent</Button
-          >
         </div>
       </div>
     </template>
@@ -87,7 +74,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { ClientStats } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuthStore } from '@/stores/auth'
 import { useSidebar } from '@/composables/useSidebar'
 import Sidebar from '@/components/atoms/Sidebar.vue'
@@ -99,7 +85,6 @@ import AccountGroupIcon from '~icons/mdi/account-group'
 
 const router = useRouter()
 const route = useRoute()
-const { switchMode } = useOnboarding()
 const authStore = useAuthStore()
 const { sidebarOpen, sidebarCollapsed, close } = useSidebar()
 
@@ -162,12 +147,6 @@ const navigationSections = computed(() => [
 ])
 
 // Methods
-const switchToVoiceTalent = () => {
-  // Switch to talent mode and navigate to dashboard
-  console.log('Switching to voice talent view')
-  switchMode('talent')
-  router.push('/talent/dashboard')
-}
 
 const handleLogout = async () => {
   try {

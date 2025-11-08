@@ -1,77 +1,48 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <ClientNavigation />
+  <div>
+    <div class="mx-auto max-w-4xl">
+      <div class="space-y-8">
+        <!-- Tab Navigation with Content -->
+        <TabNavigation v-model="currentTab" variant="underline" size="md">
+          <!-- Account Information Tab -->
+          <Tab
+            id="account"
+            label="Account"
+            :icon="AccountIcon"
+            :badge="tabValidation.account ? '✓' : undefined"
+          >
+            <AccountInformation
+              v-model="accountData"
+              @validation-change="updateTabValidation('account', $event)"
+            />
+          </Tab>
 
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header with Stepper -->
-      <AppBar :show-back="true" :show-menu="true" @back="goBack" @menu="toggleSidebar">
-        <template #title>Client Settings</template>
-        <template #subtitle>Manage your client account settings and preferences</template>
-        <template #actions>
-          <div class="flex items-center gap-3">
-            <ThemeToggle />
-            <Button
-              variant="primary"
-              size="md"
-              @click="saveSettings"
-              :disabled="isSaving"
-              :loading="isSaving"
-            >
-              {{ isSaving ? 'Saving...' : 'Save' }}
-            </Button>
-          </div>
-        </template>
-      </AppBar>
+          <!-- Job Preferences Tab -->
+          <Tab
+            id="preferences"
+            label="Preferences"
+            :icon="CogIcon"
+            :badge="tabValidation.preferences ? '✓' : undefined"
+          >
+            <JobPreferences
+              v-model="jobPreferencesData"
+              @validation-change="updateTabValidation('preferences', $event)"
+            />
+          </Tab>
 
-      <!-- Main Content Area -->
-      <div class="px-4 py-8 pt-20 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-4xl">
-          <div class="space-y-8">
-            <!-- Tab Navigation with Content -->
-            <TabNavigation v-model="currentTab" variant="underline" size="md">
-              <!-- Account Information Tab -->
-              <Tab
-                id="account"
-                label="Account"
-                :icon="AccountIcon"
-                :badge="tabValidation.account ? '✓' : undefined"
-              >
-                <AccountInformation
-                  v-model="accountData"
-                  @validation-change="updateTabValidation('account', $event)"
-                />
-              </Tab>
-
-              <!-- Job Preferences Tab -->
-              <Tab
-                id="preferences"
-                label="Preferences"
-                :icon="CogIcon"
-                :badge="tabValidation.preferences ? '✓' : undefined"
-              >
-                <JobPreferences
-                  v-model="jobPreferencesData"
-                  @validation-change="updateTabValidation('preferences', $event)"
-                />
-              </Tab>
-
-              <!-- Social Links Tab -->
-              <Tab
-                id="social"
-                label="Social Links"
-                :icon="ShareVariantIcon"
-                :badge="tabValidation.social ? '✓' : undefined"
-              >
-                <SocialLinks
-                  v-model="socialLinksData"
-                  @validation-change="updateTabValidation('social', $event)"
-                />
-              </Tab>
-            </TabNavigation>
-          </div>
-        </div>
+          <!-- Social Links Tab -->
+          <Tab
+            id="social"
+            label="Social Links"
+            :icon="ShareVariantIcon"
+            :badge="tabValidation.social ? '✓' : undefined"
+          >
+            <SocialLinks
+              v-model="socialLinksData"
+              @validation-change="updateTabValidation('social', $event)"
+            />
+          </Tab>
+        </TabNavigation>
       </div>
     </div>
   </div>
@@ -79,17 +50,11 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import type { VoiceClient } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import { useAuthStore } from '@/stores/auth'
-import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
-import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
-import { useSidebar } from '@/composables/useSidebar'
 import {
   AccountInformation,
   JobPreferences,
@@ -99,12 +64,9 @@ import AccountIcon from '~icons/mdi/account'
 import CogIcon from '~icons/mdi/cog'
 import ShareVariantIcon from '~icons/mdi/share-variant'
 
-const router = useRouter()
 const authStore = useAuthStore()
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // State
-const isSaving = ref(false)
 const currentTab = ref('account')
 const tabValidation = reactive<Record<string, boolean>>({})
 
@@ -186,10 +148,6 @@ const updateTabValidation = (tabId: string, isValid: boolean) => {
   tabValidation[tabId] = isValid
 }
 
-const goBack = () => {
-  router.back()
-}
-
 const loadSettings = () => {
   // Use authenticated user data instead of mock data
   const client = mockClientData.voiceClients[0] // Keep mock for other fields not available in auth
@@ -242,23 +200,6 @@ const loadSettings = () => {
       requireNDA: jobPreferencesData.requireNDA,
     },
   })
-}
-
-const saveSettings = async () => {
-  isSaving.value = true
-
-  try {
-    // In real app, send settings to API
-    console.log('Saving client settings:', settings)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-  } catch (error) {
-    console.error('Error saving settings:', error)
-    alert('Failed to save settings. Please try again.')
-  } finally {
-    isSaving.value = false
-  }
 }
 
 onMounted(() => {

@@ -1,185 +1,160 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <VoiceActNavigation />
-
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>My Proposal</template>
-        <template #subtitle>{{ job?.title }}</template>
-        <template #actions>
-          <StatusBadge
-            :status="getProposalStatusInfo().status"
-            :variant="getProposalStatusInfo().variant"
-          >
-            {{ getProposalStatusInfo().label }}
-          </StatusBadge>
-          <ThemeToggle />
-        </template>
-      </AppBar>
-
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-4xl">
-          <div v-if="proposal && job" class="space-y-8">
-            <!-- Proposal Status -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-foreground text-lg font-semibold">Proposal Status</h2>
-                <StatusBadge
-                  :status="getProposalStatusInfo().status"
-                  :variant="getProposalStatusInfo().variant"
-                >
-                  {{ getProposalStatusInfo().label }}
-                </StatusBadge>
-              </div>
-              <div class="grid grid-cols-1 gap-6 text-sm md:grid-cols-2">
-                <div>
-                  <span class="text-muted-foreground">Submitted:</span>
-                  <span class="text-foreground ml-2">{{ formatDate(proposal.appliedDate) }}</span>
-                </div>
-                <div v-if="proposal.reviewedDate">
-                  <span class="text-muted-foreground">Last Updated:</span>
-                  <span class="text-foreground ml-2">{{ formatDate(proposal.reviewedDate) }}</span>
-                </div>
-              </div>
-              <div
-                v-if="proposal.clientFeedback"
-                class="mt-4 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20"
-              >
-                <h4 class="mb-2 font-medium text-blue-900 dark:text-blue-100">Studio Feedback</h4>
-                <p class="text-sm text-blue-800 dark:text-blue-200">
-                  {{ proposal.clientFeedback }}
-                </p>
-              </div>
-              <div
-                v-if="proposal.rejectionReason"
-                class="mt-4 rounded-lg bg-red-50 p-4 dark:bg-red-900/20"
-              >
-                <h4 class="mb-2 font-medium text-red-900 dark:text-red-100">
-                  Reason for Rejection
-                </h4>
-                <p class="text-sm text-red-800 dark:text-red-200">{{ proposal.rejectionReason }}</p>
-              </div>
-            </div>
-
-            <!-- Cost & Timeline -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Cost & Timeline Proposal</h2>
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <div>
-                  <h3 class="text-foreground mb-2 font-medium">Proposed Cost</h3>
-                  <p class="text-foreground text-2xl font-bold">
-                    ${{ proposal.proposedRate.toLocaleString() }} {{ proposal.proposedCurrency }}
-                  </p>
-                </div>
-                <div>
-                  <h3 class="text-foreground mb-2 font-medium">Timeline</h3>
-                  <p class="text-foreground text-lg">{{ proposal.proposedTimeline }}</p>
-                </div>
-                <div>
-                  <h3 class="text-foreground mb-2 font-medium">Estimated Hours</h3>
-                  <p class="text-foreground text-lg">{{ proposal.estimatedHours }} hours</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Portfolio Samples -->
-            <div
-              v-if="proposal.portfolioSampleIds.length > 0"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
+  <div>
+    <div class="mx-auto max-w-4xl">
+      <div v-if="proposal && job" class="space-y-8">
+        <!-- Proposal Status -->
+        <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-foreground text-lg font-semibold">Proposal Status</h2>
+            <StatusBadge
+              :status="getProposalStatusInfo().status"
+              :variant="getProposalStatusInfo().variant"
             >
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Portfolio Samples</h2>
-              <div class="space-y-4">
-                <div
-                  v-for="sampleId in proposal.portfolioSampleIds"
-                  :key="sampleId"
-                  class="flex items-center space-x-3"
-                >
-                  <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <h4 class="text-foreground text-sm font-medium">Sample {{ sampleId }}</h4>
-                        <p class="text-muted-foreground text-xs">Portfolio sample</p>
-                      </div>
-                      <Button variant="outline" size="sm" icon="mdi:play"> Play </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {{ getProposalStatusInfo().label }}
+            </StatusBadge>
+          </div>
+          <div class="grid grid-cols-1 gap-6 text-sm md:grid-cols-2">
+            <div>
+              <span class="text-muted-foreground">Submitted:</span>
+              <span class="text-foreground ml-2">{{ formatDate(proposal.appliedDate) }}</span>
             </div>
-
-            <!-- Custom Samples -->
-            <div
-              v-if="proposal.customSamples.length > 0"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Custom Samples</h2>
-              <div class="space-y-4">
-                <div
-                  v-for="(customSample, index) in proposal.customSamples"
-                  :key="index"
-                  class="border-border rounded-lg border p-4"
-                >
-                  <div class="mb-3 flex items-center justify-between">
-                    <h4 class="text-foreground text-sm font-medium">{{ customSample.title }}</h4>
-                    <Button variant="ghost" size="sm" icon="mdi:play">
-                      <PlayIcon class="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p class="text-muted-foreground mb-2 text-sm">
-                    {{ customSample.description || 'No description' }}
-                  </p>
-                  <div class="flex items-center space-x-2">
-                    <Chip size="sm" variant="outline">{{ customSample.duration || 0 }}s</Chip>
-                    <Chip size="sm" variant="outline">{{
-                      customSample.format?.toUpperCase() || 'UNKNOWN'
-                    }}</Chip>
-                    <span class="text-muted-foreground text-xs">{{
-                      formatFileSize(customSample.fileSize || 0)
-                    }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Personal Note -->
-            <div
-              v-if="proposal.personalNote"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h2 class="text-foreground mb-4 text-lg font-semibold">Personal Note to Studio</h2>
-              <p class="text-muted-foreground text-sm whitespace-pre-wrap">
-                {{ proposal.personalNote }}
-              </p>
-            </div>
-
-            <!-- Actions -->
-            <div class="border-border flex items-center justify-center space-x-4 border-t pt-6">
-              <Button variant="outline" @click="$router.push(`/talent/jobs/${job.id}/casting`)">
-                <EyeIcon class="mr-2 h-4 w-4" />
-                View Casting Details
-              </Button>
-              <Button variant="outline" @click="$router.push('/talent/casting')">
-                <ArrowLeftIcon class="mr-2 h-4 w-4" />
-                Back to Casting
-              </Button>
+            <div v-if="proposal.reviewedDate">
+              <span class="text-muted-foreground">Last Updated:</span>
+              <span class="text-foreground ml-2">{{ formatDate(proposal.reviewedDate) }}</span>
             </div>
           </div>
-
-          <div v-else class="py-12 text-center">
-            <MegaphoneIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">Proposal not found</h3>
-            <p class="text-muted-foreground mb-6">
-              The proposal you're looking for doesn't exist or has been removed.
+          <div
+            v-if="proposal.clientFeedback"
+            class="mt-4 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20"
+          >
+            <h4 class="mb-2 font-medium text-blue-900 dark:text-blue-100">Studio Feedback</h4>
+            <p class="text-sm text-blue-800 dark:text-blue-200">
+              {{ proposal.clientFeedback }}
             </p>
-            <Button variant="primary" @click="$router.push('/talent/casting')">
-              <ArrowLeftIcon class="mr-2 h-4 w-4" />
-              Back to Casting
-            </Button>
+          </div>
+          <div
+            v-if="proposal.rejectionReason"
+            class="mt-4 rounded-lg bg-red-50 p-4 dark:bg-red-900/20"
+          >
+            <h4 class="mb-2 font-medium text-red-900 dark:text-red-100">Reason for Rejection</h4>
+            <p class="text-sm text-red-800 dark:text-red-200">{{ proposal.rejectionReason }}</p>
           </div>
         </div>
+
+        <!-- Cost & Timeline -->
+        <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <h2 class="text-foreground mb-4 text-lg font-semibold">Cost & Timeline Proposal</h2>
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div>
+              <h3 class="text-foreground mb-2 font-medium">Proposed Cost</h3>
+              <p class="text-foreground text-2xl font-bold">
+                ${{ proposal.proposedRate.toLocaleString() }} {{ proposal.proposedCurrency }}
+              </p>
+            </div>
+            <div>
+              <h3 class="text-foreground mb-2 font-medium">Timeline</h3>
+              <p class="text-foreground text-lg">{{ proposal.proposedTimeline }}</p>
+            </div>
+            <div>
+              <h3 class="text-foreground mb-2 font-medium">Estimated Hours</h3>
+              <p class="text-foreground text-lg">{{ proposal.estimatedHours }} hours</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Portfolio Samples -->
+        <div
+          v-if="proposal.portfolioSampleIds.length > 0"
+          class="bg-card border-border rounded-lg border p-6 shadow-sm"
+        >
+          <h2 class="text-foreground mb-4 text-lg font-semibold">Portfolio Samples</h2>
+          <div class="space-y-4">
+            <div
+              v-for="sampleId in proposal.portfolioSampleIds"
+              :key="sampleId"
+              class="flex items-center space-x-3"
+            >
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="text-foreground text-sm font-medium">Sample {{ sampleId }}</h4>
+                    <p class="text-muted-foreground text-xs">Portfolio sample</p>
+                  </div>
+                  <Button variant="outline" size="sm" icon="mdi:play"> Play </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Samples -->
+        <div
+          v-if="proposal.customSamples.length > 0"
+          class="bg-card border-border rounded-lg border p-6 shadow-sm"
+        >
+          <h2 class="text-foreground mb-4 text-lg font-semibold">Custom Samples</h2>
+          <div class="space-y-4">
+            <div
+              v-for="(customSample, index) in proposal.customSamples"
+              :key="index"
+              class="border-border rounded-lg border p-4"
+            >
+              <div class="mb-3 flex items-center justify-between">
+                <h4 class="text-foreground text-sm font-medium">{{ customSample.title }}</h4>
+                <Button variant="ghost" size="sm" icon="mdi:play">
+                  <PlayIcon class="h-4 w-4" />
+                </Button>
+              </div>
+              <p class="text-muted-foreground mb-2 text-sm">
+                {{ customSample.description || 'No description' }}
+              </p>
+              <div class="flex items-center space-x-2">
+                <Chip size="sm" variant="outline">{{ customSample.duration || 0 }}s</Chip>
+                <Chip size="sm" variant="outline">{{
+                  customSample.format?.toUpperCase() || 'UNKNOWN'
+                }}</Chip>
+                <span class="text-muted-foreground text-xs">{{
+                  formatFileSize(customSample.fileSize || 0)
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Note -->
+        <div
+          v-if="proposal.personalNote"
+          class="bg-card border-border rounded-lg border p-6 shadow-sm"
+        >
+          <h2 class="text-foreground mb-4 text-lg font-semibold">Personal Note to Studio</h2>
+          <p class="text-muted-foreground text-sm whitespace-pre-wrap">
+            {{ proposal.personalNote }}
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="border-border flex items-center justify-center space-x-4 border-t pt-6">
+          <Button variant="outline" @click="$router.push(`/talent/jobs/${job.id}/casting`)">
+            <EyeIcon class="mr-2 h-4 w-4" />
+            View Casting Details
+          </Button>
+          <Button variant="outline" @click="$router.push('/talent/casting')">
+            <ArrowLeftIcon class="mr-2 h-4 w-4" />
+            Back to Casting
+          </Button>
+        </div>
+      </div>
+
+      <div v-else class="py-12 text-center">
+        <MegaphoneIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 class="text-foreground mb-2 text-lg font-medium">Proposal not found</h3>
+        <p class="text-muted-foreground mb-6">
+          The proposal you're looking for doesn't exist or has been removed.
+        </p>
+        <Button variant="primary" @click="$router.push('/talent/casting')">
+          <ArrowLeftIcon class="mr-2 h-4 w-4" />
+          Back to Casting
+        </Button>
       </div>
     </div>
   </div>
@@ -193,13 +168,7 @@ import { mockJobPostings } from '@/data/mock-voice-client-data'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
-import { useSidebar } from '@/composables/useSidebar'
 import PlayIcon from '~icons/mdi/play'
-
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 import EyeIcon from '~icons/mdi/eye'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import ArrowLeftIcon from '~icons/mdi/arrow-left'

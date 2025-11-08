@@ -67,4 +67,3 @@ const handleBack = () => {
   router.back()
 }
 </script>
-

@@ -1,16 +1,17 @@
 <template>
-  <div class="bg-background flex min-h-screen">
+  <div class="flex h-screen flex-row">
     <!-- Navigation Sidebar -->
     <ClientNavigation />
 
     <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
+    <div class="flex-auto overflow-auto">
       <!-- Header -->
       <AppBar
         v-if="showAppBar"
         :show-menu="true"
         :show-back="showBack"
-        :fixed="appBarFixed"
+        :fixed="false"
+        class="sticky top-0 z-10"
         @menu="toggleSidebar"
         @back="handleBack"
       >
@@ -26,7 +27,7 @@
       </AppBar>
 
       <!-- Page Content -->
-      <div :class="['px-4 py-8 sm:px-6 lg:px-8', showAppBar ? 'pt-24' : 'pt-8']">
+      <div :class="['px-4 py-8 sm:px-6 lg:px-8']">
         <slot />
       </div>
     </div>
@@ -59,7 +60,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
+const { toggle: toggleSidebar } = useSidebar()
 
 const handleBack = () => {
   emit('back')
@@ -67,4 +68,3 @@ const handleBack = () => {
   router.back()
 }
 </script>
-

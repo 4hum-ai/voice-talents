@@ -1,208 +1,338 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <ClientNavigation />
+  <div>
+    <div class="mx-auto max-w-7xl">
+      <!-- Search and Filters -->
+      <div class="mb-8">
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <div class="flex-1">
+            <SearchInput
+              v-model="searchQuery"
+              placeholder="Search voice talents by name, skills, or location..."
+              @update:model-value="handleSearch"
+            />
+          </div>
+          <div class="flex gap-2">
+            <SelectInput
+              v-model="selectedLanguage"
+              :options="languageOptions"
+              placeholder="All Languages"
+              class="w-40"
+            />
+            <SelectInput
+              v-model="selectedVoiceType"
+              :options="voiceTypeOptions"
+              placeholder="All Voice Types"
+              class="w-40"
+            />
+            <SelectInput
+              v-model="selectedExperience"
+              :options="experienceOptions"
+              placeholder="All Experience"
+              class="w-40"
+            />
+            <SelectInput
+              v-model="selectedLocation"
+              :options="locationOptions"
+              placeholder="All Locations"
+              class="w-40"
+            />
+          </div>
+        </div>
+      </div>
 
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>Talent Management</template>
-        <template #subtitle>Browse and invite voice talents for your projects</template>
-        <template #actions>
-          <ThemeToggle />
-          <ViewToggle v-model="viewMode" />
-        </template>
-      </AppBar>
+      <!-- Talent Stats -->
+      <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <MetricCard
+          title="Total Talents"
+          :value="totalTalents"
+          icon="mdi:account-group"
+          color="blue"
+        />
+        <MetricCard
+          title="Available Now"
+          :value="availableTalents"
+          icon="mdi:account-check"
+          color="green"
+        />
+        <MetricCard
+          title="Verified"
+          :value="verifiedTalents"
+          icon="mdi:shield-check"
+          color="purple"
+        />
+        <MetricCard
+          title="Invited"
+          :value="invitedTalents.length"
+          icon="mdi:email"
+          color="orange"
+        />
+      </div>
 
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
-          <!-- Search and Filters -->
-          <div class="mb-8">
-            <div class="flex flex-col gap-4 sm:flex-row">
-              <div class="flex-1">
-                <SearchInput
-                  v-model="searchQuery"
-                  placeholder="Search voice talents by name, skills, or location..."
-                  @update:model-value="handleSearch"
-                />
-              </div>
-              <div class="flex gap-2">
-                <SelectInput
-                  v-model="selectedLanguage"
-                  :options="languageOptions"
-                  placeholder="All Languages"
-                  class="w-40"
-                />
-                <SelectInput
-                  v-model="selectedVoiceType"
-                  :options="voiceTypeOptions"
-                  placeholder="All Voice Types"
-                  class="w-40"
-                />
-                <SelectInput
-                  v-model="selectedExperience"
-                  :options="experienceOptions"
-                  placeholder="All Experience"
-                  class="w-40"
-                />
-                <SelectInput
-                  v-model="selectedLocation"
-                  :options="locationOptions"
-                  placeholder="All Locations"
-                  class="w-40"
-                />
+      <!-- Talent Grid/List -->
+      <div v-if="filteredTalents.length === 0" class="py-12 text-center">
+        <AccountGroupIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 class="text-foreground mb-2 text-lg font-medium">No voice talents found</h3>
+        <p class="text-muted-foreground mb-6">
+          {{
+            searchQuery
+              ? 'Try adjusting your search criteria'
+              : 'No voice talents match your current filters'
+          }}
+        </p>
+        <Button variant="primary" icon="mdi:refresh" @click="clearFilters"> Clear Filters </Button>
+      </div>
+
+      <!-- Grid View -->
+      <div
+        v-else-if="viewMode === 'grid'"
+        class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+      >
+        <div
+          v-for="talent in filteredTalents"
+          :key="talent.id"
+          class="bg-card border-border overflow-hidden rounded-lg border transition-shadow hover:shadow-md"
+        >
+          <!-- Talent Header -->
+          <div class="border-border border-b p-6">
+            <div class="flex items-start space-x-4">
+              <Avatar
+                :src="talent.avatarUrl"
+                :alt="talent.displayName"
+                :seed="talent.displayName"
+                size="lg"
+              />
+              <div class="min-w-0 flex-1">
+                <h3 class="text-foreground mb-1 text-lg font-semibold">
+                  {{ talent.displayName }}
+                </h3>
+                <p class="text-muted-foreground mb-2 text-sm">
+                  {{ talent.experience }} • {{ talent.location }}
+                </p>
+                <div class="flex items-center space-x-2">
+                  <StatusBadge
+                    :status="talent.availability === 'available' ? 'active' : 'inactive'"
+                    size="sm"
+                  >
+                    {{ talent.availability }}
+                  </StatusBadge>
+                  <StatusBadge v-if="talent.isVerified" status="success" size="sm">
+                    Verified
+                  </StatusBadge>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Talent Stats -->
-          <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-            <MetricCard
-              title="Total Talents"
-              :value="totalTalents"
-              icon="mdi:account-group"
-              color="blue"
-            />
-            <MetricCard
-              title="Available Now"
-              :value="availableTalents"
-              icon="mdi:account-check"
-              color="green"
-            />
-            <MetricCard
-              title="Verified"
-              :value="verifiedTalents"
-              icon="mdi:shield-check"
-              color="purple"
-            />
-            <MetricCard
-              title="Invited"
-              :value="invitedTalents.length"
-              icon="mdi:email"
-              color="orange"
-            />
-          </div>
+          <!-- Talent Details -->
+          <div class="p-6">
+            <div class="mb-4 space-y-3">
+              <div>
+                <div class="text-muted-foreground mb-1 text-xs">Languages</div>
+                <div class="flex flex-wrap gap-1">
+                  <Chip
+                    v-for="language in talent.languages.slice(0, 3)"
+                    :key="language"
+                    size="sm"
+                    variant="outline"
+                  >
+                    {{ language }}
+                  </Chip>
+                  <Chip v-if="talent.languages.length > 3" size="sm" variant="outline">
+                    +{{ talent.languages.length - 3 }}
+                  </Chip>
+                </div>
+              </div>
 
-          <!-- Talent Grid/List -->
-          <div v-if="filteredTalents.length === 0" class="py-12 text-center">
-            <AccountGroupIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">No voice talents found</h3>
-            <p class="text-muted-foreground mb-6">
-              {{
-                searchQuery
-                  ? 'Try adjusting your search criteria'
-                  : 'No voice talents match your current filters'
-              }}
+              <div>
+                <div class="text-muted-foreground mb-1 text-xs">Voice Types</div>
+                <div class="flex flex-wrap gap-1">
+                  <Chip
+                    v-for="voiceType in talent.voiceTypes.slice(0, 3)"
+                    :key="voiceType"
+                    size="sm"
+                    variant="secondary"
+                  >
+                    {{ formatVoiceType(voiceType) }}
+                  </Chip>
+                  <Chip v-if="talent.voiceTypes.length > 3" size="sm" variant="secondary">
+                    +{{ talent.voiceTypes.length - 3 }}
+                  </Chip>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Rate</span>
+                <span class="text-foreground font-medium">
+                  ${{ talent.hourlyRate?.toLocaleString() }}/hour
+                </span>
+              </div>
+
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">Rating</span>
+                <div class="flex items-center space-x-1">
+                  <StarIcon class="h-4 w-4 text-yellow-500" />
+                  <span class="text-foreground font-medium">{{ talent.averageRating }}</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-muted-foreground mb-4 line-clamp-2 text-sm">
+              {{ talent.bio }}
             </p>
-            <Button variant="primary" icon="mdi:refresh" @click="clearFilters">
-              Clear Filters
-            </Button>
           </div>
 
-          <!-- Grid View -->
-          <div
-            v-else-if="viewMode === 'grid'"
-            class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            <div
-              v-for="talent in filteredTalents"
-              :key="talent.id"
-              class="bg-card border-border overflow-hidden rounded-lg border transition-shadow hover:shadow-md"
-            >
-              <!-- Talent Header -->
-              <div class="border-border border-b p-6">
-                <div class="flex items-start space-x-4">
-                  <Avatar
-                    :src="talent.avatarUrl"
-                    :alt="talent.displayName"
-                    :seed="talent.displayName"
-                    size="lg"
-                  />
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-foreground mb-1 text-lg font-semibold">
-                      {{ talent.displayName }}
-                    </h3>
-                    <p class="text-muted-foreground mb-2 text-sm">
-                      {{ talent.experience }} • {{ talent.location }}
-                    </p>
-                    <div class="flex items-center space-x-2">
-                      <StatusBadge
-                        :status="talent.availability === 'available' ? 'active' : 'inactive'"
-                        size="sm"
-                      >
-                        {{ talent.availability }}
-                      </StatusBadge>
-                      <StatusBadge v-if="talent.isVerified" status="success" size="sm">
-                        Verified
-                      </StatusBadge>
-                    </div>
-                  </div>
-                </div>
+          <!-- Actions -->
+          <div class="px-6 pb-6">
+            <div class="flex items-center justify-between">
+              <div class="flex space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon="mdi:eye"
+                  @click="$router.push(`/client/talents/${talent.id}`)"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon="mdi:folder-open"
+                  @click="viewPortfolio(talent)"
+                />
               </div>
+              <Button
+                variant="primary"
+                size="sm"
+                icon="mdi:email"
+                @click="inviteTalent(talent)"
+                :disabled="isInvited(talent.id)"
+              >
+                {{ isInvited(talent.id) ? 'Invited' : 'Invite' }}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <!-- Talent Details -->
-              <div class="p-6">
-                <div class="mb-4 space-y-3">
-                  <div>
-                    <div class="text-muted-foreground mb-1 text-xs">Languages</div>
-                    <div class="flex flex-wrap gap-1">
-                      <Chip
-                        v-for="language in talent.languages.slice(0, 3)"
-                        :key="language"
-                        size="sm"
-                        variant="outline"
-                      >
-                        {{ language }}
-                      </Chip>
-                      <Chip v-if="talent.languages.length > 3" size="sm" variant="outline">
-                        +{{ talent.languages.length - 3 }}
-                      </Chip>
+      <!-- List View -->
+      <div v-else class="bg-card border-border overflow-hidden rounded-lg border">
+        <div class="overflow-x-auto">
+          <table class="divide-border min-w-full divide-y">
+            <thead class="bg-muted">
+              <tr>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Voice Talent
+                </th>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Languages
+                </th>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Voice Types
+                </th>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Rate
+                </th>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Rating
+                </th>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Status
+                </th>
+                <th
+                  class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-card divide-border divide-y">
+              <tr
+                v-for="talent in filteredTalents"
+                :key="talent.id"
+                class="hover:bg-muted transition-colors"
+              >
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center space-x-3">
+                    <Avatar
+                      :src="talent.avatarUrl"
+                      :alt="talent.displayName"
+                      :seed="talent.displayName"
+                      size="sm"
+                    />
+                    <div>
+                      <div class="text-foreground text-sm font-medium">
+                        {{ talent.displayName }}
+                      </div>
+                      <div class="text-muted-foreground text-sm">
+                        {{ talent.experience }} • {{ talent.location }}
+                      </div>
                     </div>
                   </div>
-
-                  <div>
-                    <div class="text-muted-foreground mb-1 text-xs">Voice Types</div>
-                    <div class="flex flex-wrap gap-1">
-                      <Chip
-                        v-for="voiceType in talent.voiceTypes.slice(0, 3)"
-                        :key="voiceType"
-                        size="sm"
-                        variant="secondary"
-                      >
-                        {{ formatVoiceType(voiceType) }}
-                      </Chip>
-                      <Chip v-if="talent.voiceTypes.length > 3" size="sm" variant="secondary">
-                        +{{ talent.voiceTypes.length - 3 }}
-                      </Chip>
-                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex flex-wrap gap-1">
+                    <Chip
+                      v-for="language in talent.languages.slice(0, 2)"
+                      :key="language"
+                      size="sm"
+                      variant="outline"
+                    >
+                      {{ language }}
+                    </Chip>
+                    <Chip v-if="talent.languages.length > 2" size="sm" variant="outline">
+                      +{{ talent.languages.length - 2 }}
+                    </Chip>
                   </div>
-
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-muted-foreground">Rate</span>
-                    <span class="text-foreground font-medium">
-                      ${{ talent.hourlyRate?.toLocaleString() }}/hour
-                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex flex-wrap gap-1">
+                    <Chip
+                      v-for="voiceType in talent.voiceTypes.slice(0, 2)"
+                      :key="voiceType"
+                      size="sm"
+                      variant="secondary"
+                    >
+                      {{ formatVoiceType(voiceType) }}
+                    </Chip>
+                    <Chip v-if="talent.voiceTypes.length > 2" size="sm" variant="secondary">
+                      +{{ talent.voiceTypes.length - 2 }}
+                    </Chip>
                   </div>
-
-                  <div class="flex items-center justify-between text-sm">
-                    <span class="text-muted-foreground">Rating</span>
-                    <div class="flex items-center space-x-1">
-                      <StarIcon class="h-4 w-4 text-yellow-500" />
-                      <span class="text-foreground font-medium">{{ talent.averageRating }}</span>
-                    </div>
+                </td>
+                <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
+                  ${{ talent.hourlyRate?.toLocaleString() }}/hour
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center space-x-1">
+                    <StarIcon class="h-4 w-4 text-yellow-500" />
+                    <span class="text-foreground text-sm">{{ talent.averageRating }}</span>
                   </div>
-                </div>
-
-                <p class="text-muted-foreground mb-4 line-clamp-2 text-sm">
-                  {{ talent.bio }}
-                </p>
-              </div>
-
-              <!-- Actions -->
-              <div class="px-6 pb-6">
-                <div class="flex items-center justify-between">
-                  <div class="flex space-x-2">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="space-y-1">
+                    <StatusBadge
+                      :status="talent.availability === 'available' ? 'active' : 'inactive'"
+                      size="sm"
+                    >
+                      {{ talent.availability }}
+                    </StatusBadge>
+                    <StatusBadge v-if="talent.isVerified" status="success" size="sm">
+                      Verified
+                    </StatusBadge>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm font-medium whitespace-nowrap">
+                  <div class="flex items-center space-x-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -210,167 +340,17 @@
                       @click="$router.push(`/client/talents/${talent.id}`)"
                     />
                     <Button
-                      variant="ghost"
+                      variant="primary"
                       size="sm"
-                      icon="mdi:folder-open"
-                      @click="viewPortfolio(talent)"
+                      icon="mdi:email"
+                      @click="inviteTalent(talent)"
+                      :disabled="isInvited(talent.id)"
                     />
                   </div>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    icon="mdi:email"
-                    @click="inviteTalent(talent)"
-                    :disabled="isInvited(talent.id)"
-                  >
-                    {{ isInvited(talent.id) ? 'Invited' : 'Invite' }}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- List View -->
-          <div v-else class="bg-card border-border overflow-hidden rounded-lg border">
-            <div class="overflow-x-auto">
-              <table class="divide-border min-w-full divide-y">
-                <thead class="bg-muted">
-                  <tr>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Voice Talent
-                    </th>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Languages
-                    </th>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Voice Types
-                    </th>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Rate
-                    </th>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Rating
-                    </th>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Status
-                    </th>
-                    <th
-                      class="text-muted-foreground px-6 py-3 text-left text-xs font-medium tracking-wider uppercase"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-card divide-border divide-y">
-                  <tr
-                    v-for="talent in filteredTalents"
-                    :key="talent.id"
-                    class="hover:bg-muted transition-colors"
-                  >
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="flex items-center space-x-3">
-                        <Avatar
-                          :src="talent.avatarUrl"
-                          :alt="talent.displayName"
-                          :seed="talent.displayName"
-                          size="sm"
-                        />
-                        <div>
-                          <div class="text-foreground text-sm font-medium">
-                            {{ talent.displayName }}
-                          </div>
-                          <div class="text-muted-foreground text-sm">
-                            {{ talent.experience }} • {{ talent.location }}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="flex flex-wrap gap-1">
-                        <Chip
-                          v-for="language in talent.languages.slice(0, 2)"
-                          :key="language"
-                          size="sm"
-                          variant="outline"
-                        >
-                          {{ language }}
-                        </Chip>
-                        <Chip v-if="talent.languages.length > 2" size="sm" variant="outline">
-                          +{{ talent.languages.length - 2 }}
-                        </Chip>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="flex flex-wrap gap-1">
-                        <Chip
-                          v-for="voiceType in talent.voiceTypes.slice(0, 2)"
-                          :key="voiceType"
-                          size="sm"
-                          variant="secondary"
-                        >
-                          {{ formatVoiceType(voiceType) }}
-                        </Chip>
-                        <Chip v-if="talent.voiceTypes.length > 2" size="sm" variant="secondary">
-                          +{{ talent.voiceTypes.length - 2 }}
-                        </Chip>
-                      </div>
-                    </td>
-                    <td class="text-foreground px-6 py-4 text-sm whitespace-nowrap">
-                      ${{ talent.hourlyRate?.toLocaleString() }}/hour
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="flex items-center space-x-1">
-                        <StarIcon class="h-4 w-4 text-yellow-500" />
-                        <span class="text-foreground text-sm">{{ talent.averageRating }}</span>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="space-y-1">
-                        <StatusBadge
-                          :status="talent.availability === 'available' ? 'active' : 'inactive'"
-                          size="sm"
-                        >
-                          {{ talent.availability }}
-                        </StatusBadge>
-                        <StatusBadge v-if="talent.isVerified" status="success" size="sm">
-                          Verified
-                        </StatusBadge>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                      <div class="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon="mdi:eye"
-                          @click="$router.push(`/client/talents/${talent.id}`)"
-                        />
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          icon="mdi:email"
-                          @click="inviteTalent(talent)"
-                          :disabled="isInvited(talent.id)"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -389,9 +369,6 @@
 import { ref, computed, onMounted } from 'vue'
 import type { VoiceTalent, VoiceType } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
-import ClientNavigation from '@/components/organisms/ClientNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
-import ViewToggle from '@/components/molecules/ViewToggle.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
@@ -399,14 +376,10 @@ import Button from '@/components/atoms/Button.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobSelectionModal from '@/components/molecules/JobSelectionModal.vue'
-import { useSidebar } from '@/composables/useSidebar'
 import AccountGroupIcon from '~icons/mdi/account-group'
 import StarIcon from '~icons/mdi/star'
 // Icons removed; using Button icon prop for buttons
-
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // State
 const viewMode = ref<'grid' | 'list'>('grid')

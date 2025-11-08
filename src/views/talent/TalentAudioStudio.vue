@@ -1,211 +1,119 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Main Content -->
-    <div class="flex-1">
-      <!-- Header -->
-      <AppBar :show-back="true" @back="$router.back()">
-        <template #title>Voice Studio</template>
-        <template #subtitle>{{ job?.title || 'Professional Voice Production' }}</template>
-        <template #actions>
-          <ThemeToggle />
-          <Button variant="outline" size="sm" icon="mdi:download" @click="exportProject">
-            Export
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            icon="mdi:send"
-            @click="submitWork"
-            :disabled="!canSubmit"
-          >
-            Submit Work
-          </Button>
-        </template>
-      </AppBar>
-
-      <!-- Studio Content -->
-      <div class="flex h-[calc(100vh-4rem)] overflow-hidden pt-16">
-        <!-- Left Panel - Video & Script -->
-        <div class="flex flex-1 flex-col">
-          <!-- Video Player Section -->
-          <div
-            class="border-border bg-card border-b p-4"
-            :class="isVideoExpanded ? 'h-80' : 'h-48'"
-          >
-            <div class="mb-3 flex items-center justify-between">
-              <h3 class="text-foreground text-lg font-semibold">Video Synchronization</h3>
-              <div class="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  :icon="isVideoExpanded ? 'mdi:chevron-up' : 'mdi:chevron-down'"
-                  @click="toggleVideoExpanded"
-                >
-                  {{ isVideoExpanded ? 'Collapse' : 'Expand' }}
-                </Button>
-                <Button variant="outline" size="sm" icon="mdi:upload" @click="loadVideo">
-                  Load Video
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:sync"
-                  @click="syncAudioVideo"
-                  :disabled="!hasVideo"
-                >
-                  Sync Audio
-                </Button>
-              </div>
-            </div>
-
-            <!-- Video Player Container -->
-            <div class="relative rounded-lg bg-black" :class="isVideoExpanded ? 'h-64' : 'h-32'">
-              <div v-if="!hasVideo" class="flex h-full items-center justify-center">
-                <div class="text-center text-white">
-                  <div class="mb-2 text-2xl">🎬</div>
-                  <p class="mb-1 text-sm">No video loaded</p>
-                  <p class="text-xs opacity-75">
-                    Load a video file to synchronize with your voice work
-                  </p>
-                </div>
-              </div>
-              <VideoPlayer
-                v-else
-                :url="videoUrl"
-                mode="inline"
-                class="h-full w-full"
-                @time-update="onVideoTimeUpdate"
-              />
+  <div>
+    <!-- Studio Content -->
+    <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+      <!-- Left Panel - Video & Script -->
+      <div class="flex flex-1 flex-col">
+        <!-- Video Player Section -->
+        <div class="border-border bg-card border-b p-4" :class="isVideoExpanded ? 'h-80' : 'h-48'">
+          <div class="mb-3 flex items-center justify-between">
+            <h3 class="text-foreground text-lg font-semibold">Video Synchronization</h3>
+            <div class="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                :icon="isVideoExpanded ? 'mdi:chevron-up' : 'mdi:chevron-down'"
+                @click="toggleVideoExpanded"
+              >
+                {{ isVideoExpanded ? 'Collapse' : 'Expand' }}
+              </Button>
+              <Button variant="outline" size="sm" icon="mdi:upload" @click="loadVideo">
+                Load Video
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:sync"
+                @click="syncAudioVideo"
+                :disabled="!hasVideo"
+              >
+                Sync Audio
+              </Button>
             </div>
           </div>
 
-          <!-- Script Segments -->
-          <div class="flex-1 overflow-y-auto p-4">
-            <div class="mb-4 flex items-center justify-between">
-              <h3 class="text-foreground text-lg font-semibold">Script & Transcript</h3>
-              <div class="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  :icon="showTimeline ? 'mdi:view-grid' : 'mdi:timeline'"
-                  @click="toggleTimelineView"
-                >
-                  {{ showTimeline ? 'Grid View' : 'Timeline View' }}
-                </Button>
-                <Button variant="outline" size="sm" icon="mdi:upload" @click="importScript">
-                  Import
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:robot"
-                  @click="generateTTS"
-                  :disabled="isGeneratingTTS"
-                >
-                  {{ isGeneratingTTS ? 'Generating...' : 'Generate TTS' }}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:play"
-                  @click="playFullTTS"
-                  :disabled="!hasTTS"
-                >
-                  Play All
-                </Button>
+          <!-- Video Player Container -->
+          <div class="relative rounded-lg bg-black" :class="isVideoExpanded ? 'h-64' : 'h-32'">
+            <div v-if="!hasVideo" class="flex h-full items-center justify-center">
+              <div class="text-center text-white">
+                <div class="mb-2 text-2xl">🎬</div>
+                <p class="mb-1 text-sm">No video loaded</p>
+                <p class="text-xs opacity-75">
+                  Load a video file to synchronize with your voice work
+                </p>
               </div>
             </div>
+            <VideoPlayer
+              v-else
+              :url="videoUrl"
+              mode="inline"
+              class="h-full w-full"
+              @time-update="onVideoTimeUpdate"
+            />
+          </div>
+        </div>
 
-            <!-- Timeline View -->
-            <div v-if="showTimeline" class="mb-6">
-              <div class="border-border bg-card rounded-lg border p-4">
-                <h4 class="text-foreground mb-3 font-medium">Script Timeline</h4>
-                <div class="space-y-2">
-                  <div
-                    v-for="(segment, index) in scriptSegments"
-                    :key="index"
-                    class="timeline-segment flex items-center space-x-3 rounded-lg p-2 transition-colors"
-                    :class="{
-                      'bg-blue-50 dark:bg-blue-900/20': segment.isSelected,
-                      'bg-green-50 dark:bg-green-900/20': segment.hasRecording,
-                      'bg-purple-50 dark:bg-purple-900/20': segment.hasTTS && !segment.hasRecording,
-                    }"
-                  >
-                    <div class="flex w-20 items-center space-x-2">
-                      <span class="text-muted-foreground font-mono text-xs">{{
-                        segment.startTime
-                      }}</span>
-                      <span class="text-muted-foreground text-xs">{{ segment.duration }}</span>
-                    </div>
-                    <div class="flex-1">
-                      <div class="text-sm">{{ segment.text }}</div>
-                    </div>
-                    <div class="flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon="mdi:play"
-                        @click="playSegment(index)"
-                        :disabled="!segment.hasAudio"
-                        title="Play segment"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon="mdi:microphone"
-                        @click="recordSegment(index)"
-                        title="Record segment"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon="mdi:target"
-                        @click="selectSegment(index)"
-                        title="Select segment"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Script Segments Grid -->
-            <div v-else class="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
-              <div
-                v-for="(segment, index) in scriptSegments"
-                :key="index"
-                class="rounded-lg border border-gray-200 p-4 dark:border-gray-600"
-                :class="{
-                  'border-blue-300 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/20':
-                    segment.isSelected,
-                  'border-green-300 bg-green-50 dark:border-green-600 dark:bg-green-900/20':
-                    segment.hasRecording,
-                  'border-purple-300 bg-purple-50 dark:border-purple-600 dark:bg-purple-900/20':
-                    segment.hasTTS && !segment.hasRecording,
-                }"
+        <!-- Script Segments -->
+        <div class="flex-1 overflow-y-auto p-4">
+          <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-foreground text-lg font-semibold">Script & Transcript</h3>
+            <div class="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                :icon="showTimeline ? 'mdi:view-grid' : 'mdi:timeline'"
+                @click="toggleTimelineView"
               >
-                <div class="mb-2 flex items-center justify-between">
-                  <div class="flex items-center space-x-2">
-                    <span
-                      class="text-muted-foreground rounded bg-gray-100 px-2 py-1 font-mono text-xs dark:bg-gray-700"
-                    >
-                      {{ segment.startTime }}
-                    </span>
-                    <span class="text-muted-foreground text-xs">{{ segment.duration }}</span>
-                    <span
-                      v-if="segment.hasRecording"
-                      class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
-                    >
-                      Recorded
-                    </span>
-                    <span
-                      v-else-if="segment.hasTTS"
-                      class="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                    >
-                      TTS
-                    </span>
-                  </div>
+                {{ showTimeline ? 'Grid View' : 'Timeline View' }}
+              </Button>
+              <Button variant="outline" size="sm" icon="mdi:upload" @click="importScript">
+                Import
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:robot"
+                @click="generateTTS"
+                :disabled="isGeneratingTTS"
+              >
+                {{ isGeneratingTTS ? 'Generating...' : 'Generate TTS' }}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:play"
+                @click="playFullTTS"
+                :disabled="!hasTTS"
+              >
+                Play All
+              </Button>
+            </div>
+          </div>
 
+          <!-- Timeline View -->
+          <div v-if="showTimeline" class="mb-6">
+            <div class="border-border bg-card rounded-lg border p-4">
+              <h4 class="text-foreground mb-3 font-medium">Script Timeline</h4>
+              <div class="space-y-2">
+                <div
+                  v-for="(segment, index) in scriptSegments"
+                  :key="index"
+                  class="timeline-segment flex items-center space-x-3 rounded-lg p-2 transition-colors"
+                  :class="{
+                    'bg-blue-50 dark:bg-blue-900/20': segment.isSelected,
+                    'bg-green-50 dark:bg-green-900/20': segment.hasRecording,
+                    'bg-purple-50 dark:bg-purple-900/20': segment.hasTTS && !segment.hasRecording,
+                  }"
+                >
+                  <div class="flex w-20 items-center space-x-2">
+                    <span class="text-muted-foreground font-mono text-xs">{{
+                      segment.startTime
+                    }}</span>
+                    <span class="text-muted-foreground text-xs">{{ segment.duration }}</span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-sm">{{ segment.text }}</div>
+                  </div>
                   <div class="flex items-center space-x-1">
                     <Button
                       variant="ghost"
@@ -231,237 +139,300 @@
                     />
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
 
-                <!-- Editable Text with Emotional Prompts -->
-                <div class="mb-2">
-                  <div
-                    ref="segmentEditor"
-                    :contenteditable="true"
-                    @input="updateSegmentText(index, $event)"
-                    @blur="updateSegmentText(index, $event)"
-                    class="text-foreground emotional-highlight min-h-[60px] w-full resize-none rounded-md border border-gray-300 bg-transparent p-2 text-sm leading-relaxed focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                    :data-segment-index="index"
+          <!-- Script Segments Grid -->
+          <div v-else class="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
+            <div
+              v-for="(segment, index) in scriptSegments"
+              :key="index"
+              class="rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+              :class="{
+                'border-blue-300 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/20':
+                  segment.isSelected,
+                'border-green-300 bg-green-50 dark:border-green-600 dark:bg-green-900/20':
+                  segment.hasRecording,
+                'border-purple-300 bg-purple-50 dark:border-purple-600 dark:bg-purple-900/20':
+                  segment.hasTTS && !segment.hasRecording,
+              }"
+            >
+              <div class="mb-2 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span
+                    class="text-muted-foreground rounded bg-gray-100 px-2 py-1 font-mono text-xs dark:bg-gray-700"
                   >
-                    {{ segment.text }}
-                  </div>
+                    {{ segment.startTime }}
+                  </span>
+                  <span class="text-muted-foreground text-xs">{{ segment.duration }}</span>
+                  <span
+                    v-if="segment.hasRecording"
+                    class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900 dark:text-green-300"
+                  >
+                    Recorded
+                  </span>
+                  <span
+                    v-else-if="segment.hasTTS"
+                    class="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                  >
+                    TTS
+                  </span>
+                </div>
+
+                <div class="flex items-center space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="mdi:play"
+                    @click="playSegment(index)"
+                    :disabled="!segment.hasAudio"
+                    title="Play segment"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="mdi:microphone"
+                    @click="recordSegment(index)"
+                    title="Record segment"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="mdi:target"
+                    @click="selectSegment(index)"
+                    title="Select segment"
+                  />
                 </div>
               </div>
-            </div>
 
-            <!-- Progress Summary -->
-            <div class="border-border bg-card mt-6 rounded-lg border p-4">
-              <h4 class="text-foreground mb-3 font-medium">Project Progress</h4>
-              <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-                <div class="text-center">
-                  <div class="text-muted-foreground">Total Segments</div>
-                  <div class="text-foreground text-lg font-semibold">
-                    {{ scriptSegments.length }}
-                  </div>
-                </div>
-                <div class="text-center">
-                  <div class="text-muted-foreground">Recorded</div>
-                  <div class="text-lg font-semibold text-green-600">
-                    {{ recordedSegmentsCount }}
-                  </div>
-                </div>
-                <div class="text-center">
-                  <div class="text-muted-foreground">TTS Generated</div>
-                  <div class="text-lg font-semibold text-blue-600">{{ ttsSegmentsCount }}</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-muted-foreground">Progress</div>
-                  <div class="text-foreground text-lg font-semibold">
-                    {{ Math.round((recordedSegmentsCount / scriptSegments.length) * 100) }}%
-                  </div>
+              <!-- Editable Text with Emotional Prompts -->
+              <div class="mb-2">
+                <div
+                  ref="segmentEditor"
+                  :contenteditable="true"
+                  @input="updateSegmentText(index, $event)"
+                  @blur="updateSegmentText(index, $event)"
+                  class="text-foreground emotional-highlight min-h-[60px] w-full resize-none rounded-md border border-gray-300 bg-transparent p-2 text-sm leading-relaxed focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  :data-segment-index="index"
+                >
+                  {{ segment.text }}
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Right Panel - Recording & Editing Controls -->
-        <div class="border-border bg-card w-96 border-l p-4">
-          <div class="mb-4 flex items-center justify-between">
-            <h4 class="text-foreground font-medium">Recording & Editing</h4>
-            <div v-if="selectedSegmentIndex !== null" class="text-muted-foreground text-sm">
-              Segment {{ selectedSegmentIndex + 1 }}
-            </div>
-          </div>
-
-          <!-- Current Segment Info -->
-          <div
-            v-if="selectedSegmentIndex !== null"
-            class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20"
-          >
-            <h5 class="mb-1 text-sm font-medium text-blue-900 dark:text-blue-100">
-              Current Segment
-            </h5>
-            <p class="text-xs text-blue-800 dark:text-blue-200">
-              {{ scriptSegments[selectedSegmentIndex]?.text }}
-            </p>
-          </div>
-
-          <!-- Recording Controls -->
-          <div class="mb-6 flex flex-col items-center space-y-3">
-            <div class="relative">
-              <Button
-                :variant="isRecording ? 'danger' : 'primary'"
-                size="lg"
-                @click="toggleRecording"
-                class="h-16 w-16 rounded-full text-lg font-bold"
-                :disabled="selectedSegmentIndex === null"
-                :icon="isRecording ? 'mdi:stop' : 'mdi:microphone'"
-              />
-              <div
-                v-if="isRecording"
-                class="absolute -inset-2 animate-ping rounded-full border-2 border-red-500"
-              ></div>
-            </div>
-
-            <div class="text-center">
-              <p class="text-foreground text-sm font-medium">
-                {{
-                  isRecording
-                    ? 'Recording...'
-                    : selectedSegmentIndex !== null
-                      ? 'Ready to Record'
-                      : 'Select a segment to record'
-                }}
-              </p>
-              <p class="text-muted-foreground text-xs">
-                {{
-                  isRecording
-                    ? 'Click stop when finished'
-                    : selectedSegmentIndex !== null
-                      ? 'Click to start recording this segment'
-                      : 'Click on a segment first'
-                }}
-              </p>
-            </div>
-
-            <!-- Recording Progress -->
-            <div v-if="isRecording" class="w-full max-w-xs">
-              <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                <div class="h-2 animate-pulse rounded-full bg-red-500" style="width: 60%"></div>
+          <!-- Progress Summary -->
+          <div class="border-border bg-card mt-6 rounded-lg border p-4">
+            <h4 class="text-foreground mb-3 font-medium">Project Progress</h4>
+            <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+              <div class="text-center">
+                <div class="text-muted-foreground">Total Segments</div>
+                <div class="text-foreground text-lg font-semibold">
+                  {{ scriptSegments.length }}
+                </div>
               </div>
-              <p class="text-muted-foreground mt-1 text-center text-xs">
-                Recording: {{ recordingTime }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Audio Editing Tools -->
-          <div class="space-y-4">
-            <!-- Playback Controls -->
-            <div
-              class="audio-tool-group rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800"
-            >
-              <h5 class="text-foreground mb-2 text-sm font-medium">Playback</h5>
-              <div class="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:play"
-                  @click="playRecording"
-                  :disabled="!hasRecording"
-                  class="enhanced-button flex-1"
-                  title="Play recording"
-                >
-                  Play
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:pause"
-                  @click="pauseRecording"
-                  :disabled="!isPlaying"
-                  class="enhanced-button flex-1"
-                  title="Pause recording"
-                >
-                  Pause
-                </Button>
+              <div class="text-center">
+                <div class="text-muted-foreground">Recorded</div>
+                <div class="text-lg font-semibold text-green-600">
+                  {{ recordedSegmentsCount }}
+                </div>
               </div>
-            </div>
-
-            <!-- Editing Tools -->
-            <div
-              class="audio-tool-group rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800"
-            >
-              <h5 class="text-foreground mb-2 text-sm font-medium">Editing</h5>
-              <div class="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:scissors-cutting"
-                  @click="cutAudio"
-                  :disabled="!hasRecording"
-                  class="enhanced-button flex-1"
-                  title="Cut audio"
-                >
-                  Cut
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:delete"
-                  @click="removeAudio"
-                  :disabled="!hasRecording"
-                  class="enhanced-button flex-1"
-                  title="Remove audio"
-                >
-                  Remove
-                </Button>
+              <div class="text-center">
+                <div class="text-muted-foreground">TTS Generated</div>
+                <div class="text-lg font-semibold text-blue-600">{{ ttsSegmentsCount }}</div>
               </div>
-            </div>
-
-            <!-- Advanced Tools -->
-            <div
-              class="audio-tool-group rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800"
-            >
-              <h5 class="text-foreground mb-2 text-sm font-medium">Advanced</h5>
-              <div class="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:waveform"
-                  @click="openWaveformEditor"
-                  :disabled="!hasRecording"
-                  class="enhanced-button flex-1"
-                  title="Open waveform editor"
-                >
-                  Waveform
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon="mdi:tune"
-                  @click="openAudioEffects"
-                  :disabled="!hasRecording"
-                  class="enhanced-button flex-1"
-                  title="Open audio effects"
-                >
-                  Effects
-                </Button>
+              <div class="text-center">
+                <div class="text-muted-foreground">Progress</div>
+                <div class="text-foreground text-lg font-semibold">
+                  {{ Math.round((recordedSegmentsCount / scriptSegments.length) * 100) }}%
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Floating Recording Controls -->
-      <div v-if="selectedSegmentIndex !== null" class="fixed right-6 bottom-6 z-50">
-        <div
-          class="floating-recording-btn rounded-full bg-white p-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700"
-        >
-          <Button
-            :variant="isRecording ? 'danger' : 'primary'"
-            size="lg"
-            @click="toggleRecording"
-            class="h-12 w-12 rounded-full"
-            :icon="isRecording ? 'mdi:stop' : 'mdi:microphone'"
-            :title="isRecording ? 'Stop recording' : 'Start recording'"
-          />
+      <!-- Right Panel - Recording & Editing Controls -->
+      <div class="border-border bg-card w-96 border-l p-4">
+        <div class="mb-4 flex items-center justify-between">
+          <h4 class="text-foreground font-medium">Recording & Editing</h4>
+          <div v-if="selectedSegmentIndex !== null" class="text-muted-foreground text-sm">
+            Segment {{ selectedSegmentIndex + 1 }}
+          </div>
         </div>
+
+        <!-- Current Segment Info -->
+        <div
+          v-if="selectedSegmentIndex !== null"
+          class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20"
+        >
+          <h5 class="mb-1 text-sm font-medium text-blue-900 dark:text-blue-100">Current Segment</h5>
+          <p class="text-xs text-blue-800 dark:text-blue-200">
+            {{ scriptSegments[selectedSegmentIndex]?.text }}
+          </p>
+        </div>
+
+        <!-- Recording Controls -->
+        <div class="mb-6 flex flex-col items-center space-y-3">
+          <div class="relative">
+            <Button
+              :variant="isRecording ? 'danger' : 'primary'"
+              size="lg"
+              @click="toggleRecording"
+              class="h-16 w-16 rounded-full text-lg font-bold"
+              :disabled="selectedSegmentIndex === null"
+              :icon="isRecording ? 'mdi:stop' : 'mdi:microphone'"
+            />
+            <div
+              v-if="isRecording"
+              class="absolute -inset-2 animate-ping rounded-full border-2 border-red-500"
+            ></div>
+          </div>
+
+          <div class="text-center">
+            <p class="text-foreground text-sm font-medium">
+              {{
+                isRecording
+                  ? 'Recording...'
+                  : selectedSegmentIndex !== null
+                    ? 'Ready to Record'
+                    : 'Select a segment to record'
+              }}
+            </p>
+            <p class="text-muted-foreground text-xs">
+              {{
+                isRecording
+                  ? 'Click stop when finished'
+                  : selectedSegmentIndex !== null
+                    ? 'Click to start recording this segment'
+                    : 'Click on a segment first'
+              }}
+            </p>
+          </div>
+
+          <!-- Recording Progress -->
+          <div v-if="isRecording" class="w-full max-w-xs">
+            <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+              <div class="h-2 animate-pulse rounded-full bg-red-500" style="width: 60%"></div>
+            </div>
+            <p class="text-muted-foreground mt-1 text-center text-xs">
+              Recording: {{ recordingTime }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Audio Editing Tools -->
+        <div class="space-y-4">
+          <!-- Playback Controls -->
+          <div
+            class="audio-tool-group rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800"
+          >
+            <h5 class="text-foreground mb-2 text-sm font-medium">Playback</h5>
+            <div class="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:play"
+                @click="playRecording"
+                :disabled="!hasRecording"
+                class="enhanced-button flex-1"
+                title="Play recording"
+              >
+                Play
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:pause"
+                @click="pauseRecording"
+                :disabled="!isPlaying"
+                class="enhanced-button flex-1"
+                title="Pause recording"
+              >
+                Pause
+              </Button>
+            </div>
+          </div>
+
+          <!-- Editing Tools -->
+          <div
+            class="audio-tool-group rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800"
+          >
+            <h5 class="text-foreground mb-2 text-sm font-medium">Editing</h5>
+            <div class="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:scissors-cutting"
+                @click="cutAudio"
+                :disabled="!hasRecording"
+                class="enhanced-button flex-1"
+                title="Cut audio"
+              >
+                Cut
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:delete"
+                @click="removeAudio"
+                :disabled="!hasRecording"
+                class="enhanced-button flex-1"
+                title="Remove audio"
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+
+          <!-- Advanced Tools -->
+          <div
+            class="audio-tool-group rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800"
+          >
+            <h5 class="text-foreground mb-2 text-sm font-medium">Advanced</h5>
+            <div class="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:waveform"
+                @click="openWaveformEditor"
+                :disabled="!hasRecording"
+                class="enhanced-button flex-1"
+                title="Open waveform editor"
+              >
+                Waveform
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                icon="mdi:tune"
+                @click="openAudioEffects"
+                :disabled="!hasRecording"
+                class="enhanced-button flex-1"
+                title="Open audio effects"
+              >
+                Effects
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Recording Controls -->
+    <div v-if="selectedSegmentIndex !== null" class="fixed right-6 bottom-6 z-50">
+      <div
+        class="floating-recording-btn rounded-full bg-white p-2 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700"
+      >
+        <Button
+          :variant="isRecording ? 'danger' : 'primary'"
+          size="lg"
+          @click="toggleRecording"
+          class="h-12 w-12 rounded-full"
+          :icon="isRecording ? 'mdi:stop' : 'mdi:microphone'"
+          :title="isRecording ? 'Stop recording' : 'Start recording'"
+        />
       </div>
     </div>
   </div>
@@ -470,10 +441,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
-import AppBar from '@/components/molecules/AppBar.vue'
 import Button from '@/components/atoms/Button.vue'
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
@@ -767,8 +736,6 @@ const ttsSegmentsCount = computed(
   () => scriptSegments.value.filter((segment) => segment.hasTTS).length,
 )
 
-const canSubmit = computed(() => recordedSegmentsCount.value > 0 || job.value?.finalAudio)
-
 // Video methods
 const loadVideo = () => {
   // Mock video loading
@@ -1026,21 +993,6 @@ const openWaveformEditor = () => {
 
 const openAudioEffects = () => {
   success('Audio effects panel opened')
-}
-
-// Export methods
-const exportProject = () => {
-  success('Export dialog opened')
-}
-
-// Submit methods
-const submitWork = () => {
-  if (!canSubmit.value) {
-    error('Please complete recording before submitting')
-    return
-  }
-  success('Work submitted successfully!')
-  // In real app, this would submit to backend
 }
 
 onMounted(() => {

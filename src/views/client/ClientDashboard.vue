@@ -1,191 +1,182 @@
 <template>
-  <ClientLayout>
-    <template #title>Client Dashboard</template>
-    <template #subtitle>Welcome back, {{ currentClient?.contactName }}</template>
-    <template #actions>
-      <ThemeToggle />
-      <Button variant="primary" size="sm" icon="mdi:plus" @click="openJobCreationModal"
-        >Create Job</Button
-      >
-    </template>
-
+  <div>
     <div class="mx-auto max-w-7xl">
-          <!-- Stats Overview -->
-          <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <MetricCard
-              title="Active Jobs"
-              :value="stats.activeJobs"
+      <!-- Stats Overview -->
+      <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          title="Active Jobs"
+          :value="stats.activeJobs"
+          icon="mdi:briefcase"
+          color="blue"
+        />
+        <MetricCard
+          title="Total Spent"
+          :value="`$${stats.totalSpent.toLocaleString()}`"
+          icon="mdi:currency-usd"
+          color="green"
+        />
+        <MetricCard
+          title="Hired Talents"
+          :value="stats.hiredTalents"
+          icon="mdi:account-check"
+          color="purple"
+        />
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <!-- Create New -->
+        <div class="bg-card border-border rounded-lg border p-6">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Quick Actions</h3>
+          <div class="space-y-3">
+            <Button
+              variant="outline"
+              class="w-full justify-start"
               icon="mdi:briefcase"
-              color="blue"
-            />
-            <MetricCard
-              title="Total Spent"
-              :value="`$${stats.totalSpent.toLocaleString()}`"
-              icon="mdi:currency-usd"
-              color="green"
-            />
-            <MetricCard
-              title="Hired Talents"
-              :value="stats.hiredTalents"
-              icon="mdi:account-check"
-              color="purple"
-            />
+              @click="openJobCreationModal"
+              >Post New Job</Button
+            >
+            <Button
+              variant="outline"
+              class="w-full justify-start"
+              icon="mdi:account-group"
+              @click="$router.push('/client/talents')"
+              >Talents</Button
+            >
           </div>
+        </div>
 
-          <!-- Quick Actions -->
-          <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <!-- Create New -->
-            <div class="bg-card border-border rounded-lg border p-6">
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Quick Actions</h3>
-              <div class="space-y-3">
-                <Button
-                  variant="outline"
-                  class="w-full justify-start"
-                  icon="mdi:briefcase"
-                  @click="openJobCreationModal"
-                  >Post New Job</Button
-                >
-                <Button
-                  variant="outline"
-                  class="w-full justify-start"
-                  icon="mdi:account-group"
-                  @click="$router.push('/client/talents')"
-                  >Talents</Button
-                >
+        <!-- Recent Activity -->
+        <div class="bg-card border-border rounded-lg border p-6">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Recent Activity</h3>
+          <div class="space-y-3">
+            <div
+              v-for="activity in recentActivity"
+              :key="activity.id"
+              class="hover:bg-muted flex cursor-pointer items-start space-x-3 rounded-lg p-3 transition-colors"
+              @click="activity.url && $router.push(activity.url)"
+            >
+              <div class="flex-shrink-0">
+                <div class="bg-primary mt-2 h-2 w-2 rounded-full"></div>
               </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="bg-card border-border rounded-lg border p-6">
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Recent Activity</h3>
-              <div class="space-y-3">
-                <div
-                  v-for="activity in recentActivity"
-                  :key="activity.id"
-                  class="hover:bg-muted flex cursor-pointer items-start space-x-3 rounded-lg p-3 transition-colors"
-                  @click="activity.url && $router.push(activity.url)"
-                >
-                  <div class="flex-shrink-0">
-                    <div class="bg-primary mt-2 h-2 w-2 rounded-full"></div>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="text-foreground text-sm font-medium">
-                      {{ activity.title }}
-                    </p>
-                    <p class="text-muted-foreground text-xs">
-                      {{ activity.description }}
-                    </p>
-                    <p class="text-muted-foreground mt-1 text-xs">
-                      {{ formatTimeAgo(activity.timestamp) }}
-                    </p>
-                  </div>
-                </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-foreground text-sm font-medium">
+                  {{ activity.title }}
+                </p>
+                <p class="text-muted-foreground text-xs">
+                  {{ activity.description }}
+                </p>
+                <p class="text-muted-foreground mt-1 text-xs">
+                  {{ formatTimeAgo(activity.timestamp) }}
+                </p>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Jobs Overview -->
-          <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <!-- Active Jobs -->
-            <div class="bg-card border-border rounded-lg border">
-              <div class="border-border border-b p-6">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-foreground text-lg font-semibold">Active Jobs</h3>
-                  <Button variant="ghost" size="sm" @click="$router.push('/client/jobs')">
-                    View All
-                  </Button>
-                </div>
-              </div>
-              <div class="p-6">
-                <div v-if="activeJobs.length === 0" class="py-8 text-center">
-                  <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-                  <h4 class="text-foreground mb-2 text-sm font-medium">No active jobs</h4>
-                  <p class="text-muted-foreground mb-4 text-xs">
-                    Create your first job posting to get started
-                  </p>
-                  <Button variant="primary" size="sm" @click="openJobCreationModal">
-                    Create Job
-                  </Button>
-                </div>
-                <div v-else class="space-y-4">
-                  <div
-                    v-for="job in activeJobs"
-                    :key="job.id"
-                    class="border-border cursor-pointer rounded-lg border p-4 transition-shadow hover:shadow-sm"
-                    @click="$router.push(`/client/jobs/${job.id}`)"
-                  >
-                    <div class="mb-2 flex items-start justify-between">
-                      <h4 class="text-foreground text-sm font-medium">
-                        {{ job.title }}
-                      </h4>
-                      <StatusBadge :status="getJobStatus(job.status)" />
-                    </div>
-                    <p class="text-muted-foreground mb-3 line-clamp-2 text-xs">
-                      {{ job.description }}
-                    </p>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-muted-foreground">
-                        {{ job.totalApplications }} applications
-                      </span>
-                      <span class="text-foreground font-medium">
-                        ${{ (job.budget?.max ?? 0).toLocaleString() }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <!-- Jobs Overview -->
+      <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Active Jobs -->
+        <div class="bg-card border-border rounded-lg border">
+          <div class="border-border border-b p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-foreground text-lg font-semibold">Active Jobs</h3>
+              <Button variant="ghost" size="sm" @click="$router.push('/client/jobs')">
+                View All
+              </Button>
             </div>
-
-            <!-- Recent Applications -->
-            <div class="bg-card border-border rounded-lg border">
-              <div class="border-border border-b p-6">
-                <div class="flex items-center justify-between">
-                  <h3 class="text-foreground text-lg font-semibold">Recent Applications</h3>
-                  <Button variant="ghost" size="sm" @click="$router.push('/client/jobs')">
-                    View All
-                  </Button>
+          </div>
+          <div class="p-6">
+            <div v-if="activeJobs.length === 0" class="py-8 text-center">
+              <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+              <h4 class="text-foreground mb-2 text-sm font-medium">No active jobs</h4>
+              <p class="text-muted-foreground mb-4 text-xs">
+                Create your first job posting to get started
+              </p>
+              <Button variant="primary" size="sm" @click="openJobCreationModal">
+                Create Job
+              </Button>
+            </div>
+            <div v-else class="space-y-4">
+              <div
+                v-for="job in activeJobs"
+                :key="job.id"
+                class="border-border cursor-pointer rounded-lg border p-4 transition-shadow hover:shadow-sm"
+                @click="$router.push(`/client/jobs/${job.id}`)"
+              >
+                <div class="mb-2 flex items-start justify-between">
+                  <h4 class="text-foreground text-sm font-medium">
+                    {{ job.title }}
+                  </h4>
+                  <StatusBadge :status="getJobStatus(job.status)" />
                 </div>
-              </div>
-              <div class="p-6">
-                <div v-if="recentApplications.length === 0" class="py-8 text-center">
-                  <EmailIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-                  <h4 class="text-foreground mb-2 text-sm font-medium">No applications yet</h4>
-                  <p class="text-muted-foreground text-xs">
-                    Applications will appear here once you post jobs
-                  </p>
-                </div>
-                <div v-else class="space-y-4">
-                  <div
-                    v-for="application in recentApplications"
-                    :key="application.id"
-                    class="border-border cursor-pointer rounded-lg border p-4 transition-shadow hover:shadow-sm"
-                    @click="$router.push(`/client/jobs/${application.jobId}`)"
-                  >
-                    <div class="mb-2 flex items-start justify-between">
-                      <div>
-                        <h4 class="text-foreground text-sm font-medium">
-                          {{ application.voiceTalentName }}
-                        </h4>
-                        <p class="text-muted-foreground text-xs">
-                          Applied to {{ getJobTitle(application.jobId) }}
-                        </p>
-                      </div>
-                      <StatusBadge :status="getApplicationStatus(application.status)" />
-                    </div>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-muted-foreground">
-                        {{ formatTimeAgo(application.appliedDate) }}
-                      </span>
-                      <span class="text-foreground font-medium">
-                        ${{ (application.proposedRate ?? 0).toLocaleString() }}
-                      </span>
-                    </div>
-                  </div>
+                <p class="text-muted-foreground mb-3 line-clamp-2 text-xs">
+                  {{ job.description }}
+                </p>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-muted-foreground">
+                    {{ job.totalApplications }} applications
+                  </span>
+                  <span class="text-foreground font-medium">
+                    ${{ (job.budget?.max ?? 0).toLocaleString() }}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Recent Applications -->
+        <div class="bg-card border-border rounded-lg border">
+          <div class="border-border border-b p-6">
+            <div class="flex items-center justify-between">
+              <h3 class="text-foreground text-lg font-semibold">Recent Applications</h3>
+              <Button variant="ghost" size="sm" @click="$router.push('/client/jobs')">
+                View All
+              </Button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div v-if="recentApplications.length === 0" class="py-8 text-center">
+              <EmailIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+              <h4 class="text-foreground mb-2 text-sm font-medium">No applications yet</h4>
+              <p class="text-muted-foreground text-xs">
+                Applications will appear here once you post jobs
+              </p>
+            </div>
+            <div v-else class="space-y-4">
+              <div
+                v-for="application in recentApplications"
+                :key="application.id"
+                class="border-border cursor-pointer rounded-lg border p-4 transition-shadow hover:shadow-sm"
+                @click="$router.push(`/client/jobs/${application.jobId}`)"
+              >
+                <div class="mb-2 flex items-start justify-between">
+                  <div>
+                    <h4 class="text-foreground text-sm font-medium">
+                      {{ application.voiceTalentName }}
+                    </h4>
+                    <p class="text-muted-foreground text-xs">
+                      Applied to {{ getJobTitle(application.jobId) }}
+                    </p>
+                  </div>
+                  <StatusBadge :status="getApplicationStatus(application.status)" />
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-muted-foreground">
+                    {{ formatTimeAgo(application.appliedDate) }}
+                  </span>
+                  <span class="text-foreground font-medium">
+                    ${{ (application.proposedRate ?? 0).toLocaleString() }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Job Creation Modal -->
     <JobCreationModal
@@ -201,34 +192,23 @@
       @skip="skipClientOnboarding"
       @close="closeClientOnboarding"
     />
-  </ClientLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { ClientStats, JobPosting, JobApplication } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import ClientLayout from '@/layouts/ClientLayout.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
-import { useAuthStore } from '@/stores/auth'
 // Keep these icons: used as standalone elements in empty states
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import EmailIcon from '~icons/mdi/email'
-
-// Use authenticated user data instead of mock data
-const authStore = useAuthStore()
-const currentClient = computed(() => ({
-  companyName: authStore.user?.displayName || authStore.user?.email || 'Client',
-  logoUrl: authStore.user?.photoURL,
-  contactName: authStore.user?.displayName || authStore.user?.email || 'Contact',
-}))
 
 // Keep stats and other data as mock for now, but this could be fetched from API based on user ID
 const stats = ref<ClientStats>(mockClientData.clientStats)

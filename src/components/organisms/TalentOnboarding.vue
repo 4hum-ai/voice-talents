@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showOnboarding" class="bg-background fixed inset-0 z-50 overflow-hidden">
+  <div v-if="showOnboarding" class="">
     <!-- Top Navigation Bar -->
     <div
       class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="h-full overflow-y-auto pt-20">
+    <div class="pt- h-full overflow-y-auto">
       <div class="mx-auto max-w-4xl px-6 py-8">
         <!-- Content -->
         <div class="px-8 py-6">

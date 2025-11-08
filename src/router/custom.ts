@@ -5,10 +5,10 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('../views/LandingPage.vue'),
-    meta: { title: 'Voice Talent Platform', requiresAuth: false },
+    meta: { title: 'Voice Talent Platform', requiresAuth: false, layout: 'none' },
   },
 
-  // Voice Actor Dashboard
+  // Voice Talent
   {
     path: '/talent',
     redirect: '/talent/dashboard',
@@ -16,10 +16,13 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/talent/dashboard',
     component: () => import('../views/talent/TalentDashboard.vue'),
-    meta: { title: 'VoiceTalents Dashboard', requiresAuth: true, keepAlive: true },
+    meta: {
+      title: 'VoiceTalents Dashboard',
+      requiresAuth: true,
+      keepAlive: true,
+      layout: 'talent',
+    },
   },
-
-  // Voice Actor Profile Management
   {
     path: '/talent/profile',
     redirect: '/talent/profile/edit',
@@ -27,48 +30,42 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/talent/profile/edit',
     component: () => import('../views/talent/ProfileEdit.vue'),
-    meta: { title: 'My Profile', requiresAuth: true },
+    meta: { title: 'My Profile', requiresAuth: true, layout: 'talent' },
   },
-
-  // Casting & Opportunities (unified with jobs)
   {
     path: '/talent/casting',
     component: () => import('../views/talent/CastingView.vue'),
-    meta: { title: 'Casting Opportunities', requiresAuth: true },
+    meta: { title: 'Casting Opportunities', requiresAuth: true, layout: 'talent' },
   },
   {
     path: '/talent/jobs/:id/casting',
     component: () => import('../views/talent/TalentJobDetail.vue'),
-    meta: { title: 'Job Details', requiresAuth: true },
+    meta: { title: 'Job Details', requiresAuth: true, layout: 'talent' },
   },
   {
     path: '/talent/jobs/:id/casting/proposal',
     component: () => import('../views/talent/CastingProposal.vue'),
-    meta: { title: 'View Proposal', requiresAuth: true },
+    meta: { title: 'View Proposal', requiresAuth: true, layout: 'talent' },
   },
-
-  // Job Management (Assigned Jobs)
   {
     path: '/talent/jobs',
     component: () => import('../views/talent/JobManagement.vue'),
-    meta: { title: 'My Jobs', requiresAuth: true },
+    meta: { title: 'My Jobs', requiresAuth: true, layout: 'talent' },
   },
   {
     path: '/talent/jobs/:id',
     component: () => import('../views/talent/TalentJobDetail.vue'),
-    meta: { title: 'Job Details', requiresAuth: true },
+    meta: { title: 'Job Details', requiresAuth: true, layout: 'talent' },
   },
   {
     path: '/talent/jobs/:id/studio',
     component: () => import('../views/talent/TalentAudioStudio.vue'),
-    meta: { title: 'Audio Studio', requiresAuth: true },
+    meta: { title: 'Audio Studio', requiresAuth: true, layout: 'talent' },
   },
-
-  // Settings
   {
     path: '/talent/settings',
     component: () => import('../views/talent/SettingsView.vue'),
-    meta: { title: 'Settings', requiresAuth: true },
+    meta: { title: 'Settings', requiresAuth: true, layout: 'talent' },
   },
 
   // Voice Client Routes
@@ -79,43 +76,43 @@ export const customRoutes: RouteRecordRaw[] = [
   {
     path: '/client/dashboard',
     component: () => import('../views/client/ClientDashboard.vue'),
-    meta: { title: 'Client Dashboard', requiresAuth: true, role: 'client' },
+    meta: { title: 'Client Dashboard', requiresAuth: true, role: 'client', layout: 'client' },
   },
   {
     path: '/client/jobs',
     component: () => import('../views/client/JobManagement.vue'),
-    meta: { title: 'Job Management', requiresAuth: true, role: 'client' },
+    meta: { title: 'Job Management', requiresAuth: true, role: 'client', layout: 'client' },
   },
   {
     path: '/client/jobs/:id',
     component: () => import('../views/client/JobDetail.vue'),
-    meta: { title: 'Job Details', requiresAuth: true, role: 'client' },
+    meta: { title: 'Job Details', requiresAuth: true, role: 'client', layout: 'client' },
   },
   {
     path: '/client/jobs/:id/talent-selection',
     component: () => import('../views/client/TalentSelectionView.vue'),
-    meta: { title: 'Talent Selection', requiresAuth: true, role: 'client' },
+    meta: { title: 'Talent Selection', requiresAuth: true, role: 'client', layout: 'client' },
   },
   {
     path: '/client/talents',
     component: () => import('../views/client/TalentManagement.vue'),
-    meta: { title: 'Talent Management', requiresAuth: true, role: 'client' },
+    meta: { title: 'Talent Management', requiresAuth: true, role: 'client', layout: 'client' },
   },
   {
     path: '/client/talents/:id',
     component: () => import('../views/client/TalentProfile.vue'),
-    meta: { title: 'Talent Profile', requiresAuth: true, role: 'client' },
+    meta: { title: 'Talent Profile', requiresAuth: true, role: 'client', layout: 'client' },
   },
   {
     path: '/client/settings',
     component: () => import('../views/client/ClientSettings.vue'),
-    meta: { title: 'Client Settings', requiresAuth: true, role: 'client' },
+    meta: { title: 'Client Settings', requiresAuth: true, role: 'client', layout: 'client' },
   },
 
   // Admin/Design System (keeping existing)
   {
     path: '/admin/design',
     component: () => import('../views/admin/Design.vue'),
-    meta: { title: 'Design System', requiresAuth: true },
+    meta: { title: 'Design System', requiresAuth: true, layout: 'default' },
   },
 ]

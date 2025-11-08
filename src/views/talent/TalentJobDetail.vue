@@ -1,381 +1,313 @@
 <template>
-  <div class="bg-background flex min-h-screen">
-    <!-- Navigation Sidebar -->
-    <VoiceActNavigation />
-
-    <!-- Main Content -->
-    <div :class="['flex-1', sidebarCollapsed ? 'lg:ml-16' : '']">
-      <!-- Header -->
-      <AppBar :show-back="true" :show-menu="true" @back="$router.back()" @menu="toggleSidebar">
-        <template #title>{{ job?.title || 'Job Details' }}</template>
-        <template #subtitle>{{ job?.clientName || 'Client Project' }}</template>
-        <template #actions>
-          <ThemeToggle />
-          <Button
-            v-if="isCastingContext"
-            variant="outline"
-            size="sm"
-            icon="mdi:share"
-            @click="shareJob"
-          >
-            Share
-          </Button>
-          <Button
-            v-if="isCastingContext"
-            variant="primary"
-            size="sm"
-            icon="mdi:send"
-            @click="applyToJob"
-          >
-            Apply Now
-          </Button>
-          <Button
-            v-if="!isCastingContext"
-            variant="outline"
-            size="sm"
-            icon="mdi:microphone"
-            @click="goToAudioStudio"
-          >
-            Audio Studio
-          </Button>
-          <Button
-            v-if="!isCastingContext"
-            variant="primary"
-            size="sm"
-            icon="mdi:send"
-            @click="submitWork"
-            :disabled="!canSubmit"
-            >Submit Work</Button
-          >
-        </template>
-      </AppBar>
-
-      <div class="px-4 py-8 pt-24 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-7xl">
-          <div v-if="job" class="space-y-8">
-            <!-- Job Overview -->
-            <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
-              <div class="mb-6 flex items-start justify-between">
-                <div class="flex-1">
-                  <div class="mb-4 flex items-center space-x-3">
-                    <StatusBadge :status="getJobStatusDisplay(job.status)" />
-                    <StatusBadge
-                      v-if="!isCastingContext"
-                      :status="getProgressStatus(job.progress)"
-                      :variant="getProgressVariant(job.progress)"
-                      size="sm"
-                    >
-                      {{ job.progress }}% Complete
-                    </StatusBadge>
-                    <StatusBadge v-if="isCastingContext" status="active" size="sm">
-                      Open for Applications
-                    </StatusBadge>
-                  </div>
-                  <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
-                  <p class="text-muted-foreground mb-4">{{ job.description }}</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
-                <div>
-                  <h3 class="text-foreground mb-3 font-medium">Project Details</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Client:</span>
-                      <span class="text-foreground">{{ job.clientName }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Type:</span>
-                      <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Deadline:</span>
-                      <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Budget:</span>
-                      <span class="text-foreground font-medium text-green-600">
-                        ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 class="text-foreground mb-3 font-medium">Voice Requirements</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Style:</span>
-                      <span class="text-foreground">{{ job.voiceStyle || 'Professional' }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Pace:</span>
-                      <span class="text-foreground">{{ job.pace || 'Medium' }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Tone:</span>
-                      <span class="text-foreground">{{ job.tone || 'Friendly' }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Duration:</span>
-                      <span class="text-foreground">{{ job.duration || '2-3 minutes' }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Application Status (Casting Context Only) -->
-                <div v-if="isCastingContext">
-                  <h3 class="text-foreground mb-3 font-medium">Application Status</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Status:</span>
-                      <StatusBadge
-                        :status="getApplicationStatus().status"
-                        :variant="getApplicationStatus().variant"
-                        size="sm"
-                      >
-                        {{ getApplicationStatus().label }}
-                      </StatusBadge>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Applications:</span>
-                      <span class="text-foreground">{{ job.totalApplications || 0 }} total</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Deadline:</span>
-                      <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="!isCastingContext">
-                  <h3 class="text-foreground mb-3 font-medium">Recording Info</h3>
-                  <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Segments:</span>
-                      <span class="text-foreground">{{ scriptSegments.length }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Recorded:</span>
-                      <span class="text-foreground">{{ recordedSegmentsCount }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">TTS Generated:</span>
-                      <span class="text-foreground">{{ ttsSegmentsCount }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-muted-foreground">Quality:</span>
-                      <span class="text-foreground">{{
-                        job.recordingQuality || 'Professional'
-                      }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="!isCastingContext">
-                  <h3 class="text-foreground mb-3 font-medium">Progress</h3>
-                  <div class="space-y-3">
-                    <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                      <div
-                        class="h-3 rounded-full bg-blue-600 transition-all duration-300"
-                        :style="{ width: `${job.progress}%` }"
-                      ></div>
-                    </div>
-                    <div class="text-center text-sm">
-                      <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
-                    </div>
-                    <div class="text-center">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        icon="mdi:microphone"
-                        @click="goToAudioStudio"
-                        class="w-full"
-                        >Continue Recording</Button
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Client Notes -->
-            <div
-              v-if="job.clientNotes"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Client Notes</h3>
-              <div class="space-y-3">
-                <div
-                  v-for="(note, index) in job.clientNotes"
-                  :key="index"
-                  class="flex items-start space-x-3"
+  <div>
+    <div class="mx-auto max-w-7xl">
+      <div v-if="job" class="space-y-8">
+        <!-- Job Overview -->
+        <div class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <div class="mb-6 flex items-start justify-between">
+            <div class="flex-1">
+              <div class="mb-4 flex items-center space-x-3">
+                <StatusBadge :status="getJobStatusDisplay(job.status)" />
+                <StatusBadge
+                  v-if="!isCastingContext"
+                  :status="getProgressStatus(job.progress)"
+                  :variant="getProgressVariant(job.progress)"
+                  size="sm"
                 >
-                  <LightbulbIcon class="mt-0.5 h-5 w-5 text-yellow-500" />
-                  <p class="text-muted-foreground">{{ note }}</p>
-                </div>
+                  {{ job.progress }}% Complete
+                </StatusBadge>
+                <StatusBadge v-if="isCastingContext" status="active" size="sm">
+                  Open for Applications
+                </StatusBadge>
               </div>
-            </div>
-
-            <!-- Project Files -->
-            <div
-              v-if="job.projectFiles"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
-              <div class="space-y-4">
-                <!-- Script File -->
-                <div
-                  v-if="job.projectFiles.script"
-                  class="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
-                >
-                  <div class="flex items-center space-x-3">
-                    <FileDocumentIcon class="h-8 w-8 text-blue-600" />
-                    <div>
-                      <h4 class="text-foreground font-medium">
-                        {{ job.projectFiles.script.name }}
-                      </h4>
-                      <p class="text-muted-foreground text-sm">
-                        {{ formatFileSize(job.projectFiles.script.size) }} • Script
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      @click="downloadFile(job.projectFiles.script)"
-                    >
-                      <DownloadIcon class="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                    <Button variant="outline" size="sm" @click="viewFile(job.projectFiles.script)">
-                      <EyeIcon class="mr-2 h-4 w-4" />
-                      View
-                    </Button>
-                  </div>
-                </div>
-
-                <!-- Reference Audio -->
-                <div
-                  v-if="job.projectFiles.referenceAudio"
-                  class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
-                >
-                  <div class="flex items-center space-x-3">
-                    <AudioIcon class="h-8 w-8 text-green-600" />
-                    <div>
-                      <h4 class="text-foreground font-medium">
-                        {{ job.projectFiles.referenceAudio.name }}
-                      </h4>
-                      <p class="text-muted-foreground text-sm">
-                        {{ formatFileSize(job.projectFiles.referenceAudio.size) }} • Reference Audio
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" @click="playReferenceAudio">
-                      <PlayIcon class="mr-2 h-4 w-4" />
-                      Play
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      @click="downloadFile(job.projectFiles.referenceAudio)"
-                    >
-                      <DownloadIcon class="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                  </div>
-                </div>
-
-                <!-- Additional Files -->
-                <div
-                  v-if="job.projectFiles.additional && job.projectFiles.additional.length > 0"
-                  class="space-y-3"
-                >
-                  <h4 class="text-foreground font-medium">Additional Files</h4>
-                  <div
-                    v-for="(file, index) in job.projectFiles.additional"
-                    :key="index"
-                    class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800/50"
-                  >
-                    <div class="flex items-center space-x-3">
-                      <AttachmentIcon class="h-6 w-6 text-gray-600" />
-                      <div>
-                        <h5 class="text-foreground text-sm font-medium">{{ file.name }}</h5>
-                        <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" @click="downloadFile(file)">
-                        <DownloadIcon class="mr-2 h-4 w-4" />
-                        Download
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Deliverables -->
-            <div
-              v-if="!isCastingContext"
-              class="bg-card border-border rounded-lg border p-6 shadow-sm"
-            >
-              <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
-              <div class="space-y-4">
-                <div
-                  v-if="job.finalAudio"
-                  class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
-                >
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                      <AudioIcon class="h-8 w-8 text-green-600" />
-                      <div>
-                        <h4 class="text-foreground font-medium">{{ job.finalAudio.name }}</h4>
-                        <p class="text-muted-foreground text-sm">
-                          {{ job.finalAudio.duration }} • {{ job.finalAudio.size }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" @click="playFinalAudio">
-                        <PlayIcon class="mr-2 h-4 w-4" />
-                        Play
-                      </Button>
-                      <Button variant="outline" size="sm" @click="downloadFinalAudio">
-                        <DownloadIcon class="mr-2 h-4 w-4" />
-                        Download
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                <div v-else class="py-8 text-center">
-                  <UploadIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-                  <h4 class="text-foreground mb-2 font-medium">No deliverables uploaded yet</h4>
-                  <p class="text-muted-foreground mb-4">
-                    Complete your recording and upload the final audio file
-                  </p>
-                  <Button variant="outline" icon="mdi:microphone" @click="goToAudioStudio"
-                    >Start Recording</Button
-                  >
-                </div>
-              </div>
+              <h2 class="text-foreground mb-2 text-2xl font-semibold">{{ job.title }}</h2>
+              <p class="text-muted-foreground mb-4">{{ job.description }}</p>
             </div>
           </div>
 
-          <div v-else class="py-12 text-center">
-            <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
-            <h3 class="text-foreground mb-2 text-lg font-medium">Job not found</h3>
-            <p class="text-muted-foreground mb-6">
-              The job you're looking for doesn't exist or you don't have access to it.
-            </p>
-            <Button variant="primary" @click="$router.push('/talent/jobs')">
-              <ArrowLeftIcon class="mr-2 h-4 w-4" />
-              Back to My Jobs
-            </Button>
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <div>
+              <h3 class="text-foreground mb-3 font-medium">Project Details</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Client:</span>
+                  <span class="text-foreground">{{ job.clientName }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Type:</span>
+                  <span class="text-foreground">{{ formatProjectType(job.projectType) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Deadline:</span>
+                  <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Budget:</span>
+                  <span class="text-foreground font-medium text-green-600">
+                    ${{ job.budget.max.toLocaleString() }} {{ job.budget.currency }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-foreground mb-3 font-medium">Voice Requirements</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Style:</span>
+                  <span class="text-foreground">{{ job.voiceStyle || 'Professional' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Pace:</span>
+                  <span class="text-foreground">{{ job.pace || 'Medium' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Tone:</span>
+                  <span class="text-foreground">{{ job.tone || 'Friendly' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Duration:</span>
+                  <span class="text-foreground">{{ job.duration || '2-3 minutes' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Application Status (Casting Context Only) -->
+            <div v-if="isCastingContext">
+              <h3 class="text-foreground mb-3 font-medium">Application Status</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Status:</span>
+                  <StatusBadge
+                    :status="getApplicationStatus().status"
+                    :variant="getApplicationStatus().variant"
+                    size="sm"
+                  >
+                    {{ getApplicationStatus().label }}
+                  </StatusBadge>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Applications:</span>
+                  <span class="text-foreground">{{ job.totalApplications || 0 }} total</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Deadline:</span>
+                  <span class="text-foreground">{{ formatDate(job.deadline) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="!isCastingContext">
+              <h3 class="text-foreground mb-3 font-medium">Recording Info</h3>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Segments:</span>
+                  <span class="text-foreground">{{ scriptSegments.length }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Recorded:</span>
+                  <span class="text-foreground">{{ recordedSegmentsCount }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">TTS Generated:</span>
+                  <span class="text-foreground">{{ ttsSegmentsCount }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">Quality:</span>
+                  <span class="text-foreground">{{ job.recordingQuality || 'Professional' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="!isCastingContext">
+              <h3 class="text-foreground mb-3 font-medium">Progress</h3>
+              <div class="space-y-3">
+                <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                  <div
+                    class="h-3 rounded-full bg-blue-600 transition-all duration-300"
+                    :style="{ width: `${job.progress}%` }"
+                  ></div>
+                </div>
+                <div class="text-center text-sm">
+                  <span class="text-foreground font-medium">{{ job.progress }}% Complete</span>
+                </div>
+                <div class="text-center">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    icon="mdi:microphone"
+                    @click="goToAudioStudio"
+                    class="w-full"
+                    >Continue Recording</Button
+                  >
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Client Notes -->
+        <div v-if="job.clientNotes" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Client Notes</h3>
+          <div class="space-y-3">
+            <div
+              v-for="(note, index) in job.clientNotes"
+              :key="index"
+              class="flex items-start space-x-3"
+            >
+              <LightbulbIcon class="mt-0.5 h-5 w-5 text-yellow-500" />
+              <p class="text-muted-foreground">{{ note }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Files -->
+        <div v-if="job.projectFiles" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Project Files</h3>
+          <div class="space-y-4">
+            <!-- Script File -->
+            <div
+              v-if="job.projectFiles.script"
+              class="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
+            >
+              <div class="flex items-center space-x-3">
+                <FileDocumentIcon class="h-8 w-8 text-blue-600" />
+                <div>
+                  <h4 class="text-foreground font-medium">
+                    {{ job.projectFiles.script.name }}
+                  </h4>
+                  <p class="text-muted-foreground text-sm">
+                    {{ formatFileSize(job.projectFiles.script.size) }} • Script
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Button variant="outline" size="sm" @click="downloadFile(job.projectFiles.script)">
+                  <DownloadIcon class="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+                <Button variant="outline" size="sm" @click="viewFile(job.projectFiles.script)">
+                  <EyeIcon class="mr-2 h-4 w-4" />
+                  View
+                </Button>
+              </div>
+            </div>
+
+            <!-- Reference Audio -->
+            <div
+              v-if="job.projectFiles.referenceAudio"
+              class="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+            >
+              <div class="flex items-center space-x-3">
+                <AudioIcon class="h-8 w-8 text-green-600" />
+                <div>
+                  <h4 class="text-foreground font-medium">
+                    {{ job.projectFiles.referenceAudio.name }}
+                  </h4>
+                  <p class="text-muted-foreground text-sm">
+                    {{ formatFileSize(job.projectFiles.referenceAudio.size) }} • Reference Audio
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Button variant="outline" size="sm" @click="playReferenceAudio">
+                  <PlayIcon class="mr-2 h-4 w-4" />
+                  Play
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  @click="downloadFile(job.projectFiles.referenceAudio)"
+                >
+                  <DownloadIcon class="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+              </div>
+            </div>
+
+            <!-- Additional Files -->
+            <div
+              v-if="job.projectFiles.additional && job.projectFiles.additional.length > 0"
+              class="space-y-3"
+            >
+              <h4 class="text-foreground font-medium">Additional Files</h4>
+              <div
+                v-for="(file, index) in job.projectFiles.additional"
+                :key="index"
+                class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-800/50"
+              >
+                <div class="flex items-center space-x-3">
+                  <AttachmentIcon class="h-6 w-6 text-gray-600" />
+                  <div>
+                    <h5 class="text-foreground text-sm font-medium">{{ file.name }}</h5>
+                    <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" @click="downloadFile(file)">
+                    <DownloadIcon class="mr-2 h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deliverables -->
+        <div v-if="!isCastingContext" class="bg-card border-border rounded-lg border p-6 shadow-sm">
+          <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
+          <div class="space-y-4">
+            <div
+              v-if="job.finalAudio"
+              class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <AudioIcon class="h-8 w-8 text-green-600" />
+                  <div>
+                    <h4 class="text-foreground font-medium">{{ job.finalAudio.name }}</h4>
+                    <p class="text-muted-foreground text-sm">
+                      {{ job.finalAudio.duration }} • {{ job.finalAudio.size }}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <Button variant="outline" size="sm" @click="playFinalAudio">
+                    <PlayIcon class="mr-2 h-4 w-4" />
+                    Play
+                  </Button>
+                  <Button variant="outline" size="sm" @click="downloadFinalAudio">
+                    <DownloadIcon class="mr-2 h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div v-else class="py-8 text-center">
+              <UploadIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+              <h4 class="text-foreground mb-2 font-medium">No deliverables uploaded yet</h4>
+              <p class="text-muted-foreground mb-4">
+                Complete your recording and upload the final audio file
+              </p>
+              <Button variant="outline" icon="mdi:microphone" @click="goToAudioStudio"
+                >Start Recording</Button
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="py-12 text-center">
+        <BriefcaseIcon class="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+        <h3 class="text-foreground mb-2 text-lg font-medium">Job not found</h3>
+        <p class="text-muted-foreground mb-6">
+          The job you're looking for doesn't exist or you don't have access to it.
+        </p>
+        <Button variant="primary" @click="$router.push('/talent/jobs')">
+          <ArrowLeftIcon class="mr-2 h-4 w-4" />
+          Back to My Jobs
+        </Button>
       </div>
     </div>
 
@@ -392,16 +324,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
-import AppBar from '@/components/molecules/AppBar.vue'
 import CastingSubmit from './CastingSubmit.vue'
 // import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
 import { useJob } from '@/composables/useJob'
-import { useSidebar } from '@/composables/useSidebar'
 import type { JobDetail } from '@/types/job-detail'
 import {
   getJobStatusDisplay,
@@ -427,9 +355,8 @@ import PlayIcon from '~icons/mdi/play'
 
 const route = useRoute()
 const router = useRouter()
-const { success, error } = useToast()
+const { success } = useToast()
 const { getJob } = useJob()
-const { toggle: toggleSidebar, sidebarCollapsed } = useSidebar()
 
 // Determine context - casting vs assigned job
 const isCastingContext = computed(() => route.path.includes('/casting'))
@@ -697,32 +624,12 @@ const ttsSegmentsCount = computed(
   () => scriptSegments.value.filter((segment) => segment.hasTTS).length,
 )
 
-const canSubmit = computed(() => recordedSegmentsCount.value > 0 || job.value?.finalAudio)
-
 // Navigation methods
 const goToAudioStudio = () => {
   router.push(`/talent/jobs/${route.params.id}/studio`)
 }
 
 // Casting context methods
-const shareJob = () => {
-  const url = `${window.location.origin}/talent/jobs/${route.params.id}/casting`
-  if (navigator.share) {
-    navigator.share({
-      title: job.value?.title || 'Job Opportunity',
-      text: job.value?.description || 'Check out this voice acting opportunity',
-      url: url,
-    })
-  } else {
-    navigator.clipboard.writeText(url)
-    success('Job link copied to clipboard')
-  }
-}
-
-const applyToJob = () => {
-  showSubmitModal.value = true
-}
-
 const handleCloseSubmitModal = () => {
   showSubmitModal.value = false
   // Optionally reload job data to show updated application status
@@ -781,16 +688,6 @@ const viewFile = (file: { name: string }) => {
 const playReferenceAudio = () => {
   success('Playing reference audio')
   // In real app, this would use audio player component
-}
-
-// Submit methods
-const submitWork = () => {
-  if (!canSubmit.value) {
-    error('Please complete recording before submitting')
-    return
-  }
-  success('Work submitted successfully!')
-  // In real app, this would submit to backend
 }
 
 onMounted(() => {

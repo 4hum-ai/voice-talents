@@ -3,7 +3,7 @@
     title="VoiceAct.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
-    :fixed="true"
+    :fixed="false"
     :default-collapsed="sidebarCollapsed"
     :is-open="sidebarOpen"
     @close="close"
@@ -48,18 +48,6 @@
           </div>
         </div>
 
-        <!-- Role Switcher -->
-        <div class="mb-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="w-full justify-start"
-            icon="mdi:briefcase"
-            @click="switchToClient"
-            >Switch to Client</Button
-          >
-        </div>
-
         <!-- Settings & Logout -->
         <div class="flex space-x-2">
           <Button
@@ -87,7 +75,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { VoiceTalentStats } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
-import { useOnboarding } from '@/composables/useOnboarding'
 import { useAuthStore } from '@/stores/auth'
 import { useSidebar } from '@/composables/useSidebar'
 import Sidebar from '@/components/atoms/Sidebar.vue'
@@ -101,7 +88,6 @@ import BriefcaseIcon from '~icons/mdi/briefcase'
 
 const router = useRouter()
 const route = useRoute()
-const { switchMode } = useOnboarding()
 const authStore = useAuthStore()
 const { sidebarOpen, sidebarCollapsed, close } = useSidebar()
 
@@ -176,12 +162,6 @@ const navigationSections = computed(() => [
 ])
 
 // Methods
-const switchToClient = () => {
-  // Switch to client mode and navigate to dashboard
-  console.log('Switching to client view')
-  switchMode('client')
-  router.push('/client/dashboard')
-}
 
 const handleLogout = async () => {
   try {
