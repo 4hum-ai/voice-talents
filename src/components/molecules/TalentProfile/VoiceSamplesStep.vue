@@ -1,16 +1,8 @@
 <template>
   <div class="space-y-8">
     <div class="text-center">
-      <div
-        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
-      >
-        <Icon name="mdi:upload" class="h-8 w-8 text-white" />
-      </div>
-      <h3 class="text-foreground mb-2 text-2xl font-semibold">Let's Hear Your Amazing Voice!</h3>
-      <p class="text-muted-foreground">
-        Upload samples for each type of voice work you selected. This showcases your incredible
-        range and versatility!
-      </p>
+      <h3 class="text-foreground mb-2 text-2xl font-semibold">Show Your Amazing Voice!</h3>
+      <p class="text-muted-foreground">Upload samples for each type you selected.</p>
     </div>
 
     <!-- Voice Type Upload Areas -->
@@ -58,7 +50,7 @@
             :id="`file-input-${voiceType.value}`"
             :data-voice-type="voiceType.value"
             type="file"
-            accept="audio/mp3,audio/wav,audio/ogg,audio/aac"
+            accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/aac,audio/mp4,audio/x-m4a"
             class="hidden"
             @change="handleFileSelect($event, voiceType.value)"
           />
@@ -158,7 +150,7 @@
     </div>
 
     <div class="dark:text-muted-foreground text-center text-sm text-gray-500">
-      <p>Supported formats: MP3, WAV, OGG, AAC</p>
+      <p>Supported formats: MP3, WAV, OGG, AAC, M4A</p>
       <p>Maximum file size: 50MB per file</p>
     </div>
   </div>
@@ -259,7 +251,15 @@ const processFile = (file: File, voiceType: string) => {
   console.log('Processing file:', file.name, 'for voice type:', voiceType)
 
   // Validate file
-  const allowedTypes = ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/aac', 'audio/mpeg']
+  const allowedTypes = [
+    'audio/mp3',
+    'audio/mpeg', // iOS MP3 format
+    'audio/wav',
+    'audio/ogg',
+    'audio/aac',
+    'audio/mp4', // iOS M4A format
+    'audio/x-m4a', // Alternative M4A format
+  ]
   const maxSize = 50 * 1024 * 1024 // 50MB
 
   if (!allowedTypes.includes(file.type)) {

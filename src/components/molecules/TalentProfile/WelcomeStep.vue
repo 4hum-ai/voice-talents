@@ -1,10 +1,5 @@
 <template>
   <div class="space-y-8 text-center">
-    <div
-      class="icon-bounce mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600"
-    >
-      <Icon name="mdi:microphone" class="h-16 w-16 text-white" />
-    </div>
     <div>
       <h3 class="text-foreground mb-4 text-3xl font-bold">Welcome to VoiceTalents! 🎙️</h3>
       <p class="text-muted-foreground mx-auto max-w-2xl text-lg">
@@ -12,7 +7,7 @@
         showcases your voice acting talent.
       </p>
     </div>
-    <div class="mx-auto grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-3">
+    <!-- <div class="mx-auto grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-3">
       <div class="p-4 text-center">
         <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500">
           <Icon name="mdi:account" class="h-6 w-6 text-white" />
@@ -38,12 +33,12 @@
         <h4 class="text-foreground mb-1 font-semibold">Set Rates</h4>
         <p class="text-muted-foreground text-sm">Define your pricing</p>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/atoms/Icon.vue'
+// Icon import removed - currently unused (commented out in template)
 </script>
 
 <style scoped>
