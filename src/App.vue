@@ -74,6 +74,7 @@ const layouts = {
   talent: defineAsyncComponent(() => import('@/layouts/TalentLayout.vue')),
   client: defineAsyncComponent(() => import('@/layouts/ClientLayout.vue')),
   default: defineAsyncComponent(() => import('@/layouts/DefaultLayout.vue')),
+  detail: defineAsyncComponent(() => import('@/layouts/DetailLayout.vue')),
 }
 
 // Get layout name from route meta, default to 'default'

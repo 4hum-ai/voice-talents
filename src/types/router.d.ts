@@ -3,7 +3,7 @@ import 'vue-router'
 declare module 'vue-router' {
   interface RouteMeta {
     /** Layout to use for this route */
-    layout?: 'talent' | 'client' | 'default' | 'none'
+    layout?: 'talent' | 'client' | 'default' | 'detail' | 'none'
     /** Page title */
     title?: string
     /** Page subtitle/description */
