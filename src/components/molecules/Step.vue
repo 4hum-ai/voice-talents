@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, watch } from 'vue'
 
-interface OnboardingStepContext {
+interface StepContext {
   currentStep: { value: number }
   totalSteps: { value: number }
   registerStep: (stepNumber: number) => void
@@ -30,22 +30,22 @@ const emit = defineEmits<{
   (e: 'validation-change', isValid: boolean): void
 }>()
 
-const onboardingContext = inject<OnboardingStepContext>('onboardingStepContainer')
+const stepContext = inject<StepContext>('stepContainer')
 
-if (!onboardingContext) {
-  throw new Error('OnboardingStep must be used within OnboardingStepContainer')
+if (!stepContext) {
+  throw new Error('Step must be used within StepContainer')
 }
 
 const isActive = computed(() => {
   // Computed refs have .value property
-  const stepValue = onboardingContext.currentStep.value
+  const stepValue = stepContext.currentStep.value
   return stepValue === props.step
 })
 
 // Register this step when mounted
 onMounted(() => {
-  onboardingContext.registerStep(props.step)
-  onboardingContext.setStepValidation(props.step, props.valid)
+  stepContext.registerStep(props.step)
+  stepContext.setStepValidation(props.step, props.valid)
   emit('validation-change', props.valid)
 })
 
@@ -53,7 +53,7 @@ onMounted(() => {
 watch(
   () => props.valid,
   (isValid) => {
-    onboardingContext.setStepValidation(props.step, isValid)
+    stepContext.setStepValidation(props.step, isValid)
     emit('validation-change', isValid)
   },
 )

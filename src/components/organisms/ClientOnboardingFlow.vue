@@ -1,5 +1,5 @@
 <template>
-  <OnboardingStepContainer
+  <StepContainer
     v-if="showOnboarding"
     v-model="currentStep"
     :total-steps="totalSteps"
@@ -10,7 +10,7 @@
     @close="closeOnboarding"
   >
     <!-- Step 1: About Your Company -->
-    <OnboardingStep :step="1" :valid="stepValidation[1]">
+    <Step :step="1" :valid="stepValidation[1]">
       <AccountInformation
         :model-value="accountData"
         :required-fields="['companyName']"
@@ -18,10 +18,10 @@
         @validation-change="updateStepValidation(1, $event)"
         @update:modelValue="handleAccountDataUpdate"
       />
-    </OnboardingStep>
+    </Step>
 
     <!-- Step 2: About You -->
-    <OnboardingStep :step="2" :valid="stepValidation[2]">
+    <Step :step="2" :valid="stepValidation[2]">
       <AccountInformation
         :model-value="accountData"
         :required-fields="['contactName', 'email']"
@@ -29,26 +29,26 @@
         @validation-change="updateStepValidation(2, $event)"
         @update:modelValue="handleAccountDataUpdate"
       />
-    </OnboardingStep>
+    </Step>
 
     <!-- Step 3: Project Types -->
-    <OnboardingStep :step="3" :valid="stepValidation[3]">
+    <Step :step="3" :valid="stepValidation[3]">
       <ClientProjectTypesStep
         :model-value="projectTypesData"
         @update:model-value="handleProjectTypesUpdate"
         @validation-change="updateStepValidation(3, $event)"
       />
-    </OnboardingStep>
+    </Step>
 
     <!-- Step 4: Agreement & Legal Requirements (Final Step) -->
-    <OnboardingStep :step="4" :valid="stepValidation[4]">
+    <Step :step="4" :valid="stepValidation[4]">
       <ClientAgreementStep
         :model-value="agreementData"
         @update:model-value="Object.assign(agreementData, $event)"
         @validation-change="updateStepValidation(4, $event)"
       />
-    </OnboardingStep>
-  </OnboardingStepContainer>
+    </Step>
+  </StepContainer>
 </template>
 
 <script setup lang="ts">
@@ -56,8 +56,8 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { AccountInformationData } from '@/types/onboarding'
 import { useOnboarding } from '@/composables/useOnboarding'
-import OnboardingStepContainer from '@/components/molecules/OnboardingStepContainer.vue'
-import OnboardingStep from '@/components/molecules/OnboardingStep.vue'
+import StepContainer from '@/components/molecules/StepContainer.vue'
+import Step from '@/components/molecules/Step.vue'
 import {
   AccountInformation,
   ClientAgreementStep,

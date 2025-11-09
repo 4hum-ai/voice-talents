@@ -60,10 +60,11 @@
           variant="primary"
           size="sm"
           class="h-9 flex-shrink-0 px-3"
+          :disabled="completeButtonDisabled"
           @click="$emit('complete')"
         >
           <Icon name="mdi:rocket-launch" class="h-4 w-4" />
-          <span class="ml-1 text-xs font-medium">Done</span>
+          <span class="ml-1 text-xs font-medium">{{ completeButtonText }}</span>
         </Button>
       </div>
 
@@ -103,6 +104,8 @@
 
         <!-- Right: Close and Next/Complete -->
         <div class="flex items-center space-x-3">
+          <!-- Custom header slot for extra content (e.g., auto-save indicator) -->
+          <slot name="header-extra" />
           <Button
             v-if="currentStep < totalSteps"
             variant="primary"
@@ -113,8 +116,14 @@
             <span>Next</span>
             <Icon name="mdi:chevron-right" class="ml-2 h-4 w-4" />
           </Button>
-          <Button v-else variant="primary" size="md" @click="$emit('complete')">
-            <span>Get Started</span>
+          <Button
+            v-else
+            variant="primary"
+            size="md"
+            :disabled="completeButtonDisabled"
+            @click="$emit('complete')"
+          >
+            <span>{{ completeButtonText }}</span>
             <Icon name="mdi:rocket-launch" class="ml-2 h-4 w-4" />
           </Button>
           <Button
@@ -131,7 +140,7 @@
 
     <!-- Main Content - Mobile: padding-bottom for bottom nav, Desktop: padding-top for top nav -->
     <div class="h-full overflow-y-auto pt-4 pb-16 sm:pt-20 sm:pb-0">
-      <div class="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-8">
+      <div class="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-8">
         <!-- Step Content -->
         <div class="space-y-6 sm:space-y-8">
           <slot />
@@ -146,7 +155,7 @@ import { computed, provide, ref, watch } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 
-interface OnboardingStepContext {
+interface StepContext {
   currentStep: { value: number }
   totalSteps: { value: number }
   registerStep: (stepNumber: number) => void
@@ -161,10 +170,16 @@ interface Props {
   totalSteps?: number
   /** Whether current step can proceed */
   canProceed?: boolean
+  /** Custom text for complete button (default: "Get Started") */
+  completeButtonText?: string
+  /** Whether complete button is disabled */
+  completeButtonDisabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   canProceed: true,
+  completeButtonText: 'Get Started',
+  completeButtonDisabled: false,
 })
 
 const emit = defineEmits<{
@@ -249,9 +264,9 @@ const goToPrevious = () => {
   }
 }
 
-// Provide context to child OnboardingStep components
+// Provide context to child Step components
 // Use computed refs wrapped in objects for reactivity
-provide<OnboardingStepContext>('onboardingStepContainer', {
+provide<StepContext>('stepContainer', {
   currentStep: computed(() => currentStep.value),
   totalSteps: computed(() => totalSteps.value),
   registerStep,

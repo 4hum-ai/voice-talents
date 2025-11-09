@@ -1,5 +1,5 @@
 <template>
-  <OnboardingStepContainer
+  <StepContainer
     v-if="showOnboarding"
     v-model="currentStep"
     :total-steps="totalSteps"
@@ -13,39 +13,39 @@
     <Transition :name="transitionName" mode="out-in">
       <div :key="currentStep">
         <!-- Step 1: Welcome -->
-        <OnboardingStep :step="1" :valid="true">
+        <Step :step="1" :valid="true">
           <WelcomeStep />
-        </OnboardingStep>
+        </Step>
 
         <!-- Step 2: Basic Info -->
-        <OnboardingStep
+        <Step
           :step="2"
           :valid="!!(profileData.displayName && profileData.bio && profileData.location)"
         >
           <BasicInfoStep :profile-data="profileData" @update="updateProfileData" />
-        </OnboardingStep>
+        </Step>
 
         <!-- Step 3: Voice Types -->
-        <OnboardingStep :step="3" :valid="profileData.voiceTypes.length > 0">
+        <Step :step="3" :valid="profileData.voiceTypes.length > 0">
           <VoiceTypesStep :profile-data="profileData" @update="updateProfileData" />
-        </OnboardingStep>
+        </Step>
 
         <!-- Step 4: Languages -->
-        <OnboardingStep :step="4" :valid="profileData.languages.length > 0">
+        <Step :step="4" :valid="profileData.languages.length > 0">
           <LanguagesStep :profile-data="profileData" @update="updateProfileData" />
-        </OnboardingStep>
+        </Step>
 
         <!-- Step 5: Upload Voice Samples -->
-        <OnboardingStep :step="5" :valid="Object.keys(voiceSamples).length > 0">
+        <Step :step="5" :valid="Object.keys(voiceSamples).length > 0">
           <VoiceSamplesStep
             :profile-data="profileData"
             :voice-samples="voiceSamples"
             @update="updateVoiceSamples"
           />
-        </OnboardingStep>
+        </Step>
 
         <!-- Step 6: Pricing & Rates -->
-        <OnboardingStep
+        <Step
           :step="6"
           :valid="
             Object.values(pricingData.jobTypeRates).some(
@@ -58,10 +58,10 @@
             :pricing-data="pricingData"
             @update="updatePricingData"
           />
-        </OnboardingStep>
+        </Step>
 
         <!-- Step 7: Agreement & Legal Requirements (Final Step) -->
-        <OnboardingStep
+        <Step
           :step="7"
           :valid="
             agreementData.isAgeVerified &&
@@ -74,18 +74,18 @@
             @update:model-value="Object.assign(agreementData, $event)"
             @validation-change="updateStepValidation(7, $event)"
           />
-        </OnboardingStep>
+        </Step>
       </div>
     </Transition>
-  </OnboardingStepContainer>
+  </StepContainer>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
-import OnboardingStepContainer from '@/components/molecules/OnboardingStepContainer.vue'
-import OnboardingStep from '@/components/molecules/OnboardingStep.vue'
+import StepContainer from '@/components/molecules/StepContainer.vue'
+import Step from '@/components/molecules/Step.vue'
 import WelcomeStep from '@/components/molecules/TalentProfile/WelcomeStep.vue'
 import AgreementStep from '@/components/molecules/TalentProfile/AgreementStep.vue'
 import BasicInfoStep from '@/components/molecules/TalentProfile/BasicInfoStep.vue'

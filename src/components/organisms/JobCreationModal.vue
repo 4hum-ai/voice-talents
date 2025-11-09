@@ -1,118 +1,81 @@
 <template>
-  <div v-if="open" class="bg-background fixed inset-0 z-50 overflow-y-auto pt-16">
-    <!-- Top Navigation Bar -->
-    <div
-      class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
-    >
-      <div class="flex items-center justify-between px-6 py-4">
-        <!-- Left: Previous Button -->
-        <Button v-if="currentStep > 1" variant="outline" size="md" @click="previousStep">
-          <div class="flex items-center gap-2">
-            <Icon name="mdi:chevron-left" class="h-6 w-6" />
-            <span>Previous</span>
-          </div>
-        </Button>
-        <div v-else class="w-20" />
-
-        <!-- Center: Progress -->
-        <div class="flex items-center space-x-4">
-          <div class="text-muted-foreground text-sm">
-            Step {{ currentStep }} of {{ totalSteps }}
-          </div>
-          <div class="bg-muted h-2 w-32 rounded-full">
-            <div
-              class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
-              :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
-            />
-          </div>
-          <div class="text-muted-foreground text-sm">
-            {{ Math.round((currentStep / totalSteps) * 100) }}%
-          </div>
-        </div>
-
-        <!-- Right: Close and Next -->
-        <div class="flex items-center space-x-3">
-          <!-- Auto-save Status Indicator (subtle) -->
-          <div
-            v-if="currentDraftId && lastAutoSave"
-            class="text-muted-foreground flex items-center text-xs"
-          >
-            <div class="mr-2 h-1.5 w-1.5 rounded-full bg-green-500"></div>
-            Saved {{ formatTime(lastAutoSave) }}
-          </div>
-
-          <Button
-            v-if="currentStep < totalSteps"
-            variant="primary"
-            :disabled="!canProceedToNext"
-            @click="nextStep"
-          >
-            Next
-            <Icon name="mdi:chevron-right" class="ml-2 h-4 w-4" />
-          </Button>
-          <Button
-            v-if="currentStep === totalSteps"
-            variant="primary"
-            @click="publishJobHandler"
-            :disabled="isSubmitting"
-          >
-            {{ isSubmitting ? 'Processing...' : 'Publish Job' }}
-            <Icon name="mdi:rocket-launch" class="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm" @click="closeModal">
-            <Icon name="mdi:close" class="h-5 w-5" />
-          </Button>
-        </div>
+  <StepContainer
+    v-if="open"
+    v-model="currentStep"
+    :total-steps="totalSteps"
+    :can-proceed="canProceedToNext"
+    :complete-button-text="isSubmitting ? 'Processing...' : 'Publish Job'"
+    :complete-button-disabled="isSubmitting"
+    @next="nextStep"
+    @previous="previousStep"
+    @complete="publishJobHandler"
+    @close="closeModal"
+  >
+    <!-- Auto-save Status Indicator (custom slot for desktop) -->
+    <template #header-extra>
+      <div
+        v-if="currentDraftId && lastAutoSave"
+        class="text-muted-foreground hidden items-center text-xs sm:flex"
+      >
+        <div class="mr-2 h-1.5 w-1.5 rounded-full bg-green-500"></div>
+        Saved {{ formatTime(lastAutoSave) }}
       </div>
-    </div>
+    </template>
 
-    <!-- Main Content Area -->
-    <div class="mx-auto max-w-7xl">
-      <div class="mx-auto py-8 pt-20">
-        <!-- Step Content -->
-        <Transition :name="transitionName" mode="out-in">
-          <div :key="currentStep" class="min-h-[600px]">
-            <!-- Step 1: Voice Type Selection -->
-            <JobTypeStep
-              v-if="currentStep === 1"
-              :job-type="selectedVoiceType || undefined"
-              @update:job-type="selectVoiceType"
-            />
+    <!-- Step Content with transitions -->
+    <Transition :name="transitionName" mode="out-in">
+      <div :key="currentStep" class="min-h-[600px]">
+        <!-- Step 1: Voice Type Selection -->
+        <Step :step="1" :valid="!!selectedVoiceType">
+          <JobTypeStep
+            :job-type="selectedVoiceType || undefined"
+            @update:job-type="selectVoiceType"
+          />
+        </Step>
 
-            <!-- Step 2: Basic Information & Requirements (All Types) -->
-            <BasicInfoRequirementsStep
-              v-if="currentStep === 2"
-              v-model:title="jobForm.title"
-              v-model:description="jobForm.description"
-              v-model:project-type="jobForm.projectType"
-              v-model:requirements="jobForm.requirements as any"
-              v-model:deadline="jobForm.deadline"
-              v-model:files="jobForm.files"
-              :voice-type="selectedVoiceType"
-            />
+        <!-- Step 2: Basic Information & Requirements (All Types) -->
+        <Step
+          :step="2"
+          :valid="
+            !!jobForm.title.trim() &&
+            !!jobForm.projectType &&
+            !!jobForm.requirements.language &&
+            !!jobForm.deadline
+          "
+        >
+          <BasicInfoRequirementsStep
+            v-model:title="jobForm.title"
+            v-model:description="jobForm.description"
+            v-model:project-type="jobForm.projectType"
+            v-model:requirements="jobForm.requirements as any"
+            v-model:deadline="jobForm.deadline"
+            v-model:files="jobForm.files"
+            :voice-type="selectedVoiceType"
+          />
+        </Step>
 
-            <!-- Step 3: Talent Options (All Types) -->
-            <TalentOptionsStep
-              v-if="currentStep === 3"
-              v-model:talent-options="jobForm.talentOptions"
-              v-model:ai-settings="jobForm.aiSettings"
-              v-model:premium-features="jobForm.premiumFeatures"
-              :voice-type="selectedVoiceType"
-              :requirements="jobForm.requirements"
-            />
+        <!-- Step 3: Talent Options (All Types) -->
+        <Step :step="3" :valid="true">
+          <TalentOptionsStep
+            v-model:talent-options="jobForm.talentOptions"
+            v-model:ai-settings="jobForm.aiSettings"
+            v-model:premium-features="jobForm.premiumFeatures"
+            :voice-type="selectedVoiceType"
+            :requirements="jobForm.requirements"
+          />
+        </Step>
 
-            <!-- Step 4: Review & Payment (All Types) -->
-            <ReviewPaymentStep
-              v-if="currentStep === 4"
-              :job-form="jobForm as any"
-              :voice-type="selectedVoiceType"
-              :is-submitting="isSubmitting"
-            />
-          </div>
-        </Transition>
+        <!-- Step 4: Review & Payment (All Types) -->
+        <Step :step="4" :valid="true">
+          <ReviewPaymentStep
+            :job-form="jobForm as any"
+            :voice-type="selectedVoiceType"
+            :is-submitting="isSubmitting"
+          />
+        </Step>
       </div>
-    </div>
-  </div>
+    </Transition>
+  </StepContainer>
 </template>
 
 <script setup lang="ts">
@@ -124,8 +87,8 @@ import type { JobPosting } from '@/types/voice-client'
 import type { VoiceType } from '@/types/voice-talent'
 
 // Components
-import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
+import StepContainer from '@/components/molecules/StepContainer.vue'
+import Step from '@/components/molecules/Step.vue'
 import JobTypeStep from '../molecules/JobCreationSteps/JobTypeStep.vue'
 import BasicInfoRequirementsStep from '../molecules/JobCreationSteps/BasicInfoRequirementsStep.vue'
 import TalentOptionsStep from '../molecules/JobCreationSteps/TalentOptionsStep.vue'
@@ -252,28 +215,20 @@ const selectVoiceType = (type: 'talent_only' | 'ai_synthesis' | 'hybrid_approach
 }
 
 const nextStep = () => {
-  if (
-    currentStep.value < totalSteps.value &&
-    stepValidation.value[currentStep.value as keyof typeof stepValidation.value]?.()
-  ) {
-    transitionName.value = 'slide-left'
-
-    // Handle step 1: ensure voice type is set
-    if (currentStep.value === 1) {
-      if (selectedVoiceType.value) {
-        jobForm.voiceType = selectedVoiceType.value
-        currentStep.value++
-      }
-    } else {
-      currentStep.value++
+  // Handle step 1: ensure voice type is set
+  if (currentStep.value === 1) {
+    if (selectedVoiceType.value) {
+      jobForm.voiceType = selectedVoiceType.value
+      transitionName.value = 'slide-left'
     }
+  } else {
+    transitionName.value = 'slide-left'
   }
 }
 
 const previousStep = () => {
   if (currentStep.value > 1) {
     transitionName.value = 'slide-right'
-    currentStep.value--
   }
 }
 
