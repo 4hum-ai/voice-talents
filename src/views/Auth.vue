@@ -119,23 +119,31 @@
         <div class="mt-6 border-t border-gray-200/50 pt-4 sm:mt-8 sm:pt-6 dark:border-gray-700/50">
           <p class="px-2 text-center text-xs text-gray-500 dark:text-gray-400">
             By signing in, you agree to our
-            <RouterLink
-              to="/content/terms-of-service"
-              target="_blank"
+            <button
+              type="button"
               class="text-primary hover:text-primary/80 underline"
+              @click="openContentViewer('terms-of-service')"
             >
               terms of service
-            </RouterLink>
+            </button>
             and
-            <RouterLink
-              to="/content/privacy-policy"
-              target="_blank"
+            <button
+              type="button"
               class="text-primary hover:text-primary/80 underline"
+              @click="openContentViewer('privacy-policy')"
             >
               privacy policy
-            </RouterLink>
+            </button>
           </p>
         </div>
+
+        <!-- Content Viewer -->
+        <ContentViewer
+          :open="contentViewerOpen"
+          :slug="currentContentSlug"
+          @update:open="contentViewerOpen = $event"
+          @close="contentViewerOpen = false"
+        />
       </div>
 
       <!-- Subtle bottom glow effect -->
@@ -148,10 +156,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute, RouterLink } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
+import ContentViewer from '@/components/molecules/ContentViewer.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -159,6 +168,15 @@ const authStore = useAuthStore()
 
 const isLoading = ref(false)
 const error = ref('')
+
+// Content viewer state
+const contentViewerOpen = ref(false)
+const currentContentSlug = ref('')
+
+const openContentViewer = (slug: string) => {
+  currentContentSlug.value = slug
+  contentViewerOpen.value = true
+}
 
 const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'apple') => {
   try {

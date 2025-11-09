@@ -143,14 +143,14 @@
                 <p class="mb-2 text-sm font-medium text-blue-800 dark:text-blue-200">
                   Reference Agreement Template:
                 </p>
-                <RouterLink
-                  :to="templateUrl"
-                  target="_blank"
+                <button
+                  type="button"
                   class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm underline"
+                  @click="openContentViewer"
                 >
                   <Icon name="mdi:open-in-new" class="h-4 w-4" />
                   View {{ agreementType === 'service' ? 'Service' : 'Royalty' }} Agreement Template
-                </RouterLink>
+                </button>
                 <p class="mt-2 text-xs text-blue-700 dark:text-blue-300">
                   This agreement is based on the standard template. Review the full template for all
                   terms and conditions.
@@ -190,15 +190,23 @@
         Approve & Create Agreement
       </Button>
     </div>
+
+    <!-- Content Viewer -->
+    <ContentViewer
+      :open="contentViewerOpen"
+      :slug="currentContentSlug"
+      @update:open="contentViewerOpen = $event"
+      @close="contentViewerOpen = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { RouterLink } from 'vue-router'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import ContentViewer from '@/components/molecules/ContentViewer.vue'
 
 interface AgreementData {
   projectTitle: string
@@ -227,13 +235,18 @@ const emit = defineEmits<Emits>()
 
 const localAccepted = ref(props.accepted || false)
 
-// Agreement template URL based on type
-const templateUrl = computed(() => {
+// Content viewer state
+const contentViewerOpen = ref(false)
+const currentContentSlug = computed(() => {
   if (props.agreementType === 'service') {
-    return '/content/agreement-template-service'
+    return 'agreement-template-service'
   }
-  return '/content/agreement-template-royalty'
+  return 'agreement-template-royalty'
 })
+
+const openContentViewer = () => {
+  contentViewerOpen.value = true
+}
 
 // Format currency
 const formatCurrency = (amount: number, currency: string) => {

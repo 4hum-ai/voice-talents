@@ -23,21 +23,21 @@
               />
               <span class="text-foreground text-sm leading-relaxed">
                 I have read and agree to the
-                <RouterLink
-                  to="/content/terms-of-service-clients"
-                  target="_blank"
+                <button
+                  type="button"
                   class="text-primary hover:text-primary/80 underline"
+                  @click="openContentViewer('terms-of-service-clients')"
                 >
                   Terms of Service
-                </RouterLink>
+                </button>
                 and
-                <RouterLink
-                  to="/content/privacy-policy"
-                  target="_blank"
+                <button
+                  type="button"
                   class="text-primary hover:text-primary/80 underline"
+                  @click="openContentViewer('privacy-policy')"
                 >
                   Privacy Policy
-                </RouterLink>
+                </button>
                 .
               </span>
             </label>
@@ -56,14 +56,22 @@
         </p>
       </div>
     </div>
+
+    <!-- Content Viewer -->
+    <ContentViewer
+      :open="contentViewerOpen"
+      :slug="currentContentSlug"
+      @update:open="contentViewerOpen = $event"
+      @close="contentViewerOpen = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import { RouterLink } from 'vue-router'
+import { reactive, ref, watch } from 'vue'
 import Card from '@/components/atoms/Card.vue'
 import Icon from '@/components/atoms/Icon.vue'
+import ContentViewer from '@/components/molecules/ContentViewer.vue'
 
 interface AgreementData {
   acceptedTerms: boolean
@@ -84,6 +92,15 @@ const emit = defineEmits<Emits>()
 const localData = reactive<AgreementData>({
   acceptedTerms: props.modelValue?.acceptedTerms || false,
 })
+
+// Content viewer state
+const contentViewerOpen = ref(false)
+const currentContentSlug = ref('')
+
+const openContentViewer = (slug: string) => {
+  currentContentSlug.value = slug
+  contentViewerOpen.value = true
+}
 
 // Watch for changes and emit validation status
 watch(

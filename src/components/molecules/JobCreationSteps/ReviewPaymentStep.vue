@@ -4,14 +4,14 @@
       <h1 class="text-foreground mb-4 text-3xl font-bold">Step 4: Review & Payment</h1>
       <p class="text-muted-foreground text-lg">Review your project details and complete payment</p>
       <div class="mt-4 flex justify-center gap-4">
-        <RouterLink
-          :to="getTemplateUrl"
-          target="_blank"
+        <button
+          type="button"
           class="text-primary hover:text-primary/80 inline-flex items-center gap-2 text-sm underline"
+          @click="openContentViewer"
         >
           <Icon name="mdi:file-document" class="h-4 w-4" />
           View Agreement Template Reference
-        </RouterLink>
+        </button>
       </div>
     </div>
 
@@ -257,15 +257,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Content Viewer -->
+    <ContentViewer
+      :open="contentViewerOpen"
+      :slug="currentContentSlug"
+      @update:open="contentViewerOpen = $event"
+      @close="contentViewerOpen = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, ref } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
 import { useToast } from '@/composables/useToast'
 import { getPremiumFeatureById } from '@/composables/usePremiumFeatures'
+import ContentViewer from '@/components/molecules/ContentViewer.vue'
 import IconMdiContentCopy from '~icons/mdi/content-copy'
 import IconMdiFileDocument from '~icons/mdi/file-document'
 import IconMdiFileMusic from '~icons/mdi/file-music'
@@ -433,15 +441,22 @@ const hasFiles = computed(() => {
   )
 })
 
-// Determine agreement template URL based on voice type
-const getTemplateUrl = computed(() => {
+// Content viewer state
+const contentViewerOpen = ref(false)
+
+// Determine agreement template slug based on voice type
+const currentContentSlug = computed(() => {
   // talent_only = Service Agreement
   // ai_synthesis = Royalty Agreement
   // hybrid_approach = Both (show Service as primary)
   if (props.voiceType === 'ai_synthesis') {
-    return '/content/agreement-template-royalty'
+    return 'agreement-template-royalty'
   }
   // Default to service agreement for talent_only and hybrid
-  return '/content/agreement-template-service'
+  return 'agreement-template-service'
 })
+
+const openContentViewer = () => {
+  contentViewerOpen.value = true
+}
 </script>
