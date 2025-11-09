@@ -41,25 +41,6 @@
 
     <template #footer>
       <div class="space-y-4">
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-muted/60 hover:bg-muted rounded-lg p-2.5 text-center transition-colors">
-            <div class="text-foreground mb-0.5 text-base font-semibold">
-              {{ stats.activeJobs }}
-            </div>
-            <div class="text-muted-foreground text-xs">Active Jobs</div>
-          </div>
-          <div class="bg-muted/60 hover:bg-muted rounded-lg p-2.5 text-center transition-colors">
-            <div class="text-foreground mb-0.5 text-base font-semibold">
-              ${{ stats.monthlySpent.toLocaleString() }}
-            </div>
-            <div class="text-muted-foreground text-xs">This Month</div>
-          </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="border-border border-t"></div>
-
         <!-- Action Buttons: Settings, Theme -->
         <div class="flex items-center gap-1.5">
           <Button

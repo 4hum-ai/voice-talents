@@ -60,9 +60,21 @@
           />
         </Step>
 
-        <!-- Step 7: Agreement & Legal Requirements (Final Step) -->
+        <!-- Step 7: Payout Preferences -->
         <Step
           :step="7"
+          :valid="
+            !!payoutData.frequency &&
+            (payoutData.frequency !== 'threshold' ||
+              !!(payoutData.thresholdAmount && payoutData.thresholdAmount >= 5))
+          "
+        >
+          <PayoutPreferencesStep :payout-data="payoutData" @update="updatePayoutData" />
+        </Step>
+
+        <!-- Step 8: Agreement & Legal Requirements (Final Step) -->
+        <Step
+          :step="8"
           :valid="
             agreementData.isAgeVerified &&
             agreementData.acceptedTerms &&
@@ -72,7 +84,7 @@
           <AgreementStep
             :model-value="agreementData"
             @update:model-value="Object.assign(agreementData, $event)"
-            @validation-change="updateStepValidation(7, $event)"
+            @validation-change="updateStepValidation(8, $event)"
           />
         </Step>
       </div>
@@ -93,6 +105,7 @@ import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
 import VoiceSamplesStep from '@/components/molecules/TalentProfile/VoiceSamplesStep.vue'
 import PricingStep from '@/components/molecules/TalentProfile/PricingStep.vue'
+import PayoutPreferencesStep from '@/components/molecules/TalentProfile/PayoutPreferencesStep.vue'
 
 interface Props {
   show?: boolean
@@ -113,7 +126,7 @@ const { completeTalentOnboarding } = useOnboarding()
 
 // State
 const currentStep = ref(1)
-const totalSteps = 7
+const totalSteps = 8
 const transitionName = ref('slide-left')
 
 // Agreement data
@@ -173,6 +186,18 @@ const pricingData = reactive({
   jobTypeRates: {} as Record<string, string>,
 })
 
+// Payout preferences data - initialize with default values
+const payoutData = reactive({
+  frequency: 'manual' as 'monthly' | 'threshold' | 'manual',
+  thresholdAmount: 500 as number | undefined,
+  currency: 'USD' as 'USD' | 'EUR' | 'JPY' | 'KRW' | 'CNY' | 'INR',
+})
+
+// Ensure payoutData.frequency is always set (for step 7 validation)
+if (!payoutData.frequency) {
+  payoutData.frequency = 'manual'
+}
+
 // Computed
 const showOnboarding = computed(() => props.show)
 
@@ -201,7 +226,16 @@ const canProceedToNext = computed((): boolean => {
       return Object.values(pricingData.jobTypeRates).some(
         (rate) => rate && rate !== '' && parseFloat(rate) > 0,
       )
-    case 7:
+    case 7: {
+      // Payout preferences - must have frequency, and threshold amount if threshold selected
+      // 'manual' frequency is always valid (default)
+      const hasFrequency = !!payoutData.frequency
+      const thresholdValid =
+        payoutData.frequency !== 'threshold' ||
+        !!(payoutData.thresholdAmount && payoutData.thresholdAmount >= 5)
+      return !!(hasFrequency && thresholdValid)
+    }
+    case 8:
       // Final step: Agreement - must accept all terms
       return (
         agreementData.isAgeVerified &&
@@ -226,19 +260,25 @@ const updatePricingData = (data: Partial<typeof pricingData>) => {
   Object.assign(pricingData, data)
 }
 
+const updatePayoutData = (data: Partial<typeof payoutData>) => {
+  Object.assign(payoutData, data)
+}
+
 // Methods
 
 const nextStep = () => {
+  // StepContainer already handles the step increment via v-model
+  // We just need to update the transition direction
   if (currentStep.value < totalSteps && canProceedToNext.value) {
     transitionName.value = 'slide-left'
-    currentStep.value++
   }
 }
 
 const previousStep = () => {
+  // StepContainer already handles the step decrement via v-model
+  // We just need to update the transition direction
   if (currentStep.value > 1) {
     transitionName.value = 'slide-right'
-    currentStep.value--
   }
 }
 
@@ -251,6 +291,7 @@ const completeOnboarding = async () => {
       voiceSamples: voiceSamples,
       preferences: preferencesData,
       pricing: pricingData,
+      payoutPreferences: payoutData,
       completedAt: new Date().toISOString(),
     }
 

@@ -36,9 +36,16 @@ if (!stepContext) {
   throw new Error('Step must be used within StepContainer')
 }
 
+// Create a computed that properly tracks the step context
+// The stepContext.currentStep is a ComputedRef, we need to access its value
+const currentStepValue = computed(() => {
+  // Access the computed ref's value - Vue will track this
+  const ref = stepContext.currentStep as { value: number }
+  return ref.value
+})
+
 const isActive = computed(() => {
-  // Computed refs have .value property
-  const stepValue = stepContext.currentStep.value
+  const stepValue = currentStepValue.value
   return stepValue === props.step
 })
 

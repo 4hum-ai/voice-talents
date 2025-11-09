@@ -294,6 +294,33 @@ export interface Payout extends BaseEntity {
   publisherName?: string
 }
 
+// Payout preferences for talent users
+export interface PayoutPreferences {
+  frequency: 'monthly' | 'threshold' | 'manual'
+  thresholdAmount?: number // Required if frequency is 'threshold'
+  currency: 'USD' | 'EUR' | 'JPY' | 'KRW' | 'CNY' | 'INR'
+}
+
+// Talent balance information
+export interface TalentBalance {
+  availableBalance: number
+  pendingBalance: number
+  currency: 'USD' | 'EUR' | 'JPY' | 'KRW' | 'CNY' | 'INR'
+  lastPayoutDate?: string
+  nextScheduledPayout?: string
+}
+
+// Payout fee calculation result
+export interface PayoutFeeCalculation {
+  amount: number
+  percentageFee: number // 1.5%
+  fixedFee: number // $1.50
+  fxFee: number // 0.5% (if applicable)
+  totalFees: number
+  netAmount: number
+  currency: string
+}
+
 // Revenue Distribution model interfaces
 export interface RevenueDistribution extends BaseEntity {
   date: string

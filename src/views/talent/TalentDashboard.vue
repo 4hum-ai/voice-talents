@@ -10,6 +10,11 @@
       </p>
     </div>
 
+    <!-- Balance Card -->
+    <div v-if="balance" class="mb-8">
+      <BalanceCard :balance="balance" @payout-requested="handlePayoutRequested" />
+    </div>
+
     <!-- Enhanced Stats Overview -->
     <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       <div class="group">
@@ -246,13 +251,18 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import TalentOnboarding from '@/components/organisms/TalentOnboarding.vue'
+import BalanceCard from '@/components/molecules/BalanceCard.vue'
+import { usePayout } from '@/composables/usePayout'
 
 const router = useRouter()
 
 // Onboarding logic
 const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
-const { success } = useToast()
+const { success, error } = useToast()
 const authStore = useAuthStore()
+
+// Payout logic
+const { balance, fetchBalance, requestPayout } = usePayout()
 
 // Use authenticated user data instead of mock data
 // const currentActor = computed(() => ({
@@ -358,9 +368,29 @@ const closeTalentOnboarding = () => {
   // Onboarding will be hidden automatically by the computed property
 }
 
-onMounted(() => {
+const handlePayoutRequested = async (amount: number) => {
+  if (!authStore.user?.id) {
+    error('User not authenticated')
+    return
+  }
+
+  try {
+    await requestPayout(authStore.user.id, amount, balance.value?.currency || 'USD')
+    success(`Payout request for $${amount.toFixed(2)} submitted successfully`)
+    await fetchBalance(authStore.user.id)
+  } catch (err) {
+    error(err instanceof Error ? err.message : 'Failed to request payout')
+  }
+}
+
+onMounted(async () => {
   // Set user mode to talent when accessing talent dashboard
   setUserMode('talent')
+
+  // Fetch balance if user is authenticated
+  if (authStore.user?.id) {
+    await fetchBalance(authStore.user.id)
+  }
 
   // Initialize dashboard data
   console.log('Talent dashboard mounted')

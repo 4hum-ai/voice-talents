@@ -2,9 +2,6 @@
   <div class="space-y-8">
     <div class="text-center">
       <h3 class="text-foreground mb-2 text-2xl font-semibold">Let's Get to Know You</h3>
-      <p class="text-muted-foreground">
-        Share your voice qualities so clients can find the perfect match for their projects.
-      </p>
     </div>
 
     <div class="mx-auto max-w-2xl space-y-6">

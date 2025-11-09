@@ -28,22 +28,16 @@
             />
           </Tab>
 
+          <!-- Payments Tab -->
+          <Tab id="payments" label="Payments">
+            <PayoutSettings @validation-change="updateTabValidation('payments', $event)" />
+          </Tab>
+
           <!-- Data & Export Tab -->
           <Tab id="data" label="Data & Export">
             <DataExport @validation-change="updateTabValidation('data', $event)" />
           </Tab>
         </TabNavigation>
-
-        <!-- Theme Toggle Section -->
-        <div class="border-border bg-card mt-8 rounded-lg border p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-foreground mb-1 text-lg font-semibold">Theme</h3>
-              <p class="text-muted-foreground text-sm">Switch between light and dark mode</p>
-            </div>
-            <ThemeToggle />
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -55,12 +49,12 @@ import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
 import {
   AccountInformation,
   NotificationPreferences,
   PrivacySettings,
+  PayoutSettings,
   DataExport,
 } from '@/components/molecules/TalentSettings'
 

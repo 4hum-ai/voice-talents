@@ -254,6 +254,36 @@
           </div>
         </div>
 
+        <!-- Payout Information Banner (for completed jobs) -->
+        <div
+          v-if="!isCastingContext && job.status === 'completed'"
+          class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+        >
+          <div class="flex items-start space-x-3">
+            <Icon
+              name="mdi:information"
+              class="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400"
+            />
+            <div class="flex-1">
+              <h4 class="text-foreground mb-1 font-semibold">Earnings Added to Your Balance</h4>
+              <p class="text-muted-foreground text-sm">
+                Your earnings from this job have been added to your available balance. You can
+                request payout anytime from your dashboard or settings.
+              </p>
+              <div class="mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  @click="$router.push('/talent/settings?tab=payments')"
+                >
+                  <Icon name="mdi:wallet" class="mr-1 h-4 w-4" />
+                  View Balance & Request Payout
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Deliverables -->
         <div v-if="!isCastingContext" class="bg-card border-border rounded-lg border p-6 shadow-sm">
           <h3 class="text-foreground mb-4 text-lg font-semibold">Deliverables</h3>
@@ -328,6 +358,7 @@ import CastingSubmit from './CastingSubmit.vue'
 // import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
+import Icon from '@/components/atoms/Icon.vue'
 import { useToast } from '@/composables/useToast'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'

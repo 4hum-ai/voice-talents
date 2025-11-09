@@ -122,7 +122,24 @@ const updateProfileData = (data: Partial<typeof profileData>) => {
 }
 
 const updateVoiceSamples = (data: Partial<typeof voiceSamples>) => {
-  Object.assign(voiceSamples, data)
+  // Clean up old preview URLs before replacing
+  Object.keys(voiceSamples).forEach((key) => {
+    if (voiceSamples[key]?.previewUrl) {
+      URL.revokeObjectURL(voiceSamples[key].previewUrl)
+    }
+  })
+
+  // Replace the entire object to ensure reactivity works for deletions
+  // Note: We can't directly assign to a reactive object, so we need to clear and reassign
+  const keysToDelete = Object.keys(voiceSamples).filter((key) => !(key in data))
+  keysToDelete.forEach((key) => {
+    delete voiceSamples[key]
+  })
+
+  // Update existing or add new entries
+  Object.keys(data).forEach((key) => {
+    voiceSamples[key] = data[key]!
+  })
 }
 
 const updatePricingData = (data: Partial<typeof pricingData>) => {

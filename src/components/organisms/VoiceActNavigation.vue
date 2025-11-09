@@ -41,25 +41,6 @@
 
     <template #footer>
       <div class="space-y-4">
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-muted/60 hover:bg-muted rounded-lg p-2.5 text-center transition-colors">
-            <div class="text-foreground mb-0.5 text-base font-semibold">
-              {{ stats.activeProjects }}
-            </div>
-            <div class="text-muted-foreground text-xs">Active</div>
-          </div>
-          <div class="bg-muted/60 hover:bg-muted rounded-lg p-2.5 text-center transition-colors">
-            <div class="text-foreground mb-0.5 text-base font-semibold">
-              ${{ stats.monthlyEarnings.toLocaleString() }}
-            </div>
-            <div class="text-muted-foreground text-xs">This Month</div>
-          </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="border-border border-t"></div>
-
         <!-- Action Buttons: Settings, Theme -->
         <div class="flex items-center gap-1.5">
           <Button
@@ -99,6 +80,7 @@ import HomeIcon from '~icons/mdi/home'
 import UserIcon from '~icons/mdi/account'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 import BriefcaseIcon from '~icons/mdi/briefcase'
+import WalletIcon from '~icons/mdi/wallet'
 // Icons removed; using Button icon prop instead
 
 const router = useRouter()
@@ -129,6 +111,7 @@ const activeItemId = computed(() => {
   if (path.startsWith('/talent/jobs')) return 'jobs'
   if (path.startsWith('/talent/projects')) return 'projects'
   if (path.startsWith('/talent/casting')) return 'casting'
+  if (path.startsWith('/talent/payouts')) return 'payouts'
   if (path.startsWith('/talent/settings')) return 'settings'
   return 'dashboard'
 })
@@ -172,6 +155,13 @@ const navigationSections = computed(() => [
         description: 'Find new projects',
         icon: MegaphoneIcon,
         action: () => router.push('/talent/casting'),
+      },
+      {
+        id: 'payouts',
+        title: 'Payouts',
+        description: 'Balance, history & requests',
+        icon: WalletIcon,
+        action: () => router.push('/talent/payouts'),
       },
     ],
   },

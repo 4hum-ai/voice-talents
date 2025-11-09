@@ -81,4 +81,14 @@ export const talentRoutes: RouteRecordRaw[] = [
       layout: 'talent',
     },
   },
+  {
+    path: '/talent/payouts',
+    component: () => import('../views/talent/PayoutsView.vue'),
+    meta: {
+      title: 'Payouts',
+      subtitle: 'View your balance, payout history, and request payouts',
+      requiresAuth: true,
+      layout: 'talent',
+    },
+  },
 ]

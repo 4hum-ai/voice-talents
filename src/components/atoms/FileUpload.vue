@@ -18,24 +18,32 @@
         @change="handleFileSelect"
       />
 
-      <div class="space-y-3">
+      <div v-if="!hasFile" class="space-y-3">
         <div class="bg-muted mx-auto flex h-12 w-12 items-center justify-center rounded-lg">
           <Icon name="mdi:cloud-upload" class="text-muted-foreground h-6 w-6" />
         </div>
 
         <div>
           <p class="text-foreground text-sm font-medium">
-            {{ isDragOver ? 'Drop files here' : 'Click to upload or drag and drop' }}
+            {{ isDragOver ? dropText : uploadText }}
+          </p>
+          <p v-if="secondaryText" class="text-muted-foreground mt-1 mb-4 text-sm">
+            {{ secondaryText }}
           </p>
           <p class="text-muted-foreground mt-1 text-xs">
             {{ acceptText }} (max {{ maxSize }}MB{{ multiple ? ' each' : '' }})
           </p>
         </div>
 
-        <div v-if="premiumFeature" class="flex items-center justify-center space-x-2">
-          <Icon name="mdi:star" class="text-primary h-4 w-4" />
-          <span class="text-primary text-xs font-medium">Premium Feature</span>
-        </div>
+        <Button
+          v-if="showButton"
+          variant="primary"
+          class="mt-4 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
+          @click.stop="triggerFileInput"
+        >
+          <Icon name="mdi:folder-open" class="mr-2 h-4 w-4" />
+          {{ buttonText }}
+        </Button>
       </div>
     </div>
 
@@ -45,22 +53,28 @@
     </div>
 
     <!-- File Preview -->
-    <div v-if="modelValue && !multiple" class="mt-3">
+    <div v-if="hasFile && !multiple && modelValue" class="mt-3 space-y-4">
       <div class="bg-muted/50 flex items-center justify-between rounded-lg p-3">
         <div class="flex items-center space-x-3">
           <Icon
-            :name="getFileIcon(Array.isArray(modelValue) ? modelValue[0]?.type : modelValue.type)"
+            :name="
+              getFileIcon(
+                Array.isArray(modelValue) ? modelValue[0]?.type : (modelValue as File).type,
+              )
+            "
             class="text-muted-foreground h-5 w-5"
           />
           <div>
             <p class="text-foreground text-sm font-medium">
-              {{ Array.isArray(modelValue) ? `${modelValue.length} files` : modelValue.name }}
+              {{
+                Array.isArray(modelValue) ? `${modelValue.length} files` : (modelValue as File).name
+              }}
             </p>
             <p class="text-muted-foreground text-xs">
               {{
                 Array.isArray(modelValue)
                   ? formatFileSize(modelValue.reduce((sum, file) => sum + file.size, 0))
-                  : formatFileSize(modelValue.size)
+                  : formatFileSize((modelValue as File).size)
               }}
             </p>
           </div>
@@ -68,11 +82,16 @@
         <Button
           variant="ghost"
           size="sm"
-          @click="() => removeFile()"
+          @click.stop="removeFile()"
           class="text-destructive hover:text-destructive"
         >
           <Icon name="mdi:close" class="h-4 w-4" />
         </Button>
+      </div>
+
+      <!-- Audio Preview -->
+      <div v-if="modelValue && isAudioFile(modelValue) && previewUrl" class="w-full">
+        <audio :src="previewUrl" controls class="w-full" />
       </div>
     </div>
 
@@ -104,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 
@@ -113,7 +132,11 @@ interface Props {
   accept?: string
   maxSize?: number // in MB
   multiple?: boolean
-  premiumFeature?: boolean
+  uploadText?: string
+  dropText?: string
+  secondaryText?: string
+  showButton?: boolean
+  buttonText?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -121,28 +144,107 @@ const props = withDefaults(defineProps<Props>(), {
   maxSize: 10,
   multiple: false,
   premiumFeature: false,
+  uploadText: 'Click to upload or drag and drop',
+  dropText: 'Drop files here',
+  secondaryText: '',
+  showButton: false,
+  buttonText: 'Browse',
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: File | File[] | null]
   upload: [file: File | File[]]
+  'update:previewUrl': [url: string | null]
 }>()
 
 const fileInput = ref<HTMLInputElement>()
 const isDragOver = ref(false)
 const hasError = ref(false)
 const errorMessage = ref('')
+const previewUrl = ref<string | null>(null)
+
+// Helper functions
+const isAudioFile = (file: File | File[]): boolean => {
+  const fileObj = Array.isArray(file) ? file[0] : file
+  return fileObj?.type?.startsWith('audio/') ?? false
+}
+
+const isVideoFile = (file: File | File[]): boolean => {
+  const fileObj = Array.isArray(file) ? file[0] : file
+  return fileObj?.type?.startsWith('video/') ?? false
+}
+
+// Watch for external modelValue changes to create preview URL
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    // If value became null/undefined, clear everything
+    if (!newValue || newValue === null || newValue === undefined) {
+      if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value)
+        previewUrl.value = null
+      }
+      emit('update:previewUrl', null)
+      // Reset file input
+      if (fileInput.value) {
+        fileInput.value.value = ''
+      }
+      return
+    }
+
+    const file = Array.isArray(newValue) ? newValue[0] : newValue
+    if (file && file instanceof File && (isAudioFile(file) || isVideoFile(file))) {
+      // Clean up old preview URL
+      if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value)
+      }
+      previewUrl.value = URL.createObjectURL(file)
+      emit('update:previewUrl', previewUrl.value)
+    } else {
+      // Not an audio/video file, clear preview URL
+      if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value)
+        previewUrl.value = null
+      }
+      emit('update:previewUrl', null)
+    }
+  },
+  { immediate: true },
+)
 
 // Computed properties
+const hasFile = computed(() => {
+  const value = props.modelValue
+  if (!value || value === null || value === undefined) return false
+  if (props.multiple && Array.isArray(value)) {
+    return value.length > 0
+  }
+  // For single file mode, check if it's actually a File object
+  if (value instanceof File) {
+    return true
+  }
+  return false
+})
+
 const acceptText = computed(() => {
   if (props.accept === '*/*') return 'Any file type'
 
-  const extensions = props.accept.split(',').map((ext) => {
-    const clean = ext.trim().replace('.', '')
-    return clean.toUpperCase()
+  const parts = props.accept.split(',').map((part) => {
+    const trimmed = part.trim()
+    // Handle MIME types like "audio/mp3" -> "MP3"
+    if (trimmed.includes('/')) {
+      const mimeParts = trimmed.split('/')
+      if (mimeParts[0] === 'audio' || mimeParts[0] === 'video' || mimeParts[0] === 'image') {
+        return mimeParts[1]?.toUpperCase() || trimmed.toUpperCase()
+      }
+      return trimmed.toUpperCase()
+    }
+    // Handle extensions like ".mp3" -> "MP3"
+    const clean = trimmed.replace('.', '').toUpperCase()
+    return clean
   })
 
-  return extensions.join(', ')
+  return parts.join(', ')
 })
 
 // Methods
@@ -212,6 +314,19 @@ const processFiles = (files: File[]) => {
     emit('upload', newFiles)
   } else {
     const file = files[0]
+
+    // Create preview URL for audio/video files
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value)
+    }
+    if (isAudioFile(file) || isVideoFile(file)) {
+      previewUrl.value = URL.createObjectURL(file)
+      emit('update:previewUrl', previewUrl.value)
+    } else {
+      previewUrl.value = null
+      emit('update:previewUrl', null)
+    }
+
     emit('update:modelValue', file)
     emit('upload', file)
   }
@@ -224,6 +339,16 @@ const removeFile = (index?: number) => {
       emit('update:modelValue', newFiles.length > 0 ? newFiles : null)
     }
   } else {
+    // Clean up preview URL
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value)
+      previewUrl.value = null
+      emit('update:previewUrl', null)
+    }
+    // Reset file input so the same file can be selected again
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
     emit('update:modelValue', null)
   }
 }
