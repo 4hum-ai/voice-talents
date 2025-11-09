@@ -10,6 +10,7 @@ export interface PremiumFeature {
   label: string
   description: string
   price: number
+  stripePriceId: string // Stripe Price ID (e.g., price_1234)
   availableFor: JobApproach[]
 }
 
@@ -20,15 +21,8 @@ const premiumFeaturesConfig: PremiumFeature[] = [
     description:
       'Our casting manager will reach out to top talent on your behalf and handle initial negotiations',
     price: 25,
-    availableFor: ['talent_only', 'hybrid_approach'], // Not available for AI
-  },
-  {
-    id: 'aiMatching',
-    label: 'AI Matching',
-    description:
-      'Use AI to automatically match your project with the most suitable talent based on voice characteristics and experience',
-    price: 15,
-    availableFor: ['talent_only', 'ai_synthesis', 'hybrid_approach'], // Available for all
+    stripePriceId: 'price_1SRZVSKSR3BkeOV58eFFFWZy',
+    availableFor: ['talent_only'],
   },
   {
     id: 'autoPrompts',
@@ -36,7 +30,8 @@ const premiumFeaturesConfig: PremiumFeature[] = [
     description:
       'Automatically generate optimized prompts and tags for your transcripts to improve AI voice generation quality',
     price: 10,
-    availableFor: ['ai_synthesis', 'hybrid_approach'], // Only for AI-based approaches
+    stripePriceId: 'price_1SRZXDKSR3BkeOV5NuHyHt5G',
+    availableFor: ['ai_synthesis'],
   },
 ]
 

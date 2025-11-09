@@ -151,7 +151,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, watch } from 'vue'
+import { computed, provide, ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 
@@ -174,13 +175,22 @@ interface Props {
   completeButtonText?: string
   /** Whether complete button is disabled */
   completeButtonDisabled?: boolean
+  /** Query parameter name for step (default: "step") */
+  stepQueryParam?: string
+  /** Whether to sync step with query params (default: true) */
+  syncWithQuery?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   canProceed: true,
   completeButtonText: 'Get Started',
   completeButtonDisabled: false,
+  stepQueryParam: 'step',
+  syncWithQuery: true,
 })
+
+const route = useRoute()
+const router = useRouter()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', step: number): void
@@ -191,13 +201,39 @@ const emit = defineEmits<{
 }>()
 
 // Step management
-const internalCurrentStep = ref(props.modelValue || 1)
+const getInitialStep = (): number => {
+  // Priority: 1. Query param, 2. Prop, 3. Default to 1
+  if (props.syncWithQuery) {
+    const queryStep = route.query[props.stepQueryParam]
+    if (queryStep) {
+      const step = parseInt(String(queryStep), 10)
+      if (!isNaN(step) && step >= 1) {
+        return step
+      }
+    }
+  }
+  return props.modelValue || 1
+}
+
+const internalCurrentStep = ref(getInitialStep())
 const internalTotalSteps = ref(props.totalSteps || 1)
 const stepValidation = ref<Record<number, boolean>>({})
 const canProceedInternal = ref(props.canProceed)
 
 // Computed current step (use prop if provided, otherwise internal state)
 const currentStep = computed(() => props.modelValue ?? internalCurrentStep.value)
+
+// Update query param when step changes
+const updateQueryParam = (step: number) => {
+  if (props.syncWithQuery) {
+    router.replace({
+      query: {
+        ...route.query,
+        [props.stepQueryParam]: step.toString(),
+      },
+    })
+  }
+}
 const totalSteps = computed(() => props.totalSteps ?? internalTotalSteps.value)
 const canProceed = computed(() => {
   // Check if prop is provided, otherwise use internal validation
@@ -250,6 +286,7 @@ const goToNext = () => {
   if (currentStep.value < totalSteps.value && canProceed.value) {
     const nextStep = currentStep.value + 1
     internalCurrentStep.value = nextStep
+    updateQueryParam(nextStep)
     emit('update:modelValue', nextStep)
     emit('next')
   }
@@ -259,10 +296,42 @@ const goToPrevious = () => {
   if (currentStep.value > 1) {
     const prevStep = currentStep.value - 1
     internalCurrentStep.value = prevStep
+    updateQueryParam(prevStep)
     emit('update:modelValue', prevStep)
     emit('previous')
   }
 }
+
+// Watch for query param changes (e.g., browser back/forward)
+watch(
+  () => route.query[props.stepQueryParam],
+  (queryStep) => {
+    if (props.syncWithQuery && queryStep) {
+      const step = parseInt(String(queryStep), 10)
+      if (!isNaN(step) && step >= 1 && step !== currentStep.value) {
+        internalCurrentStep.value = step
+        emit('update:modelValue', step)
+      }
+    }
+  },
+)
+
+// Initialize from query param on mount
+onMounted(() => {
+  if (props.syncWithQuery) {
+    const queryStep = route.query[props.stepQueryParam]
+    if (queryStep) {
+      const step = parseInt(String(queryStep), 10)
+      if (!isNaN(step) && step >= 1) {
+        internalCurrentStep.value = step
+        emit('update:modelValue', step)
+      }
+    } else {
+      // Set initial step in query if not present
+      updateQueryParam(internalCurrentStep.value)
+    }
+  }
+})
 
 // Provide context to child Step components
 // Use computed refs wrapped in objects for reactivity

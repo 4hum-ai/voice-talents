@@ -4,7 +4,7 @@
     v-model="currentStep"
     :total-steps="totalSteps"
     :can-proceed="canProceedToNext"
-    :complete-button-text="isSubmitting ? 'Processing...' : 'Publish Job'"
+    :complete-button-text="isSubmitting ? 'Processing...' : 'Pay & Publish'"
     :complete-button-disabled="isSubmitting"
     @next="nextStep"
     @previous="previousStep"
@@ -71,6 +71,8 @@
             :job-form="jobForm as any"
             :voice-type="selectedVoiceType"
             :is-submitting="isSubmitting"
+            @payment-initiated="handlePaymentInitiated"
+            @payment-confirmed="handlePaymentConfirmed"
           />
         </Step>
       </div>
@@ -82,6 +84,8 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
+import { useStripePayment } from '@/composables/useStripePayment'
+import { useRoute, useRouter } from 'vue-router'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import type { JobPosting } from '@/types/voice-client'
 import type { VoiceType } from '@/types/voice-talent'
@@ -113,6 +117,9 @@ const emit = defineEmits<{
 // Composables
 const { saveDraft: saveDraftToStorage, autoSaveDraft, loadDraft, publishJob } = useJob()
 const { addToast: showToast } = useToast()
+const { verifyPayment } = useStripePayment()
+const route = useRoute()
+const router = useRouter()
 
 // State
 const currentStep = ref(1)
@@ -126,6 +133,7 @@ const isSubmitting = ref(false)
 const currentDraftId = ref<string | null>(null)
 const lastAutoSave = ref<Date | null>(null)
 const autoSaveInterval = ref<number | null>(null)
+const paymentSessionId = ref<string | null>(null)
 
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])
@@ -182,7 +190,7 @@ const jobForm = reactive({
     pitch: 'normal' as 'low' | 'normal' | 'high',
   },
   paymentDetails: {
-    method: 'direct' as 'direct' | 'online',
+    method: 'direct' as 'direct' | 'online' | 'stripe',
   },
   isPublic: true,
   requirePortfolio: true,
@@ -323,42 +331,194 @@ const loadDraftData = (draftId: string) => {
   }
 }
 
+// Handle payment initiated - save draft and store session ID
+const handlePaymentInitiated = async (sessionId: string) => {
+  paymentSessionId.value = sessionId
+
+  // Save job as draft before payment
+  if (!currentDraftId.value) {
+    const draft = saveDraftToStorage(
+      jobForm as Record<string, unknown>,
+      currentClient.value.id,
+      currentClient.value.companyName,
+    )
+    currentDraftId.value = draft.id
+  }
+
+  // Store session ID in localStorage for verification
+  if (currentDraftId.value) {
+    localStorage.setItem(`payment_session_${currentDraftId.value}`, sessionId)
+  }
+}
+
+// Handle payment confirmed (for embedded checkout)
+const handlePaymentConfirmed = async () => {
+  if (!paymentSessionId.value) {
+    showToast({
+      type: 'error',
+      title: 'Payment Error',
+      message: 'Payment session not found. Please try again.',
+    })
+    return
+  }
+
+  // Verify payment and publish job
+  isSubmitting.value = true
+  try {
+    const paymentResult = await verifyPayment(paymentSessionId.value)
+
+    if (paymentResult.status === 'paid') {
+      // Payment verified, proceed with publishing
+      if (!currentDraftId.value) {
+        const draft = saveDraftToStorage(
+          jobForm as Record<string, unknown>,
+          currentClient.value.id,
+          currentClient.value.companyName,
+        )
+        currentDraftId.value = draft.id
+      }
+
+      if (currentDraftId.value) {
+        jobForm.paymentDetails = { method: 'stripe' }
+        saveDraftToStorage(
+          jobForm as Record<string, unknown>,
+          currentClient.value.id,
+          currentClient.value.companyName,
+          currentDraftId.value,
+        )
+
+        const publishedJob = publishJob(currentDraftId.value)
+        if (publishedJob) {
+          // Clean up
+          localStorage.removeItem(`payment_session_${currentDraftId.value}`)
+          showToast({
+            type: 'success',
+            title: 'Payment Successful & Job Published!',
+            message: `"${jobForm.title}" has been published successfully.`,
+          })
+          emit('complete', publishedJob)
+          resetForm()
+          closeModal()
+        } else {
+          throw new Error('Failed to publish job')
+        }
+      }
+    } else {
+      throw new Error('Payment not verified. Please contact support.')
+    }
+  } catch (error) {
+    console.error('Error processing payment:', error)
+    showToast({
+      type: 'error',
+      title: 'Payment Processing Failed',
+      message:
+        error instanceof Error ? error.message : 'Failed to process payment. Please try again.',
+    })
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
 const publishJobHandler = async () => {
   isSubmitting.value = true
 
   try {
-    // First save as draft if not already saved
-    if (!currentDraftId.value) {
-      const draft = saveDraftToStorage(
-        jobForm as Record<string, unknown>,
-        currentClient.value.id,
-        currentClient.value.companyName,
-      )
-      currentDraftId.value = draft.id
-    }
+    // Check if we're returning from Stripe payment
+    const paymentStatus = route.query.payment as string | undefined
+    const sessionId = route.query.session_id as string | undefined
 
-    // Publish the job using the composable
-    const publishedJob = publishJob(currentDraftId.value)
+    if (paymentStatus === 'success' && sessionId) {
+      // Verify payment before publishing
+      const paymentResult = await verifyPayment(sessionId)
 
-    if (publishedJob) {
-      showToast({
-        type: 'success',
-        title: 'Job Published!',
-        message: `"${jobForm.title}" has been published successfully.`,
-      })
+      if (paymentResult.status === 'paid') {
+        // Payment verified, proceed with publishing
+        // First save as draft if not already saved
+        if (!currentDraftId.value) {
+          const draft = saveDraftToStorage(
+            jobForm as Record<string, unknown>,
+            currentClient.value.id,
+            currentClient.value.companyName,
+          )
+          currentDraftId.value = draft.id
+        }
 
-      emit('complete', publishedJob)
-      resetForm() // Reset form for next job creation
-      closeModal()
+        // Update payment details
+        if (currentDraftId.value) {
+          jobForm.paymentDetails = {
+            method: 'stripe',
+          }
+          // Save updated draft with payment info
+          saveDraftToStorage(
+            jobForm as Record<string, unknown>,
+            currentClient.value.id,
+            currentClient.value.companyName,
+            currentDraftId.value,
+          )
+        }
+
+        // Publish the job using the composable
+        const publishedJob = publishJob(currentDraftId.value)
+
+        if (publishedJob) {
+          // Clean up payment session from localStorage
+          if (currentDraftId.value) {
+            localStorage.removeItem(`payment_session_${currentDraftId.value}`)
+          }
+
+          showToast({
+            type: 'success',
+            title: 'Payment Successful & Job Published!',
+            message: `"${jobForm.title}" has been published successfully.`,
+          })
+
+          emit('complete', publishedJob)
+          resetForm() // Reset form for next job creation
+          closeModal()
+
+          // Clean up URL params
+          router.replace({ query: {} })
+        } else {
+          throw new Error('Failed to publish job')
+        }
+      } else {
+        throw new Error('Payment not verified. Please contact support.')
+      }
     } else {
-      throw new Error('Failed to publish job')
+      // No payment flow - direct publish (for backward compatibility or testing)
+      // First save as draft if not already saved
+      if (!currentDraftId.value) {
+        const draft = saveDraftToStorage(
+          jobForm as Record<string, unknown>,
+          currentClient.value.id,
+          currentClient.value.companyName,
+        )
+        currentDraftId.value = draft.id
+      }
+
+      // Publish the job using the composable
+      const publishedJob = publishJob(currentDraftId.value)
+
+      if (publishedJob) {
+        showToast({
+          type: 'success',
+          title: 'Job Published!',
+          message: `"${jobForm.title}" has been published successfully.`,
+        })
+
+        emit('complete', publishedJob)
+        resetForm() // Reset form for next job creation
+        closeModal()
+      } else {
+        throw new Error('Failed to publish job')
+      }
     }
   } catch (error) {
     console.error('Error publishing job:', error)
     showToast({
       type: 'error',
       title: 'Publishing Failed',
-      message: 'Failed to publish job. Please try again.',
+      message: error instanceof Error ? error.message : 'Failed to publish job. Please try again.',
     })
   } finally {
     isSubmitting.value = false
@@ -409,7 +569,7 @@ const resetForm = () => {
       pitch: 'normal' as 'low' | 'normal' | 'high',
     },
     paymentDetails: {
-      method: 'direct' as 'direct' | 'online',
+      method: 'direct' as 'direct' | 'online' | 'stripe',
     },
     isPublic: true,
     requirePortfolio: true,
@@ -458,6 +618,24 @@ onMounted(() => {
   // Load draft if provided
   if (props.draftId) {
     loadDraftData(props.draftId)
+
+    // Check if returning from payment
+    const sessionId = localStorage.getItem(`payment_session_${props.draftId}`)
+    if (sessionId && route.query.payment === 'success') {
+      // Navigate to review step to show payment success
+      currentStep.value = 4
+    }
+  }
+
+  // Check URL params for payment status
+  if (route.query.payment === 'success' && route.query.session_id) {
+    // Auto-trigger publish if we have a draft
+    if (currentDraftId.value) {
+      // Small delay to ensure component is fully mounted
+      setTimeout(() => {
+        publishJobHandler()
+      }, 500)
+    }
   }
 })
 

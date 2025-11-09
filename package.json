@@ -29,6 +29,7 @@
     "@schedule-x/calendar": "^3.0.0",
     "@schedule-x/theme-default": "^3.0.0",
     "@schedule-x/vue": "^3.0.0",
+    "@stripe/stripe-js": "^8.3.0",
     "@tailwindcss/vite": "^4.1.8",
     "@types/marked": "^5.0.2",
     "@vueuse/core": "^13.7.0",
@@ -43,6 +44,7 @@
     "vue": "^3.3.4",
     "vue-chartjs": "^5.3.0",
     "vue-router": "^4.2.5",
+    "vue-stripe-js": "^2.0.2",
     "webvtt": "^0.0.2",
     "wrangler": "3.90.0",
     "zod": "^3.23.8"
