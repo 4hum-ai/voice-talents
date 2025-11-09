@@ -204,11 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, h } from 'vue'
-import { useLayoutSlots } from '@/composables/useLayoutSlots'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-
-const { setActions } = useLayoutSlots()
+import { ref, computed, onMounted } from 'vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import SelectInput from '@/components/atoms/SelectInput.vue'
@@ -359,8 +355,7 @@ const clearFilters = () => {
 }
 
 onMounted(() => {
-  // Set actions (title/subtitle come from route meta)
-  setActions(h(ThemeToggle))
+  // Actions removed - ThemeToggle is now in sidebar footer
 
   console.log('Talent Job Management loaded')
 })

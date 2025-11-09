@@ -33,7 +33,7 @@
 
     <!-- Page Content -->
     <div class="flex-auto overflow-auto">
-      <div :class="['px-4 py-8 sm:px-6 lg:px-8']">
+      <div :class="['px-3 py-6 sm:px-4 sm:py-8 lg:px-8']">
         <slot />
       </div>
     </div>

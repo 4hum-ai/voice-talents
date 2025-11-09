@@ -1,10 +1,12 @@
 <template>
   <div class="flex h-screen flex-row">
     <!-- Navigation Sidebar -->
+    <!-- On mobile, sidebar is fixed overlay and doesn't take up flex space -->
     <VoiceActNavigation />
 
     <!-- Main Content -->
-    <div class="flex-auto overflow-auto">
+    <!-- On mobile, content takes full width since sidebar is fixed overlay -->
+    <div class="flex-auto overflow-auto lg:ml-0">
       <!-- Header -->
       <AppBar
         v-if="showAppBar"
@@ -38,7 +40,7 @@
       </AppBar>
 
       <!-- Page Content -->
-      <div :class="['px-4 py-8 sm:px-6 lg:px-8']">
+      <div :class="['px-3 py-6 sm:px-4 sm:py-8 lg:px-8']">
         <slot />
       </div>
     </div>

@@ -69,7 +69,6 @@ import Card from '@/components/atoms/Card.vue'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import BasicInfoStep from '@/components/molecules/TalentProfile/BasicInfoStep.vue'
 import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.vue'
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
@@ -145,18 +144,15 @@ const saveProfile = () => {
 // Set layout actions (title/subtitle come from route meta)
 onMounted(() => {
   setActions(
-    h('div', { class: 'flex items-center gap-2' }, [
-      h(ThemeToggle),
-      h(
-        Button,
-        {
-          variant: 'primary',
-          size: 'sm',
-          onClick: saveProfile,
-        },
-        () => 'Save',
-      ),
-    ]),
+    h(
+      Button,
+      {
+        variant: 'primary',
+        size: 'sm',
+        onClick: saveProfile,
+      },
+      () => 'Save',
+    ),
   )
 
   // Try to load from localStorage (from onboarding)

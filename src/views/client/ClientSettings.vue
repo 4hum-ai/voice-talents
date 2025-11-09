@@ -43,6 +43,17 @@
             />
           </Tab>
         </TabNavigation>
+
+        <!-- Theme Toggle Section -->
+        <div class="border-border bg-card rounded-lg border p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-foreground mb-1 text-lg font-semibold">Theme</h3>
+              <p class="text-muted-foreground text-sm">Switch between light and dark mode</p>
+            </div>
+            <ThemeToggle />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -51,8 +62,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, h } from 'vue'
 import { useLayoutSlots } from '@/composables/useLayoutSlots'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
+import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import { useToast } from '@/composables/useToast'
 
 const { setActions } = useLayoutSlots()

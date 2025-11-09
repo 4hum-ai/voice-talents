@@ -10,8 +10,9 @@
     <aside
       :class="[
         'bg-card border-border flex flex-col border-r transition-all duration-300 ease-in-out',
-        collapsed ? 'w-16' : 'w-72',
-        fixed ? 'fixed top-0 left-0 z-50 h-screen' : 'relative h-screen',
+        // On mobile, always use full width (w-72). On desktop, respect collapsed state
+        isMobile ? 'w-72' : isCollapsed ? 'w-16' : 'w-72',
+        isFixed ? 'fixed top-0 left-0 z-50 h-screen' : 'relative h-screen',
         // Mobile: hidden by default, visible when open, overlay style
         isMobile ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0',
         // Desktop: always visible
@@ -20,24 +21,35 @@
     >
       <!-- Header -->
       <div class="border-border flex h-16 flex-shrink-0 items-center justify-between border-b px-4">
-        <div v-if="!collapsed" class="flex min-w-0 items-center space-x-2">
+        <div v-if="!isCollapsed" class="flex min-w-0 items-center space-x-2">
           <h2 class="text-foreground truncate text-lg font-semibold">{{ title }}</h2>
           <span v-if="subtitle" class="text-muted-foreground truncate text-sm">{{ subtitle }}</span>
         </div>
+        <!-- Collapse button - hidden on mobile, shown on desktop -->
         <button
+          v-if="!isMobile"
           @click="toggleCollapsed"
           class="text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0 rounded-md p-2 transition-colors"
-          :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+          :aria-label="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
         >
           <IconChevronLeft
             class="h-4 w-4 transition-transform"
-            :class="{ 'rotate-180': collapsed }"
+            :class="{ 'rotate-180': isCollapsed }"
           />
+        </button>
+        <!-- Close button on mobile -->
+        <button
+          v-if="isMobile"
+          @click="$emit('close')"
+          class="text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0 rounded-md p-2 transition-colors"
+          aria-label="Close sidebar"
+        >
+          <IconChevronLeft class="h-4 w-4 rotate-180" />
         </button>
       </div>
 
       <!-- Custom Header Slot -->
-      <div v-if="!collapsed && $slots.header" class="border-border flex-shrink-0 border-b">
+      <div v-if="!isCollapsed && $slots.header" class="border-border flex-shrink-0 border-b">
         <slot name="header" />
       </div>
 
@@ -46,7 +58,7 @@
         <div class="space-y-6 px-3">
           <div v-for="section in sections" :key="section.id" class="space-y-2">
             <!-- Section Header -->
-            <div v-if="!collapsed && section.title" class="px-3 py-2">
+            <div v-if="!isCollapsed && section.title" class="px-3 py-2">
               <h3 class="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                 {{ section.title }}
               </h3>
@@ -66,7 +78,7 @@
                     ? 'bg-primary/10 text-primary border-primary/20 border'
                     : 'text-muted-foreground',
                 ]"
-                :title="collapsed ? item.title : undefined"
+                :title="isCollapsed ? item.title : undefined"
               >
                 <!-- Icon -->
                 <div class="flex-shrink-0">
@@ -75,7 +87,7 @@
                 </div>
 
                 <!-- Text (hidden when collapsed) -->
-                <div v-if="!collapsed" class="ml-3 min-w-0 flex-1 text-left">
+                <div v-if="!isCollapsed" class="ml-3 min-w-0 flex-1 text-left">
                   <span class="block truncate">{{ item.title }}</span>
                   <p
                     v-if="item.description"
@@ -86,7 +98,7 @@
                 </div>
 
                 <!-- Badge (hidden when collapsed) -->
-                <div v-if="!collapsed && item.badge" class="ml-auto flex-shrink-0">
+                <div v-if="!isCollapsed && item.badge" class="ml-auto flex-shrink-0">
                   <span
                     class="bg-muted text-muted-foreground inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                   >
@@ -100,7 +112,7 @@
       </nav>
 
       <!-- Footer (optional) -->
-      <div v-if="!collapsed && $slots.footer" class="border-border flex-shrink-0 border-t p-4">
+      <div v-if="!isCollapsed && $slots.footer" class="border-border flex-shrink-0 border-t p-4">
         <slot name="footer" />
       </div>
     </aside>
@@ -108,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, type Component } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick, type Component } from 'vue'
 import IconChevronLeft from '~icons/mdi/chevron-left'
 
 interface SidebarItem {
@@ -175,25 +187,61 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
+// Automatically use fixed positioning on mobile for overlay behavior
+const isFixed = computed(() => props.fixed || isMobile.value)
+
+// On mobile, always show extended view (no collapsed state)
+const isCollapsed = computed(() => (isMobile.value ? false : collapsed.value))
+
 const emit = defineEmits<{
   close: []
   'update:collapsed': [value: boolean]
 }>()
 
 const toggleCollapsed = () => {
+  // Don't allow collapsing on mobile
+  if (isMobile.value) return
   collapsed.value = !collapsed.value
   emit('update:collapsed', collapsed.value)
 }
 
 const handleItemClick = (item: SidebarItem) => {
   if (item.action) {
-    item.action()
-    // Close sidebar on mobile after navigation
-    if (isMobile.value && props.isOpen) {
-      // Small delay to allow navigation to start
-      setTimeout(() => {
-        emit('close')
-      }, 100)
+    // Check if we're on mobile (check window width directly for reliability)
+    const isCurrentlyMobile = window.innerWidth < 1024
+
+    // Call the action (navigation)
+    const actionResult = item.action()
+
+    // Always close sidebar on mobile after navigation
+    if (isCurrentlyMobile) {
+      // If action returns a promise (like router.push), wait for it, otherwise close immediately
+      const isPromise =
+        actionResult != null &&
+        typeof actionResult === 'object' &&
+        'then' in actionResult &&
+        typeof (actionResult as { then?: unknown }).then === 'function'
+
+      if (isPromise) {
+        ;(actionResult as Promise<unknown>)
+          .then(() => {
+            // Close after navigation completes
+            nextTick(() => {
+              emit('close')
+            })
+          })
+          .catch(() => {
+            // Close even if navigation fails
+            nextTick(() => {
+              emit('close')
+            })
+          })
+      } else {
+        // Close immediately for synchronous actions
+        nextTick(() => {
+          emit('close')
+        })
+      }
     }
   }
 }

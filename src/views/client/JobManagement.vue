@@ -427,7 +427,6 @@ import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import JobRatingModal from '@/components/molecules/JobRatingModal.vue'
@@ -672,21 +671,18 @@ const getCurrencySymbol = (currency: string) => {
 }
 
 onMounted(() => {
-  // Set actions (title/subtitle come from route meta)
+  // Set actions (title comes from route meta)
   setActions(
-    h('div', { class: 'flex items-center gap-2' }, [
-      h(ThemeToggle),
-      h(
-        Button,
-        {
-          variant: 'primary',
-          size: 'sm',
-          icon: 'mdi:plus',
-          onClick: openJobCreationModal,
-        },
-        () => 'Create Job',
-      ),
-    ]),
+    h(
+      Button,
+      {
+        variant: 'primary',
+        size: 'sm',
+        icon: 'mdi:plus',
+        onClick: openJobCreationModal,
+      },
+      () => 'Create Job',
+    ),
   )
 })
 </script>

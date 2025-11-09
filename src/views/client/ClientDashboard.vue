@@ -204,7 +204,6 @@ import { useAuthStore } from '@/stores/auth'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
 import { useToast } from '@/composables/useToast'
@@ -344,19 +343,16 @@ onMounted(() => {
 
   // Set actions (title comes from route meta)
   setActions(
-    h('div', { class: 'flex items-center gap-2' }, [
-      h(ThemeToggle),
-      h(
-        Button,
-        {
-          variant: 'primary',
-          size: 'sm',
-          icon: 'mdi:plus',
-          onClick: openJobCreationModal,
-        },
-        () => 'Create Job',
-      ),
-    ]),
+    h(
+      Button,
+      {
+        variant: 'primary',
+        size: 'sm',
+        icon: 'mdi:plus',
+        onClick: openJobCreationModal,
+      },
+      () => 'Create Job',
+    ),
   )
 
   // Set user mode to client when accessing client dashboard

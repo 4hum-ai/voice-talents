@@ -320,11 +320,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, h } from 'vue'
-import { useLayoutSlots } from '@/composables/useLayoutSlots'
-import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
-
-const { setActions } = useLayoutSlots()
+import { ref, computed, onMounted } from 'vue'
 import CastingSubmit from './CastingSubmit.vue'
 import type { JobPosting } from '@/types/voice-client'
 import { mockJobPostings } from '@/data/mock-voice-client-data'
@@ -565,8 +561,7 @@ const handleCloseSubmitModal = () => {
 }
 
 onMounted(() => {
-  // Set actions (title/subtitle come from route meta)
-  setActions(h(ThemeToggle))
+  // Actions removed - ThemeToggle is now in sidebar footer
 
   // In real app, fetch casting sessions from API
   console.log('Casting view loaded with mock data')

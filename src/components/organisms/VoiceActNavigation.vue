@@ -10,58 +10,73 @@
   >
     <template #header>
       <div class="p-4">
-        <div class="flex items-center space-x-3">
-          <Avatar
-            :src="currentActor?.avatarUrl"
-            :alt="currentActor?.displayName"
-            :seed="currentActor?.displayName || 'User'"
-            size="sm"
-          />
-          <div class="min-w-0 flex-1">
-            <p class="text-foreground truncate text-sm font-medium">
-              {{ currentActor?.displayName }}
-            </p>
-            <p class="text-muted-foreground truncate text-xs">
-              {{ authStore.user?.email }}
-            </p>
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex min-w-0 flex-1 items-center space-x-3">
+            <Avatar
+              :src="currentActor?.avatarUrl"
+              :alt="currentActor?.displayName"
+              :seed="currentActor?.displayName || 'User'"
+              size="sm"
+            />
+            <div class="min-w-0 flex-1">
+              <p class="text-foreground truncate text-sm font-medium">
+                {{ currentActor?.displayName }}
+              </p>
+              <p class="text-muted-foreground truncate text-xs">
+                {{ authStore.user?.email }}
+              </p>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="flex-shrink-0"
+            icon="mdi:logout"
+            aria-label="Logout"
+            @click="handleLogout"
+          />
         </div>
       </div>
     </template>
 
     <template #footer>
-      <div class="space-y-3">
+      <div class="space-y-4">
         <!-- Quick Stats -->
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="bg-muted rounded p-2 text-center">
-            <div class="text-foreground font-semibold">
+          <div class="bg-muted/60 hover:bg-muted rounded-lg p-2.5 text-center transition-colors">
+            <div class="text-foreground mb-0.5 text-base font-semibold">
               {{ stats.activeProjects }}
             </div>
-            <div class="text-muted-foreground">Active</div>
+            <div class="text-muted-foreground text-xs">Active</div>
           </div>
-          <div class="bg-muted rounded p-2 text-center">
-            <div class="text-foreground font-semibold">
+          <div class="bg-muted/60 hover:bg-muted rounded-lg p-2.5 text-center transition-colors">
+            <div class="text-foreground mb-0.5 text-base font-semibold">
               ${{ stats.monthlyEarnings.toLocaleString() }}
             </div>
-            <div class="text-muted-foreground">This Month</div>
+            <div class="text-muted-foreground text-xs">This Month</div>
           </div>
         </div>
 
-        <!-- Settings & Logout -->
-        <div class="flex space-x-2">
+        <!-- Divider -->
+        <div class="border-border border-t"></div>
+
+        <!-- Action Buttons: Settings, Theme -->
+        <div class="flex items-center gap-1.5">
           <Button
             variant="ghost"
             size="sm"
             class="flex-1"
             icon="mdi:cog"
+            aria-label="Settings"
             @click="$router.push('/talent/settings')"
           />
           <Button
             variant="ghost"
             size="sm"
             class="flex-1"
-            icon="mdi:logout"
-            @click="handleLogout"
+            :icon="isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'"
+            :aria-label="`Switch to ${isDark ? 'light' : 'dark'} mode`"
+            @click="toggleTheme"
           />
         </div>
       </div>
@@ -76,6 +91,7 @@ import type { VoiceTalentStats } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
 import { useAuthStore } from '@/stores/auth'
 import { useSidebar } from '@/composables/useSidebar'
+import { useTheme } from '@/composables/useTheme'
 import Sidebar from '@/components/atoms/Sidebar.vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
@@ -89,6 +105,7 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const { sidebarOpen, sidebarCollapsed, close } = useSidebar()
+const { isDark, toggleTheme } = useTheme()
 
 // Use authenticated user data instead of mock data
 const currentActor = computed(() => {
