@@ -1,11 +1,6 @@
 <template>
   <div class="space-y-8">
     <div class="text-center">
-      <div
-        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-500"
-      >
-        <Icon name="mdi:account" class="h-8 w-8 text-white" />
-      </div>
       <h3 class="text-foreground mb-2 text-2xl font-semibold">Let's Get to Know You</h3>
       <p class="text-muted-foreground">
         Share your voice qualities so clients can find the perfect match for their projects.

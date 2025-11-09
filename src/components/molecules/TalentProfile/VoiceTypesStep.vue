@@ -1,18 +1,10 @@
 <template>
   <div class="space-y-8">
     <div class="text-center">
-      <div
-        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500"
-      >
-        <Icon name="mdi:microphone" class="h-8 w-8 text-white" />
-      </div>
       <h3 class="text-foreground mb-2 text-2xl font-semibold">
         What Kind of Voice Work Do You Love?
       </h3>
-      <p class="text-muted-foreground">
-        Select all the types of voice work you specialize in. This helps clients find the perfect
-        voice for their projects.
-      </p>
+      <p class="text-muted-foreground">Select all the types of voice work you specialize in.</p>
     </div>
 
     <div class="mx-auto max-w-4xl">

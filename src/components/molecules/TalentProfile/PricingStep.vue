@@ -1,16 +1,8 @@
 <template>
   <div class="space-y-8">
     <div class="text-center">
-      <div
-        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500"
-      >
-        <Icon name="mdi:currency-usd" class="h-8 w-8 text-white" />
-      </div>
       <h3 class="text-foreground mb-2 text-2xl font-semibold">Let's Talk About Your Rates</h3>
-      <p class="text-muted-foreground">
-        Share your rates for different types of voice work. This helps clients understand your
-        pricing and find the perfect match for their budget.
-      </p>
+      <p class="text-muted-foreground">Share your rates for different types of voice work.</p>
     </div>
 
     <div class="space-y-8">
@@ -59,7 +51,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useJobType } from '@/composables/useJobType'
-import Icon from '@/components/atoms/Icon.vue'
 
 interface Props {
   profileData: {

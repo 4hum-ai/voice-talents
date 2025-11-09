@@ -285,7 +285,7 @@ export function useJobType() {
 
     audiobook_narrator: {
       id: 'audiobook_narrator',
-      label: 'Audiobook Narration',
+      label: 'Audiobook',
       category: 'educational',
       pricing: {
         model: 'per_hour',
@@ -420,7 +420,7 @@ export function useJobType() {
     // Generic "Other" job type
     other: {
       id: 'other',
-      label: 'Other Voice Work',
+      label: 'Others',
       category: 'corporate',
       pricing: {
         model: 'per_project',

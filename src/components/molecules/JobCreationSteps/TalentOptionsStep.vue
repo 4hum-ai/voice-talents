@@ -338,7 +338,7 @@ const mockTalentList = [
   {
     id: 'talent-3',
     name: 'Emma Rodriguez',
-    specialty: 'Audiobook Narration',
+    specialty: 'Audiobook',
     rating: '4.9',
     projects: 203,
   },

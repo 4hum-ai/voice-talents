@@ -9,10 +9,6 @@
       <h3 class="text-foreground mb-2 text-2xl font-semibold">
         What Languages Can You Perform In?
       </h3>
-      <p class="text-muted-foreground">
-        Select all the languages you're comfortable working in. This opens up more amazing
-        opportunities for you!
-      </p>
     </div>
 
     <div class="mx-auto max-w-4xl">

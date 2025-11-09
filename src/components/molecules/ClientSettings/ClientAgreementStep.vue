@@ -1,11 +1,6 @@
 <template>
   <div class="space-y-6">
     <div class="text-center">
-      <div
-        class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-blue-500"
-      >
-        <Icon name="mdi:file-document-check" class="h-8 w-8 text-white" />
-      </div>
       <h2 class="text-foreground mb-2 text-2xl font-bold">Final Step: Accept Terms</h2>
       <p class="text-muted-foreground mx-auto max-w-2xl text-base">
         Please review and confirm the following to complete your account setup.
