@@ -1,102 +1,54 @@
 <template>
-  <div v-if="showOnboarding" class="bg-background fixed inset-0 z-50 overflow-hidden">
-    <!-- Top Navigation Bar -->
-    <div
-      class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
-    >
-      <div class="flex items-center justify-between px-6 py-4">
-        <!-- Left: Previous Button -->
-        <Button v-if="currentStep > 1" variant="outline" size="md" @click="previousStep">
-          <div class="flex items-center gap-2">
-            <Icon name="mdi:chevron-left" class="h-4 w-4" />
-            <span>Previous</span>
-          </div>
-        </Button>
-        <div v-else class="w-20" />
+  <OnboardingStepContainer
+    v-if="showOnboarding"
+    v-model="currentStep"
+    :total-steps="totalSteps"
+    :can-proceed="canProceedToNext"
+    @next="nextStep"
+    @previous="previousStep"
+    @complete="completeOnboarding"
+    @close="closeOnboarding"
+  >
+    <!-- Step 1: About Your Company -->
+    <OnboardingStep :step="1" :valid="stepValidation[1]">
+      <AccountInformation
+        :model-value="accountData"
+        :required-fields="['companyName']"
+        mode="company"
+        @validation-change="updateStepValidation(1, $event)"
+        @update:modelValue="handleAccountDataUpdate"
+      />
+    </OnboardingStep>
 
-        <!-- Center: Progress -->
-        <div class="flex items-center space-x-4">
-          <div class="text-muted-foreground text-sm">
-            Step {{ currentStep }} of {{ totalSteps }}
-          </div>
-          <div class="bg-muted h-2 w-32 rounded-full">
-            <div
-              class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
-              :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
-            />
-          </div>
-          <div class="text-muted-foreground text-sm">
-            {{ Math.round((currentStep / totalSteps) * 100) }}%
-          </div>
-        </div>
+    <!-- Step 2: About You -->
+    <OnboardingStep :step="2" :valid="stepValidation[2]">
+      <AccountInformation
+        :model-value="accountData"
+        :required-fields="['contactName', 'email']"
+        mode="personal"
+        @validation-change="updateStepValidation(2, $event)"
+        @update:modelValue="handleAccountDataUpdate"
+      />
+    </OnboardingStep>
 
-        <!-- Right: Close and Next/Skip -->
-        <div class="flex items-center space-x-3">
-          <Button
-            v-if="currentStep < totalSteps"
-            variant="primary"
-            :disabled="!canProceedToNext"
-            @click="nextStep"
-          >
-            Next
-            <Icon name="mdi:chevron-right" class="ml-2 h-4 w-4" />
-          </Button>
-          <Button v-else variant="primary" @click="completeOnboarding">
-            Get Started
-            <Icon name="mdi:rocket-launch" class="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm" @click="closeOnboarding">
-            <Icon name="mdi:close" class="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
-    </div>
+    <!-- Step 3: Project Types -->
+    <OnboardingStep :step="3" :valid="stepValidation[3]">
+      <ClientProjectTypesStep
+        :model-value="projectTypesData"
+        @update:model-value="handleProjectTypesUpdate"
+        @validation-change="updateStepValidation(3, $event)"
+      />
+    </OnboardingStep>
 
-    <!-- Main Content -->
-    <div class="h-full overflow-y-auto pt-20">
-      <div class="mx-auto max-w-4xl px-6 py-8">
-        <!-- Step 1: About Your Company -->
-        <div v-if="currentStep === 1" class="space-y-8">
-          <AccountInformation
-            :model-value="accountData"
-            :required-fields="['companyName']"
-            mode="company"
-            @validation-change="updateStepValidation(1, $event)"
-            @update:modelValue="handleAccountDataUpdate"
-          />
-        </div>
-
-        <!-- Step 2: About You -->
-        <div v-if="currentStep === 2" class="space-y-8">
-          <AccountInformation
-            :model-value="accountData"
-            :required-fields="['contactName', 'email']"
-            mode="personal"
-            @validation-change="updateStepValidation(2, $event)"
-            @update:modelValue="handleAccountDataUpdate"
-          />
-        </div>
-
-        <!-- Step 3: Project Types -->
-        <div v-if="currentStep === 3" class="space-y-8">
-          <ClientProjectTypesStep
-            :model-value="projectTypesData"
-            @update:model-value="handleProjectTypesUpdate"
-            @validation-change="updateStepValidation(3, $event)"
-          />
-        </div>
-
-        <!-- Step 4: Agreement & Legal Requirements (Final Step) -->
-        <div v-if="currentStep === 4" class="space-y-8">
-          <ClientAgreementStep
-            :model-value="agreementData"
-            @update:model-value="Object.assign(agreementData, $event)"
-            @validation-change="updateStepValidation(4, $event)"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
+    <!-- Step 4: Agreement & Legal Requirements (Final Step) -->
+    <OnboardingStep :step="4" :valid="stepValidation[4]">
+      <ClientAgreementStep
+        :model-value="agreementData"
+        @update:model-value="Object.assign(agreementData, $event)"
+        @validation-change="updateStepValidation(4, $event)"
+      />
+    </OnboardingStep>
+  </OnboardingStepContainer>
 </template>
 
 <script setup lang="ts">
@@ -104,8 +56,8 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { AccountInformationData } from '@/types/onboarding'
 import { useOnboarding } from '@/composables/useOnboarding'
-import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
+import OnboardingStepContainer from '@/components/molecules/OnboardingStepContainer.vue'
+import OnboardingStep from '@/components/molecules/OnboardingStep.vue'
 import {
   AccountInformation,
   ClientAgreementStep,

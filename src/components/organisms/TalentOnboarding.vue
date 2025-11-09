@@ -1,131 +1,91 @@
 <template>
-  <div v-if="showOnboarding" class="">
-    <!-- Top Navigation Bar -->
-    <div
-      class="border-border bg-card/95 absolute top-0 right-0 left-0 z-10 border-b backdrop-blur-sm"
-    >
-      <div class="flex items-center justify-between px-6 py-4">
-        <!-- Left: Previous Button -->
-        <Button v-if="currentStep > 1" variant="outline" size="md" @click="previousStep">
-          <div class="flex items-center gap-2">
-            <Icon name="mdi:chevron-left" class="h-4 w-4" />
-            <span>Previous</span>
-          </div>
-        </Button>
-        <div v-else class="w-20" />
+  <OnboardingStepContainer
+    v-if="showOnboarding"
+    v-model="currentStep"
+    :total-steps="totalSteps"
+    :can-proceed="canProceedToNext"
+    @next="nextStep"
+    @previous="previousStep"
+    @complete="completeOnboarding"
+    @close="closeOnboarding"
+  >
+    <!-- Content with transition animations -->
+    <Transition :name="transitionName" mode="out-in">
+      <div :key="currentStep">
+        <!-- Step 1: Welcome -->
+        <OnboardingStep :step="1" :valid="true">
+          <WelcomeStep />
+        </OnboardingStep>
 
-        <!-- Center: Progress -->
-        <div class="flex items-center space-x-4">
-          <div class="text-muted-foreground text-sm">
-            Step {{ currentStep }} of {{ totalSteps }}
-          </div>
-          <div class="bg-muted h-2 w-32 rounded-full">
-            <div
-              class="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
-              :style="{ width: `${(currentStep / totalSteps) * 100}%` }"
-            />
-          </div>
-          <div class="text-muted-foreground text-sm">
-            {{ Math.round((currentStep / totalSteps) * 100) }}%
-          </div>
-        </div>
+        <!-- Step 2: Basic Info -->
+        <OnboardingStep
+          :step="2"
+          :valid="!!(profileData.displayName && profileData.bio && profileData.location)"
+        >
+          <BasicInfoStep :profile-data="profileData" @update="updateProfileData" />
+        </OnboardingStep>
 
-        <!-- Right: Close and Next/Skip -->
-        <div class="flex items-center space-x-3">
-          <Button
-            v-if="currentStep < totalSteps"
-            variant="primary"
-            :disabled="!canProceedToNext"
-            @click="nextStep"
-            class="onboarding-button"
-          >
-            Next
-            <Icon name="mdi:chevron-right" class="ml-2 h-4 w-4" />
-          </Button>
-          <Button v-else variant="primary" @click="completeOnboarding" class="onboarding-button">
-            Get Started
-            <Icon name="mdi:rocket-launch" class="ml-2 h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            @click="closeOnboarding"
-            class="text-muted-foreground hover:text-foreground"
-          >
-            <Icon name="mdi:close" class="h-5 w-5" />
-          </Button>
-        </div>
+        <!-- Step 3: Voice Types -->
+        <OnboardingStep :step="3" :valid="profileData.voiceTypes.length > 0">
+          <VoiceTypesStep :profile-data="profileData" @update="updateProfileData" />
+        </OnboardingStep>
+
+        <!-- Step 4: Languages -->
+        <OnboardingStep :step="4" :valid="profileData.languages.length > 0">
+          <LanguagesStep :profile-data="profileData" @update="updateProfileData" />
+        </OnboardingStep>
+
+        <!-- Step 5: Upload Voice Samples -->
+        <OnboardingStep :step="5" :valid="Object.keys(voiceSamples).length > 0">
+          <VoiceSamplesStep
+            :profile-data="profileData"
+            :voice-samples="voiceSamples"
+            @update="updateVoiceSamples"
+          />
+        </OnboardingStep>
+
+        <!-- Step 6: Pricing & Rates -->
+        <OnboardingStep
+          :step="6"
+          :valid="
+            Object.values(pricingData.jobTypeRates).some(
+              (rate) => rate && rate !== '' && parseFloat(rate) > 0,
+            )
+          "
+        >
+          <PricingStep
+            :profile-data="profileData"
+            :pricing-data="pricingData"
+            @update="updatePricingData"
+          />
+        </OnboardingStep>
+
+        <!-- Step 7: Agreement & Legal Requirements (Final Step) -->
+        <OnboardingStep
+          :step="7"
+          :valid="
+            agreementData.isAgeVerified &&
+            agreementData.acceptedTerms &&
+            agreementData.acceptedPlatformAgreement
+          "
+        >
+          <AgreementStep
+            :model-value="agreementData"
+            @update:model-value="Object.assign(agreementData, $event)"
+            @validation-change="updateStepValidation(7, $event)"
+          />
+        </OnboardingStep>
       </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="pt- h-full overflow-y-auto">
-      <div class="mx-auto max-w-4xl px-6 py-8">
-        <!-- Content -->
-        <div class="px-8 py-6">
-          <Transition :name="transitionName" mode="out-in">
-            <div :key="currentStep" class="space-y-8">
-              <!-- Step 1: Welcome -->
-              <WelcomeStep v-if="currentStep === 1" />
-
-              <!-- Step 2: Basic Info -->
-              <BasicInfoStep
-                v-if="currentStep === 2"
-                :profile-data="profileData"
-                @update="updateProfileData"
-              />
-
-              <!-- Step 3: Voice Types -->
-              <VoiceTypesStep
-                v-if="currentStep === 3"
-                :profile-data="profileData"
-                @update="updateProfileData"
-              />
-
-              <!-- Step 4: Languages -->
-              <LanguagesStep
-                v-if="currentStep === 4"
-                :profile-data="profileData"
-                @update="updateProfileData"
-              />
-
-              <!-- Step 5: Upload Voice Samples -->
-              <VoiceSamplesStep
-                v-if="currentStep === 5"
-                :profile-data="profileData"
-                :voice-samples="voiceSamples"
-                @update="updateVoiceSamples"
-              />
-
-              <!-- Step 6: Pricing & Rates -->
-              <PricingStep
-                v-if="currentStep === 6"
-                :profile-data="profileData"
-                :pricing-data="pricingData"
-                @update="updatePricingData"
-              />
-
-              <!-- Step 7: Agreement & Legal Requirements (Final Step) -->
-              <AgreementStep
-                v-if="currentStep === 7"
-                :model-value="agreementData"
-                @update:model-value="Object.assign(agreementData, $event)"
-                @validation-change="updateStepValidation(7, $event)"
-              />
-            </div>
-          </Transition>
-        </div>
-      </div>
-    </div>
-  </div>
+    </Transition>
+  </OnboardingStepContainer>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
-import Button from '@/components/atoms/Button.vue'
-import Icon from '@/components/atoms/Icon.vue'
+import OnboardingStepContainer from '@/components/molecules/OnboardingStepContainer.vue'
+import OnboardingStep from '@/components/molecules/OnboardingStep.vue'
 import WelcomeStep from '@/components/molecules/TalentProfile/WelcomeStep.vue'
 import AgreementStep from '@/components/molecules/TalentProfile/AgreementStep.vue'
 import BasicInfoStep from '@/components/molecules/TalentProfile/BasicInfoStep.vue'
@@ -223,12 +183,12 @@ const updateStepValidation = (step: number, isValid: boolean) => {
   stepValidation[step] = isValid
 }
 
-const canProceedToNext = computed(() => {
+const canProceedToNext = computed((): boolean => {
   switch (currentStep.value) {
     case 1:
       return true // Welcome step
     case 2:
-      return profileData.displayName && profileData.bio && profileData.location
+      return !!(profileData.displayName && profileData.bio && profileData.location)
     case 3:
       return profileData.voiceTypes.length > 0
     case 4:
