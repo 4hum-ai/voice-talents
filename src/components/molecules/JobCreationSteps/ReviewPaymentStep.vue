@@ -405,36 +405,73 @@ const handleSubmitPayment = async () => {
 
     // Debug: Log what's available
     console.log('Checkout object:', checkout.value)
+    console.log('Checkout object keys:', Object.keys(checkout.value || {}))
     console.log('Payment element:', paymentElementRef.value)
-    console.log('Container:', paymentContainerRef.value)
+    console.log(
+      'Payment element methods:',
+      paymentElementRef.value ? Object.keys(paymentElementRef.value) : 'N/A',
+    )
 
-    // For checkout sessions with ui_mode: "custom", use checkout.submit()
-    // This is the correct method according to Stripe documentation
+    // For checkout sessions with ui_mode: "custom", try multiple submission methods
     const checkoutObj = checkout.value as unknown as {
       submit?: () => Promise<void> | void
+      confirm?: () => Promise<void> | void
       [key: string]: unknown
     }
 
-    // Check if submit method exists (it might be on the prototype)
-    if (checkoutObj && 'submit' in checkoutObj && typeof checkoutObj.submit === 'function') {
+    // Method 1: Try checkout.submit() (standard method)
+    if (checkoutObj && typeof checkoutObj.submit === 'function') {
       try {
         console.log('Attempting to call checkout.submit()')
         const submitResult = checkoutObj.submit()
-        // If submit returns a promise, await it
         if (submitResult instanceof Promise) {
           await submitResult
         }
         console.log('checkout.submit() completed successfully')
-        // Payment will redirect to return_url automatically
-        // Don't set isSubmittingPayment to false here as we're redirecting
         return
       } catch (submitErr) {
         console.error('Error calling checkout.submit():', submitErr)
-        // If submit fails, try alternative methods
       }
-    } else {
-      console.log('checkout.submit() not found, trying alternative methods')
     }
+
+    // Method 2: Try payment element submit (if available)
+    const paymentElement = paymentElementRef.value as unknown as {
+      submit?: () => Promise<{ error?: Error }>
+      [key: string]: unknown
+    }
+    if (paymentElement && typeof paymentElement.submit === 'function') {
+      try {
+        console.log('Attempting to call paymentElement.submit()')
+        const result = await paymentElement.submit()
+        if (result && result.error) {
+          throw result.error
+        }
+        console.log('paymentElement.submit() completed successfully')
+        return
+      } catch (submitErr) {
+        console.error('Error calling paymentElement.submit():', submitErr)
+      }
+    }
+
+    // Method 3: Try to get payment element from checkout and submit
+    if (
+      checkoutObj &&
+      typeof (checkoutObj as { getPaymentElement?: () => unknown }).getPaymentElement === 'function'
+    ) {
+      try {
+        console.log('Attempting to get payment element from checkout')
+        const element = (checkoutObj as { getPaymentElement: () => unknown }).getPaymentElement()
+        if (element && typeof (element as { submit?: () => Promise<void> }).submit === 'function') {
+          console.log('Attempting to submit via getPaymentElement().submit()')
+          await (element as { submit: () => Promise<void> }).submit()
+          return
+        }
+      } catch (err) {
+        console.error('Error with getPaymentElement():', err)
+      }
+    }
+
+    console.log('All direct submission methods failed, trying DOM-based approach')
 
     // Alternative: Check if there's a form in the payment container and submit it
     if (paymentContainerRef.value) {
