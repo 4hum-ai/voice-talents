@@ -81,46 +81,16 @@
             <div>
               <h4 class="text-foreground mb-4 text-base font-medium">Secure Payment</h4>
               <div class="space-y-4">
-                <!-- Payment Element Container (shown when clientSecret is available) -->
-                <div v-if="showPaymentElement && stripeLoaded" class="space-y-4">
-                  <div
-                    ref="paymentContainerRef"
-                    class="min-h-[400px] rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
-                  ></div>
-                  <!-- Custom Submit Button -->
-                  <Button
-                    v-if="isPaymentElementReady"
-                    variant="primary"
-                    size="lg"
-                    class="w-full"
-                    :disabled="isSubmittingPayment || props.isSubmitting"
-                    @click="handleSubmitPayment"
-                  >
-                    <Icon
-                      v-if="isSubmittingPayment || props.isSubmitting"
-                      name="mdi:loading"
-                      class="mr-2 h-5 w-5 animate-spin"
-                    />
-                    <Icon v-else name="mdi:check-circle" class="mr-2 h-5 w-5" />
-                    {{
-                      isSubmittingPayment || props.isSubmitting
-                        ? 'Processing...'
-                        : `Pay $${totalCost}`
-                    }}
-                  </Button>
-                </div>
-
-                <!-- Initial Payment Button (shown before payment element is mounted) -->
+                <!-- Payment Button - Redirects to Stripe Hosted Checkout -->
                 <Button
-                  v-else
                   variant="primary"
                   size="lg"
                   class="w-full"
-                  :disabled="isSubmitting || isLoadingPayment"
+                  :disabled="isLoadingPayment || props.isSubmitting"
                   @click="handleStripePayment"
                 >
                   <Icon
-                    v-if="isLoadingPayment || isSubmitting"
+                    v-if="isLoadingPayment || props.isSubmitting"
                     name="mdi:loading"
                     class="mr-2 h-5 w-5 animate-spin"
                   />
@@ -128,9 +98,9 @@
                   {{
                     isLoadingPayment
                       ? 'Processing...'
-                      : isSubmitting
-                        ? 'Completing...'
-                        : `Pay $${totalCost} with Stripe`
+                      : props.isSubmitting
+                        ? 'Redirecting...'
+                        : `Pay $${totalCost}`
                   }}
                 </Button>
 
@@ -311,18 +281,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onBeforeMount, watch } from 'vue'
-import {
-  loadStripe,
-  type Stripe,
-  type StripeCheckout,
-  type StripePaymentElement,
-} from '@stripe/stripe-js'
+import { computed, ref } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
 import Button from '@/components/atoms/Button.vue'
 import { useToast } from '@/composables/useToast'
 import { useStripePayment, type StripeLineItem } from '@/composables/useStripePayment'
-import { useTheme } from '@/composables/useTheme'
 import { getPremiumFeatureById } from '@/composables/usePremiumFeatures'
 import ContentViewer from '@/components/molecules/ContentViewer.vue'
 import IconMdiContentCopy from '~icons/mdi/content-copy'
@@ -383,441 +346,10 @@ const emit = defineEmits<{
   (e: 'payment-confirmed'): void
 }>()
 
-// Handle payment submission
-const handleSubmitPayment = async () => {
-  paymentError.value = null
-
-  if (!checkout.value || !paymentElementRef.value || !clientSecretRef.value) {
-    paymentError.value = 'Payment element not initialized'
-    error(paymentError.value)
-    return
-  }
-
-  // Check if payment element is complete
-  if (!isPaymentElementComplete.value) {
-    paymentError.value = 'Please complete the payment form before submitting'
-    error(paymentError.value)
-    return
-  }
-
-  let submissionTimeout: ReturnType<typeof setTimeout> | null = null
-
-  try {
-    isSubmittingPayment.value = true
-
-    // Set a timeout to prevent getting stuck
-    submissionTimeout = setTimeout(() => {
-      if (isSubmittingPayment.value) {
-        console.error('Payment submission timed out after 10 seconds')
-        isSubmittingPayment.value = false
-        paymentError.value = 'Payment submission timed out. Please try again.'
-        error(paymentError.value)
-      }
-    }, 10000) // 10 second timeout
-
-    // Debug: Log what's available
-    console.log('Checkout object:', checkout.value)
-    console.log('Checkout object keys:', Object.keys(checkout.value || {}))
-    console.log('Payment element:', paymentElementRef.value)
-    console.log(
-      'Payment element methods:',
-      paymentElementRef.value ? Object.keys(paymentElementRef.value) : 'N/A',
-    )
-
-    // For checkout sessions with ui_mode: "custom", try multiple submission methods
-    const checkoutObj = checkout.value as unknown as {
-      submit?: () => Promise<void> | void
-      confirm?: () => Promise<void> | void
-      [key: string]: unknown
-    }
-
-    // Method 1: Try checkout.submit() (standard method)
-    if (checkoutObj && typeof checkoutObj.submit === 'function') {
-      try {
-        console.log('Attempting to call checkout.submit()')
-        const submitResult = checkoutObj.submit()
-        if (submitResult instanceof Promise) {
-          await Promise.race([
-            submitResult,
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
-          ])
-        }
-        console.log('checkout.submit() completed successfully')
-        clearTimeout(submissionTimeout)
-        return
-      } catch (submitErr) {
-        console.error('Error calling checkout.submit():', submitErr)
-        clearTimeout(submissionTimeout)
-      }
-    }
-
-    // Method 2: Try payment element submit (if available)
-    const paymentElement = paymentElementRef.value as unknown as {
-      submit?: () => Promise<{ error?: Error }>
-      [key: string]: unknown
-    }
-    if (paymentElement && typeof paymentElement.submit === 'function') {
-      try {
-        console.log('Attempting to call paymentElement.submit()')
-        const result = await Promise.race([
-          paymentElement.submit(),
-          new Promise<{ error?: Error }>((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout')), 5000),
-          ),
-        ])
-        if (result && result.error) {
-          throw result.error
-        }
-        console.log('paymentElement.submit() completed successfully')
-        clearTimeout(submissionTimeout)
-        return
-      } catch (submitErr) {
-        console.error('Error calling paymentElement.submit():', submitErr)
-        clearTimeout(submissionTimeout)
-      }
-    }
-
-    // Method 3: Try loadActions() - this might return actions we can trigger
-    if (
-      checkoutObj &&
-      typeof (checkoutObj as { loadActions?: () => Promise<unknown> }).loadActions === 'function'
-    ) {
-      try {
-        console.log('Attempting to call checkout.loadActions()')
-        const actionsResult = await Promise.race([
-          (checkoutObj as { loadActions: () => Promise<unknown> }).loadActions(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
-        ])
-        console.log('loadActions() result:', actionsResult)
-
-        // Check if actionsResult contains a submit method or action
-        if (actionsResult && typeof actionsResult === 'object') {
-          const actions = actionsResult as Record<string, unknown>
-          console.log('Actions keys:', Object.keys(actions))
-
-          // Look for submit, confirm, or process methods in the actions
-          if (typeof actions.submit === 'function') {
-            console.log('Found submit in actions, calling it')
-            await (actions.submit as () => Promise<void>)()
-            clearTimeout(submissionTimeout)
-            return
-          }
-          if (typeof actions.confirm === 'function') {
-            console.log('Found confirm in actions, calling it')
-            await (actions.confirm as () => Promise<void>)()
-            clearTimeout(submissionTimeout)
-            return
-          }
-        }
-
-        // If no actions returned, wait a bit to see if submission happens automatically
-        console.log('No submit action found in loadActions result, waiting for auto-submit')
-        await Promise.race([
-          new Promise((resolve) => setTimeout(resolve, 2000)),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('No auto-submit')), 3000)),
-        ])
-        clearTimeout(submissionTimeout)
-        return
-      } catch (err) {
-        console.error('Error calling loadActions() or waiting for auto-submit:', err)
-        clearTimeout(submissionTimeout)
-      }
-    }
-
-    // Method 4: Try to get payment element from checkout using getPaymentElement()
-    // This might return a different instance with submit capabilities
-    if (
-      checkoutObj &&
-      typeof (checkoutObj as { getPaymentElement?: () => unknown }).getPaymentElement === 'function'
-    ) {
-      try {
-        console.log('Attempting to get payment element from checkout via getPaymentElement()')
-        const element = (checkoutObj as { getPaymentElement: () => unknown }).getPaymentElement()
-        console.log('Got element from getPaymentElement():', element)
-        if (element) {
-          const elementKeys = Object.keys(element as Record<string, unknown>)
-          console.log('Element methods from getPaymentElement():', elementKeys)
-
-          // Check for submit method
-          if (typeof (element as { submit?: () => Promise<void> }).submit === 'function') {
-            console.log('Found submit() on getPaymentElement() result, calling it')
-            await (element as { submit: () => Promise<void> }).submit()
-            return
-          }
-
-          // Check for other submission-related methods
-          const submitMethods = ['confirm', 'process', 'complete', 'finish']
-          for (const methodName of submitMethods) {
-            if (typeof (element as Record<string, unknown>)[methodName] === 'function') {
-              console.log(`Found ${methodName}() method, attempting to call it`)
-              try {
-                await ((element as Record<string, unknown>)[methodName] as () => Promise<void>)()
-                console.log(`${methodName}() completed successfully`)
-                return
-              } catch (methodErr) {
-                console.error(`Error calling ${methodName}():`, methodErr)
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Error with getPaymentElement():', err)
-      }
-    }
-
-    // Method 5: For checkout sessions with ui_mode: "custom", the payment element
-    // should have a built-in submit button. Since we can't access it directly (iframe),
-    // we need to trigger the form submission through the payment element's events.
-    // Try triggering a 'submit' event on the payment element
-    if (paymentElementRef.value) {
-      try {
-        console.log('Attempting to trigger submit event on payment element')
-        // The payment element might listen for certain events
-        const element = paymentElementRef.value as unknown as {
-          emit?: (event: string, data?: unknown) => void
-          _emit?: (event: string, data?: unknown) => void
-        }
-        if (element.emit) {
-          element.emit('submit', {})
-        } else if (element._emit) {
-          element._emit('submit', {})
-        }
-        // Wait to see if this triggers submission
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        return
-      } catch (err) {
-        console.error('Error triggering submit event:', err)
-      }
-    }
-
-    console.log('All direct submission methods failed, trying DOM-based approach')
-
-    // Alternative: Check if there's a form in the payment container and submit it
-    if (paymentContainerRef.value) {
-      console.log('Container HTML:', paymentContainerRef.value.innerHTML.substring(0, 500))
-
-      const form = paymentContainerRef.value.querySelector('form') as HTMLFormElement
-      if (form) {
-        console.log('Form found, attempting to submit')
-        // Check if form has a submit button
-        const submitButton = form.querySelector('button[type="submit"], input[type="submit"]') as
-          | HTMLButtonElement
-          | HTMLInputElement
-
-        if (submitButton && !submitButton.disabled) {
-          console.log('Found submit button in form, clicking it')
-          submitButton.click()
-          return
-        }
-
-        // Try to submit the form directly
-        try {
-          console.log('Attempting form.requestSubmit()')
-          form.requestSubmit()
-          return
-        } catch (formErr) {
-          console.error('Error submitting form:', formErr)
-        }
-      }
-
-      // Look for any button in the container (Stripe payment elements often have buttons)
-      await new Promise((resolve) => setTimeout(resolve, 300))
-      const allButtons = paymentContainerRef.value.querySelectorAll('button')
-      console.log(`Found ${allButtons.length} buttons in container`)
-
-      for (const btn of Array.from(allButtons)) {
-        const isVisible = btn.offsetParent !== null
-        const isEnabled = !btn.disabled
-        const text = btn.textContent?.toLowerCase() || ''
-        const hasSubmitText =
-          text.includes('pay') ||
-          text.includes('submit') ||
-          text.includes('confirm') ||
-          text.includes('complete')
-
-        console.log('Button:', {
-          text: btn.textContent,
-          type: btn.type,
-          disabled: btn.disabled,
-          visible: isVisible,
-          hasSubmitText,
-        })
-
-        // Look for buttons that might be submit buttons (not disabled, visible)
-        if (isEnabled && isVisible && (hasSubmitText || btn.type === 'submit')) {
-          console.log('Clicking button:', btn.textContent)
-          btn.click()
-          return
-        }
-      }
-
-      // Also check for any element with role="button" that might be the submit button
-      const buttonRoles = paymentContainerRef.value.querySelectorAll('[role="button"]')
-      console.log(`Found ${buttonRoles.length} elements with role="button"`)
-      for (const btn of Array.from(buttonRoles)) {
-        if (
-          !(btn as HTMLElement).hasAttribute('disabled') &&
-          (btn as HTMLElement).offsetParent !== null
-        ) {
-          console.log('Clicking role="button" element')
-          ;(btn as HTMLElement).click()
-          return
-        }
-      }
-    }
-
-    // If all methods fail, provide helpful error message
-    throw new Error(
-      'Unable to submit payment. The payment form may not be fully loaded. Please try refreshing the page and ensure all payment fields are filled correctly.',
-    )
-  } catch (err) {
-    console.error('Payment submission error:', err)
-    paymentError.value = err instanceof Error ? err.message : 'Failed to submit payment'
-    error(paymentError.value)
-    isSubmittingPayment.value = false
-  } finally {
-    // Ensure timeout is cleared if we exit early
-    if (submissionTimeout) {
-      clearTimeout(submissionTimeout)
-    }
-  }
-}
-
 const { success, error } = useToast()
 const { createCheckoutSession, isLoading: isLoadingPayment } = useStripePayment()
-const { mode: theme } = useTheme()
 
 const paymentError = ref<string | null>(null)
-const clientSecretRef = ref<string | null>(null)
-const showPaymentElement = ref(false)
-const stripeLoaded = ref(false)
-const stripe = ref<Stripe | null>(null)
-const checkout = ref<StripeCheckout | undefined>()
-const paymentElementRef = ref<StripePaymentElement | null>(null)
-const paymentContainerRef = ref<HTMLElement | null>(null)
-const isPaymentElementReady = ref(false)
-const isPaymentElementComplete = ref(false)
-const isSubmittingPayment = ref(false)
-
-// Initialize Stripe and auto-load payment form
-onBeforeMount(async () => {
-  const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
-  if (publishableKey) {
-    stripe.value = await loadStripe(publishableKey)
-    stripeLoaded.value = true
-
-    // Auto-load payment form when step is mounted
-    // Wait a bit for component to fully render
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    if (stripeLoaded.value) {
-      handleStripePayment()
-    }
-  }
-})
-
-// Watch for clientSecret changes to mount payment element
-watch(
-  [clientSecretRef, paymentContainerRef, stripeLoaded],
-  async ([clientSecret, container, loaded]) => {
-    if (clientSecret && container && loaded && stripe.value && !isPaymentElementReady.value) {
-      await mountPaymentElement(clientSecret, container)
-    }
-  },
-  { immediate: true },
-)
-
-// Mount payment element using initCheckout (for checkout sessions)
-const mountPaymentElement = async (clientSecret: string, container: HTMLElement) => {
-  if (!stripe.value) return
-
-  try {
-    // Clean up existing
-    if (paymentElementRef.value) {
-      try {
-        if (paymentElementRef.value.unmount) {
-          paymentElementRef.value.unmount()
-        }
-      } catch {
-        // Ignore
-      }
-      paymentElementRef.value = null
-    }
-    checkout.value = undefined
-
-    // Create checkout with client secret
-    checkout.value = await stripe.value.initCheckout({
-      clientSecret,
-      elementsOptions: {
-        appearance: {
-          theme: theme.value === 'dark' ? 'night' : 'stripe',
-          variables: {
-            colorPrimary: theme.value === 'dark' ? '#3b82f6' : '#3182ce',
-            colorBackground: theme.value === 'dark' ? '#09090b' : '#ffffff',
-            fontFamily: 'Inter, system-ui, sans-serif',
-          },
-        },
-      },
-    })
-
-    // Create and mount payment element
-    // For checkout sessions with ui_mode: "custom", the payment element should include a submit button
-    // We need to configure it to show the submit button
-    const element = checkout.value.createPaymentElement({
-      // Configuration options for the payment element
-      // The submit button should be included by default for checkout sessions
-      fields: {
-        billingDetails: 'auto',
-      },
-    })
-    await element.mount(container)
-    paymentElementRef.value = element
-    isPaymentElementReady.value = true
-
-    // Listen for payment element events
-    element.on('ready', () => {
-      console.log('Payment element is ready')
-      isPaymentElementReady.value = true
-
-      // Check if submit button exists in the container
-      setTimeout(() => {
-        const submitButton = container.querySelector(
-          'button[type="submit"], button:not([type="button"])',
-        )
-        if (submitButton) {
-          console.log('Submit button found in payment element')
-        } else {
-          console.warn(
-            'Submit button not found in payment element. Container HTML:',
-            container.innerHTML.substring(0, 1000),
-          )
-        }
-      }, 500)
-    })
-
-    element.on('change', (event: { complete?: boolean }) => {
-      isPaymentElementComplete.value = event.complete || false
-      if (event.complete) {
-        console.log('Payment element is complete and ready for submission')
-      }
-    })
-
-    // Listen for checkout events if available
-    if (
-      checkout.value &&
-      typeof (checkout.value as { on?: (event: string, handler: () => void) => void }).on ===
-        'function'
-    ) {
-      ;(checkout.value as { on: (event: string, handler: () => void) => void }).on('submit', () => {
-        console.log('Payment submitted via checkout')
-        // Payment will redirect to return_url automatically
-      })
-    }
-  } catch (err) {
-    console.error('Error mounting payment element:', err)
-    paymentError.value = err instanceof Error ? err.message : 'Failed to mount payment element'
-    isPaymentElementReady.value = false
-  }
-}
 
 // Generate a unique job ID for payment reference
 const jobId = computed(() => {
@@ -1043,20 +575,19 @@ const buildLineItems = computed((): StripeLineItem[] => {
   return items
 })
 
-// Handle Stripe payment
+// Handle Stripe payment - redirects to Stripe hosted checkout
 const handleStripePayment = async () => {
   paymentError.value = null
 
   try {
-    // Build return URL with step query param to return to payment step
-    // Use current window location path to maintain context
+    // Build return URL for hosted checkout
     const currentPath = window.location.pathname || '/client/jobs'
-    const returnUrl = `${window.location.origin}${currentPath}?step=4&payment=success&session_id={CHECKOUT_SESSION_ID}`
+    const successUrl = `${window.location.origin}${currentPath}?step=4&payment=success&session_id={CHECKOUT_SESSION_ID}`
 
     const session = await createCheckoutSession({
       line_items: buildLineItems.value,
       mode: 'payment',
-      return_url: returnUrl,
+      return_url: successUrl, // Used for success_url
       jobId: jobId.value,
       metadata: {
         voiceType: props.voiceType || 'talent_only',
@@ -1068,17 +599,12 @@ const handleStripePayment = async () => {
     // Emit event to parent component
     emit('payment-initiated', session.id)
 
-    // For embedded checkout, we get clientSecret instead of URL
-    if (session.clientSecret) {
-      clientSecretRef.value = session.clientSecret
-      showPaymentElement.value = true
-
-      // Mount will happen via watcher when container is ready
-    } else if (session.url) {
-      // Fallback to redirect if URL is provided (hosted checkout)
+    // For hosted checkout, we always get a URL to redirect to
+    if (session.url) {
+      // Redirect to Stripe hosted checkout page
       window.location.href = session.url
     } else {
-      throw new Error('No payment method available in session response')
+      throw new Error('No checkout URL available. Please try again.')
     }
   } catch (err) {
     paymentError.value = err instanceof Error ? err.message : 'Failed to initiate payment'

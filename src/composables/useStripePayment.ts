@@ -66,15 +66,17 @@ export function useStripePayment() {
         throw new Error('User must be authenticated to create payment session')
       }
 
-      // Format request to match backend API
-      // Backend expects ui_mode: "custom" (even though we use initEmbeddedCheckout on frontend)
+      // Format request for Stripe hosted checkout (redirect)
+      // For hosted checkout, we don't need ui_mode - Stripe handles the UI
       const sessionData: Record<string, unknown> = {
-        ui_mode: 'custom', // Backend validation requires "custom"
         mode: params.mode || 'payment', // One-time payment (not subscription)
         line_items: params.line_items,
-        return_url:
-          params.return_url ||
+        success_url:
+          params.return_url?.replace('{CHECKOUT_SESSION_ID}', '{CHECKOUT_SESSION_ID}') ||
           `${window.location.origin}/client/jobs?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url:
+          params.return_url?.replace('?payment=success', '?payment=cancelled') ||
+          `${window.location.origin}/client/jobs?payment=cancelled`,
         metadata: {
           jobId: params.jobId || '',
           userId: authStore.user.id,
