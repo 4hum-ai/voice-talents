@@ -403,19 +403,28 @@ const handleSubmitPayment = async () => {
   try {
     isSubmittingPayment.value = true
 
+    // Debug: Log what's available
+    console.log('Checkout object:', checkout.value)
+    console.log('Payment element:', paymentElementRef.value)
+    console.log('Container:', paymentContainerRef.value)
+
     // For checkout sessions with ui_mode: "custom", use checkout.submit()
     // This is the correct method according to Stripe documentation
     const checkoutObj = checkout.value as unknown as {
       submit?: () => Promise<void> | void
+      [key: string]: unknown
     }
 
-    if (checkoutObj && typeof checkoutObj.submit === 'function') {
+    // Check if submit method exists (it might be on the prototype)
+    if (checkoutObj && 'submit' in checkoutObj && typeof checkoutObj.submit === 'function') {
       try {
+        console.log('Attempting to call checkout.submit()')
         const submitResult = checkoutObj.submit()
         // If submit returns a promise, await it
         if (submitResult instanceof Promise) {
           await submitResult
         }
+        console.log('checkout.submit() completed successfully')
         // Payment will redirect to return_url automatically
         // Don't set isSubmittingPayment to false here as we're redirecting
         return
@@ -423,24 +432,31 @@ const handleSubmitPayment = async () => {
         console.error('Error calling checkout.submit():', submitErr)
         // If submit fails, try alternative methods
       }
+    } else {
+      console.log('checkout.submit() not found, trying alternative methods')
     }
 
     // Alternative: Check if there's a form in the payment container and submit it
     if (paymentContainerRef.value) {
+      console.log('Container HTML:', paymentContainerRef.value.innerHTML.substring(0, 500))
+
       const form = paymentContainerRef.value.querySelector('form') as HTMLFormElement
       if (form) {
+        console.log('Form found, attempting to submit')
         // Check if form has a submit button
         const submitButton = form.querySelector('button[type="submit"], input[type="submit"]') as
           | HTMLButtonElement
           | HTMLInputElement
 
         if (submitButton && !submitButton.disabled) {
+          console.log('Found submit button in form, clicking it')
           submitButton.click()
           return
         }
 
         // Try to submit the form directly
         try {
+          console.log('Attempting form.requestSubmit()')
           form.requestSubmit()
           return
         } catch (formErr) {
@@ -448,19 +464,47 @@ const handleSubmitPayment = async () => {
         }
       }
 
-      // Last resort: Look for any button that might be a submit button
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      // Look for any button in the container (Stripe payment elements often have buttons)
+      await new Promise((resolve) => setTimeout(resolve, 300))
       const allButtons = paymentContainerRef.value.querySelectorAll('button')
+      console.log(`Found ${allButtons.length} buttons in container`)
+
       for (const btn of Array.from(allButtons)) {
+        const isVisible = btn.offsetParent !== null
+        const isEnabled = !btn.disabled
+        const text = btn.textContent?.toLowerCase() || ''
+        const hasSubmitText =
+          text.includes('pay') ||
+          text.includes('submit') ||
+          text.includes('confirm') ||
+          text.includes('complete')
+
+        console.log('Button:', {
+          text: btn.textContent,
+          type: btn.type,
+          disabled: btn.disabled,
+          visible: isVisible,
+          hasSubmitText,
+        })
+
         // Look for buttons that might be submit buttons (not disabled, visible)
-        if (
-          !btn.disabled &&
-          btn.offsetParent !== null && // Element is visible
-          (btn.textContent?.toLowerCase().includes('pay') ||
-            btn.textContent?.toLowerCase().includes('submit') ||
-            btn.textContent?.toLowerCase().includes('confirm'))
-        ) {
+        if (isEnabled && isVisible && (hasSubmitText || btn.type === 'submit')) {
+          console.log('Clicking button:', btn.textContent)
           btn.click()
+          return
+        }
+      }
+
+      // Also check for any element with role="button" that might be the submit button
+      const buttonRoles = paymentContainerRef.value.querySelectorAll('[role="button"]')
+      console.log(`Found ${buttonRoles.length} elements with role="button"`)
+      for (const btn of Array.from(buttonRoles)) {
+        if (
+          !(btn as HTMLElement).hasAttribute('disabled') &&
+          (btn as HTMLElement).offsetParent !== null
+        ) {
+          console.log('Clicking role="button" element')
+          ;(btn as HTMLElement).click()
           return
         }
       }
@@ -468,7 +512,7 @@ const handleSubmitPayment = async () => {
 
     // If all methods fail, provide helpful error message
     throw new Error(
-      'Unable to submit payment. Please ensure the payment form is complete and try again. If the problem persists, please refresh the page.',
+      'Unable to submit payment. The payment form may not be fully loaded. Please try refreshing the page and ensure all payment fields are filled correctly.',
     )
   } catch (err) {
     console.error('Payment submission error:', err)
