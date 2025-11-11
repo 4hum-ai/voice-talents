@@ -477,20 +477,50 @@ const handleSubmitPayment = async () => {
       }
     }
 
-    // Method 3: Try loadActions() - this might trigger submission
+    // Method 3: Try loadActions() - this might return actions we can trigger
     if (
       checkoutObj &&
-      typeof (checkoutObj as { loadActions?: () => Promise<void> }).loadActions === 'function'
+      typeof (checkoutObj as { loadActions?: () => Promise<unknown> }).loadActions === 'function'
     ) {
       try {
         console.log('Attempting to call checkout.loadActions()')
-        await (checkoutObj as { loadActions: () => Promise<void> }).loadActions()
-        console.log('loadActions() completed, checking if submission was triggered')
-        // Wait a bit to see if submission happens
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        const actionsResult = await Promise.race([
+          (checkoutObj as { loadActions: () => Promise<unknown> }).loadActions(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
+        ])
+        console.log('loadActions() result:', actionsResult)
+
+        // Check if actionsResult contains a submit method or action
+        if (actionsResult && typeof actionsResult === 'object') {
+          const actions = actionsResult as Record<string, unknown>
+          console.log('Actions keys:', Object.keys(actions))
+
+          // Look for submit, confirm, or process methods in the actions
+          if (typeof actions.submit === 'function') {
+            console.log('Found submit in actions, calling it')
+            await (actions.submit as () => Promise<void>)()
+            clearTimeout(submissionTimeout)
+            return
+          }
+          if (typeof actions.confirm === 'function') {
+            console.log('Found confirm in actions, calling it')
+            await (actions.confirm as () => Promise<void>)()
+            clearTimeout(submissionTimeout)
+            return
+          }
+        }
+
+        // If no actions returned, wait a bit to see if submission happens automatically
+        console.log('No submit action found in loadActions result, waiting for auto-submit')
+        await Promise.race([
+          new Promise((resolve) => setTimeout(resolve, 2000)),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('No auto-submit')), 3000)),
+        ])
+        clearTimeout(submissionTimeout)
         return
       } catch (err) {
-        console.error('Error calling loadActions():', err)
+        console.error('Error calling loadActions() or waiting for auto-submit:', err)
+        clearTimeout(submissionTimeout)
       }
     }
 
@@ -730,10 +760,14 @@ const mountPaymentElement = async (clientSecret: string, container: HTMLElement)
     })
 
     // Create and mount payment element
-    // For checkout sessions, the payment element should include a submit button
+    // For checkout sessions with ui_mode: "custom", the payment element should include a submit button
+    // We need to configure it to show the submit button
     const element = checkout.value.createPaymentElement({
-      // Ensure the payment element includes the submit button
-      layout: 'tabs',
+      // Configuration options for the payment element
+      // The submit button should be included by default for checkout sessions
+      fields: {
+        billingDetails: 'auto',
+      },
     })
     await element.mount(container)
     paymentElementRef.value = element
