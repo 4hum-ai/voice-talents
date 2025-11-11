@@ -67,16 +67,22 @@ export function useStripePayment() {
       }
 
       // Format request for Stripe hosted checkout (redirect)
-      // For hosted checkout, we don't need ui_mode - Stripe handles the UI
+      // For hosted checkout, we use success_url and cancel_url (NOT ui_mode: "custom")
+      // Backend will assume ui_mode: "custom" if not specified, so we must explicitly set it
+      // For hosted checkout, we should NOT use ui_mode or set it to null/undefined
+      const baseUrl = params.return_url?.split('?')[0] || `${window.location.origin}/client/jobs`
+      const successUrl =
+        params.return_url || `${baseUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`
+      const cancelUrl = `${baseUrl}?payment=cancelled`
+
       const sessionData: Record<string, unknown> = {
         mode: params.mode || 'payment', // One-time payment (not subscription)
         line_items: params.line_items,
-        success_url:
-          params.return_url?.replace('{CHECKOUT_SESSION_ID}', '{CHECKOUT_SESSION_ID}') ||
-          `${window.location.origin}/client/jobs?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url:
-          params.return_url?.replace('?payment=success', '?payment=cancelled') ||
-          `${window.location.origin}/client/jobs?payment=cancelled`,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        // Explicitly set ui_mode to null/undefined to prevent backend from assuming "custom"
+        // Hosted checkout doesn't use ui_mode - it uses success_url and cancel_url instead
+        ui_mode: null, // or undefined - this tells backend to use hosted checkout
         metadata: {
           jobId: params.jobId || '',
           userId: authStore.user.id,
