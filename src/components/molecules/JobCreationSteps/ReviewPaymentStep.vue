@@ -400,8 +400,20 @@ const handleSubmitPayment = async () => {
     return
   }
 
+  let submissionTimeout: ReturnType<typeof setTimeout> | null = null
+
   try {
     isSubmittingPayment.value = true
+
+    // Set a timeout to prevent getting stuck
+    submissionTimeout = setTimeout(() => {
+      if (isSubmittingPayment.value) {
+        console.error('Payment submission timed out after 10 seconds')
+        isSubmittingPayment.value = false
+        paymentError.value = 'Payment submission timed out. Please try again.'
+        error(paymentError.value)
+      }
+    }, 10000) // 10 second timeout
 
     // Debug: Log what's available
     console.log('Checkout object:', checkout.value)
@@ -425,12 +437,17 @@ const handleSubmitPayment = async () => {
         console.log('Attempting to call checkout.submit()')
         const submitResult = checkoutObj.submit()
         if (submitResult instanceof Promise) {
-          await submitResult
+          await Promise.race([
+            submitResult,
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000)),
+          ])
         }
         console.log('checkout.submit() completed successfully')
+        clearTimeout(submissionTimeout)
         return
       } catch (submitErr) {
         console.error('Error calling checkout.submit():', submitErr)
+        clearTimeout(submissionTimeout)
       }
     }
 
@@ -442,14 +459,21 @@ const handleSubmitPayment = async () => {
     if (paymentElement && typeof paymentElement.submit === 'function') {
       try {
         console.log('Attempting to call paymentElement.submit()')
-        const result = await paymentElement.submit()
+        const result = await Promise.race([
+          paymentElement.submit(),
+          new Promise<{ error?: Error }>((_, reject) =>
+            setTimeout(() => reject(new Error('Timeout')), 5000),
+          ),
+        ])
         if (result && result.error) {
           throw result.error
         }
         console.log('paymentElement.submit() completed successfully')
+        clearTimeout(submissionTimeout)
         return
       } catch (submitErr) {
         console.error('Error calling paymentElement.submit():', submitErr)
+        clearTimeout(submissionTimeout)
       }
     }
 
@@ -621,6 +645,11 @@ const handleSubmitPayment = async () => {
     paymentError.value = err instanceof Error ? err.message : 'Failed to submit payment'
     error(paymentError.value)
     isSubmittingPayment.value = false
+  } finally {
+    // Ensure timeout is cleared if we exit early
+    if (submissionTimeout) {
+      clearTimeout(submissionTimeout)
+    }
   }
 }
 
