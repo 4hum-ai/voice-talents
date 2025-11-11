@@ -453,21 +453,86 @@ const handleSubmitPayment = async () => {
       }
     }
 
-    // Method 3: Try to get payment element from checkout and submit
+    // Method 3: Try loadActions() - this might trigger submission
+    if (
+      checkoutObj &&
+      typeof (checkoutObj as { loadActions?: () => Promise<void> }).loadActions === 'function'
+    ) {
+      try {
+        console.log('Attempting to call checkout.loadActions()')
+        await (checkoutObj as { loadActions: () => Promise<void> }).loadActions()
+        console.log('loadActions() completed, checking if submission was triggered')
+        // Wait a bit to see if submission happens
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        return
+      } catch (err) {
+        console.error('Error calling loadActions():', err)
+      }
+    }
+
+    // Method 4: Try to get payment element from checkout using getPaymentElement()
+    // This might return a different instance with submit capabilities
     if (
       checkoutObj &&
       typeof (checkoutObj as { getPaymentElement?: () => unknown }).getPaymentElement === 'function'
     ) {
       try {
-        console.log('Attempting to get payment element from checkout')
+        console.log('Attempting to get payment element from checkout via getPaymentElement()')
         const element = (checkoutObj as { getPaymentElement: () => unknown }).getPaymentElement()
-        if (element && typeof (element as { submit?: () => Promise<void> }).submit === 'function') {
-          console.log('Attempting to submit via getPaymentElement().submit()')
-          await (element as { submit: () => Promise<void> }).submit()
-          return
+        console.log('Got element from getPaymentElement():', element)
+        if (element) {
+          const elementKeys = Object.keys(element as Record<string, unknown>)
+          console.log('Element methods from getPaymentElement():', elementKeys)
+
+          // Check for submit method
+          if (typeof (element as { submit?: () => Promise<void> }).submit === 'function') {
+            console.log('Found submit() on getPaymentElement() result, calling it')
+            await (element as { submit: () => Promise<void> }).submit()
+            return
+          }
+
+          // Check for other submission-related methods
+          const submitMethods = ['confirm', 'process', 'complete', 'finish']
+          for (const methodName of submitMethods) {
+            if (typeof (element as Record<string, unknown>)[methodName] === 'function') {
+              console.log(`Found ${methodName}() method, attempting to call it`)
+              try {
+                await ((element as Record<string, unknown>)[methodName] as () => Promise<void>)()
+                console.log(`${methodName}() completed successfully`)
+                return
+              } catch (methodErr) {
+                console.error(`Error calling ${methodName}():`, methodErr)
+              }
+            }
+          }
         }
       } catch (err) {
         console.error('Error with getPaymentElement():', err)
+      }
+    }
+
+    // Method 5: For checkout sessions with ui_mode: "custom", the payment element
+    // should have a built-in submit button. Since we can't access it directly (iframe),
+    // we need to trigger the form submission through the payment element's events.
+    // Try triggering a 'submit' event on the payment element
+    if (paymentElementRef.value) {
+      try {
+        console.log('Attempting to trigger submit event on payment element')
+        // The payment element might listen for certain events
+        const element = paymentElementRef.value as unknown as {
+          emit?: (event: string, data?: unknown) => void
+          _emit?: (event: string, data?: unknown) => void
+        }
+        if (element.emit) {
+          element.emit('submit', {})
+        } else if (element._emit) {
+          element._emit('submit', {})
+        }
+        // Wait to see if this triggers submission
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        return
+      } catch (err) {
+        console.error('Error triggering submit event:', err)
       }
     }
 
