@@ -1,183 +1,114 @@
 <template>
-  <div class="mx-auto max-w-5xl">
-    <div class="mb-8 text-center">
-      <h1 class="text-foreground mb-4 text-3xl font-bold">
-        Step 2: Project Details & Requirements
-      </h1>
-      <p class="text-muted-foreground text-lg">
-        Define your {{ getVoiceTypeLabel() }} project requirements
+  <div class="mx-auto max-w-3xl">
+    <div class="mb-6 text-center sm:mb-8">
+      <h1 class="text-foreground mb-3 text-2xl font-bold sm:text-3xl">Project Details</h1>
+      <p class="text-muted-foreground text-base sm:text-lg">
+        Tell us about your {{ getVoiceTypeLabel() }} project
       </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      <!-- Left Column: Project Details -->
-      <div class="space-y-6 lg:col-span-2">
-        <!-- Basic Information -->
-        <div class="bg-card border-border rounded-lg border p-6">
-          <h3 class="text-foreground mb-6 text-lg font-semibold">Project Information</h3>
-
-          <div class="space-y-4">
-            <!-- Job Title -->
-            <div>
-              <label class="text-foreground mb-2 block text-sm font-medium">
-                Job Title <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="localTitle"
-                type="text"
-                required
-                class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
-                placeholder="e.g., Commercial Voice-Over for Tech Startup"
-              />
-            </div>
-
-            <!-- Project/Voice Type (Combined) -->
-            <div>
-              <label class="text-foreground mb-2 block text-sm font-medium">
-                Project Type <span class="text-red-500">*</span>
-              </label>
-              <SelectInput
-                v-model="localProjectType"
-                :options="combinedProjectTypeOptions"
-                placeholder="Select project type"
-                required
-              />
-            </div>
+    <div class="space-y-6">
+      <!-- Core Information -->
+      <div class="bg-card border-border rounded-lg border p-6">
+        <div class="space-y-4">
+          <!-- Job Title -->
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              Job Title <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="localTitle"
+              type="text"
+              required
+              class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
+              placeholder="e.g., Commercial Voice-Over for Tech Startup"
+            />
           </div>
-        </div>
 
-        <!-- Voice Requirements -->
-        <div class="bg-card border-border rounded-lg border p-6">
-          <h3 class="text-foreground mb-6 text-lg font-semibold">Voice Requirements</h3>
+          <!-- Project Type -->
+          <div>
+            <label class="text-foreground mb-2 block text-sm font-medium">
+              Project Type <span class="text-red-500">*</span>
+            </label>
+            <SelectInput
+              v-model="localProjectType"
+              :options="combinedProjectTypeOptions"
+              placeholder="Select project type"
+              required
+            />
+          </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <!-- Language -->
-            <div>
-              <label for="language" class="text-foreground mb-2 block text-sm font-medium">
-                Language <span class="text-red-500">*</span>
-              </label>
-              <SelectInput
-                id="language"
-                v-model="localRequirements.language"
-                :options="languageOptions"
-                placeholder="Select language"
-              />
-            </div>
+          <!-- Language -->
+          <div>
+            <label for="language" class="text-foreground mb-2 block text-sm font-medium">
+              Language <span class="text-red-500">*</span>
+            </label>
+            <SelectInput
+              id="language"
+              v-model="localRequirements.language"
+              :options="languageOptions"
+              placeholder="Select language"
+            />
+          </div>
 
-            <!-- Gender -->
-            <div>
-              <label for="gender" class="text-foreground mb-2 block text-sm font-medium">
-                Gender Preference
-              </label>
-              <SelectInput
-                id="gender"
-                v-model="localRequirements.gender"
-                :options="genderOptions"
-              />
-            </div>
-
-            <!-- Age Range -->
-            <div>
-              <label for="ageRange" class="text-foreground mb-2 block text-sm font-medium">
-                Age Range
-              </label>
-              <SelectInput
-                id="ageRange"
-                v-model="localRequirements.ageRange"
-                :options="ageRangeOptions"
-                placeholder="Select age range"
-              />
-            </div>
-
-            <!-- Project Deadline -->
-            <div>
-              <label for="deadline" class="text-foreground mb-2 block text-sm font-medium">
-                Project Deadline <span class="text-red-500">*</span>
-              </label>
-              <input
-                id="deadline"
-                v-model="localDeadline"
-                type="date"
-                required
-                class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
-              />
-            </div>
-
-            <!-- Delivery Format -->
-            <div>
-              <label for="deliveryFormat" class="text-foreground mb-2 block text-sm font-medium">
-                Delivery Format
-              </label>
-              <SelectInput
-                id="deliveryFormat"
-                v-model="deliveryFormat"
-                :options="deliveryFormatOptions"
-                :placeholder="deliveryFormatOptions[0].label"
-                disabled
-              />
-            </div>
-
-            <!-- Revision Rounds -->
-            <div>
-              <label for="revisionRounds" class="text-foreground mb-2 block text-sm font-medium">
-                Revision Rounds
-              </label>
-              <SelectInput
-                id="revisionRounds"
-                v-model="localRequirements.revisionRounds"
-                :options="revisionRoundsOptions"
-                placeholder="Select revisions"
-              />
-            </div>
+          <!-- Project Deadline -->
+          <div>
+            <label for="deadline" class="text-foreground mb-2 block text-sm font-medium">
+              Project Deadline <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="deadline"
+              v-model="localDeadline"
+              type="date"
+              required
+              class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
+            />
           </div>
 
           <!-- Special Instructions -->
-          <div class="mt-4">
+          <div>
             <label for="specialInstructions" class="text-foreground mb-2 block text-sm font-medium">
-              Special Instructions & Requirements
+              Project Description
             </label>
             <textarea
               id="specialInstructions"
               v-model="localRequirements.specialInstructions"
               rows="4"
               class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
-              placeholder="Describe your project, target audience, voice characteristics, tone, style requirements, and any other specific needs..."
+              placeholder="Describe your project, target audience, and any specific requirements..."
             />
-            <p class="text-muted-foreground mt-1 text-sm">
-              Provide detailed context about your project and voice requirements
-            </p>
           </div>
         </div>
       </div>
 
-      <!-- Right Column: File Uploads -->
-      <div class="lg:col-span-1">
-        <div class="bg-card border-border sticky top-6 rounded-lg border p-6">
-          <h3 class="text-foreground mb-6 text-lg font-semibold">Project Files</h3>
+      <!-- Optional: File Uploads (Collapsible) -->
+      <div class="bg-card border-border rounded-lg border p-6">
+        <details class="group">
+          <summary class="text-foreground cursor-pointer text-sm font-semibold">
+            <div class="flex items-center justify-between">
+              <span>Project Files (Optional)</span>
+              <Icon
+                name="mdi:chevron-down"
+                class="h-5 w-5 transition-transform group-open:rotate-180"
+              />
+            </div>
+          </summary>
 
-          <!-- Project Type Selection Notice -->
-          <div v-if="!localProjectType" class="bg-muted/50 mb-6 rounded-lg p-4">
-            <div class="text-muted-foreground flex items-center gap-2">
+          <div v-if="!localProjectType" class="bg-muted/50 mt-4 rounded-lg p-4">
+            <div class="text-muted-foreground flex items-center gap-2 text-sm">
               <Icon name="mdi:information" class="h-5 w-5" />
-              <span class="text-sm">Select a project type to see specific file requirements</span>
+              <span>Select a project type to see file requirements</span>
             </div>
           </div>
 
-          <!-- Dynamic File Requirements based on Project Type -->
-          <div v-else class="space-y-6">
-            <!-- Required Files Section -->
-            <div v-if="currentProjectConfig?.files.required.length">
-              <h4 class="text-foreground mb-4 text-sm font-semibold">
-                Required Files
-                <span class="text-muted-foreground text-xs font-normal"
-                  >({{ currentProjectConfig.files.required.length }})</span
-                >
-              </h4>
-              <div class="space-y-4">
+          <div v-else-if="currentProjectConfig" class="mt-4 space-y-4">
+            <!-- Required Files -->
+            <div v-if="currentProjectConfig.files.required.length">
+              <h4 class="text-foreground mb-3 text-sm font-medium">Required Files</h4>
+              <div class="space-y-3">
                 <div v-for="fileReq in currentProjectConfig.files.required" :key="fileReq.id">
                   <label class="text-foreground mb-2 block text-sm font-medium">
                     {{ fileReq.label }}
-                    <span class="text-destructive">*</span>
                   </label>
                   <FileUpload
                     :key="`required-${fileReq.id}`"
@@ -187,26 +118,17 @@
                     :multiple="fileReq.multiple || false"
                     @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
                   />
-                  <p class="text-muted-foreground mt-2 text-xs">
-                    {{ fileReq.description }} Max {{ fileReq.maxSize }}MB.
-                  </p>
                 </div>
               </div>
             </div>
 
-            <!-- Optional Files Section -->
-            <div v-if="currentProjectConfig?.files.optional.length">
-              <h4 class="text-foreground mb-4 text-sm font-semibold">
-                Optional Files
-                <span class="text-muted-foreground text-xs font-normal"
-                  >({{ currentProjectConfig.files.optional.length }})</span
-                >
-              </h4>
-              <div class="space-y-4">
+            <!-- Optional Files -->
+            <div v-if="currentProjectConfig.files.optional.length">
+              <h4 class="text-foreground mb-3 text-sm font-medium">Optional Files</h4>
+              <div class="space-y-3">
                 <div v-for="fileReq in currentProjectConfig.files.optional" :key="fileReq.id">
                   <label class="text-foreground mb-2 block text-sm font-medium">
                     {{ fileReq.label }}
-                    <span class="text-muted-foreground text-xs">(Optional)</span>
                   </label>
                   <FileUpload
                     :key="`optional-${fileReq.id}`"
@@ -216,28 +138,11 @@
                     :multiple="fileReq.multiple || false"
                     @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
                   />
-                  <p class="text-muted-foreground mt-2 text-xs">
-                    {{ fileReq.description }} Max {{ fileReq.maxSize }}MB.
-                  </p>
                 </div>
               </div>
             </div>
-
-            <!-- No Files Required -->
-            <div
-              v-if="
-                !currentProjectConfig?.files.required.length &&
-                !currentProjectConfig?.files.optional.length
-              "
-              class="bg-muted/50 rounded-lg p-4"
-            >
-              <div class="text-muted-foreground flex items-center gap-2">
-                <Icon name="mdi:file-check" class="h-5 w-5" />
-                <span class="text-sm">No specific files required for this project type</span>
-              </div>
-            </div>
           </div>
-        </div>
+        </details>
       </div>
     </div>
   </div>
@@ -322,55 +227,14 @@ const currentProjectConfig = computed(() => {
   return getConfig(localProjectType.value)
 })
 
-// Ensure delivery format is always set to default
-const deliveryFormat = computed({
-  get: () => localRequirements.value.deliveryFormat || 'mp3_44khz',
-  set: (value) => {
-    localRequirements.value.deliveryFormat = value
-  },
-})
-
 const languageOptions = [
   { value: 'english', label: 'English' },
   { value: 'spanish', label: 'Spanish' },
   { value: 'vietnamese', label: 'Vietnamese' },
 ]
 
-const genderOptions = [
-  { value: 'any', label: 'Any' },
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'non-binary', label: 'Non-binary' },
-]
-
-const ageRangeOptions = [
-  { value: 'child', label: 'Child (5-12 years)' },
-  { value: 'teen', label: 'Teen (13-17 years)' },
-  { value: 'young_adult', label: 'Young Adult (18-25 years)' },
-  { value: 'adult', label: 'Adult (26-40 years)' },
-  { value: 'mature', label: 'Mature (41-60 years)' },
-  { value: 'senior', label: 'Senior (60+ years)' },
-  { value: 'any', label: 'Any Age' },
-]
-
-const deliveryFormatOptions = [
-  { value: 'mp3_44khz', label: 'MP3 (44.1kHz)' },
-  { value: 'wav_44khz', label: 'WAV (44.1kHz, 16-bit)' },
-  { value: 'pcm_s16le', label: 'PCM S16LE (16kHz-44.1kHz)' },
-  { value: 'opus_48khz', label: 'Opus (48kHz)' },
-  { value: 'ulaw_8khz', label: 'μ-law (8kHz) - Telephony' },
-  { value: 'alaw_8khz', label: 'A-law (8kHz) - Telephony' },
-]
-
-// Delivery timeline removed - using project deadline instead
-
-const revisionRoundsOptions = [
-  { value: '0', label: 'No Revisions' },
-  { value: '1', label: '1 Revision' },
-  { value: '2', label: '2 Revisions' },
-  { value: '3', label: '3 Revisions' },
-  { value: 'unlimited', label: 'Unlimited' },
-]
+// Removed optional fields: gender, ageRange, deliveryFormat, revisionRounds
+// These can be added later if needed, but keeping core flow simple
 
 // Computed properties
 

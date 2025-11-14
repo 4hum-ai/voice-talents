@@ -1,20 +1,17 @@
 <template>
-  <div class="mx-auto max-w-full px-8">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6">
     <!-- Header Section -->
-    <div class="mb-12 text-center">
-      <h1
-        class="text-foreground from-foreground to-foreground/80 mb-4 bg-gradient-to-r bg-clip-text text-4xl font-bold"
-      >
-        Step 1: How Do You Want to Involve Voice Talent?
+    <div class="mb-8 text-center sm:mb-12">
+      <h1 class="text-foreground mb-3 text-2xl font-bold sm:text-3xl">
+        How Do You Want to Involve Voice Talent?
       </h1>
-      <p class="text-muted-foreground mx-auto max-w-2xl text-xl leading-relaxed">
-        Choose how you want to work with voice talent - license with AI for instant delivery or
-        professional service for personalized quality
+      <p class="text-muted-foreground mx-auto max-w-xl text-base leading-relaxed sm:text-lg">
+        Choose how you want to work with voice talent
       </p>
     </div>
 
     <!-- Cards Grid -->
-    <div class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
       <div v-for="type in jobTypes" :key="type.value" class="group relative">
         <input
           :id="type.value"
@@ -25,61 +22,42 @@
         />
         <label
           :for="type.value"
-          class="relative flex h-full cursor-pointer flex-col overflow-visible rounded-2xl border-2 p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl"
+          class="relative flex h-full cursor-pointer flex-col rounded-lg border-2 p-6 transition-all duration-200 sm:p-8"
           :class="
             localJobType === type.value
-              ? 'border-primary from-primary/10 via-primary/5 shadow-primary/20 bg-gradient-to-br to-transparent shadow-xl'
-              : 'border-border hover:border-primary/50 bg-card/50 hover:bg-card/80'
+              ? 'border-primary bg-primary/5 shadow-md'
+              : 'border-border bg-card hover:border-primary/50 hover:shadow-sm'
           "
         >
           <!-- Selection Indicator -->
           <div
             v-if="localJobType === type.value"
-            class="bg-primary absolute -top-2 -right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full"
+            class="bg-primary absolute -top-2 -right-2 z-10 flex h-5 w-5 items-center justify-center rounded-full sm:h-6 sm:w-6"
           >
-            <Icon name="mdi:check" class="h-5 w-5 text-white" />
+            <Icon name="mdi:check" class="h-4 w-4 text-white sm:h-5 sm:w-5" />
           </div>
 
           <!-- Icon Container -->
-          <div class="mb-6">
+          <div class="mb-4 sm:mb-6">
             <div
-              class="flex h-16 w-16 items-center justify-center rounded-2xl transition-all duration-300"
+              class="flex h-12 w-12 items-center justify-center rounded-lg transition-colors sm:h-14 sm:w-14"
               :class="
                 localJobType === type.value
-                  ? 'from-primary to-primary/80 shadow-primary/30 bg-gradient-to-br text-white shadow-lg'
-                  : 'from-muted to-muted/80 text-muted-foreground group-hover:from-primary/20 group-hover:to-primary/10 group-hover:text-primary bg-gradient-to-br'
+                  ? 'bg-primary text-white'
+                  : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
               "
             >
-              <component :is="type.icon" class="h-8 w-8" />
+              <component :is="type.icon" class="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
           </div>
 
           <!-- Title and Description -->
-          <div class="mb-6">
-            <h3 class="text-foreground mb-3 text-2xl font-bold">{{ type.label }}</h3>
-            <p class="text-muted-foreground mb-4 leading-relaxed">{{ type.description }}</p>
-
-            <!-- Benefits -->
-            <div v-if="type.benefits" class="flex flex-wrap gap-2">
-              <span
-                v-for="benefit in type.benefits"
-                :key="benefit"
-                class="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium"
-                :class="
-                  localJobType === type.value
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-muted/50 text-muted-foreground'
-                "
-              >
-                {{ benefit }}
-              </span>
-            </div>
+          <div>
+            <h3 class="text-foreground mb-2 text-xl font-bold sm:text-2xl">{{ type.label }}</h3>
+            <p class="text-muted-foreground text-sm leading-relaxed sm:text-base">
+              {{ type.description }}
+            </p>
           </div>
-
-          <!-- Hover Effect Overlay -->
-          <div
-            class="from-primary/5 pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          ></div>
         </label>
       </div>
     </div>
@@ -107,19 +85,13 @@ const localJobType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | un
   props.jobType || undefined,
 )
 
-// Voice Approach Types with enhanced descriptions and benefits
+// Voice Approach Types - simplified
 const jobTypes = [
   {
     value: 'talent_only',
     label: 'Professional Service',
     description: 'Work directly with skilled voice actors for authentic, personalized performances',
     icon: AccountIcon,
-    benefits: [
-      'High Quality',
-      'Emotional Depth',
-      'Personalized Performance',
-      'Creative Collaboration',
-    ],
   },
   {
     value: 'ai_synthesis',
@@ -127,7 +99,6 @@ const jobTypes = [
     description:
       'License AI voices trained on licensed talent voices, ensuring fair compensation for creators',
     icon: CopyrightIcon,
-    benefits: ['Instant Creation', '24/7 Availability', 'Cost Effective', 'Consistent Quality'],
   },
 ]
 

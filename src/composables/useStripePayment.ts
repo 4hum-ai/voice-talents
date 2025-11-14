@@ -83,6 +83,8 @@ export function useStripePayment() {
         // Explicitly set ui_mode to 'hosted' for hosted checkout (redirect)
         // This prevents backend from assuming 'custom' which conflicts with success_url/cancel_url
         ui_mode: 'hosted', // Hosted checkout uses success_url and cancel_url
+        // Prefill email in checkout form
+        customer_email: authStore.user.email || undefined,
         metadata: {
           jobId: params.jobId || '',
           userId: authStore.user.id,

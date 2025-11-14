@@ -93,6 +93,8 @@ export function useStripeEmbedded() {
 
       // For ui_mode: "custom", use initCheckout with checkout session client secret
       // Pass clientSecret directly (not fetchClientSecret)
+      // Note: Email prefilling for embedded checkout is handled at the session creation level
+      // (customer_email parameter in useStripePayment.createCheckoutSession)
       checkout.value = await stripeInstance.initCheckout({
         clientSecret, // Checkout session client secret (cs_live_...)
         elementsOptions: {
