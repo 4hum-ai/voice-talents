@@ -26,7 +26,7 @@ export const genericRoutes: RouteRecordRaw[] = [
   // Content Pages (Legal, etc.)
   {
     path: '/content/:slug',
-    component: () => import('../views/Content.vue'),
+    component: () => import('../lib/content/view/ContentPage.vue'),
     meta: { requiresAuth: false, layout: 'none' },
   },
   {

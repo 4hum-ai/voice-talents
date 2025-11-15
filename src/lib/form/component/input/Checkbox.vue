@@ -19,13 +19,13 @@
           {{ label }}
           <span v-if="required" class="ml-1 text-red-500">*</span>
         </label>
-        <!-- Help text -->
-        <p v-if="helpText" :class="helpTextClasses">
-          {{ helpText }}
-        </p>
-        <!-- Error message -->
+        <!-- Error message (shown first if present) -->
         <p v-if="error" :class="errorClasses">
           {{ error }}
+        </p>
+        <!-- Help text (shown only if no error) -->
+        <p v-if="helpText && !error" :class="helpTextClasses">
+          {{ helpText }}
         </p>
       </div>
     </div>
@@ -34,21 +34,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import {
+  generateInputId,
+  getValidationState,
+  getHelpTextClasses,
+  getErrorClasses,
+  type BaseFormInputProps,
+} from '../util/BaseFormInput'
 
-interface Props {
+interface Props extends Omit<BaseFormInputProps, 'size'> {
   modelValue: boolean
-  /** Label text */
-  label?: string
-  /** Whether the field is required */
-  required?: boolean
-  /** Whether the field is disabled */
-  disabled?: boolean
-  /** Help text below the checkbox */
-  helpText?: string
-  /** Error message */
-  error?: string
-  /** Validation state */
-  validationState?: 'default' | 'success' | 'error' | 'warning'
   /** Checkbox size */
   size?: 'sm' | 'md' | 'lg'
 }
@@ -64,16 +59,20 @@ const emit = defineEmits<{
   focus: [event: FocusEvent]
 }>()
 
-const checkboxId = `checkbox-${Math.random().toString(36).substr(2, 9)}`
+const checkboxId = generateInputId('checkbox')
 
 const checked = computed({
   get: () => props.modelValue,
   set: (value: boolean) => emit('update:modelValue', value),
 })
 
+const effectiveValidationState = computed(() =>
+  getValidationState(props.error, props.validationState),
+)
+
 const checkboxClasses = computed(() => {
   const base =
-    'rounded border-gray-300 bg-white text-red-600 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:bg-gray-800'
+    'rounded border bg-input text-primary focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
 
   const sizes = {
     sm: 'h-3 w-3',
@@ -81,21 +80,21 @@ const checkboxClasses = computed(() => {
     lg: 'h-5 w-5',
   }
 
-  let focusClasses = 'focus:ring-2 focus:ring-offset-0'
+  let borderClasses = 'border-border focus:ring-primary'
 
-  if (props.validationState === 'success') {
-    focusClasses = 'focus:ring-green-500 text-green-600'
-  } else if (props.validationState === 'error') {
-    focusClasses = 'focus:ring-red-500 text-red-600 border-red-300'
-  } else if (props.validationState === 'warning') {
-    focusClasses = 'focus:ring-yellow-500 text-yellow-600 border-yellow-300'
+  if (effectiveValidationState.value === 'success') {
+    borderClasses = 'border-green-300 focus:ring-green-500 text-green-600 dark:border-green-600'
+  } else if (effectiveValidationState.value === 'error') {
+    borderClasses = 'border-red-300 focus:ring-red-500 text-red-600 dark:border-red-600'
+  } else if (effectiveValidationState.value === 'warning') {
+    borderClasses = 'border-yellow-300 focus:ring-yellow-500 text-yellow-600 dark:border-yellow-600'
   }
 
-  return `${base} ${sizes[props.size]} ${focusClasses}`
+  return `${base} ${sizes[props.size]} ${borderClasses}`
 })
 
 const labelClasses = computed(() => {
-  const base = 'font-medium text-gray-700 dark:text-gray-300 cursor-pointer'
+  const base = 'font-medium text-foreground cursor-pointer'
   const sizes = {
     sm: 'text-xs',
     md: 'text-sm',
@@ -104,25 +103,8 @@ const labelClasses = computed(() => {
   return `${base} ${sizes[props.size]}`
 })
 
-const helpTextClasses = computed(() => {
-  const base = 'mt-1 text-gray-500 dark:text-gray-400'
-  const sizes = {
-    sm: 'text-xs',
-    md: 'text-xs',
-    lg: 'text-sm',
-  }
-  return `${base} ${sizes[props.size]}`
-})
-
-const errorClasses = computed(() => {
-  const base = 'mt-1 text-red-600 dark:text-red-400'
-  const sizes = {
-    sm: 'text-xs',
-    md: 'text-xs',
-    lg: 'text-sm',
-  }
-  return `${base} ${sizes[props.size]}`
-})
+const helpTextClasses = computed(() => getHelpTextClasses(props.size))
+const errorClasses = computed(() => getErrorClasses(props.size))
 
 const handleChange = (event: Event) => {
   const target = event.target as HTMLInputElement

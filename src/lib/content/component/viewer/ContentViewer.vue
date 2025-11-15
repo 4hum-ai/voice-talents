@@ -39,21 +39,16 @@
 
         <!-- Content -->
         <div ref="contentRef" :class="contentClasses" @scroll="handleScroll">
-          <div v-if="loading" class="flex items-center justify-center py-12">
+          <div v-if="content.loading.value" class="flex items-center justify-center py-12">
             <LoadingSpinner size="md" />
           </div>
           <div
-            v-else-if="error"
+            v-else-if="content.error.value"
             class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
           >
-            <p class="text-red-700 dark:text-red-400">{{ error }}</p>
+            <p class="text-red-700 dark:text-red-400">{{ content.error.value }}</p>
           </div>
-          <article
-            v-else
-            ref="articleRef"
-            class="text-foreground [&>a]:text-primary [&>a]:hover:text-primary/80 [&_a]:text-primary [&_a]:hover:text-primary/80 [&>code]:bg-muted [&_code]:bg-muted [&>pre]:bg-muted [&_pre]:bg-muted [&>blockquote]:border-primary [&_blockquote]:border-primary [&_a]:underline [&_blockquote]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_blockquote]:italic [&_code]:rounded [&_code]:px-2 [&_code]:py-1 [&_code]:font-mono [&_code]:text-sm [&_li]:mb-2 [&_ol]:mb-4 [&_ol]:ml-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_pre]:mb-4 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:p-4 [&_strong]:font-semibold [&_ul]:mb-4 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:pl-6 [&>a]:underline [&>blockquote]:my-4 [&>blockquote]:border-l-4 [&>blockquote]:pl-4 [&>blockquote]:italic [&>code]:rounded [&>code]:px-2 [&>code]:py-1 [&>code]:font-mono [&>code]:text-sm [&>h1]:mt-8 [&>h1]:mb-4 [&>h1]:text-3xl [&>h1]:font-bold [&>h2]:mt-6 [&>h2]:mb-3 [&>h2]:text-2xl [&>h2]:font-semibold [&>h3]:mt-4 [&>h3]:mb-2 [&>h3]:text-xl [&>h3]:font-semibold [&>p]:mb-4 [&>p]:leading-relaxed [&>pre]:mb-4 [&>pre]:overflow-x-auto [&>pre]:rounded-lg [&>pre]:p-4 [&>strong]:font-semibold"
-            v-html="renderedContent"
-          />
+          <ContentRenderer v-else :html="content.html.value" />
         </div>
       </div>
     </Transition>
@@ -63,7 +58,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { marked } from 'marked'
+import { useContent } from '../../composable'
+import ContentRenderer from './ContentRenderer.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
@@ -85,23 +81,23 @@ const emit = defineEmits<Emits>()
 const containerRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const headerRef = ref<HTMLElement | null>(null)
-const articleRef = ref<HTMLElement | null>(null)
 
 // State
-const loading = ref(true)
-const error = ref<string | null>(null)
-const renderedContent = ref('')
-const title = ref<string>('')
 const isMobile = ref(false)
 const isExpanded = ref(false)
 const lastScrollTop = ref(0)
 const scrollThreshold = 50 // Pixels to scroll before expanding/collapsing
 
-// Configure marked options
-marked.setOptions({
-  breaks: true,
-  gfm: true,
+// Content composable
+const content = useContent({
+  slug: props.slug,
+  extractTitle: true,
+  removeH1: true,
 })
+
+// Computed
+const title = computed(() => content.title.value)
+const slug = computed(() => props.slug)
 
 // Computed classes
 const containerClasses = computed(() => {
@@ -124,43 +120,6 @@ const contentClasses = computed(() => {
 // Check if mobile
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 1024 // lg breakpoint
-}
-
-// Load content
-const loadContent = async () => {
-  if (!props.slug) return
-
-  loading.value = true
-  error.value = null
-
-  try {
-    const response = await fetch(`/content/${props.slug}.md`, {
-      cache: 'no-cache',
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to load content`)
-    }
-
-    const markdown = await response.text()
-    const parsedHtml = marked.parse(markdown) as string
-    renderedContent.value = parsedHtml
-
-    // Extract H1 from parsed HTML string directly
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(parsedHtml, 'text/html')
-    const h1 = doc.querySelector('h1')
-    if (h1) {
-      title.value = h1.textContent || ''
-      // Remove the H1 from the content since we show it in the header
-      h1.remove()
-      renderedContent.value = doc.body.innerHTML
-    }
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Failed to load content'
-  } finally {
-    loading.value = false
-  }
 }
 
 // Handle scroll for mobile bottom sheet expansion
@@ -208,7 +167,6 @@ watch(
   () => props.open,
   (newValue) => {
     if (newValue) {
-      loadContent()
       lockBodyScroll()
       // Reset scroll state
       isExpanded.value = false
@@ -218,16 +176,6 @@ watch(
       }
     } else {
       unlockBodyScroll()
-    }
-  },
-)
-
-// Watch for slug changes
-watch(
-  () => props.slug,
-  () => {
-    if (props.open) {
-      loadContent()
     }
   },
 )
@@ -246,7 +194,6 @@ onMounted(() => {
   window.addEventListener('keydown', handleEscape)
 
   if (props.open) {
-    loadContent()
     lockBodyScroll()
   }
 })

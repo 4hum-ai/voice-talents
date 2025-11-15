@@ -12,7 +12,7 @@
     </p>
 
     <!-- Budget Inputs -->
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3">
       <!-- Min Budget -->
       <div>
         <label for="minBudget" class="text-muted-foreground mb-1 block text-xs font-medium">
@@ -80,13 +80,13 @@
       </div>
     </div>
 
-    <!-- Error Message -->
-    <p v-if="errorMessage" class="text-sm text-red-600 dark:text-red-400">
+    <!-- Error Message (shown first if present) -->
+    <p v-if="errorMessage" class="mt-1 text-xs text-red-600 sm:text-sm dark:text-red-400">
       {{ errorMessage }}
     </p>
 
-    <!-- Help Text -->
-    <p v-if="helpText" class="text-muted-foreground text-xs">
+    <!-- Help Text (shown only if no error) -->
+    <p v-if="helpText && !errorMessage" class="text-muted-foreground mt-1 text-xs">
       {{ helpText }}
     </p>
 

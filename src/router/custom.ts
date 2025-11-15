@@ -14,4 +14,11 @@ export const customRoutes: RouteRecordRaw[] = [
     component: () => import('../views/admin/Design.vue'),
     meta: { title: 'Design System', requiresAuth: true, layout: 'default' },
   },
+
+  // Form Test Page
+  {
+    path: '/admin/form-test',
+    component: () => import('../lib/form/view/form.vue'),
+    meta: { title: 'Form Components Test', requiresAuth: true, layout: 'default' },
+  },
 ]

@@ -7,81 +7,153 @@
       </p>
     </div>
 
-    <div class="space-y-6">
-      <!-- Core Information -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Left Column: All Form Fields -->
       <div class="bg-card border-border rounded-lg border p-6">
-        <div class="space-y-4">
-          <!-- Job Title -->
-          <div>
-            <label class="text-foreground mb-2 block text-sm font-medium">
-              Job Title <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="localTitle"
-              type="text"
-              required
-              class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
-              placeholder="e.g., Commercial Voice-Over for Tech Startup"
-            />
+        <div class="space-y-6">
+          <!-- Project Information Section -->
+          <div class="space-y-4">
+            <h3 class="text-foreground mb-3 text-sm font-semibold">Project Information</h3>
+
+            <!-- Job Title -->
+            <div>
+              <label class="text-foreground mb-2 block text-sm font-medium">
+                Job Title <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="localTitle"
+                type="text"
+                required
+                :class="[
+                  'border-border focus:ring-primary h-[42px] w-full rounded-lg border px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:outline-none',
+                  props.errors?.title ? 'border-red-500 focus:ring-red-500' : '',
+                ]"
+                placeholder="e.g., Commercial Voice-Over for Tech Startup"
+              />
+              <p v-if="props.errors?.title" class="mt-1 text-sm text-red-500">
+                {{ props.errors.title }}
+              </p>
+            </div>
+
+            <!-- Project Type -->
+            <div>
+              <label class="text-foreground mb-2 block text-sm font-medium">
+                Project Type <span class="text-red-500">*</span>
+              </label>
+              <SelectInput
+                v-model="localProjectType"
+                :options="combinedProjectTypeOptions"
+                placeholder="Select project type"
+                required
+                :error="props.errors?.projectType"
+              />
+            </div>
+
+            <!-- Language -->
+            <div>
+              <label for="language" class="text-foreground mb-2 block text-sm font-medium">
+                Language <span class="text-red-500">*</span>
+              </label>
+              <SelectInput
+                id="language"
+                v-model="localRequirements.language"
+                :options="languageOptions"
+                placeholder="Select language"
+                :error="props.errors?.requirementsLanguage"
+              />
+            </div>
+
+            <!-- Project Description -->
+            <div>
+              <label
+                for="specialInstructions"
+                class="text-foreground mb-2 block text-sm font-medium"
+              >
+                Project Description
+              </label>
+              <textarea
+                id="specialInstructions"
+                v-model="localRequirements.specialInstructions"
+                rows="4"
+                class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
+                placeholder="Describe your project, target audience, and any specific requirements..."
+              />
+            </div>
           </div>
 
-          <!-- Project Type -->
-          <div>
-            <label class="text-foreground mb-2 block text-sm font-medium">
-              Project Type <span class="text-red-500">*</span>
-            </label>
-            <SelectInput
-              v-model="localProjectType"
-              :options="combinedProjectTypeOptions"
-              placeholder="Select project type"
-              required
-            />
+          <!-- Voice Requirements Section -->
+          <div class="border-border border-t pt-4">
+            <h3 class="text-foreground mb-3 text-sm font-semibold">Voice Requirements</h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <!-- Gender -->
+              <div>
+                <label for="gender" class="text-foreground mb-2 block text-sm font-medium">
+                  Gender Preference
+                </label>
+                <SelectInput
+                  id="gender"
+                  v-model="localRequirements.gender"
+                  :options="genderOptions"
+                />
+              </div>
+
+              <!-- Age Range -->
+              <div>
+                <label for="ageRange" class="text-foreground mb-2 block text-sm font-medium">
+                  Age Range
+                </label>
+                <SelectInput
+                  id="ageRange"
+                  v-model="localRequirements.ageRange"
+                  :options="ageRangeOptions"
+                  placeholder="Select age range"
+                />
+              </div>
+            </div>
           </div>
 
-          <!-- Language -->
-          <div>
-            <label for="language" class="text-foreground mb-2 block text-sm font-medium">
-              Language <span class="text-red-500">*</span>
-            </label>
-            <SelectInput
-              id="language"
-              v-model="localRequirements.language"
-              :options="languageOptions"
-              placeholder="Select language"
-            />
-          </div>
+          <!-- Project Timeline Section -->
+          <div class="border-border border-t pt-4">
+            <h3 class="text-foreground mb-3 text-sm font-semibold">Project Timeline</h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <!-- Project Deadline -->
+              <div>
+                <label for="deadline" class="text-foreground mb-2 block text-sm font-medium">
+                  Project Deadline <span class="text-red-500">*</span>
+                </label>
+                <input
+                  id="deadline"
+                  v-model="localDeadline"
+                  type="date"
+                  required
+                  :class="[
+                    'border-border focus:ring-primary h-[42px] w-full rounded-lg border px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:outline-none',
+                    props.errors?.deadline ? 'border-red-500 focus:ring-red-500' : '',
+                  ]"
+                />
+                <p v-if="props.errors?.deadline" class="mt-1 text-sm text-red-500">
+                  {{ props.errors.deadline }}
+                </p>
+              </div>
 
-          <!-- Project Deadline -->
-          <div>
-            <label for="deadline" class="text-foreground mb-2 block text-sm font-medium">
-              Project Deadline <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="deadline"
-              v-model="localDeadline"
-              type="date"
-              required
-              class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
-            />
-          </div>
-
-          <!-- Special Instructions -->
-          <div>
-            <label for="specialInstructions" class="text-foreground mb-2 block text-sm font-medium">
-              Project Description
-            </label>
-            <textarea
-              id="specialInstructions"
-              v-model="localRequirements.specialInstructions"
-              rows="4"
-              class="border-border focus:ring-primary w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:outline-none"
-              placeholder="Describe your project, target audience, and any specific requirements..."
-            />
+              <!-- Revision Rounds -->
+              <div>
+                <label for="revisionRounds" class="text-foreground mb-2 block text-sm font-medium">
+                  Revision Rounds
+                </label>
+                <SelectInput
+                  id="revisionRounds"
+                  v-model="localRequirements.revisionRounds"
+                  :options="revisionRoundsOptions"
+                  placeholder="Select revisions"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Project Files (Required) -->
+      <!-- Right Column: Project Files -->
       <div class="bg-card border-border rounded-lg border p-6">
         <h3 class="text-foreground mb-4 text-base font-semibold">Project Files</h3>
 
@@ -161,8 +233,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
-import FileUpload from '@/components/atoms/FileUpload.vue'
+import { SelectInput, FileUpload } from '@/lib/form'
 import Icon from '@/components/atoms/Icon.vue'
 import type { VoiceType } from '@/types/voice-talent'
 import { useJobType } from '@/composables/useJobType'
@@ -190,6 +261,12 @@ interface Props {
   deadline: string
   files: ProjectFiles
   voiceType?: 'talent_only' | 'ai_synthesis' | 'hybrid_approach'
+  errors?: {
+    title?: string
+    projectType?: string
+    requirementsLanguage?: string
+    deadline?: string
+  }
 }
 
 interface Emits {
@@ -221,6 +298,22 @@ const localRequirements = ref<Requirements>({
 const localDeadline = ref(props.deadline || getDateIn7Days()) // Auto-set to 7 days from now
 const localFiles = ref<ProjectFiles>({ ...props.files })
 
+// Watch for external changes to props.files and sync to localFiles
+watch(
+  () => props.files,
+  (newFiles) => {
+    if (newFiles) {
+      // Merge new files into localFiles
+      Object.keys(newFiles).forEach((key) => {
+        if (newFiles[key] !== undefined) {
+          localFiles.value[key] = newFiles[key]
+        }
+      })
+    }
+  },
+  { deep: true, immediate: true },
+)
+
 // Use job type configuration composable
 const { getAllConfigs, getConfig } = useJobType()
 
@@ -244,8 +337,30 @@ const languageOptions = [
   { value: 'vietnamese', label: 'Vietnamese' },
 ]
 
-// Removed optional fields: gender, ageRange, deliveryFormat, revisionRounds
-// These can be added later if needed, but keeping core flow simple
+const genderOptions = [
+  { value: 'any', label: 'Any' },
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' },
+  { value: 'non-binary', label: 'Non-binary' },
+]
+
+const ageRangeOptions = [
+  { value: 'child', label: 'Child (5-12 years)' },
+  { value: 'teen', label: 'Teen (13-17 years)' },
+  { value: 'young_adult', label: 'Young Adult (18-25 years)' },
+  { value: 'adult', label: 'Adult (26-40 years)' },
+  { value: 'mature', label: 'Mature (41-60 years)' },
+  { value: 'senior', label: 'Senior (60+ years)' },
+  { value: 'any', label: 'Any Age' },
+]
+
+const revisionRoundsOptions = [
+  { value: '0', label: 'No Revisions' },
+  { value: '1', label: '1 Revision' },
+  { value: '2', label: '2 Revisions' },
+  { value: '3', label: '3 Revisions' },
+  { value: 'unlimited', label: 'Unlimited' },
+]
 
 // Computed properties
 
@@ -308,10 +423,14 @@ watch(localProjectType, (newType, oldType) => {
 
 // Emit initial auto-set values on mount
 onMounted(() => {
-  if (!props.deadline && localDeadline.value) {
+  // Always emit deadline to ensure form has it
+  if (localDeadline.value) {
     emit('update:deadline', localDeadline.value)
   }
   if (!props.requirements.revisionRounds && localRequirements.value.revisionRounds) {
+    emit('update:requirements', { ...localRequirements.value })
+  }
+  if (!props.requirements.deliveryFormat && localRequirements.value.deliveryFormat) {
     emit('update:requirements', { ...localRequirements.value })
   }
 })

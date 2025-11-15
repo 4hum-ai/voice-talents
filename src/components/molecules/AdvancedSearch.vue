@@ -193,7 +193,7 @@
 import { ref, computed, watch } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
+import { SelectInput } from '@/lib/form'
 import Chip from '@/components/atoms/Chip.vue'
 
 interface FilterOptions {

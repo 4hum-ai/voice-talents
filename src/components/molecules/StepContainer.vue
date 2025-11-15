@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, watch, onMounted } from 'vue'
+import { computed, provide, ref, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
@@ -228,7 +228,7 @@ const updateQueryParam = (step: number) => {
   if (props.syncWithQuery) {
     router.replace({
       query: {
-        ...route.query,
+        ...route.query, // Preserve all existing query params including 'modal'
         [props.stepQueryParam]: step.toString(),
       },
     })
@@ -327,8 +327,11 @@ onMounted(() => {
         emit('update:modelValue', step)
       }
     } else {
-      // Set initial step in query if not present
-      updateQueryParam(internalCurrentStep.value)
+      // Set initial step in query if not present, preserving ALL existing query params (including 'modal')
+      // Use nextTick to ensure any pending route updates are applied first
+      nextTick(() => {
+        updateQueryParam(internalCurrentStep.value)
+      })
     }
   }
 })

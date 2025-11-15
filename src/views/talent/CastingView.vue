@@ -329,7 +329,7 @@ import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
+import { SelectInput } from '@/lib/form'
 import MegaphoneIcon from '~icons/mdi/megaphone'
 
 // State

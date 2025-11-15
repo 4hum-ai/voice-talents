@@ -188,7 +188,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import FormInput from './FormInput.vue'
+import FormInput from '../util/FormInput.vue'
 import Textarea from './Textarea.vue'
 import SelectInput from './SelectInput.vue'
 import Checkbox from './Checkbox.vue'

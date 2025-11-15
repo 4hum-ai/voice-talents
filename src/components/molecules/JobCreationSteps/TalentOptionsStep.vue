@@ -30,54 +30,44 @@
         </label>
       </div>
 
-      <!-- Premium Features (Collapsible) -->
+      <!-- Premium Features -->
       <div class="bg-card border-border rounded-lg border p-6">
-        <details class="group">
-          <summary class="text-foreground cursor-pointer text-sm font-semibold">
-            <div class="flex items-center justify-between">
-              <span>Premium Features (Optional)</span>
-              <Icon
-                name="mdi:chevron-down"
-                class="h-5 w-5 transition-transform group-open:rotate-180"
-              />
-            </div>
-          </summary>
+        <h3 class="text-foreground mb-4 text-base font-semibold">Premium Features (Optional)</h3>
 
-          <div v-if="availablePremiumFeatures.length === 0" class="bg-muted/50 mt-4 rounded-lg p-4">
-            <p class="text-muted-foreground text-sm">
-              No premium features available for this project type
-            </p>
-          </div>
+        <div v-if="availablePremiumFeatures.length === 0" class="bg-muted/50 rounded-lg p-4">
+          <p class="text-muted-foreground text-sm">
+            No premium features available for this project type
+          </p>
+        </div>
 
-          <div v-else class="mt-4 space-y-3">
-            <label
-              v-for="feature in availablePremiumFeatures"
-              :key="feature.id"
-              class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-3 transition-colors"
-            >
-              <input
-                v-model="localPremiumFeatures[feature.id as keyof PremiumFeatures]"
-                type="checkbox"
-                class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded"
-              />
-              <div class="flex-1">
-                <div class="flex items-center justify-between">
-                  <h4 class="text-foreground text-sm font-medium">{{ feature.label }}</h4>
-                  <span class="text-primary text-sm font-semibold">+${{ feature.price }}</span>
-                </div>
-                <p class="text-muted-foreground mt-1 text-xs">{{ feature.description }}</p>
-              </div>
-            </label>
-
-            <!-- Total Premium Cost -->
-            <div v-if="totalPremiumCost > 0" class="bg-primary/10 mt-3 rounded-lg p-3">
+        <div v-else class="space-y-3">
+          <label
+            v-for="feature in availablePremiumFeatures"
+            :key="feature.id"
+            class="border-border hover:bg-muted/50 flex cursor-pointer items-start space-x-3 rounded-lg border p-3 transition-colors"
+          >
+            <input
+              v-model="localPremiumFeatures[feature.id as keyof PremiumFeatures]"
+              type="checkbox"
+              class="text-primary focus:ring-primary border-border mt-1 h-4 w-4 rounded"
+            />
+            <div class="flex-1">
               <div class="flex items-center justify-between">
-                <span class="text-foreground text-sm font-medium">Total Premium Features:</span>
-                <span class="text-primary font-bold">+${{ totalPremiumCost }}</span>
+                <h4 class="text-foreground text-sm font-medium">{{ feature.label }}</h4>
+                <span class="text-primary text-sm font-semibold">+${{ feature.price }}</span>
               </div>
+              <p class="text-muted-foreground mt-1 text-xs">{{ feature.description }}</p>
+            </div>
+          </label>
+
+          <!-- Total Premium Cost -->
+          <div v-if="totalPremiumCost > 0" class="bg-primary/10 mt-3 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+              <span class="text-foreground text-sm font-medium">Total Premium Features:</span>
+              <span class="text-primary font-bold">+${{ totalPremiumCost }}</span>
             </div>
           </div>
-        </details>
+        </div>
       </div>
     </div>
   </div>
@@ -85,7 +75,6 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import Icon from '@/components/atoms/Icon.vue'
 import { getAvailablePremiumFeatures } from '@/composables/usePremiumFeatures'
 import type { VoiceType } from '@/types/voice-talent'
 

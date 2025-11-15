@@ -945,7 +945,7 @@ const startRecording = () => {
   }, 1000)
 
   // Store timer reference for cleanup
-  ;(window as Window & { recordingTimer?: number }).recordingTimer = timer
+  ;(window as Window & { recordingTimer?: ReturnType<typeof setInterval> }).recordingTimer = timer
 }
 
 const stopRecording = () => {

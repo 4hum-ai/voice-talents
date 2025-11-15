@@ -207,7 +207,7 @@
 import { ref, computed, onMounted } from 'vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
+import { SelectInput } from '@/lib/form'
 import ViewToggle from '@/components/molecules/ViewToggle.vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'

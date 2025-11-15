@@ -160,7 +160,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
-import ContentViewer from '@/components/molecules/ContentViewer.vue'
+import { ContentViewer } from '@/lib/content'
 
 const router = useRouter()
 const route = useRoute()

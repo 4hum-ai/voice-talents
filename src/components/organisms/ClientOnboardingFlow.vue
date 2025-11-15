@@ -10,52 +10,85 @@
     @close="closeOnboarding"
   >
     <!-- Step 1: About Your Company -->
-    <Step :step="1" :valid="stepValidation[1]">
+    <Step :step="1" :valid="form.isStepValid.value">
       <AccountInformation
-        :model-value="accountData"
+        :model-value="{
+          companyName: form.getField('companyName') || '',
+          website: form.getField('website') || '',
+          description: form.getField('description') || '',
+          contactName: '',
+          email: '',
+          phone: '',
+          location: '',
+          timezone: '',
+          industry: '',
+          companySize: 'small',
+        }"
         :required-fields="['companyName']"
         mode="company"
-        @validation-change="updateStepValidation(1, $event)"
-        @update:modelValue="handleAccountDataUpdate"
+        @update:modelValue="
+          (data) => {
+            form.setField('companyName', data.companyName)
+            form.setField('website', data.website)
+            form.setField('description', data.description)
+          }
+        "
       />
     </Step>
 
     <!-- Step 2: About You -->
-    <Step :step="2" :valid="stepValidation[2]">
+    <Step :step="2" :valid="form.isStepValid.value">
       <AccountInformation
-        :model-value="accountData"
+        :model-value="{
+          contactName: form.getField('contactName') || '',
+          email: form.getField('email') || '',
+          phone: form.getField('phone') || '',
+          companyName: '',
+          website: '',
+          location: '',
+          timezone: '',
+          industry: '',
+          companySize: 'small',
+          description: '',
+        }"
         :required-fields="['contactName', 'email']"
         mode="personal"
-        @validation-change="updateStepValidation(2, $event)"
-        @update:modelValue="handleAccountDataUpdate"
+        @update:modelValue="
+          (data) => {
+            form.setField('contactName', data.contactName)
+            form.setField('email', data.email)
+            form.setField('phone', data.phone)
+          }
+        "
       />
     </Step>
 
     <!-- Step 3: Project Types -->
-    <Step :step="3" :valid="stepValidation[3]">
+    <Step :step="3" :valid="form.isStepValid.value">
       <ClientProjectTypesStep
-        :model-value="projectTypesData"
-        @update:model-value="handleProjectTypesUpdate"
-        @validation-change="updateStepValidation(3, $event)"
+        :model-value="(form.getField('projectTypes') as string[]) || []"
+        @update:model-value="(types) => form.setField('projectTypes', types)"
       />
     </Step>
 
     <!-- Step 4: Agreement & Legal Requirements (Final Step) -->
-    <Step :step="4" :valid="stepValidation[4]">
+    <Step :step="4" :valid="form.isStepValid.value">
       <ClientAgreementStep
-        :model-value="agreementData"
-        @update:model-value="Object.assign(agreementData, $event)"
-        @validation-change="updateStepValidation(4, $event)"
+        :model-value="{
+          acceptedTerms: form.getField('acceptedTerms') || false,
+        }"
+        @update:model-value="(data) => form.setField('acceptedTerms', data.acceptedTerms)"
       />
     </Step>
   </StepContainer>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import type { AccountInformationData } from '@/types/onboarding'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { useJobType } from '@/composables/useJobType'
+import { useForm, type FormDefinition } from '@/lib/form'
 import StepContainer from '@/components/molecules/StepContainer.vue'
 import Step from '@/components/molecules/Step.vue'
 import {
@@ -74,140 +107,202 @@ const {
   completeCurrentOnboarding,
 } = useOnboarding()
 
-// State
-const showOnboarding = ref(false)
-const currentStep = ref(1)
-const totalSteps = ref(4)
-// Use a Map-like approach with explicit refs for better reactivity tracking
-const stepValidation = reactive({
-  1: false,
-  2: false,
-  3: false,
-  4: false,
-} as Record<number, boolean>)
+const { availableJobTypes } = useJobType()
 
-// Agreement data
-const agreementData = reactive({
-  acceptedTerms: false,
-})
+// Create form definition - update when job types are available
+const createFormDefinition = (): FormDefinition => {
+  const projectTypeOptions = availableJobTypes.value.map((type) => ({
+    value: type.value,
+    label: type.label,
+  }))
 
-// Component data structures
-const accountData = reactive({
-  companyName: '',
-  contactName: '',
-  email: '',
-  phone: '',
-  website: '',
-  location: '',
-  timezone: '',
-  industry: '',
-  companySize: 'small' as 'startup' | 'small' | 'medium' | 'large' | 'enterprise',
-  description: '',
-})
-
-// Project types data
-const projectTypesData = reactive<string[]>([])
-
-// Legacy onboarding data for compatibility
-const onboardingData = ref<Record<string, unknown>>({
-  companyName: '',
-  contactName: '',
-  email: '',
-  industry: '',
-  autoApprove: false,
-  requireNDA: false,
-  requirePortfolio: true,
-})
-
-// Methods
-const updateStepValidation = (step: number, isValid: boolean) => {
-  console.log(`updateStepValidation called - Step ${step} validation:`, isValid)
-
-  // Ensure the property exists in the reactive object to help Vue track it
-  if (!(step in stepValidation)) {
-    // Initialize the property if it doesn't exist
-    stepValidation[step] = false
+  return {
+    id: 'client-onboarding',
+    persistToStorage: true,
+    initialStep: 1,
+    steps: [
+      {
+        step: 1,
+        title: 'About Your Company',
+        description: 'Tell us about your company so we can help you find the perfect voice talent',
+        fields: [
+          {
+            name: 'companyName',
+            type: 'text',
+            label: "What's your company name?",
+            placeholder: 'Your Company Name',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Company name is required' },
+              {
+                type: 'minLength',
+                value: 2,
+                message: 'Company name must be at least 2 characters',
+              },
+            ],
+          },
+          {
+            name: 'website',
+            type: 'url',
+            label: 'Website',
+            placeholder: 'https://yourcompany.com',
+            validation: [{ type: 'url', message: 'Please enter a valid URL' }],
+          },
+          {
+            name: 'description',
+            type: 'textarea',
+            label: 'Tell us about your company',
+            placeholder: 'Brief description of your company and what you do...',
+            validation: [
+              {
+                type: 'maxLength',
+                value: 1000,
+                message: 'Description must be no more than 1000 characters',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        step: 2,
+        title: 'About You',
+        description: 'Let us know how to reach you and who you are',
+        fields: [
+          {
+            name: 'contactName',
+            type: 'text',
+            label: 'What should we call you?',
+            placeholder: 'Your Full Name',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Contact name is required' },
+              { type: 'minLength', value: 2, message: 'Name must be at least 2 characters' },
+            ],
+          },
+          {
+            name: 'email',
+            type: 'email',
+            label: "What's your email address?",
+            placeholder: 'your@email.com',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Email is required' },
+              { type: 'email', message: 'Please enter a valid email address' },
+            ],
+          },
+          {
+            name: 'phone',
+            type: 'tel',
+            label: 'Phone Number',
+            placeholder: '+1 (555) 123-4567',
+          },
+        ],
+      },
+      {
+        step: 3,
+        title: 'Project Types',
+        description: 'Select the types of voice projects you typically create',
+        fields: [
+          {
+            name: 'projectTypes',
+            type: 'multiselect',
+            label: 'What Types of Voice Work Do You Need?',
+            required: true,
+            options: projectTypeOptions,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (!Array.isArray(value) || value.length === 0) {
+                    return 'Please select at least one project type'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        step: 4,
+        title: 'Agreement & Legal Requirements',
+        description: 'Please review and confirm the following to complete your account setup',
+        fields: [
+          {
+            name: 'acceptedTerms',
+            type: 'checkbox',
+            label: 'I have read and agree to the Terms of Service and Privacy Policy',
+            required: true,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (value !== true) {
+                    return 'You must accept the terms and conditions to continue'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
   }
-
-  // Update the value
-  stepValidation[step] = isValid
-
-  // Force reactivity by accessing the object
-  console.log('Current stepValidation after update:', JSON.parse(JSON.stringify(stepValidation)))
-  console.log('Current step:', currentStep.value)
-  console.log('Step validation value for current step:', stepValidation[currentStep.value])
-  console.log('stepValidation object keys:', Object.keys(stepValidation))
 }
 
-const handleAccountDataUpdate = (newData: AccountInformationData) => {
-  console.log('handleAccountDataUpdate called with:', newData)
-  // Update each field individually to ensure reactivity
-  Object.keys(newData).forEach((key) => {
-    if (key in accountData) {
-      const value = newData[key as keyof AccountInformationData]
-      if (key === 'companySize' && typeof value === 'string') {
-        accountData.companySize = value as 'startup' | 'small' | 'medium' | 'large' | 'enterprise'
-      } else if (key !== 'companySize') {
-        ;(accountData as Record<string, unknown>)[key] = value
-      }
-    }
-  })
-  console.log('Updated accountData:', accountData)
-}
-
-const handleProjectTypesUpdate = (newTypes: string[]) => {
-  projectTypesData.length = 0
-  projectTypesData.push(...newTypes)
-  console.log('Updated projectTypesData:', projectTypesData)
-}
-
-// Computed - track both currentStep and stepValidation explicitly
-const canProceedToNext = computed(() => {
-  // Access both to ensure reactivity tracking
-  const step = currentStep.value
-  const validation = stepValidation[step]
-  const result = validation ?? false
-  console.log(
-    `canProceedToNext for step ${step}:`,
-    result,
-    'stepValidation[step]:',
-    validation,
-    'Full stepValidation:',
-    { ...stepValidation },
-  )
-  return result
+// Initialize form with definition
+const form = useForm({
+  definition: createFormDefinition(),
+  persistToStorage: true,
 })
+
+// Sync form.currentStep with StepContainer
+const currentStep = computed({
+  get: () => form.currentStep.value,
+  set: (value: number) => form.goToStep(value),
+})
+
+const totalSteps = computed(() => form.totalSteps.value)
+const showOnboarding = ref(false)
+
+// Computed - use form's built-in validation
+const canProceedToNext = computed(() => form.isStepValid.value)
 
 // Methods
 const nextStep = () => {
-  if (currentStep.value < totalSteps.value) {
-    currentStep.value++
-    updateOnboardingStep(currentStep.value)
+  if (form.nextStep()) {
+    updateOnboardingStep(form.currentStep.value)
   }
 }
 
 const previousStep = () => {
-  if (currentStep.value > 1) {
-    currentStep.value--
-    updateOnboardingStep(currentStep.value)
+  if (form.previousStep()) {
+    updateOnboardingStep(form.currentStep.value)
   }
 }
 
 const completeOnboarding = () => {
+  // Get form data
+  const formData = form.getFormData()
+
   // Update legacy data for compatibility
-  onboardingData.value = {
-    companyName: accountData.companyName,
-    contactName: accountData.contactName,
-    email: accountData.email,
-    industry: accountData.industry,
+  const onboardingData = {
+    companyName: formData.companyName || '',
+    contactName: formData.contactName || '',
+    email: formData.email || '',
+    industry: '',
     autoApprove: false,
     requireNDA: false,
     requirePortfolio: true,
-    projectTypes: [...projectTypesData], // Store selected project types
+    projectTypes: (formData.projectTypes as string[]) || [],
   }
 
   // Save onboarding data
-  completeCurrentOnboarding(onboardingData.value)
+  completeCurrentOnboarding(onboardingData)
+
+  // Clear form storage
+  form.clear()
 
   // Hide onboarding
   showOnboarding.value = false
@@ -225,7 +320,7 @@ onMounted(() => {
   // Check if we should show client onboarding
   if (isClientMode.value && shouldShowOnboarding.value) {
     showOnboarding.value = true
-    setOnboardingSteps(currentStep.value, totalSteps.value)
+    setOnboardingSteps(form.currentStep.value, form.totalSteps.value)
   }
 })
 
@@ -235,7 +330,7 @@ watch(
   (newMode) => {
     if (newMode === 'client' && shouldShowOnboarding.value) {
       showOnboarding.value = true
-      setOnboardingSteps(currentStep.value, totalSteps.value)
+      setOnboardingSteps(form.currentStep.value, form.totalSteps.value)
     } else {
       showOnboarding.value = false
     }

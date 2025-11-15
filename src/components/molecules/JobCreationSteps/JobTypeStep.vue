@@ -102,9 +102,32 @@ const jobTypes = [
   },
 ]
 
-// Emit updates when selection changes (only if a value is selected)
+// Track if we're syncing from props to avoid emitting during sync
+const isSyncingFromProps = ref(false)
+
+// Sync localJobType when prop changes (e.g., when loading from localStorage)
+watch(
+  () => props.jobType,
+  (newValue) => {
+    if (newValue !== localJobType.value) {
+      isSyncingFromProps.value = true
+      localJobType.value = newValue || undefined
+      // Reset flag after next tick to allow reactive updates
+      setTimeout(() => {
+        isSyncingFromProps.value = false
+      }, 0)
+    }
+  },
+  { immediate: true },
+)
+
+// Emit updates when selection changes (only if a value is selected and not syncing from props)
 watch(localJobType, (newValue) => {
-  if (newValue && (newValue === 'talent_only' || newValue === 'ai_synthesis')) {
+  if (
+    !isSyncingFromProps.value &&
+    newValue &&
+    (newValue === 'talent_only' || newValue === 'ai_synthesis')
+  ) {
     emit('update:jobType', newValue)
   }
 })

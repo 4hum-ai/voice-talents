@@ -6,8 +6,8 @@
       :class="{
         'border-primary bg-primary/5': isDragOver,
         'border-destructive': hasError,
-        'p-6': !hasFile,
-        'p-3': hasFile,
+        'p-4 sm:p-6': !hasFile,
+        'p-2 sm:p-3': hasFile,
       }"
       @click="triggerFileInput"
       @dragover.prevent="handleDragOver"
@@ -64,10 +64,10 @@
       </div>
     </div>
 
-    <!-- Error Message -->
-    <div v-if="hasError" class="text-destructive mt-2 text-sm">
+    <!-- Error Message (right below upload area) -->
+    <p v-if="hasError" class="text-destructive mt-1.5 text-xs sm:text-sm">
       {{ errorMessage }}
-    </div>
+    </p>
 
     <!-- File Preview -->
     <div v-if="hasFile && !multiple && modelValue" class="mt-3 space-y-4">

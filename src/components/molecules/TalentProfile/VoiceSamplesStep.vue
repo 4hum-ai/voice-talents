@@ -48,7 +48,7 @@ import { computed } from 'vue'
 import { useToast } from '@/composables/useToast'
 import { useJobType } from '@/composables/useJobType'
 import Icon from '@/components/atoms/Icon.vue'
-import FileUpload from '@/components/atoms/FileUpload.vue'
+import { FileUpload } from '@/lib/form'
 
 interface VoiceSample {
   file: File

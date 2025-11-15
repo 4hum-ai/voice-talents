@@ -168,7 +168,7 @@ export class GisAuthProvider implements AuthProvider {
       script.async = true
       script.defer = true
 
-      let timeoutId: number | null = null
+      let timeoutId: ReturnType<typeof setTimeout> | null = null
 
       script.onload = () => {
         console.log('🔐 GIS: Google script loaded, checking API availability...')

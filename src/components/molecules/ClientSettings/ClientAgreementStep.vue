@@ -59,6 +59,7 @@
 
     <!-- Content Viewer -->
     <ContentViewer
+      v-if="currentContentSlug"
       :open="contentViewerOpen"
       :slug="currentContentSlug"
       @update:open="contentViewerOpen = $event"
@@ -71,7 +72,7 @@
 import { reactive, ref, watch } from 'vue'
 import Card from '@/components/atoms/Card.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import ContentViewer from '@/components/molecules/ContentViewer.vue'
+import { ContentViewer } from '@/lib/content'
 
 interface AgreementData {
   acceptedTerms: boolean

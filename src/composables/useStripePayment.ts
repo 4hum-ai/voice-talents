@@ -71,9 +71,25 @@ export function useStripePayment() {
       // Backend will assume ui_mode: "custom" if not specified, so we must explicitly set it
       // For hosted checkout, we should NOT use ui_mode or set it to null/undefined
       const baseUrl = params.return_url?.split('?')[0] || `${window.location.origin}/client/jobs`
+
+      // Check if modal parameter exists in return_url or current URL
+      let modalParam = ''
+      if (params.return_url?.includes('modal=')) {
+        const urlParams = new URLSearchParams(params.return_url.split('?')[1])
+        if (urlParams.has('modal')) {
+          modalParam = `&modal=${urlParams.get('modal')}`
+        }
+      } else {
+        const currentUrlParams = new URLSearchParams(window.location.search)
+        if (currentUrlParams.has('modal')) {
+          modalParam = `&modal=${currentUrlParams.get('modal')}`
+        }
+      }
+
       const successUrl =
-        params.return_url || `${baseUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`
-      const cancelUrl = `${baseUrl}?payment=cancelled`
+        params.return_url ||
+        `${baseUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}${modalParam}`
+      const cancelUrl = `${baseUrl}?payment=cancelled${modalParam}`
 
       const sessionData: Record<string, unknown> = {
         mode: params.mode || 'payment', // One-time payment (not subscription)

@@ -590,7 +590,7 @@ import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import TimeWindowPicker from '@/components/molecules/TimeWindowPicker.vue'
 // Atoms
-import JsonInput from '@/components/atoms/JsonInput.vue'
+import { JsonInput } from '@/lib/form'
 import Accordion from '@/components/atoms/Accordion.vue'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Sidebar from '@/components/atoms/Sidebar.vue'
@@ -600,22 +600,24 @@ import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import Card from '@/components/atoms/Card.vue'
-import Checkbox from '@/components/atoms/Checkbox.vue'
+import {
+  Checkbox,
+  DateRangeInput,
+  FileInput,
+  FormInput,
+  SelectInput,
+  TagInput,
+  Textarea,
+} from '@/lib/form'
 import Chip from '@/components/atoms/Chip.vue'
 import CountryFlag from '@/components/atoms/CountryFlag.vue'
-import DateRangeInput from '@/components/atoms/DateRangeInput.vue'
 import FieldValue from '@/components/atoms/FieldValue.vue'
-import FileInput from '@/components/atoms/FileInput.vue'
-import FormInput from '@/components/atoms/FormInput.vue'
 import IconButton from '@/components/atoms/IconButton.vue'
 import LanguageDisplay from '@/components/atoms/LanguageDisplay.vue'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
 import ResourceSelector from '@/components/atoms/ResourceSelector.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
 import SkeletonLoader from '@/components/atoms/SkeletonLoader.vue'
 import StatusDot from '@/components/atoms/StatusDot.vue'
-import TagInput from '@/components/atoms/TagInput.vue'
-import Textarea from '@/components/atoms/Textarea.vue'
 import TimeAgo from '@/components/atoms/TimeAgo.vue'
 // Organisms
 import VideoPlayer from '@/components/organisms/VideoPlayer.vue'

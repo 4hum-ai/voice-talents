@@ -244,14 +244,16 @@
 import { reactive, computed, ref } from 'vue'
 import { countries } from '@/utils/countries'
 import FileUploadModal from '@/components/molecules/FileUploadModal.vue'
-import FormInput from '@/components/atoms/FormInput.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
-import Textarea from '@/components/atoms/Textarea.vue'
-import FileInput from '@/components/atoms/FileInput.vue'
-import Checkbox from '@/components/atoms/Checkbox.vue'
+import {
+  FormInput,
+  SelectInput,
+  Textarea,
+  FileInput,
+  Checkbox,
+  ObjectInput,
+  ArrayInput,
+} from '@/lib/form'
 import ResourceSelector from '@/components/atoms/ResourceSelector.vue'
-import ObjectInput from '@/components/atoms/ObjectInput.vue'
-import ArrayInput from '@/components/atoms/ArrayInput.vue'
 import Button from '@/components/atoms/Button.vue'
 
 const props = withDefaults(

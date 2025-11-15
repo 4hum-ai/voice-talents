@@ -423,8 +423,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, h } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch, h } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import Button from '@/components/atoms/Button.vue'
 import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
@@ -442,6 +442,7 @@ import ChevronRightIcon from '~icons/mdi/chevron-right'
 
 const { setActions } = useLayoutSlots()
 
+const route = useRoute()
 const router = useRouter()
 const {
   deleteDraft,
@@ -544,6 +545,12 @@ const cancelDiscard = () => {
 
 // Job creation modal methods
 const openJobCreationModal = () => {
+  // Update URL with query parameters FIRST (before opening modal)
+  // Set both modal and step=1 to prevent StepContainer from overwriting
+  // This ensures the parameters are in URL even if modal fails to open
+  router.replace({
+    query: { ...route.query, modal: 'createJob', step: '1' },
+  })
   selectedDraftId.value = null
   showJobCreationModal.value = true
 }
@@ -551,6 +558,10 @@ const openJobCreationModal = () => {
 const closeJobCreationModal = () => {
   showJobCreationModal.value = false
   selectedDraftId.value = null
+  // Remove modal query parameter from URL
+  const query = { ...route.query }
+  delete query.modal
+  router.replace({ query })
 }
 
 const handleJobCreated = (job: JobPosting) => {
@@ -670,6 +681,21 @@ const getCurrencySymbol = (currency: string) => {
   return symbols[currency] || '$'
 }
 
+// Watch for modal query parameter to open modal
+watch(
+  () => route.query.modal,
+  (modal) => {
+    if (modal === 'createJob' && !showJobCreationModal.value) {
+      showJobCreationModal.value = true
+      selectedDraftId.value = null
+    } else if (modal !== 'createJob' && showJobCreationModal.value) {
+      // Close modal if query parameter is removed
+      showJobCreationModal.value = false
+      selectedDraftId.value = null
+    }
+  },
+)
+
 onMounted(() => {
   // Set actions (title comes from route meta)
   setActions(
@@ -684,5 +710,11 @@ onMounted(() => {
       () => 'Create Job',
     ),
   )
+
+  // Check if modal should be opened from query parameter
+  if (route.query.modal === 'createJob') {
+    showJobCreationModal.value = true
+    selectedDraftId.value = null
+  }
 })
 </script>

@@ -246,7 +246,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import Image from '@/components/molecules/Image.vue'
-import TagInput from '@/components/atoms/TagInput.vue'
+import { TagInput } from '@/lib/form'
 import Button from '@/components/atoms/Button.vue'
 
 // Icons

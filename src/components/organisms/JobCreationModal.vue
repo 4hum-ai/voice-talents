@@ -34,33 +34,39 @@
         </Step>
 
         <!-- Step 2: Basic Information & Requirements (All Types) -->
-        <Step :step="2" :valid="stepValidation[2]()">
+        <Step :step="2" :valid="canProceedToNext">
           <BasicInfoRequirementsStep
-            v-model:title="jobForm.title"
-            v-model:description="jobForm.description"
-            v-model:project-type="jobForm.projectType"
-            v-model:requirements="jobForm.requirements as any"
-            v-model:deadline="jobForm.deadline"
-            v-model:files="jobForm.files"
+            v-model:title="formTitle"
+            v-model:description="formDescription"
+            v-model:project-type="formProjectType"
+            v-model:requirements="formRequirements"
+            v-model:deadline="formDeadline"
+            v-model:files="formFiles"
             :voice-type="selectedVoiceType"
+            :errors="{
+              title: form.getFieldError('title'),
+              projectType: form.getFieldError('projectType'),
+              requirementsLanguage: form.getFieldError('requirementsLanguage'),
+              deadline: form.getFieldError('deadline'),
+            }"
           />
         </Step>
 
         <!-- Step 3: Talent Options (All Types) -->
         <Step :step="3" :valid="true">
           <TalentOptionsStep
-            v-model:talent-options="jobForm.talentOptions"
-            v-model:ai-settings="jobForm.aiSettings"
-            v-model:premium-features="jobForm.premiumFeatures"
+            v-model:talent-options="formTalentOptions"
+            v-model:ai-settings="formAiSettings"
+            v-model:premium-features="formPremiumFeatures"
             :voice-type="selectedVoiceType"
-            :requirements="jobForm.requirements"
+            :requirements="formRequirements"
           />
         </Step>
 
         <!-- Step 4: Review & Payment (All Types) -->
         <Step :step="4" :valid="true">
           <ReviewPaymentStep
-            :job-form="jobForm as any"
+            :job-form="getJobFormData() as any"
             :voice-type="selectedVoiceType"
             :is-submitting="isSubmitting"
             @payment-initiated="handlePaymentInitiated"
@@ -79,6 +85,7 @@ import { useToast } from '@/composables/useToast'
 import { useStripePayment } from '@/composables/useStripePayment'
 import { useJobType } from '@/composables/useJobType'
 import { useRoute, useRouter } from 'vue-router'
+import { useForm, type FormDefinition } from '@/lib/form'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import type { JobPosting } from '@/types/voice-client'
 import type { VoiceType } from '@/types/voice-talent'
@@ -116,119 +123,495 @@ const route = useRoute()
 const router = useRouter()
 
 // State
-const currentStep = ref(1)
-// 4 steps total: Voice Type + Basic Info & Requirements + Talent Options + Review
-const totalSteps = computed(() => {
-  return 4
-})
 const transitionName = ref('slide-left')
 const isSubmitting = ref(false)
-// isSavingDraft removed - using auto-save only
 const currentDraftId = ref<string | null>(null)
 const lastAutoSave = ref<Date | null>(null)
-const autoSaveInterval = ref<number | null>(null)
+const autoSaveInterval = ref<ReturnType<typeof setInterval> | null>(null)
 const paymentSessionId = ref<string | null>(null)
 
 // Get current client (in real app, this would come from auth)
 const currentClient = ref(mockClientData.voiceClients[0])
 
-// Voice type selection (outside of steps)
+// Voice type selection (outside of steps, handled separately)
 const selectedVoiceType = ref<'talent_only' | 'ai_synthesis' | 'hybrid_approach' | undefined>(
   undefined,
 )
 
-// Job form data - Dynamic based on voice type
-const jobForm = reactive({
-  voiceType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
-  title: '',
-  description: '',
-  projectType: 'commercial' as string,
-  priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
-  budget: {
-    max: 0,
-    currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND',
-  },
-  deadline: '', // Will be auto-set to 7 days in BasicInfoRequirementsStep
-  requirements: {
-    language: '',
-    voiceType: '' as VoiceType,
-    gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
-    ageRange: undefined as string | undefined,
-    specialInstructions: '',
-    deliveryFormat: '',
-    deliveryTimeline: '',
-    revisionRounds: '1', // Auto-set to 1
-  },
-  files: {
-    script: undefined as File | undefined,
-    referenceAudio: undefined as File | undefined,
-    additional: undefined as File[] | undefined,
-  },
-  premiumFeatures: {
-    talentOutreach: false,
-    aiMatching: false,
-    autoPrompts: false,
-  },
-  // Talent options
-  talentOptions: {
-    isPublic: true,
-    pickOwn: false,
-    selectedTalents: [] as string[],
-  },
-  // AI-specific settings
-  aiSettings: {
-    voiceModel: '',
-    voiceStyle: '',
-    emotion: '',
-    speed: 'normal' as 'slow' | 'normal' | 'fast',
-    pitch: 'normal' as 'low' | 'normal' | 'high',
-  },
-  paymentDetails: {
-    method: 'direct' as 'direct' | 'online' | 'stripe',
-  },
-  isPublic: true,
-  requirePortfolio: true,
+// Helper function to get date 7 days from now
+const getDateIn7Days = () => {
+  const date = new Date()
+  date.setDate(date.getDate() + 7)
+  return date.toISOString().split('T')[0] // Format as YYYY-MM-DD
+}
+
+// Create form definition - will be recreated when voice type changes
+const createFormDefinition = (): FormDefinition => {
+  const { getAllConfigs } = useJobType()
+
+  const projectTypeOptions = getAllConfigs.value.map((config) => ({
+    value: config.id,
+    label: config.label,
+  }))
+
+  const languageOptions = [
+    { value: 'english', label: 'English' },
+    { value: 'spanish', label: 'Spanish' },
+    { value: 'vietnamese', label: 'Vietnamese' },
+  ]
+
+  const genderOptions = [
+    { value: 'any', label: 'Any' },
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'non-binary', label: 'Non-binary' },
+  ]
+
+  const ageRangeOptions = [
+    { value: '18-25', label: '18-25' },
+    { value: '26-35', label: '26-35' },
+    { value: '36-45', label: '36-45' },
+    { value: '46-55', label: '46-55' },
+    { value: '56+', label: '56+' },
+  ]
+
+  const deliveryFormatOptions = [
+    { value: 'mp3_44khz', label: 'MP3 44kHz' },
+    { value: 'wav_48khz', label: 'WAV 48kHz' },
+    { value: 'wav_96khz', label: 'WAV 96kHz' },
+  ]
+
+  const revisionRoundsOptions = [
+    { value: '1', label: '1 round' },
+    { value: '2', label: '2 rounds' },
+    { value: '3', label: '3 rounds' },
+    { value: 'unlimited', label: 'Unlimited' },
+  ]
+
+  return {
+    id: 'job-creation',
+    persistToStorage: true,
+    excludeFromStorage: ['files'], // Files can't be serialized
+    initialStep: 1,
+    steps: [
+      {
+        step: 1,
+        title: 'Voice Type Selection',
+        fields: [], // Voice type handled separately
+      },
+      {
+        step: 2,
+        title: 'Basic Information & Requirements',
+        fields: [
+          {
+            name: 'title',
+            type: 'text',
+            label: 'Job Title',
+            placeholder: 'e.g., Commercial Voice-Over for Tech Startup',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Job title is required' },
+              { type: 'minLength', value: 5, message: 'Title must be at least 5 characters' },
+              {
+                type: 'maxLength',
+                value: 100,
+                message: 'Title must be no more than 100 characters',
+              },
+            ],
+          },
+          {
+            name: 'description',
+            type: 'textarea',
+            label: 'Project Description',
+            placeholder: 'Describe your project, target audience, and any specific requirements...',
+            validation: [
+              {
+                type: 'maxLength',
+                value: 2000,
+                message: 'Description must be no more than 2000 characters',
+              },
+            ],
+          },
+          {
+            name: 'projectType',
+            type: 'select',
+            label: 'Project Type',
+            required: true,
+            options: projectTypeOptions,
+            validation: [{ type: 'required', message: 'Project type is required' }],
+          },
+          {
+            name: 'requirementsLanguage',
+            type: 'select',
+            label: 'Language',
+            required: true,
+            options: languageOptions,
+            validation: [{ type: 'required', message: 'Language is required' }],
+          },
+          {
+            name: 'requirementsGender',
+            type: 'select',
+            label: 'Gender Preference',
+            options: genderOptions,
+            defaultValue: 'any',
+          },
+          {
+            name: 'requirementsAgeRange',
+            type: 'select',
+            label: 'Age Range',
+            options: ageRangeOptions,
+          },
+          {
+            name: 'requirementsSpecialInstructions',
+            type: 'textarea',
+            label: 'Special Instructions',
+            placeholder: 'Any additional requirements or notes...',
+          },
+          {
+            name: 'requirementsDeliveryFormat',
+            type: 'select',
+            label: 'Delivery Format',
+            options: deliveryFormatOptions,
+            defaultValue: 'mp3_44khz',
+          },
+          {
+            name: 'requirementsRevisionRounds',
+            type: 'select',
+            label: 'Revision Rounds',
+            options: revisionRoundsOptions,
+            defaultValue: '1',
+          },
+          {
+            name: 'deadline',
+            type: 'date',
+            label: 'Project Deadline',
+            required: true,
+            defaultValue: getDateIn7Days(),
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (!value || value === '') {
+                    return 'Deadline is required'
+                  }
+                  const deadline = new Date(value)
+                  if (isNaN(deadline.getTime())) {
+                    return 'Invalid date format'
+                  }
+                  const today = new Date()
+                  today.setHours(0, 0, 0, 0)
+                  if (deadline < today) {
+                    return 'Deadline must be in the future'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        step: 3,
+        title: 'Talent Options',
+        fields: [
+          {
+            name: 'talentOptionsIsPublic',
+            type: 'checkbox',
+            label: 'Public Listing',
+            defaultValue: true,
+          },
+          {
+            name: 'premiumFeaturesTalentOutreach',
+            type: 'checkbox',
+            label: 'Talent Outreach',
+            defaultValue: false,
+          },
+          {
+            name: 'premiumFeaturesAiMatching',
+            type: 'checkbox',
+            label: 'AI Matching',
+            defaultValue: false,
+          },
+          {
+            name: 'premiumFeaturesAutoPrompts',
+            type: 'checkbox',
+            label: 'Auto Prompts',
+            defaultValue: false,
+          },
+        ],
+      },
+      {
+        step: 4,
+        title: 'Review & Payment',
+        fields: [], // Review step, no form fields
+      },
+    ],
+  }
+}
+
+// Initialize form with definition
+const form = useForm({
+  definition: createFormDefinition(),
+  persistToStorage: true,
+  excludeFromStorage: ['files'],
 })
 
-// Helper function to validate required files
-const validateRequiredFiles = (): boolean => {
-  if (!jobForm.projectType) return true // Can't validate without project type
+// Sync form.currentStep with StepContainer
+const currentStep = computed({
+  get: () => form.currentStep.value,
+  set: (value: number) => form.goToStep(value),
+})
 
-  const projectConfig = getConfig(jobForm.projectType)
-  if (!projectConfig || !projectConfig.files.required.length) return true // No required files
+const totalSteps = computed(() => form.totalSteps.value)
 
-  // Check if all required files are uploaded
+// Files data (handled separately, not in form)
+// Use dynamic keys to support different project types with different file requirements
+const files = reactive<Record<string, File | File[] | undefined>>({})
+
+// Computed property to sync files with step component
+const formFiles = computed({
+  get: () => files,
+  set: (value: Record<string, File | File[] | undefined>) => {
+    // Update files reactively by assigning new values
+    // Clear existing keys that are not in the new value
+    Object.keys(files).forEach((key) => {
+      if (!(key in value)) {
+        delete files[key]
+      }
+    })
+    // Set/update files from new value
+    Object.keys(value).forEach((key) => {
+      files[key] = value[key]
+    })
+  },
+})
+
+// Helper to convert form data to jobForm structure
+const getJobFormData = () => {
+  const formData = form.getFormData()
+  return {
+    voiceType: selectedVoiceType.value || 'talent_only',
+    title: formData.title || '',
+    description: formData.description || '',
+    projectType: formData.projectType || 'commercial',
+    priority: 'medium' as const,
+    budget: {
+      max: 0,
+      currency: 'USD' as const,
+    },
+    deadline: formData.deadline || '',
+    requirements: {
+      language: formData.requirementsLanguage || '',
+      voiceType: '' as VoiceType,
+      gender: (formData.requirementsGender as 'male' | 'female' | 'non-binary' | 'any') || 'any',
+      ageRange: formData.requirementsAgeRange as string | undefined,
+      specialInstructions: formData.requirementsSpecialInstructions || '',
+      deliveryFormat: formData.requirementsDeliveryFormat || 'mp3_44khz',
+      deliveryTimeline: '',
+      revisionRounds: formData.requirementsRevisionRounds || '1',
+    },
+    files: files,
+    premiumFeatures: {
+      talentOutreach: formData.premiumFeaturesTalentOutreach || false,
+      aiMatching: formData.premiumFeaturesAiMatching || false,
+      autoPrompts: formData.premiumFeaturesAutoPrompts || false,
+    },
+    talentOptions: {
+      isPublic: formData.talentOptionsIsPublic !== false,
+      pickOwn: false,
+      selectedTalents: [] as string[],
+    },
+    aiSettings: {
+      voiceModel: '',
+      voiceStyle: '',
+      emotion: '',
+      speed: 'normal' as const,
+      pitch: 'normal' as const,
+    },
+    paymentDetails: {
+      method: 'direct' as 'direct' | 'online' | 'stripe',
+    },
+    isPublic: true,
+    requirePortfolio: true,
+  }
+}
+
+// Helper function to validate required files (computed for reactivity)
+const validateRequiredFiles = computed(() => {
+  const projectType = form.getField('projectType')
+  if (!projectType) return true
+
+  const projectConfig = getConfig(projectType as string)
+  if (!projectConfig || !projectConfig.files.required.length) return true
+
+  // Access files to ensure reactivity - iterate through all files for reactivity
+  Object.keys(files).forEach(() => {
+    // Accessing files keys ensures reactivity tracking
+  })
+
   return projectConfig.files.required.every((fileReq) => {
-    const files = jobForm.files as Record<string, File | File[] | undefined>
     const file = files[fileReq.id]
     return file !== undefined && file !== null
   })
-}
+})
 
-// Step validation for all 4 steps
-const stepValidation = computed(() => {
-  return {
-    1: () => !!selectedVoiceType.value, // Voice type selection
-    2: () =>
-      !!jobForm.title.trim() &&
-      !!jobForm.projectType &&
-      !!jobForm.requirements.language &&
-      !!jobForm.deadline &&
-      validateRequiredFiles(), // Basic info & requirements + required files
-    3: () => true, // Talent options step is always valid (can be empty)
-    4: () => true, // Review step is always valid
+// Can proceed to next step
+const canProceedToNext = computed(() => {
+  switch (currentStep.value) {
+    case 1:
+      return !!selectedVoiceType.value
+    case 2: {
+      // Access form data to ensure reactivity - access all step 2 fields directly
+      const title = form.getField('title')
+      const projectType = form.getField('projectType')
+      const requirementsLanguage = form.getField('requirementsLanguage')
+      const deadline = form.getField('deadline')
+
+      // Access files to track file changes - iterate through all files for reactivity
+      Object.keys(files).forEach(() => {
+        // Accessing files keys ensures reactivity tracking
+      })
+
+      // Manually validate step 2 to ensure validation runs
+      const stepValid = form.validateStep(2)
+      const hasRequiredFiles = validateRequiredFiles.value
+
+      // Debug logging (remove in production)
+      if (import.meta.env.DEV) {
+        console.log('Step 2 validation:', {
+          title: !!title && (title as string).trim().length > 0,
+          projectType: !!projectType,
+          requirementsLanguage: !!requirementsLanguage,
+          deadline: !!deadline,
+          stepValid,
+          hasRequiredFiles,
+          files: Object.keys(files),
+          requiredFiles: projectType
+            ? getConfig(projectType as string)?.files.required.map((f) => f.id)
+            : [],
+        })
+      }
+
+      return stepValid && hasRequiredFiles
+    }
+    case 3:
+    case 4:
+      return true
+    default:
+      return false
   }
 })
 
-// Can proceed to next step (for top navigation button)
-const canProceedToNext = computed(() => {
-  return stepValidation.value[currentStep.value as keyof typeof stepValidation.value]?.() ?? false
+// Computed properties to sync form data with step components
+const formTitle = computed({
+  get: () => form.getField('title') || '',
+  set: (value: string) => {
+    form.setField('title', value)
+    form.markFieldAsTouched('title')
+  },
+})
+
+const formDescription = computed({
+  get: () => form.getField('description') || '',
+  set: (value: string) => {
+    form.setField('description', value)
+    form.markFieldAsTouched('description')
+  },
+})
+
+const formProjectType = computed({
+  get: () => form.getField('projectType') || '',
+  set: (value: string) => {
+    form.setField('projectType', value)
+    form.markFieldAsTouched('projectType')
+  },
+})
+
+const formDeadline = computed({
+  get: () => form.getField('deadline') || '',
+  set: (value: string) => {
+    form.setField('deadline', value)
+    form.markFieldAsTouched('deadline')
+  },
+})
+
+const formRequirements = computed({
+  get: () => ({
+    language: form.getField('requirementsLanguage') || '',
+    voiceType: '' as VoiceType,
+    gender:
+      (form.getField('requirementsGender') as 'male' | 'female' | 'non-binary' | 'any') || 'any',
+    ageRange: form.getField('requirementsAgeRange') as string | undefined,
+    specialInstructions: form.getField('requirementsSpecialInstructions') || '',
+    deliveryFormat: form.getField('requirementsDeliveryFormat') || 'mp3_44khz',
+    deliveryTimeline: '',
+    revisionRounds: form.getField('requirementsRevisionRounds') || '1',
+  }),
+  set: (value: {
+    language?: string
+    gender?: 'male' | 'female' | 'non-binary' | 'any'
+    ageRange?: string
+    specialInstructions?: string
+    deliveryFormat?: string
+    revisionRounds?: string
+  }) => {
+    if (value.language !== undefined) {
+      form.setField('requirementsLanguage', value.language)
+      form.markFieldAsTouched('requirementsLanguage')
+    }
+    if (value.gender !== undefined) form.setField('requirementsGender', value.gender)
+    if (value.ageRange !== undefined) form.setField('requirementsAgeRange', value.ageRange)
+    if (value.specialInstructions !== undefined)
+      form.setField('requirementsSpecialInstructions', value.specialInstructions)
+    if (value.deliveryFormat !== undefined)
+      form.setField('requirementsDeliveryFormat', value.deliveryFormat)
+    if (value.revisionRounds !== undefined)
+      form.setField('requirementsRevisionRounds', value.revisionRounds)
+  },
+})
+
+const formTalentOptions = computed({
+  get: () => ({
+    isPublic: form.getField('talentOptionsIsPublic') !== false,
+    pickOwn: false,
+    selectedTalents: [] as string[],
+  }),
+  set: (value: { isPublic?: boolean }) => {
+    if (value.isPublic !== undefined) form.setField('talentOptionsIsPublic', value.isPublic)
+  },
+})
+
+const formPremiumFeatures = computed({
+  get: () => ({
+    talentOutreach: form.getField('premiumFeaturesTalentOutreach') || false,
+    aiMatching: form.getField('premiumFeaturesAiMatching') || false,
+    autoPrompts: form.getField('premiumFeaturesAutoPrompts') || false,
+  }),
+  set: (value: { talentOutreach?: boolean; aiMatching?: boolean; autoPrompts?: boolean }) => {
+    if (value.talentOutreach !== undefined)
+      form.setField('premiumFeaturesTalentOutreach', value.talentOutreach)
+    if (value.aiMatching !== undefined) form.setField('premiumFeaturesAiMatching', value.aiMatching)
+    if (value.autoPrompts !== undefined)
+      form.setField('premiumFeaturesAutoPrompts', value.autoPrompts)
+  },
+})
+
+const formAiSettings = computed({
+  get: () => ({
+    voiceModel: '',
+    voiceStyle: '',
+    emotion: '',
+    speed: 'normal' as const,
+    pitch: 'normal' as const,
+  }),
+  set: () => {
+    // AI settings not in form yet
+  },
 })
 
 // Methods
 const selectVoiceType = (type: 'talent_only' | 'ai_synthesis' | 'hybrid_approach') => {
   selectedVoiceType.value = type
-  jobForm.voiceType = type
   // Don't change currentStep - let user navigate manually
 }
 
@@ -236,26 +619,42 @@ const nextStep = () => {
   // Handle step 1: ensure voice type is set
   if (currentStep.value === 1) {
     if (selectedVoiceType.value) {
-      jobForm.voiceType = selectedVoiceType.value
       transitionName.value = 'slide-left'
+      form.nextStep()
+    }
+  } else if (currentStep.value === 2) {
+    // For step 2, validate before proceeding
+    if (canProceedToNext.value) {
+      transitionName.value = 'slide-left'
+      form.nextStep()
+    } else {
+      // Mark all required fields as touched to show errors
+      form.markFieldAsTouched('title')
+      form.markFieldAsTouched('projectType')
+      form.markFieldAsTouched('requirementsLanguage')
+      form.markFieldAsTouched('deadline')
     }
   } else {
     transitionName.value = 'slide-left'
+    form.nextStep()
   }
 }
 
 const previousStep = () => {
   if (currentStep.value > 1) {
     transitionName.value = 'slide-right'
+    form.previousStep()
   }
 }
 
-// Manual save removed - using auto-save only
-
 const autoSaveHandler = () => {
-  if (jobForm.title.trim() || jobForm.description.trim()) {
+  // Form already persists to storage, but we also save draft
+  const formData = form.getFormData()
+
+  if ((formData.title as string)?.trim() || (formData.description as string)?.trim()) {
+    const jobFormData = getJobFormData()
     const draft = autoSaveDraft(
-      jobForm as Record<string, unknown>,
+      jobFormData as Record<string, unknown>,
       currentClient.value.id,
       currentClient.value.companyName,
       currentDraftId.value || undefined,
@@ -286,52 +685,50 @@ const loadDraftData = (draftId: string) => {
     currentDraftId.value = draft.id
 
     // Populate form with draft data
-    jobForm.voiceType = draft.voiceType || 'talent_only'
-    selectedVoiceType.value = jobForm.voiceType
-    jobForm.title = draft.title
-    jobForm.description = draft.description
-    jobForm.projectType = draft.projectType
-    jobForm.priority = draft.priority || 'medium'
-    jobForm.budget = { max: draft.budget.max, currency: draft.budget.currency }
-    jobForm.deadline = draft.deadline
-    jobForm.requirements = {
-      language: ((draft.requirements as Record<string, unknown>).language as string) || '',
-      voiceType:
-        ((draft.requirements as Record<string, unknown>).voiceType as VoiceType) || 'commercial',
-      gender: draft.requirements.gender || 'any',
-      ageRange: (draft.requirements as Record<string, unknown>).ageRange as string | undefined,
-      specialInstructions: draft.requirements.specialInstructions || '',
-      deliveryFormat:
-        ((draft.requirements as Record<string, unknown>).deliveryFormat as string) || '',
-      deliveryTimeline:
-        ((draft.requirements as Record<string, unknown>).deliveryTimeline as string) || '',
-      revisionRounds:
-        ((draft.requirements as Record<string, unknown>).revisionRounds as string) || '',
-    }
-    jobForm.files = ((draft as unknown as Record<string, unknown>)
-      .files as typeof jobForm.files) || {
-      script: undefined,
-      referenceAudio: undefined,
-      additional: undefined,
-    }
-    jobForm.premiumFeatures = ((draft as unknown as Record<string, unknown>)
-      .premiumFeatures as typeof jobForm.premiumFeatures) || {
-      expressMatching: false,
-      talentOutreach: false,
-    }
-    jobForm.aiSettings = ((draft as unknown as Record<string, unknown>)
-      .aiSettings as typeof jobForm.aiSettings) || {
-      voiceModel: '',
-      voiceStyle: '',
-      emotion: '',
-      speed: 'normal',
-      pitch: 'normal',
-    }
-    jobForm.paymentDetails = ((draft as unknown as Record<string, unknown>)
-      .paymentDetails as typeof jobForm.paymentDetails) || {
-      method: 'direct',
-    }
-    jobForm.isPublic = draft.isPublic
+    selectedVoiceType.value = draft.voiceType || 'talent_only'
+    form.setField('title', draft.title || '')
+    form.setField('description', draft.description || '')
+    form.setField('projectType', draft.projectType || 'commercial')
+    form.setField('deadline', draft.deadline || '')
+    form.setField(
+      'requirementsLanguage',
+      ((draft.requirements as Record<string, unknown>).language as string) || '',
+    )
+    form.setField('requirementsGender', draft.requirements.gender || 'any')
+    form.setField(
+      'requirementsAgeRange',
+      (draft.requirements as Record<string, unknown>).ageRange as string,
+    )
+    form.setField('requirementsSpecialInstructions', draft.requirements.specialInstructions || '')
+    form.setField(
+      'requirementsDeliveryFormat',
+      ((draft.requirements as Record<string, unknown>).deliveryFormat as string) || 'mp3_44khz',
+    )
+    form.setField(
+      'requirementsRevisionRounds',
+      ((draft.requirements as Record<string, unknown>).revisionRounds as string) || '1',
+    )
+
+    const premiumFeatures =
+      ((draft as unknown as Record<string, unknown>).premiumFeatures as Record<string, boolean>) ||
+      {}
+    form.setField('premiumFeaturesTalentOutreach', premiumFeatures.talentOutreach || false)
+    form.setField('premiumFeaturesAiMatching', premiumFeatures.aiMatching || false)
+    form.setField('premiumFeaturesAutoPrompts', premiumFeatures.autoPrompts || false)
+
+    const talentOptions =
+      ((draft as unknown as Record<string, unknown>).talentOptions as Record<string, unknown>) || {}
+    form.setField('talentOptionsIsPublic', talentOptions.isPublic !== false)
+
+    // Load files (can't be in form)
+    const draftFiles =
+      ((draft as unknown as Record<string, unknown>).files as Record<
+        string,
+        File | File[] | undefined
+      >) || {}
+    Object.keys(draftFiles).forEach((key) => {
+      files[key] = draftFiles[key]
+    })
 
     showToast({
       type: 'info',
@@ -347,8 +744,9 @@ const handlePaymentInitiated = async (sessionId: string) => {
 
   // Save job as draft before payment
   if (!currentDraftId.value) {
+    const jobFormData = getJobFormData()
     const draft = saveDraftToStorage(
-      jobForm as Record<string, unknown>,
+      jobFormData as Record<string, unknown>,
       currentClient.value.id,
       currentClient.value.companyName,
     )
@@ -380,8 +778,9 @@ const handlePaymentConfirmed = async () => {
     if (paymentResult.status === 'paid') {
       // Payment verified, proceed with publishing
       if (!currentDraftId.value) {
+        const jobFormData = getJobFormData()
         const draft = saveDraftToStorage(
-          jobForm as Record<string, unknown>,
+          jobFormData as Record<string, unknown>,
           currentClient.value.id,
           currentClient.value.companyName,
         )
@@ -389,9 +788,10 @@ const handlePaymentConfirmed = async () => {
       }
 
       if (currentDraftId.value) {
-        jobForm.paymentDetails = { method: 'stripe' }
+        const jobFormData = getJobFormData()
+        jobFormData.paymentDetails = { method: 'stripe' }
         saveDraftToStorage(
-          jobForm as Record<string, unknown>,
+          jobFormData as Record<string, unknown>,
           currentClient.value.id,
           currentClient.value.companyName,
           currentDraftId.value,
@@ -401,10 +801,12 @@ const handlePaymentConfirmed = async () => {
         if (publishedJob) {
           // Clean up
           localStorage.removeItem(`payment_session_${currentDraftId.value}`)
+          // Clear form storage on successful publish
+          form.clear()
           showToast({
             type: 'success',
             title: 'Payment Successful & Job Published!',
-            message: `"${jobForm.title}" has been published successfully.`,
+            message: `"${form.getField('title')}" has been published successfully.`,
           })
           emit('complete', publishedJob)
           resetForm()
@@ -445,22 +847,24 @@ const publishJobHandler = async () => {
         // Payment verified, proceed with publishing
         // First save as draft if not already saved
         if (!currentDraftId.value) {
+          const jobFormData = getJobFormData()
           const draft = saveDraftToStorage(
-            jobForm as Record<string, unknown>,
+            jobFormData as Record<string, unknown>,
             currentClient.value.id,
             currentClient.value.companyName,
           )
           currentDraftId.value = draft.id
         }
 
-        // Update payment details
+        // Update payment details and save draft
         if (currentDraftId.value) {
-          jobForm.paymentDetails = {
+          const jobFormData = getJobFormData()
+          jobFormData.paymentDetails = {
             method: 'stripe',
           }
           // Save updated draft with payment info
           saveDraftToStorage(
-            jobForm as Record<string, unknown>,
+            jobFormData as Record<string, unknown>,
             currentClient.value.id,
             currentClient.value.companyName,
             currentDraftId.value,
@@ -476,10 +880,13 @@ const publishJobHandler = async () => {
             localStorage.removeItem(`payment_session_${currentDraftId.value}`)
           }
 
+          // Clear form storage on successful publish
+          form.clear()
+
           showToast({
             type: 'success',
             title: 'Payment Successful & Job Published!',
-            message: `"${jobForm.title}" has been published successfully.`,
+            message: `"${form.getField('title')}" has been published successfully.`,
           })
 
           emit('complete', publishedJob)
@@ -498,8 +905,9 @@ const publishJobHandler = async () => {
       // No payment flow - direct publish (for backward compatibility or testing)
       // First save as draft if not already saved
       if (!currentDraftId.value) {
+        const jobFormData = getJobFormData()
         const draft = saveDraftToStorage(
-          jobForm as Record<string, unknown>,
+          jobFormData as Record<string, unknown>,
           currentClient.value.id,
           currentClient.value.companyName,
         )
@@ -510,10 +918,13 @@ const publishJobHandler = async () => {
       const publishedJob = publishJob(currentDraftId.value)
 
       if (publishedJob) {
+        // Clear current session on successful publish
+        // Form storage is cleared by form.clear() in resetForm()
+
         showToast({
           type: 'success',
           title: 'Job Published!',
-          message: `"${jobForm.title}" has been published successfully.`,
+          message: `"${form.getField('title')}" has been published successfully.`,
         })
 
         emit('complete', publishedJob)
@@ -536,65 +947,29 @@ const publishJobHandler = async () => {
 }
 
 const resetForm = () => {
-  // Reset form to initial state
-  Object.assign(jobForm, {
-    voiceType: 'talent_only' as 'talent_only' | 'ai_synthesis' | 'hybrid_approach',
-    title: '',
-    description: '',
-    projectType: 'commercial' as string,
-    budget: {
-      max: 0,
-      currency: 'USD' as 'USD' | 'EUR' | 'GBP' | 'CAD' | 'AUD' | 'VND',
-    },
-    deadline: '',
-    requirements: {
-      language: '',
-      voiceType: '' as VoiceType,
-      gender: 'any' as 'male' | 'female' | 'non-binary' | 'any',
-      ageRange: undefined as string | undefined,
-      specialInstructions: '',
-      deliveryFormat: '',
-      revisionRounds: '1',
-    },
-    files: {
-      script: undefined as File | undefined,
-      referenceAudio: undefined as File | undefined,
-      additional: undefined as File[] | undefined,
-    },
-    premiumFeatures: {
-      talentOutreach: false,
-      aiMatching: false,
-      autoPrompts: false,
-    },
-    talentOptions: {
-      isPublic: true,
-      pickOwn: false,
-      selectedTalents: [] as string[],
-    },
-    aiSettings: {
-      voiceModel: '',
-      voiceStyle: '',
-      emotion: '',
-      speed: 'normal' as 'slow' | 'normal' | 'fast',
-      pitch: 'normal' as 'low' | 'normal' | 'high',
-    },
-    paymentDetails: {
-      method: 'direct' as 'direct' | 'online' | 'stripe',
-    },
-    isPublic: true,
-    requirePortfolio: true,
+  // Clear form
+  form.clear()
+
+  // Reset files - clear all dynamic file keys
+  Object.keys(files).forEach((key) => {
+    delete files[key]
   })
 
   // Reset step and voice type
-  currentStep.value = 1
+  form.goToStep(1)
   selectedVoiceType.value = undefined
   currentDraftId.value = null
+
+  // Set default deadline after clearing
+  const defaultDeadline = getDateIn7Days()
+  form.setField('deadline', defaultDeadline)
 
   // Load client defaults for new job
   loadClientDefaults()
 }
 
 const closeModal = () => {
+  // Form already handles persistence, just stop auto-save
   stopAutoSave()
   emit('close')
 }
@@ -602,17 +977,8 @@ const closeModal = () => {
 const loadClientDefaults = () => {
   const client = currentClient.value
   if (client) {
-    // Load default budget
-    jobForm.budget.max = client.preferences.defaultBudget.max
-    jobForm.budget.currency = client.preferences.defaultBudget.currency
-
-    // Load default language and voice type (use first preference)
-    jobForm.requirements.language = client.preferences.preferredLanguages[0] || ''
-    jobForm.requirements.voiceType = (client.preferences.preferredVoiceTypes[0] as VoiceType) || ''
-
-    // Load default preferences
-    jobForm.requirePortfolio = true
-    jobForm.isPublic = client.isPublic
+    // Load default language (use first preference)
+    form.setField('requirementsLanguage', client.preferences.preferredLanguages[0] || '')
   }
 }
 
@@ -622,9 +988,6 @@ const formatTime = (date: Date) => {
 
 // Lifecycle
 onMounted(() => {
-  loadClientDefaults()
-  startAutoSave()
-
   // Load draft if provided
   if (props.draftId) {
     loadDraftData(props.draftId)
@@ -635,7 +998,15 @@ onMounted(() => {
       // Navigate to review step to show payment success
       currentStep.value = 4
     }
+  } else {
+    // Form already loads from storage, just load client defaults if needed
+    const formData = form.getFormData()
+    if (!formData.title && !formData.description) {
+      loadClientDefaults()
+    }
   }
+
+  startAutoSave()
 
   // Check URL params for payment status
   if (route.query.payment === 'success' && route.query.session_id) {
@@ -654,16 +1025,24 @@ onUnmounted(() => {
 })
 
 // Watch for form changes to trigger auto-save
+// Watch specific fields instead of entire formData to avoid reactivity issues
 watch(
-  jobForm,
+  () => [
+    form.getField('title'),
+    form.getField('description'),
+    form.getField('projectType'),
+    form.getField('deadline'),
+  ],
   () => {
+    // Form already persists to storage, just trigger auto-save if needed
     if (autoSaveInterval.value) {
       clearTimeout(autoSaveInterval.value)
       autoSaveInterval.value = setTimeout(autoSaveHandler, 5000)
     }
   },
-  { deep: true },
 )
+
+// Form already handles persistence automatically, no need to watch step changes
 const scrollLock = useScrollLock(document.documentElement) // or document.body
 
 // Watch for modal open/close
@@ -675,8 +1054,22 @@ watch(
       // If opening for a new job (no draftId), reset the form
       if (!props.draftId) {
         resetForm()
+      } else {
+        // Ensure deadline is set even when loading from draft
+        const currentDeadline = form.getField('deadline')
+        if (!currentDeadline) {
+          const defaultDeadline = getDateIn7Days()
+          form.setField('deadline', defaultDeadline)
+        }
       }
       startAutoSave()
+
+      // Ensure modal parameter is in URL when modal opens
+      if (route.query.modal !== 'createJob') {
+        router.replace({
+          query: { ...route.query, modal: 'createJob' },
+        })
+      }
     } else {
       stopAutoSave()
     }

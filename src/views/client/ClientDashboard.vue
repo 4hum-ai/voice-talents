@@ -196,7 +196,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, computed, onMounted, watch, h } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import type { ClientStats, JobPosting, JobApplication } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
@@ -211,6 +212,8 @@ import { useOnboarding } from '@/composables/useOnboarding'
 
 const { setActions, setSubtitle } = useLayoutSlots()
 const authStore = useAuthStore()
+const route = useRoute()
+const router = useRouter()
 // Keep these icons: used as standalone elements in empty states
 import BriefcaseIcon from '~icons/mdi/briefcase'
 import EmailIcon from '~icons/mdi/email'
@@ -303,11 +306,21 @@ const formatTimeAgo = (dateString: string) => {
 
 // Modal methods
 const openJobCreationModal = () => {
+  // Update URL with query parameters FIRST (before opening modal)
+  // Set both modal and step=1 to prevent StepContainer from overwriting
+  // This ensures the parameters are in URL even if modal fails to open
+  router.replace({
+    query: { ...route.query, modal: 'createJob', step: '1' },
+  })
   showJobCreationModal.value = true
 }
 
 const closeJobCreationModal = () => {
   showJobCreationModal.value = false
+  // Remove modal query parameter from URL
+  const query = { ...route.query }
+  delete query.modal
+  router.replace({ query })
 }
 
 const handleJobCreated = (job: JobPosting) => {
@@ -337,6 +350,19 @@ const closeClientOnboarding = () => {
   // Onboarding will be hidden automatically by the computed property
 }
 
+// Watch for modal query parameter to open modal
+watch(
+  () => route.query.modal,
+  (modal) => {
+    if (modal === 'createJob' && !showJobCreationModal.value) {
+      showJobCreationModal.value = true
+    } else if (modal !== 'createJob' && showJobCreationModal.value) {
+      // Close modal if query parameter is removed
+      showJobCreationModal.value = false
+    }
+  },
+)
+
 onMounted(() => {
   // Update subtitle dynamically with user name
   setSubtitle(`Welcome back, ${authStore.user?.displayName || authStore.user?.email || 'there'}`)
@@ -354,6 +380,11 @@ onMounted(() => {
       () => 'Create Job',
     ),
   )
+
+  // Check if modal should be opened from query parameter
+  if (route.query.modal === 'createJob') {
+    showJobCreationModal.value = true
+  }
 
   // Set user mode to client when accessing client dashboard
   setUserMode('client')

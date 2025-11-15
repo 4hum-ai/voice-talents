@@ -50,14 +50,14 @@
         </div>
       </div>
 
-      <!-- Help text -->
-      <p v-if="helpText" :class="helpTextClasses">
-        {{ helpText }}
-      </p>
-
-      <!-- Error message -->
+      <!-- Error message (shown first if present) -->
       <p v-if="error" :class="errorClasses">
         {{ error }}
+      </p>
+
+      <!-- Help text (shown only if no error) -->
+      <p v-if="helpText && !error" :class="helpTextClasses">
+        {{ helpText }}
       </p>
     </div>
 
@@ -80,8 +80,17 @@ import FileUploadModal from '@/components/molecules/FileUploadModal.vue'
 import { useMedia } from '@/composables/useMedia'
 import { useToast } from '@/composables/useToast'
 import IconCloudUpload from '~icons/mdi/cloud-upload'
+import {
+  generateInputId,
+  getValidationState,
+  getLabelClasses,
+  getHelpTextClasses,
+  getErrorClasses,
+  getBorderClasses,
+  type BaseFormInputProps,
+} from '../util/BaseFormInput'
 
-interface Props {
+interface Props extends BaseFormInputProps {
   modelValue: string | undefined
   /** Accepted file types */
   accept?: string
@@ -89,20 +98,6 @@ interface Props {
   multiple?: boolean
   /** Maximum number of files */
   maxFiles?: number
-  /** Input size */
-  size?: 'sm' | 'md' | 'lg'
-  /** Label text */
-  label?: string
-  /** Whether the field is required */
-  required?: boolean
-  /** Whether the field is disabled */
-  disabled?: boolean
-  /** Help text below the input */
-  helpText?: string
-  /** Error message */
-  error?: string
-  /** Validation state */
-  validationState?: 'default' | 'success' | 'error' | 'warning'
   /** Button text */
   buttonText?: string
   /** Modal title */
@@ -161,7 +156,11 @@ const uploading = ref(false)
 const { uploadViaMediaResource } = useMedia()
 const { push } = useToast()
 
-const fileInputId = `file-input-${Math.random().toString(36).substr(2, 9)}`
+const fileInputId = generateInputId('file-input')
+
+const effectiveValidationState = computed(() =>
+  getValidationState(props.error, props.validationState),
+)
 
 const inputClasses = computed(() => {
   const base = 'sr-only' // Hide the actual file input
@@ -170,7 +169,7 @@ const inputClasses = computed(() => {
 
 const buttonClasses = computed(() => {
   const base =
-    'inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
+    'inline-flex items-center border shadow-sm leading-4 font-medium rounded-md text-foreground bg-input hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
   const sizes = {
     sm: 'px-2 py-1 text-xs',
@@ -178,52 +177,17 @@ const buttonClasses = computed(() => {
     lg: 'px-4 py-3 text-base',
   }
 
-  let borderClasses =
-    'border-gray-300 focus:border-red-500 focus:ring-red-500 dark:border-gray-600 dark:focus:border-red-400 dark:focus:ring-red-400'
-
-  if (props.validationState === 'success') {
-    borderClasses =
-      'border-green-300 focus:border-green-500 focus:ring-green-500 dark:border-green-600 dark:focus:border-green-400 dark:focus:ring-green-400'
-  } else if (props.validationState === 'error') {
-    borderClasses =
-      'border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-600 dark:focus:border-red-400 dark:focus:ring-red-400'
-  } else if (props.validationState === 'warning') {
-    borderClasses =
-      'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500 dark:border-yellow-600 dark:focus:border-yellow-400 dark:focus:ring-yellow-400'
-  }
+  const borderClasses = getBorderClasses(effectiveValidationState.value).replace(
+    'border ',
+    'border-2 ',
+  )
 
   return `${base} ${sizes[props.size]} ${borderClasses}`
 })
 
-const labelClasses = computed(() => {
-  const base = 'block font-medium text-gray-700 dark:text-gray-300'
-  const sizes = {
-    sm: 'text-xs mb-1',
-    md: 'text-sm mb-2',
-    lg: 'text-base mb-2',
-  }
-  return `${base} ${sizes[props.size]}`
-})
-
-const helpTextClasses = computed(() => {
-  const base = 'mt-1 text-gray-500 dark:text-gray-400'
-  const sizes = {
-    sm: 'text-xs',
-    md: 'text-xs',
-    lg: 'text-sm',
-  }
-  return `${base} ${sizes[props.size]}`
-})
-
-const errorClasses = computed(() => {
-  const base = 'mt-1 text-red-600 dark:text-red-400'
-  const sizes = {
-    sm: 'text-xs',
-    md: 'text-xs',
-    lg: 'text-sm',
-  }
-  return `${base} ${sizes[props.size]}`
-})
+const labelClasses = computed(() => getLabelClasses(props.size))
+const helpTextClasses = computed(() => getHelpTextClasses(props.size))
+const errorClasses = computed(() => getErrorClasses(props.size))
 
 const triggerFileInput = () => {
   if (props.useModal) {

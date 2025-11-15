@@ -1,6 +1,6 @@
 <template>
   <StepContainer
-    v-if="showOnboarding"
+    v-if="show"
     v-model="currentStep"
     :total-steps="totalSteps"
     :can-proceed="canProceedToNext"
@@ -18,20 +18,17 @@
         </Step>
 
         <!-- Step 2: Basic Info -->
-        <Step
-          :step="2"
-          :valid="!!(profileData.displayName && profileData.bio && profileData.location)"
-        >
+        <Step :step="2" :valid="form.isStepValid.value">
           <BasicInfoStep :profile-data="profileData" @update="updateProfileData" />
         </Step>
 
         <!-- Step 3: Voice Types -->
-        <Step :step="3" :valid="profileData.voiceTypes.length > 0">
+        <Step :step="3" :valid="form.isStepValid.value">
           <VoiceTypesStep :profile-data="profileData" @update="updateProfileData" />
         </Step>
 
         <!-- Step 4: Languages -->
-        <Step :step="4" :valid="profileData.languages.length > 0">
+        <Step :step="4" :valid="form.isStepValid.value">
           <LanguagesStep :profile-data="profileData" @update="updateProfileData" />
         </Step>
 
@@ -61,30 +58,32 @@
         </Step>
 
         <!-- Step 7: Payout Preferences -->
-        <Step
-          :step="7"
-          :valid="
-            !!payoutData.frequency &&
-            (payoutData.frequency !== 'threshold' ||
-              !!(payoutData.thresholdAmount && payoutData.thresholdAmount >= 5))
-          "
-        >
-          <PayoutPreferencesStep :payout-data="payoutData" @update="updatePayoutData" />
+        <Step :step="7" :valid="form.isStepValid.value">
+          <PayoutPreferencesStep
+            :payout-data="{
+              frequency: form.getField('payoutFrequency') || 'manual',
+              thresholdAmount: form.getField('thresholdAmount'),
+              currency: form.getField('currency') || 'USD',
+            }"
+            @update="updatePayoutData"
+          />
         </Step>
 
         <!-- Step 8: Agreement & Legal Requirements (Final Step) -->
-        <Step
-          :step="8"
-          :valid="
-            agreementData.isAgeVerified &&
-            agreementData.acceptedTerms &&
-            agreementData.acceptedPlatformAgreement
-          "
-        >
+        <Step :step="8" :valid="form.isStepValid.value">
           <AgreementStep
-            :model-value="agreementData"
-            @update:model-value="Object.assign(agreementData, $event)"
-            @validation-change="updateStepValidation(8, $event)"
+            :model-value="{
+              isAgeVerified: form.getField('isAgeVerified') || false,
+              acceptedTerms: form.getField('acceptedTerms') || false,
+              acceptedPlatformAgreement: form.getField('acceptedPlatformAgreement') || false,
+            }"
+            @update:model-value="
+              (data) => {
+                form.setField('isAgeVerified', data.isAgeVerified)
+                form.setField('acceptedTerms', data.acceptedTerms)
+                form.setField('acceptedPlatformAgreement', data.acceptedPlatformAgreement)
+              }
+            "
           />
         </Step>
       </div>
@@ -96,6 +95,8 @@
 import { ref, computed, reactive } from 'vue'
 import { useToast } from '@/composables/useToast'
 import { useOnboarding } from '@/composables/useOnboarding'
+import { useJobType } from '@/composables/useJobType'
+import { useForm, type FormDefinition } from '@/lib/form'
 import StepContainer from '@/components/molecules/StepContainer.vue'
 import Step from '@/components/molecules/Step.vue'
 import WelcomeStep from '@/components/molecules/TalentProfile/WelcomeStep.vue'
@@ -111,7 +112,7 @@ interface Props {
   show?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   show: false,
 })
 
@@ -123,30 +124,269 @@ const emit = defineEmits<{
 
 const { success, error } = useToast()
 const { completeTalentOnboarding } = useOnboarding()
+const { availableJobTypes } = useJobType()
 
-// State
-const currentStep = ref(1)
-const totalSteps = 8
+// Create form definition with dynamic options
+const createFormDefinition = (): FormDefinition => {
+  const voiceTypeOptions = availableJobTypes.value.map((type) => ({
+    value: type.value,
+    label: type.label,
+  }))
+
+  const languageOptions = [
+    { value: 'English', label: 'English' },
+    { value: 'Vietnamese', label: 'Vietnamese' },
+    { value: 'German', label: 'German' },
+  ]
+
+  return {
+    id: 'talent-onboarding',
+    persistToStorage: true,
+    excludeFromStorage: ['voiceSamples'], // Files can't be serialized
+    initialStep: 1,
+    steps: [
+      {
+        step: 1,
+        title: 'Welcome',
+        fields: [], // No fields, just content
+      },
+      {
+        step: 2,
+        title: 'Basic Info',
+        fields: [
+          {
+            name: 'displayName',
+            type: 'text',
+            label: 'What should we call you?',
+            placeholder: 'Your professional name',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Display name is required' },
+              { type: 'minLength', value: 2, message: 'Name must be at least 2 characters' },
+            ],
+          },
+          {
+            name: 'location',
+            type: 'text',
+            label: 'Where do you call home?',
+            placeholder: 'City, Country',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Location is required' },
+              { type: 'minLength', value: 2, message: 'Location must be at least 2 characters' },
+            ],
+          },
+          {
+            name: 'bio',
+            type: 'textarea',
+            label: 'Describe your voice',
+            placeholder: 'Describe your voice tone, range, style, characteristics...',
+            required: true,
+            validation: [
+              { type: 'required', message: 'Bio is required' },
+              { type: 'minLength', value: 10, message: 'Bio must be at least 10 characters' },
+              { type: 'maxLength', value: 500, message: 'Bio must be no more than 500 characters' },
+            ],
+          },
+        ],
+      },
+      {
+        step: 3,
+        title: 'Voice Types',
+        fields: [
+          {
+            name: 'voiceTypes',
+            type: 'multiselect',
+            label: 'Select all the types of voice work you specialize in',
+            required: true,
+            options: voiceTypeOptions,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (!Array.isArray(value) || value.length === 0) {
+                    return 'Please select at least one voice type'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        step: 4,
+        title: 'Languages',
+        fields: [
+          {
+            name: 'languages',
+            type: 'multiselect',
+            label: 'Select all languages you can perform in',
+            required: true,
+            options: languageOptions,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (!Array.isArray(value) || value.length === 0) {
+                    return 'Please select at least one language'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        step: 5,
+        title: 'Upload Voice Samples',
+        fields: [], // File uploads handled separately
+      },
+      {
+        step: 6,
+        title: 'Pricing & Rates',
+        fields: [], // Dynamic pricing fields handled separately
+      },
+      {
+        step: 7,
+        title: 'Payout Preferences',
+        fields: [
+          {
+            name: 'payoutFrequency',
+            type: 'radio',
+            label: 'Payout Frequency',
+            required: true,
+            options: [
+              { value: 'monthly', label: 'Monthly Automatic Payout' },
+              { value: 'threshold', label: 'Threshold-Based Payout' },
+              { value: 'manual', label: 'Manual Payout (Request Anytime)' },
+            ],
+            defaultValue: 'manual',
+          },
+          {
+            name: 'thresholdAmount',
+            type: 'number',
+            label: 'Payout Threshold Amount',
+            placeholder: '500',
+            dependencies: [
+              {
+                field: 'payoutFrequency',
+                operator: 'equals',
+                value: 'threshold',
+              },
+            ],
+            validation: [
+              {
+                type: 'custom',
+                validator: (value, formData) => {
+                  if (formData.payoutFrequency === 'threshold') {
+                    if (!value || value < 5) {
+                      return 'Minimum threshold is $5.00'
+                    }
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+          {
+            name: 'currency',
+            type: 'select',
+            label: 'Preferred Currency',
+            defaultValue: 'USD',
+            options: [
+              { value: 'USD', label: 'USD - US Dollar' },
+              { value: 'EUR', label: 'EUR - Euro' },
+              { value: 'JPY', label: 'JPY - Japanese Yen' },
+              { value: 'KRW', label: 'KRW - South Korean Won' },
+              { value: 'CNY', label: 'CNY - Chinese Yuan' },
+              { value: 'INR', label: 'INR - Indian Rupee' },
+            ],
+          },
+        ],
+      },
+      {
+        step: 8,
+        title: 'Agreement & Legal Requirements',
+        fields: [
+          {
+            name: 'isAgeVerified',
+            type: 'checkbox',
+            label: 'I confirm that I am at least 18 years old',
+            required: true,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (value !== true) {
+                    return 'You must confirm your age to continue'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+          {
+            name: 'acceptedTerms',
+            type: 'checkbox',
+            label: 'I have read and agree to the Terms of Service',
+            required: true,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (value !== true) {
+                    return 'You must accept the terms and conditions to continue'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+          {
+            name: 'acceptedPlatformAgreement',
+            type: 'checkbox',
+            label: 'I have read and agree to the Platform Agreement',
+            required: true,
+            validation: [
+              {
+                type: 'custom',
+                validator: (value) => {
+                  if (value !== true) {
+                    return 'You must accept the platform agreement to continue'
+                  }
+                  return true
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+}
+
+// Initialize form with definition
+const form = useForm({
+  definition: createFormDefinition(),
+  persistToStorage: true,
+  excludeFromStorage: ['voiceSamples'],
+})
+
+// Sync form.currentStep with StepContainer
+const currentStep = computed({
+  get: () => form.currentStep.value,
+  set: (value: number) => form.goToStep(value),
+})
+
+const totalSteps = computed(() => form.totalSteps.value)
 const transitionName = ref('slide-left')
 
-// Agreement data
-const agreementData = reactive({
-  isAgeVerified: false,
-  acceptedTerms: false,
-  acceptedPlatformAgreement: false,
-})
+// Avatar data (handled separately, not in form - files can't be serialized)
+const avatarUrl = ref<string>('')
 
-// Profile data
-const profileData = reactive({
-  displayName: '',
-  bio: '',
-  location: '',
-  avatarUrl: '',
-  voiceTypes: [] as string[],
-  languages: [] as string[],
-})
-
-// Voice samples data - one per voice type
+// Voice samples data - one per voice type (handled separately, not in form)
 const voiceSamples = reactive<
   Record<
     string,
@@ -160,6 +400,14 @@ const voiceSamples = reactive<
     }
   >
 >({})
+
+// Pricing data - dynamic based on selected job types (handled separately)
+const pricingData = reactive({
+  hourlyRate: '',
+  perWordRate: '',
+  notes: '',
+  jobTypeRates: {} as Record<string, string>,
+})
 
 // Preferences data
 const preferencesData = reactive({
@@ -177,79 +425,49 @@ const preferencesData = reactive({
   audioQuality: 'professional',
 })
 
-// Pricing data - now dynamic based on selected job types
-const pricingData = reactive({
-  hourlyRate: '',
-  perWordRate: '',
-  notes: '',
-  // Dynamic rates based on selected job types
-  jobTypeRates: {} as Record<string, string>,
-})
-
-// Payout preferences data - initialize with default values
-const payoutData = reactive({
-  frequency: 'manual' as 'monthly' | 'threshold' | 'manual',
-  thresholdAmount: 500 as number | undefined,
-  currency: 'USD' as 'USD' | 'EUR' | 'JPY' | 'KRW' | 'CNY' | 'INR',
-})
-
-// Ensure payoutData.frequency is always set (for step 7 validation)
-if (!payoutData.frequency) {
-  payoutData.frequency = 'manual'
-}
-
-// Computed
-const showOnboarding = computed(() => props.show)
-
-// Step validation state
-const stepValidation = reactive<Record<number, boolean>>({})
-
-const updateStepValidation = (step: number, isValid: boolean) => {
-  stepValidation[step] = isValid
-}
-
+// Computed - use form validation for steps with form fields, custom for others
 const canProceedToNext = computed((): boolean => {
   switch (currentStep.value) {
     case 1:
       return true // Welcome step
     case 2:
-      return !!(profileData.displayName && profileData.bio && profileData.location)
     case 3:
-      return profileData.voiceTypes.length > 0
     case 4:
-      return profileData.languages.length > 0
+    case 7:
+    case 8:
+      // Steps with form fields - use form validation
+      return form.isStepValid.value
     case 5:
-      // Allow proceeding if at least one voice type has a sample uploaded
+      // Voice samples - at least one sample required
       return Object.keys(voiceSamples).length > 0
     case 6:
-      // Require at least one job type rate to be set
+      // Pricing - at least one job type rate required
       return Object.values(pricingData.jobTypeRates).some(
         (rate) => rate && rate !== '' && parseFloat(rate) > 0,
-      )
-    case 7: {
-      // Payout preferences - must have frequency, and threshold amount if threshold selected
-      // 'manual' frequency is always valid (default)
-      const hasFrequency = !!payoutData.frequency
-      const thresholdValid =
-        payoutData.frequency !== 'threshold' ||
-        !!(payoutData.thresholdAmount && payoutData.thresholdAmount >= 5)
-      return !!(hasFrequency && thresholdValid)
-    }
-    case 8:
-      // Final step: Agreement - must accept all terms
-      return (
-        agreementData.isAgeVerified &&
-        agreementData.acceptedTerms &&
-        agreementData.acceptedPlatformAgreement
       )
     default:
       return false
   }
 })
 
+// Profile data computed from form
+const profileData = computed(() => ({
+  displayName: form.getField('displayName') || '',
+  bio: form.getField('bio') || '',
+  location: form.getField('location') || '',
+  avatarUrl: avatarUrl.value,
+  voiceTypes: (form.getField('voiceTypes') as string[]) || [],
+  languages: (form.getField('languages') as string[]) || [],
+}))
+
 // Update methods for child components
-const updateProfileData = (data: Partial<typeof profileData>) => {
-  Object.assign(profileData, data)
+const updateProfileData = (data: Partial<typeof profileData.value>) => {
+  if (data.displayName !== undefined) form.setField('displayName', data.displayName)
+  if (data.bio !== undefined) form.setField('bio', data.bio)
+  if (data.location !== undefined) form.setField('location', data.location)
+  if (data.avatarUrl !== undefined) avatarUrl.value = data.avatarUrl
+  if (data.voiceTypes !== undefined) form.setField('voiceTypes', data.voiceTypes)
+  if (data.languages !== undefined) form.setField('languages', data.languages)
 }
 
 const updateVoiceSamples = (data: Partial<typeof voiceSamples>) => {
@@ -260,43 +478,67 @@ const updatePricingData = (data: Partial<typeof pricingData>) => {
   Object.assign(pricingData, data)
 }
 
-const updatePayoutData = (data: Partial<typeof payoutData>) => {
-  Object.assign(payoutData, data)
+const updatePayoutData = (
+  data: Partial<{ frequency: string; thresholdAmount?: number; currency: string }>,
+) => {
+  if (data.frequency !== undefined) form.setField('payoutFrequency', data.frequency)
+  if (data.thresholdAmount !== undefined) form.setField('thresholdAmount', data.thresholdAmount)
+  if (data.currency !== undefined) form.setField('currency', data.currency)
 }
 
 // Methods
-
 const nextStep = () => {
-  // StepContainer already handles the step increment via v-model
-  // We just need to update the transition direction
-  if (currentStep.value < totalSteps && canProceedToNext.value) {
+  if (currentStep.value < totalSteps.value && canProceedToNext.value) {
     transitionName.value = 'slide-left'
+    if (form.nextStep()) {
+      // Step navigation handled by form
+    }
   }
 }
 
 const previousStep = () => {
-  // StepContainer already handles the step decrement via v-model
-  // We just need to update the transition direction
   if (currentStep.value > 1) {
     transitionName.value = 'slide-right'
+    form.previousStep()
   }
 }
 
 const completeOnboarding = async () => {
   try {
+    // Get form data
+    const formData = form.getFormData()
+
     // Save all onboarding data
     const onboardingData = {
-      agreement: agreementData,
-      profile: profileData,
+      agreement: {
+        isAgeVerified: formData.isAgeVerified || false,
+        acceptedTerms: formData.acceptedTerms || false,
+        acceptedPlatformAgreement: formData.acceptedPlatformAgreement || false,
+      },
+      profile: {
+        displayName: formData.displayName || '',
+        bio: formData.bio || '',
+        location: formData.location || '',
+        avatarUrl: avatarUrl.value || '',
+        voiceTypes: (formData.voiceTypes as string[]) || [],
+        languages: (formData.languages as string[]) || [],
+      },
       voiceSamples: voiceSamples,
       preferences: preferencesData,
       pricing: pricingData,
-      payoutPreferences: payoutData,
+      payoutPreferences: {
+        frequency: formData.payoutFrequency || 'manual',
+        thresholdAmount: formData.thresholdAmount,
+        currency: formData.currency || 'USD',
+      },
       completedAt: new Date().toISOString(),
     }
 
     // Use the new onboarding system
     completeTalentOnboarding(onboardingData)
+
+    // Clear form storage
+    form.clear()
 
     success('Welcome to VoiceTalents! Your profile is ready to go.')
     emit('complete')
@@ -308,10 +550,6 @@ const completeOnboarding = async () => {
 const closeOnboarding = () => {
   emit('close')
 }
-
-// const navigateToFeature = (route: string) => {
-//   router.push(route)
-// }
 </script>
 
 <style scoped>

@@ -171,7 +171,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import type { VoiceSample } from '@/types/voice-talent'
 import Button from '@/components/atoms/Button.vue'
-import SelectInput from '@/components/atoms/SelectInput.vue'
+import { SelectInput } from '@/lib/form'
 import ActionsMenu from '@/components/atoms/ActionsMenu.vue'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner.vue'
 import Chip from '@/components/atoms/Chip.vue'

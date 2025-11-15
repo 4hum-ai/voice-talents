@@ -287,7 +287,7 @@ import Button from '@/components/atoms/Button.vue'
 import { useToast } from '@/composables/useToast'
 import { useStripePayment, type StripeLineItem } from '@/composables/useStripePayment'
 import { getPremiumFeatureById } from '@/composables/usePremiumFeatures'
-import ContentViewer from '@/components/molecules/ContentViewer.vue'
+import { ContentViewer } from '@/lib/content'
 import IconMdiContentCopy from '~icons/mdi/content-copy'
 import IconMdiFileDocument from '~icons/mdi/file-document'
 import IconMdiFileMusic from '~icons/mdi/file-music'
@@ -582,7 +582,7 @@ const handleStripePayment = async () => {
   try {
     // Build return URL for hosted checkout
     const currentPath = window.location.pathname || '/client/jobs'
-    const successUrl = `${window.location.origin}${currentPath}?step=4&payment=success&session_id={CHECKOUT_SESSION_ID}`
+    const successUrl = `${window.location.origin}${currentPath}?modal=createJob&step=4&payment=success&session_id={CHECKOUT_SESSION_ID}`
 
     const session = await createCheckoutSession({
       line_items: buildLineItems.value,

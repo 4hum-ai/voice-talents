@@ -206,7 +206,7 @@ import { ref, computed, watch } from 'vue'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import ContentViewer from '@/components/molecules/ContentViewer.vue'
+import { ContentViewer } from '@/lib/content'
 
 interface AgreementData {
   projectTitle: string
