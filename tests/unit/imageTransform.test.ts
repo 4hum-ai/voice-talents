@@ -10,7 +10,7 @@ import {
 } from '../../src/utils/imageTransform'
 
 // Mock the useCdn composable
-vi.mock('@/composables/useCdn', () => ({
+vi.mock('@/lib/media', () => ({
   useCdn: () => ({
     domain: 'test-cdn.com',
     enabled: true,

@@ -2,8 +2,30 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { MockedFunction } from 'vitest'
 import { createApiClient } from '../../src/utils/useApiGateway'
 
+// Mock localStorage for Node.js environment
+const localStorageMock = (() => {
+  let store: Record<string, string> = {}
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString()
+    },
+    removeItem: (key: string) => {
+      delete store[key]
+    },
+    clear: () => {
+      store = {}
+    },
+  }
+})()
+
+if (typeof window === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  global.localStorage = localStorageMock as any
+}
+
 // Mock the auth provider factory
-vi.mock('@/providers/authProviderFactory', () => ({
+vi.mock('@/lib/auth', () => ({
   createDefaultAuthProvider: vi.fn(),
 }))
 
@@ -57,7 +79,7 @@ describe('useApiGateway / createApiClient', () => {
   })
 
   it('joins URLs correctly and includes headers with token when available', async () => {
-    const { createDefaultAuthProvider } = await import('@/providers/authProviderFactory')
+    const { createDefaultAuthProvider } = await import('@/lib/auth')
     const mockCreateDefaultAuthProvider = createDefaultAuthProvider as MockedFunction<
       typeof createDefaultAuthProvider
     >
@@ -91,7 +113,7 @@ describe('useApiGateway / createApiClient', () => {
   })
 
   it('retries once on 401 with refreshed token', async () => {
-    const { createDefaultAuthProvider } = await import('@/providers/authProviderFactory')
+    const { createDefaultAuthProvider } = await import('@/lib/auth')
     const mockCreateDefaultAuthProvider = createDefaultAuthProvider as MockedFunction<
       typeof createDefaultAuthProvider
     >

@@ -2,7 +2,7 @@
   <div class="flex h-screen flex-row">
     <!-- Navigation Sidebar -->
     <!-- On mobile, sidebar is fixed overlay and doesn't take up flex space -->
-    <VoiceActNavigation />
+    <TalentNavigation />
 
     <!-- Main Content -->
     <!-- On mobile, content takes full width since sidebar is fixed overlay -->
@@ -52,7 +52,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSidebar } from '@/composables/useSidebar'
 import { provideLayoutSlots } from '@/composables/useLayoutSlots'
-import VoiceActNavigation from '@/components/organisms/VoiceActNavigation.vue'
+import TalentNavigation from '@/components/organisms/TalentNavigation.vue'
 import AppBar from '@/components/molecules/AppBar.vue'
 
 const route = useRoute()

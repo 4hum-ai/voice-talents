@@ -219,7 +219,7 @@ flowchart TD
 ### Core User Entities
 
 - **User**: Base authentication entity
-- **VoiceTalent**: Voice talent profiles (renamed from VoiceActor)
+- **VoiceTalent**: Voice talent profiles (renamed from VoiceTalents)
 - **VoiceClient**: Client company profiles
 
 ### Content & Media Entities

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { useCdn, getCdnDomain, isCdnEnabled, getCdnUrl } from '../../src/composables/useCdn'
+import { useCdn, getCdnDomain, isCdnEnabled, getCdnUrl } from '../composable/useCdn'
 
 describe('useCdn', () => {
   beforeEach(() => {
@@ -68,7 +68,7 @@ describe('useCdn', () => {
 
     it('returns original URL when CDN is disabled', () => {
       // Mock isCdnEnabled to return false
-      vi.doMock('../../src/composables/useCdn', () => ({
+      vi.doMock('../composable/useCdn', () => ({
         isCdnEnabled: () => false,
         getCdnDomain: () => 'test.com',
       }))
@@ -86,7 +86,7 @@ describe('useCdn', () => {
 
     it('returns original URL when CDN domain is not available', () => {
       // Mock getCdnDomain to return undefined
-      vi.doMock('../../src/composables/useCdn', () => ({
+      vi.doMock('../composable/useCdn', () => ({
         isCdnEnabled: () => true,
         getCdnDomain: () => undefined,
       }))

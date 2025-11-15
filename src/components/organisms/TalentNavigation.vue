@@ -91,8 +91,8 @@ const { isDark, toggleTheme } = useTheme()
 
 // Use authenticated user data instead of mock data
 const currentActor = computed(() => {
-  console.log('🔍 VoiceActNavigation: user:', user.value)
-  console.log('🔍 VoiceActNavigation: isAuthenticated:', isAuthenticated.value)
+  console.log('🔍 TalentNavigation: user:', user.value)
+  console.log('🔍 TalentNavigation: isAuthenticated:', isAuthenticated.value)
   return {
     displayName: user.value?.displayName || user.value?.email || 'Voice Actor',
     avatarUrl: user.value?.photoURL,

@@ -188,6 +188,7 @@ describe('useForm', () => {
       expect(form.isFieldTouched('title')).toBe(false)
 
       form.setField('title', 'New Title')
+      form.touchField('title')
 
       expect(form.isFieldTouched('title')).toBe(true)
       expect(form.isFieldTouched('description')).toBe(false)
@@ -219,7 +220,7 @@ describe('useForm', () => {
 
       // Step 1 should be invalid (no title)
       expect(form.validateStep(1)).toBe(false)
-      expect(form.getFieldError('step_1')).toBe('Title is required')
+      expect(form.getFieldError('step_1', true)).toBe('Title is required')
 
       // Set title and validate again
       form.setField('title', 'My Title')
@@ -306,6 +307,7 @@ describe('useForm', () => {
       })
 
       form.setFieldError('title', 'Title is required')
+      form.touchField('title')
 
       expect(form.getFieldError('title')).toBe('Title is required')
     })
@@ -318,6 +320,8 @@ describe('useForm', () => {
 
       form.setFieldError('title', 'Title is required')
       form.setFieldError('email', 'Email is invalid')
+      form.touchField('title')
+      form.touchField('email')
 
       expect(form.getFieldError('title')).toBe('Title is required')
       expect(form.getFieldError('email')).toBe('Email is invalid')
@@ -346,6 +350,7 @@ describe('useForm', () => {
       })
 
       form.setFieldError('title', 'Title is required')
+      form.touchField('title')
       expect(form.getFieldError('title')).toBe('Title is required')
 
       form.clearFieldError('title')
@@ -373,6 +378,7 @@ describe('useForm', () => {
       })
 
       form.setFieldError('title', 'Title is required')
+      form.touchField('title')
       expect(form.getFieldError('title')).toBe('Title is required')
 
       form.setField('title', 'New Title')
@@ -731,7 +737,7 @@ describe('useForm', () => {
 
       // Try to proceed with invalid data
       expect(form.nextStep()).toBe(false)
-      expect(form.getFieldError('step_1')).toBe('Title is required')
+      expect(form.getFieldError('step_1', true)).toBe('Title is required')
 
       // Fix the error
       form.setField('title', 'My Title')
@@ -741,12 +747,12 @@ describe('useForm', () => {
 
       // Try to proceed with invalid email
       expect(form.nextStep()).toBe(false)
-      expect(form.getFieldError('step_2')).toBe('Email is required')
+      expect(form.getFieldError('step_2', true)).toBe('Email is required')
 
       // Fix with invalid format
       form.setField('email', 'invalid-email')
       expect(form.validateStep(2)).toBe(false)
-      expect(form.getFieldError('step_2')).toBe('Email must be valid')
+      expect(form.getFieldError('step_2', true)).toBe('Email must be valid')
 
       // Fix with valid email
       form.setField('email', 'valid@example.com')
