@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useCdn } from '@/composables/useCdn'
+import { useCdn } from '@/lib/media'
 import {
   transformImageUrl,
   generateSrcset,

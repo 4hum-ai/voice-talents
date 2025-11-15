@@ -55,7 +55,7 @@ import { useRouter } from 'vue-router'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 
 interface Emits {
   (e: 'validation-change', isValid: boolean): void

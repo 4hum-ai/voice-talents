@@ -98,7 +98,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import Icon from '@/components/atoms/Icon.vue'
 
 interface Props {

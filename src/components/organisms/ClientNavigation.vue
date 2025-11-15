@@ -1,6 +1,6 @@
 <template>
   <Sidebar
-    title="VoiceAct.AI"
+    title="VoiceTalents.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
     :default-collapsed="sidebarCollapsed"
@@ -23,7 +23,7 @@
                 {{ currentClient?.companyName }}
               </p>
               <p class="text-muted-foreground truncate text-xs">
-                {{ authStore.user?.email }}
+                {{ user?.email }}
               </p>
             </div>
           </div>
@@ -70,7 +70,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { ClientStats } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import { useSidebar } from '@/composables/useSidebar'
 import { useTheme } from '@/composables/useTheme'
 import Sidebar from '@/components/atoms/Sidebar.vue'
@@ -82,15 +82,15 @@ import AccountGroupIcon from '~icons/mdi/account-group'
 
 const router = useRouter()
 const route = useRoute()
-const authStore = useAuthStore()
+const { user, logout } = useAuth()
 const { sidebarOpen, sidebarCollapsed, close } = useSidebar()
 const { isDark, toggleTheme } = useTheme()
 
 // Use authenticated user data instead of mock data
 const currentClient = computed(() => ({
-  companyName: authStore.user?.displayName || authStore.user?.email || 'Client',
-  logoUrl: authStore.user?.photoURL,
-  contactName: authStore.user?.displayName || authStore.user?.email || 'Contact',
+  companyName: user.value?.displayName || user.value?.email || 'Client',
+  logoUrl: user.value?.photoURL,
+  contactName: user.value?.displayName || user.value?.email || 'Contact',
 }))
 
 // Keep stats as mock for now, but this could be fetched from API based on user ID
@@ -148,7 +148,7 @@ const navigationSections = computed(() => [
 
 const handleLogout = async () => {
   try {
-    await authStore.logoutUser()
+    await logout()
     router.push('/auth')
   } catch (error) {
     console.error('Logout failed:', error)

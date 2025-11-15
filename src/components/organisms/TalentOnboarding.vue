@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 import { ref, computed, reactive } from 'vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { useOnboarding } from '@/composables/useOnboarding'
 import { useJobType } from '@/composables/useJobType'
 import { useForm, type FormDefinition } from '@/lib/form'

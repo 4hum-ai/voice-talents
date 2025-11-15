@@ -831,7 +831,7 @@ import {
   JsonInput,
 } from '@/lib/form'
 import Button from '@/components/atoms/Button.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import StepContainer from '@/components/molecules/StepContainer.vue'
 import DynamicFormSidebar from '@/components/molecules/DynamicFormSidebar.vue'
 

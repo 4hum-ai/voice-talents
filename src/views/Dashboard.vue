@@ -1,8 +1,10 @@
 <template>
   <div>
     <AppBar :loading="loadingCounts">
-      <template #title> Hi, {{ auth.user?.displayName || auth.user?.email || 'there' }} </template>
-      <template #subtitle> You are logged in as {{ auth.user?.email || '—' }} </template>
+      <template #title>
+        Hi, {{ auth.user.value?.displayName || auth.user.value?.email || 'there' }}
+      </template>
+      <template #subtitle> You are logged in as {{ auth.user.value?.email || '—' }} </template>
       <template #actions>
         <div class="flex flex-wrap items-center gap-3 sm:flex-nowrap">
           <div class="w-full sm:w-64">
@@ -191,7 +193,7 @@ import Icon from '@/components/atoms/Icon.vue'
 import SearchInput from '@/components/atoms/SearchInput.vue'
 import { useResourceService } from '@/composables/useResourceService'
 import { useUiConfig, type AdminResourceInfo } from '@/composables/useUiConfig'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import LoadingIcon from '~icons/mdi/loading'
@@ -205,7 +207,7 @@ import { DataItem } from '@/types/common'
 // Connection health check removed as it's low value for UX
 const api = useResourceService()
 const uiConfig = useUiConfig()
-const auth = useAuthStore()
+const auth = useAuth()
 const router = useRouter()
 const { isDark, toggleTheme } = useTheme()
 const activity = useActivity()
@@ -318,7 +320,7 @@ const onMenuSelect = async (key: string) => {
   } else if (key === 'toggle-theme') {
     toggleTheme()
   } else if (key === 'logout') {
-    await auth.logoutUser()
+    await auth.logout()
     await router.push({ name: 'Auth', query: { redirect: '/' } })
   }
 }

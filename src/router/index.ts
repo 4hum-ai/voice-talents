@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import { genericRoutes } from './generic'
 import { customRoutes } from './custom'
 import { talentRoutes } from './talent'
@@ -19,24 +19,24 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   let titleSuffix = String(to.meta.title || 'Admin')
-  const authStore = useAuthStore()
+  const { user, isLoading, isAuthenticated, initialize } = useAuth()
 
   // Try to initialize auth if not already done, but don't block navigation on failure
-  if (!authStore.user && !authStore.isLoading) {
+  if (!user.value && !isLoading.value) {
     try {
-      await authStore.initialize()
+      await initialize()
     } catch (error) {
       console.warn('🔐 Router: Auth initialization failed in route guard:', error)
-      // Continue with navigation - auth errors are handled in the store
+      // Continue with navigation - auth errors are handled in the composable
     }
   }
 
-  if (to.name === 'Auth' && authStore.isAuthenticated) {
+  if (to.name === 'Auth' && isAuthenticated.value) {
     const redirectPath = (to.query.redirect as string) || '/'
     next(redirectPath)
     return
   }
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  if (to.meta.requiresAuth && !isAuthenticated.value) {
     next({ name: 'Auth', query: { redirect: to.fullPath } })
     return
   }

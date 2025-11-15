@@ -50,15 +50,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import Button from './Button.vue'
-import Icon from './Icon.vue'
-
-interface ToastAction {
-  label: string
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
-  onClick?: () => void
-}
+import Button from '@/components/atoms/Button.vue'
+import Icon from '@/components/atoms/Icon.vue'
+import type { ToastAction } from '../type'
 
 interface Props {
   id?: string

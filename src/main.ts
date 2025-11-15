@@ -9,12 +9,12 @@ import '@/style.css'
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
-// Initialize auth store before mount so guards have state
-import { useAuthStore } from './stores/auth'
+// Initialize auth before mount so guards have state
+import { useAuth } from './lib/auth'
 import { useTheme } from './composables/useTheme'
 import { useUiConfig } from './composables/useUiConfig'
 import { useActivity } from './composables/useActivity'
-const authStore = useAuthStore()
+const { initialize: initAuth } = useAuth()
 // Initialize theme before mounting to prevent FOUC
 const { initialize: initTheme } = useTheme()
 initTheme()
@@ -29,9 +29,8 @@ setTimeout(() => {
 }, 100)
 app.mount('#app')
 
-// Initialize auth store (non-blocking)
-authStore
-  .initialize()
+// Initialize auth (non-blocking)
+initAuth()
   .then(() => {
     console.log('🔐 Main: Auth initialization completed')
     // Kick off UI config initialization in the background

@@ -3,7 +3,7 @@
  * Declarative form schema for job posting
  */
 
-import type { FormDefinition } from '../composable/useFormDefinition'
+import type { FormDefinition } from '@/lib/form'
 import { useJobType } from '@/composables/useJobType'
 
 /**

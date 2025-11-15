@@ -1,7 +1,19 @@
+/**
+ * Auth Composable
+ * Provides authentication functionality with provider abstraction
+ */
+
 import { ref, readonly, computed } from 'vue'
-import type { AuthUser } from '@/types/auth'
-import { createDefaultAuthProvider } from '@/providers/authProviderFactory'
-import type { AuthProvider } from '@/types/auth'
+import type { AuthUser } from '../type'
+import { createDefaultAuthProvider } from '../provider'
+import type { AuthProvider } from '../type'
+import {
+  emitAuthEvent,
+  AuthEventType,
+  type AuthLoginEvent,
+  type AuthLogoutEvent,
+  type AuthUserChangedEvent,
+} from '../event'
 
 // Global provider instance
 let authProvider: AuthProvider | null = null
@@ -39,9 +51,18 @@ export function useAuth() {
     getAuthProvider()
       .then((provider) => {
         unsubscribe = provider.subscribe((authUser) => {
+          const previousUser = user.value
           user.value = authUser
           cb(authUser)
           isLoading.value = false
+
+          // Emit user changed event if user actually changed
+          if (previousUser?.id !== authUser?.id) {
+            emitAuthEvent({
+              type: AuthEventType.USER_CHANGED,
+              user: authUser,
+            } as AuthUserChangedEvent)
+          }
         })
       })
       .catch((err) => {
@@ -63,10 +84,24 @@ export function useAuth() {
       const provider = await getAuthProvider()
       const authUser = await provider.login(email, password)
       user.value = authUser
+
+      // Emit login event
+      emitAuthEvent({
+        type: AuthEventType.LOGIN,
+        user: authUser,
+      } as AuthLoginEvent)
+
       return authUser
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed'
       error.value = message
+
+      // Emit login failed event
+      emitAuthEvent({
+        type: AuthEventType.LOGIN_FAILED,
+        error: message,
+      })
+
       throw new Error(message)
     }
   }
@@ -80,10 +115,25 @@ export function useAuth() {
       const provider = await getAuthProvider()
       const result = await provider.loginWithGoogle()
       user.value = result.user
+
+      // Emit login event
+      emitAuthEvent({
+        type: AuthEventType.LOGIN,
+        user: result.user,
+        isNewUser: result.newUser,
+      } as AuthLoginEvent)
+
       return result
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Google login failed'
       error.value = message
+
+      // Emit login failed event
+      emitAuthEvent({
+        type: AuthEventType.LOGIN_FAILED,
+        error: message,
+      })
+
       throw new Error(message)
     }
   }
@@ -96,10 +146,25 @@ export function useAuth() {
       const provider = await getAuthProvider()
       const result = await provider.loginWithOAuth(providerName)
       user.value = result.user
+
+      // Emit login event
+      emitAuthEvent({
+        type: AuthEventType.LOGIN,
+        user: result.user,
+        isNewUser: result.newUser,
+      } as AuthLoginEvent)
+
       return result
     } catch (err) {
       const message = err instanceof Error ? err.message : 'OAuth login failed'
       error.value = message
+
+      // Emit login failed event
+      emitAuthEvent({
+        type: AuthEventType.LOGIN_FAILED,
+        error: message,
+      })
+
       throw new Error(message)
     }
   }
@@ -110,9 +175,21 @@ export function useAuth() {
       const provider = await getAuthProvider()
       await provider.logout()
       user.value = null
+
+      // Emit logout event
+      emitAuthEvent({
+        type: AuthEventType.LOGOUT,
+      } as AuthLogoutEvent)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Logout failed'
       error.value = message
+
+      // Emit logout failed event
+      emitAuthEvent({
+        type: AuthEventType.LOGOUT_FAILED,
+        error: message,
+      })
+
       throw new Error(message)
     }
   }
@@ -146,6 +223,34 @@ export function useAuth() {
     }
   }
 
+  /**
+   * Initialize authentication state
+   * Call this on app startup to restore user session
+   */
+  const initialize = async () => {
+    try {
+      isLoading.value = true
+      error.value = null
+      const current = await getCurrentUser()
+      if (current) {
+        // User will be set by getCurrentUser
+        // Set up subscription to keep state in sync
+        subscribe(() => {
+          // State is already updated by subscribe callback
+        })
+      }
+      return current
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Authentication initialization failed'
+      error.value = message
+      isLoading.value = false
+      // Don't throw - allow app to continue
+      return null
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     user: readonly(user),
     isLoading: readonly(isLoading),
@@ -158,5 +263,6 @@ export function useAuth() {
     loginWithOAuth,
     logout,
     setPersistenceMode,
+    initialize,
   }
 }

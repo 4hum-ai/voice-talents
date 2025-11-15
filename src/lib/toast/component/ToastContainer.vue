@@ -26,53 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import Toast from '@/components/atoms/Toast.vue'
+import { useToast } from '../composable'
+import Toast from './Toast.vue'
 
-interface ToastData {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  title?: string
-  message?: string
-  duration?: number
-  persistent?: boolean
-  action?: {
-    label: string
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
-    size?: 'sm' | 'md' | 'lg'
-    onClick?: () => void
-  }
-}
-
-const toasts = ref<ToastData[]>([])
-
-let toastIdCounter = 0
-
-const addToast = (toast: Omit<ToastData, 'id'>) => {
-  const id = `toast-${++toastIdCounter}`
-  toasts.value.push({ ...toast, id })
-  return id
-}
-
-const removeToast = (id: string) => {
-  const index = toasts.value.findIndex((toast) => toast.id === id)
-  if (index > -1) {
-    toasts.value.splice(index, 1)
-  }
-}
-
-const clearAllToasts = () => {
-  toasts.value = []
-}
+const { toasts, removeToast } = useToast()
 
 const handleToastAction = () => {
   // Handle toast action if needed
 }
-
-// Expose methods for global use
-defineExpose({
-  addToast,
-  removeToast,
-  clearAllToasts,
-})
 </script>

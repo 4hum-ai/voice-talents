@@ -3,7 +3,7 @@
     <!-- Welcome Section -->
     <div class="mb-8">
       <h2 class="text-foreground mb-2 text-3xl font-bold">
-        Welcome back, {{ authStore.user?.displayName || authStore.user?.email || 'there' }}! 👋
+        Welcome back, {{ user?.displayName || user?.email || 'there' }}! 👋
       </h2>
       <p class="text-muted-foreground">
         Here's what's happening with your voice acting career today.
@@ -242,8 +242,8 @@ import { useRouter } from 'vue-router'
 import type { VoiceTalentStats } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
 import { useOnboarding } from '@/composables/useOnboarding'
-import { useToast } from '@/composables/useToast'
-import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/lib/toast'
+import { useAuth } from '@/lib/auth'
 import Card from '@/components/atoms/Card.vue'
 import Button from '@/components/atoms/Button.vue'
 import MetricCard from '@/components/molecules/MetricCard.vue'
@@ -259,7 +259,7 @@ const router = useRouter()
 // Onboarding logic
 const { shouldShowOnboarding, isTalentMode, setUserMode } = useOnboarding()
 const { success, error } = useToast()
-const authStore = useAuthStore()
+const { user } = useAuth()
 
 // Payout logic
 const { balance, fetchBalance, requestPayout } = usePayout()
@@ -369,15 +369,15 @@ const closeTalentOnboarding = () => {
 }
 
 const handlePayoutRequested = async (amount: number) => {
-  if (!authStore.user?.id) {
+  if (!user.value?.id) {
     error('User not authenticated')
     return
   }
 
   try {
-    await requestPayout(authStore.user.id, amount, balance.value?.currency || 'USD')
+    await requestPayout(user.value.id, amount, balance.value?.currency || 'USD')
     success(`Payout request for $${amount.toFixed(2)} submitted successfully`)
-    await fetchBalance(authStore.user.id)
+    await fetchBalance(user.value.id)
   } catch (err) {
     error(err instanceof Error ? err.message : 'Failed to request payout')
   }
@@ -388,8 +388,8 @@ onMounted(async () => {
   setUserMode('talent')
 
   // Fetch balance if user is authenticated
-  if (authStore.user?.id) {
-    await fetchBalance(authStore.user.id)
+  if (user.value?.id) {
+    await fetchBalance(user.value.id)
   }
 
   // Initialize dashboard data

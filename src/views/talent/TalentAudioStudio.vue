@@ -442,8 +442,8 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import Button from '@/components/atoms/Button.vue'
-import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
-import { useToast } from '@/composables/useToast'
+import { VideoPlayer } from '@/lib/media'
+import { useToast } from '@/lib/toast'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
 

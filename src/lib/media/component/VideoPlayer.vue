@@ -194,7 +194,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
-import { useCdn } from '@/composables/useCdn'
+import { useCdn } from '../composable'
 import Hls from 'hls.js'
 import AlertCircleOutlineIcon from '~icons/mdi/alert-circle-outline'
 import PlayIcon from '~icons/mdi/play'

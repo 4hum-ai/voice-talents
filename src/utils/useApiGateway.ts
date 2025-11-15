@@ -5,7 +5,7 @@ import {
   type HttpActivePayload,
   type HttpErrorPayload,
 } from '@/types/events'
-import { createDefaultAuthProvider } from '@/providers/authProviderFactory'
+import { createDefaultAuthProvider } from '@/lib/auth'
 
 export interface ApiClientOptions {
   /** Base URL for the API */

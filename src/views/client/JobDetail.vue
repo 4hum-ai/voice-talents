@@ -335,7 +335,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
 import {

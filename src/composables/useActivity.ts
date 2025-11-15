@@ -6,8 +6,9 @@ import {
   EVENT_VISITS_UPDATED,
   type CrudEventPayload,
 } from '@/types/events'
-import { useToast } from './useToast'
+import { useToast } from '@/lib/toast'
 import { useResourceService } from './useResourceService'
+import { onAuthLogout } from '@/lib/auth'
 
 export type VisitEntry<T = unknown> = {
   resource: string
@@ -31,6 +32,7 @@ const ACTIVITIES_KEY = 'md_admin_recent_activities'
 
 const started = ref(false)
 let offCrud: (() => void) | null = null
+let offAuthLogout: (() => void) | null = null
 
 function readJson<T>(key: string, fallback: T): T {
   try {
@@ -67,6 +69,8 @@ export function useActivity() {
   const start = () => {
     if (started.value) return
     started.value = true
+
+    // Subscribe to CRUD events
     offCrud = crudBus.on((evt: CrudEventPayload) => {
       try {
         logActivityFromEvent(evt)
@@ -74,11 +78,29 @@ export function useActivity() {
         /* ignore */
       }
     })
+
+    // Subscribe to auth logout events to clear activity on logout
+    if (!offAuthLogout) {
+      offAuthLogout = onAuthLogout(() => {
+        try {
+          clearAll()
+          stop()
+        } catch {
+          /* ignore */
+        }
+      })
+    }
   }
 
   const stop = () => {
-    if (offCrud) offCrud()
-    offCrud = null
+    if (offCrud) {
+      offCrud()
+      offCrud = null
+    }
+    if (offAuthLogout) {
+      offAuthLogout()
+      offAuthLogout = null
+    }
     started.value = false
   }
 

@@ -1,6 +1,6 @@
 <template>
   <Sidebar
-    title="VoiceAct.AI"
+    title="VoiceTalents.AI"
     :sections="navigationSections"
     :active-item-id="activeItemId"
     :default-collapsed="sidebarCollapsed"
@@ -23,7 +23,7 @@
                 {{ currentActor?.displayName }}
               </p>
               <p class="text-muted-foreground truncate text-xs">
-                {{ authStore.user?.email }}
+                {{ user?.email }}
               </p>
             </div>
           </div>
@@ -70,7 +70,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { VoiceTalentStats } from '@/types/voice-talent'
 import { mockData } from '@/data/mock-voice-talent-data'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import { useSidebar } from '@/composables/useSidebar'
 import { useTheme } from '@/composables/useTheme'
 import Sidebar from '@/components/atoms/Sidebar.vue'
@@ -85,17 +85,17 @@ import WalletIcon from '~icons/mdi/wallet'
 
 const router = useRouter()
 const route = useRoute()
-const authStore = useAuthStore()
+const { user, isAuthenticated, logout } = useAuth()
 const { sidebarOpen, sidebarCollapsed, close } = useSidebar()
 const { isDark, toggleTheme } = useTheme()
 
 // Use authenticated user data instead of mock data
 const currentActor = computed(() => {
-  console.log('🔍 VoiceActNavigation: authStore.user:', authStore.user)
-  console.log('🔍 VoiceActNavigation: authStore.isAuthenticated:', authStore.isAuthenticated)
+  console.log('🔍 VoiceActNavigation: user:', user.value)
+  console.log('🔍 VoiceActNavigation: isAuthenticated:', isAuthenticated.value)
   return {
-    displayName: authStore.user?.displayName || authStore.user?.email || 'Voice Actor',
-    avatarUrl: authStore.user?.photoURL,
+    displayName: user.value?.displayName || user.value?.email || 'Voice Actor',
+    avatarUrl: user.value?.photoURL,
   }
 })
 
@@ -171,7 +171,7 @@ const navigationSections = computed(() => [
 
 const handleLogout = async () => {
   try {
-    await authStore.logoutUser()
+    await logout()
     router.push('/auth')
   } catch (error) {
     console.error('Logout failed:', error)

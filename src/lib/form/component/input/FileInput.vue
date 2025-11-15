@@ -78,7 +78,7 @@
 import { computed, ref } from 'vue'
 import FileUploadModal from '@/components/molecules/FileUploadModal.vue'
 import { useMedia } from '@/composables/useMedia'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import IconCloudUpload from '~icons/mdi/cloud-upload'
 import {
   generateInputId,

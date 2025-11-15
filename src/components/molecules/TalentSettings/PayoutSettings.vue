@@ -11,10 +11,10 @@ import { ref, onMounted, watch } from 'vue'
 import Card from '@/components/atoms/Card.vue'
 import PayoutPreferencesStep from '@/components/molecules/TalentProfile/PayoutPreferencesStep.vue'
 import { usePayout } from '@/composables/usePayout'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import type { PayoutPreferences } from '@/types/models'
 
-const authStore = useAuthStore()
+const { user } = useAuth()
 
 const { preferences, fetchBalance, fetchPreferences } = usePayout()
 
@@ -30,12 +30,9 @@ const handlePreferencesUpdate = (data: Partial<PayoutPreferences>) => {
 
 // Load data on mount
 onMounted(async () => {
-  if (!authStore.user?.id) return
+  if (!user.value?.id) return
 
-  await Promise.all([
-    fetchBalance(authStore.user?.id || ''),
-    fetchPreferences(authStore.user?.id || ''),
-  ])
+  await Promise.all([fetchBalance(user.value?.id || ''), fetchPreferences(user.value?.id || '')])
 
   // Sync local preferences with fetched preferences
   if (preferences.value) {

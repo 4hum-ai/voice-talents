@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { useApiGateway } from '@/utils/useApiGateway'
-import { useToast } from './useToast'
-import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/lib/toast'
+import { useAuth } from '@/lib/auth'
 
 export interface StripeCheckoutSession {
   id: string
@@ -44,7 +44,7 @@ export interface CreateCheckoutSessionParams {
 export function useStripePayment() {
   const apiClient = useApiGateway('billing')
   const { error } = useToast()
-  const authStore = useAuthStore()
+  const { user } = useAuth()
 
   const isLoading = ref(false)
   const isProcessing = ref(false)
@@ -62,7 +62,7 @@ export function useStripePayment() {
     errorMessage.value = null
 
     try {
-      if (!authStore.user?.id) {
+      if (!user.value?.id) {
         throw new Error('User must be authenticated to create payment session')
       }
 
@@ -100,11 +100,11 @@ export function useStripePayment() {
         // This prevents backend from assuming 'custom' which conflicts with success_url/cancel_url
         ui_mode: 'hosted', // Hosted checkout uses success_url and cancel_url
         // Prefill email in checkout form
-        customer_email: authStore.user.email || undefined,
+        customer_email: user.value.email || undefined,
         metadata: {
           jobId: params.jobId || '',
-          userId: authStore.user.id,
-          userEmail: authStore.user.email || '',
+          userId: user.value.id,
+          userEmail: user.value.email || '',
           ...params.metadata,
         },
       }

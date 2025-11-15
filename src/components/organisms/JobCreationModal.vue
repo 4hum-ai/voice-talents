@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useJob } from '@/composables/useJob'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { useStripePayment } from '@/composables/useStripePayment'
 import { useJobType } from '@/composables/useJobType'
 import { useRoute, useRouter } from 'vue-router'

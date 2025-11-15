@@ -123,11 +123,11 @@ import Icon from '@/components/atoms/Icon.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import BalanceCard from '@/components/molecules/BalanceCard.vue'
 import { usePayout } from '@/composables/usePayout'
-import { useToast } from '@/composables/useToast'
-import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/lib/toast'
+import { useAuth } from '@/lib/auth'
 
 const { success, error } = useToast()
-const authStore = useAuthStore()
+const { user } = useAuth()
 
 const {
   balance,
@@ -140,17 +140,17 @@ const {
 } = usePayout()
 
 const handlePayoutRequested = async (amount: number) => {
-  if (!authStore.user?.id) {
+  if (!user.value?.id) {
     error('User not authenticated')
     return
   }
 
   try {
-    await requestPayout(authStore.user.id, amount, balance.value?.currency || 'USD')
+    await requestPayout(user.value.id, amount, balance.value?.currency || 'USD')
     success(
       `Payout request for ${formatCurrency(amount, balance.value?.currency || 'USD')} submitted successfully`,
     )
-    await fetchBalance(authStore.user.id)
+    await fetchBalance(user.value.id)
     await refreshHistory()
   } catch (err) {
     error(err instanceof Error ? err.message : 'Failed to request payout')
@@ -158,15 +158,15 @@ const handlePayoutRequested = async (amount: number) => {
 }
 
 const refreshHistory = async () => {
-  if (!authStore.user?.id) return
-  await fetchPayoutHistory(authStore.user.id)
+  if (!user.value?.id) return
+  await fetchPayoutHistory(user.value.id)
 }
 
 // Load data on mount
 onMounted(async () => {
-  if (!authStore.user?.id) return
+  if (!user.value?.id) return
 
-  await Promise.all([fetchBalance(authStore.user.id), fetchPayoutHistory(authStore.user.id)])
+  await Promise.all([fetchBalance(user.value.id), fetchPayoutHistory(user.value.id)])
 })
 
 const formatCurrency = (amount: number, currency: string): string => {

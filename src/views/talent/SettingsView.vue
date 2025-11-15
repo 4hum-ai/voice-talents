@@ -49,7 +49,7 @@ import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import Button from '@/components/atoms/Button.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import {
   AccountInformation,
   NotificationPreferences,

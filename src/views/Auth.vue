@@ -83,7 +83,7 @@
             leave-to-class="opacity-0 transform translate-y-2 scale-95"
           >
             <div
-              v-if="error || authStore.error"
+              v-if="error || authError"
               id="auth-error"
               class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/30 dark:bg-red-900/20"
               role="alert"
@@ -103,9 +103,9 @@
               </svg>
               <div class="text-sm text-red-700 dark:text-red-400">
                 <p v-if="error">{{ error }}</p>
-                <p v-else-if="authStore.error">{{ authStore.error }}</p>
+                <p v-else-if="authError">{{ authError }}</p>
                 <p
-                  v-if="authStore.error && authStore.error.includes('Google Identity Services')"
+                  v-if="authError && authError.includes('Google Identity Services')"
                   class="mt-2 text-xs"
                 >
                   You can still try logging in - the system will attempt to reconnect.
@@ -157,14 +157,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
 import Button from '@/components/atoms/Button.vue'
 import { ContentViewer } from '@/lib/content'
 
 const router = useRouter()
 const route = useRoute()
-const authStore = useAuthStore()
+const { error: authError, isAuthenticated, initialize, loginWithOAuth } = useAuth()
 
 const isLoading = ref(false)
 const error = ref('')
@@ -182,7 +182,7 @@ const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'app
   try {
     isLoading.value = true
     error.value = ''
-    await authStore.loginWithProvider(provider)
+    await loginWithOAuth(provider)
 
     const redirectPath = (route.query.redirect as string) || '/'
     router.push(redirectPath)
@@ -195,9 +195,9 @@ const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'app
 
 onMounted(async () => {
   try {
-    await authStore.initialize()
+    await initialize()
 
-    if (authStore.isAuthenticated) {
+    if (isAuthenticated.value) {
       const redirectPath = (route.query.redirect as string) || '/'
       router.push(redirectPath)
     } else {

@@ -1,44 +1,17 @@
+/**
+ * Toast Composable
+ * Provides toast notification functionality
+ */
+
 import { ref } from 'vue'
-
-interface ToastOptions {
-  id?: string
-  type?: 'success' | 'error' | 'warning' | 'info'
-  title?: string
-  message?: string
-  body?: string
-  duration?: number
-  timeout?: number
-  persistent?: boolean
-  position?: string
-  action?: {
-    label: string
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
-    size?: 'sm' | 'md' | 'lg'
-    onClick?: () => void
-  }
-}
-
-interface ToastData {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  title?: string
-  message?: string
-  duration?: number
-  persistent?: boolean
-  action?: {
-    label: string
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
-    size?: 'sm' | 'md' | 'lg'
-    onClick?: () => void
-  }
-}
+import type { ToastOptions, ToastData } from '../type'
 
 const toasts = ref<ToastData[]>([])
 let toastIdCounter = 0
 
 export function useToast() {
   const addToast = (options: ToastOptions) => {
-    const id = `toast-${++toastIdCounter}`
+    const id = options.id || `toast-${++toastIdCounter}`
     const toast: ToastData = {
       id,
       type: options.type || 'info',
@@ -106,7 +79,7 @@ export function useToast() {
   }
 
   return {
-    toasts: toasts.value,
+    toasts, // Return the ref itself, not the value
     addToast,
     removeToast,
     clearAllToasts,

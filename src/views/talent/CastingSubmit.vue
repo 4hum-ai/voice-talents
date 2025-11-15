@@ -239,8 +239,8 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { JobPosting, JobApplication } from '@/types/voice-client'
 import { mockJobPostings } from '@/data/mock-voice-client-data'
-import { useAuthStore } from '@/stores/auth'
-import { useToast } from '@/composables/useToast'
+import { useAuth } from '@/lib/auth'
+import { useToast } from '@/lib/toast'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 
@@ -256,11 +256,11 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const authStore = useAuthStore()
+const { user } = useAuth()
 const { success, error, warning } = useToast()
 
 // Current user ID - in real app, this would come from auth store
-const currentUserId = authStore.user?.id || 'va-001'
+const currentUserId = user.value?.id || 'va-001'
 
 // State
 const job = ref<JobPosting | null>(null)
@@ -273,7 +273,7 @@ const hasUnsavedChanges = ref(false)
 const proposal = ref<Partial<JobApplication>>({
   jobId: props.jobId,
   voiceTalentId: currentUserId,
-  voiceTalentName: authStore.user?.displayName || authStore.user?.email || 'Voice Talent',
+  voiceTalentName: user.value?.displayName || user.value?.email || 'Voice Talent',
   status: 'submitted',
   appliedDate: new Date().toISOString(),
   proposedRate: 0,

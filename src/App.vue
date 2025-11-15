@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import ToastContainer from '@/components/organisms/ToastContainer.vue'
+import { ToastContainer } from '@/lib/toast'
 import NetworkStatusBar from '@/components/organisms/NetworkStatusBar.vue'
 import GlobalProgressBar from '@/components/organisms/GlobalProgressBar.vue'
 import GlobalUploadBar from '@/components/organisms/GlobalUploadBar.vue'

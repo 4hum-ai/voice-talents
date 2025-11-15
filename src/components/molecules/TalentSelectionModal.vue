@@ -253,7 +253,7 @@ import Avatar from '@/components/atoms/Avatar.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import { SelectInput } from '@/lib/form'
 import AgreementReviewStep from '@/components/molecules/AgreementReviewStep.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
 import type { JobApplication } from '@/types/voice-client'
 // Close icon removed; using Button icon prop instead

@@ -14,7 +14,7 @@ import {
   browserSessionPersistence,
   type User as FirebaseUser,
 } from 'firebase/auth'
-import type { AuthProvider, AuthUser } from '@/types/auth'
+import type { AuthProvider, AuthUser } from '../type'
 
 /**
  * Firebase Authentication Provider

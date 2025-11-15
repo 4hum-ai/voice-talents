@@ -359,7 +359,7 @@ import CastingSubmit from './CastingSubmit.vue'
 import Button from '@/components/atoms/Button.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Icon from '@/components/atoms/Icon.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { useJob } from '@/composables/useJob'
 import type { JobDetail } from '@/types/job-detail'
 import {

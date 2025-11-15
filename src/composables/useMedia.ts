@@ -1,6 +1,6 @@
 import { ref, computed, readonly } from 'vue'
 import { useResourceService } from '@/composables/useResourceService'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 
 export interface PaginatedResponse<T> {
   /** Array of media items */

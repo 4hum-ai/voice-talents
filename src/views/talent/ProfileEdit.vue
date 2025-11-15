@@ -74,7 +74,7 @@ import VoiceTypesStep from '@/components/molecules/TalentProfile/VoiceTypesStep.
 import LanguagesStep from '@/components/molecules/TalentProfile/LanguagesStep.vue'
 import VoiceSamplesStep from '@/components/molecules/TalentProfile/VoiceSamplesStep.vue'
 import PricingStep from '@/components/molecules/TalentProfile/PricingStep.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 
 const { setActions } = useLayoutSlots()
 const { success } = useToast()

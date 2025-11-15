@@ -3,7 +3,7 @@
  * Implements OAuth2 authentication using Google Identity Services
  */
 
-import type { AuthUser, AuthProvider } from '@/types/auth'
+import type { AuthUser, AuthProvider } from '../type'
 
 interface GoogleCredentialResponse {
   credential: string

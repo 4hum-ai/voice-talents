@@ -201,17 +201,17 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import type { ClientStats, JobPosting, JobApplication } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import MetricCard from '@/components/molecules/MetricCard.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Button from '@/components/atoms/Button.vue'
 import JobCreationModal from '@/components/organisms/JobCreationModal.vue'
 import ClientOnboardingFlow from '@/components/organisms/ClientOnboardingFlow.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { useOnboarding } from '@/composables/useOnboarding'
 
 const { setActions, setSubtitle } = useLayoutSlots()
-const authStore = useAuthStore()
+const { user } = useAuth()
 const route = useRoute()
 const router = useRouter()
 // Keep these icons: used as standalone elements in empty states
@@ -365,7 +365,7 @@ watch(
 
 onMounted(() => {
   // Update subtitle dynamically with user name
-  setSubtitle(`Welcome back, ${authStore.user?.displayName || authStore.user?.email || 'there'}`)
+  setSubtitle(`Welcome back, ${user.value?.displayName || user.value?.email || 'there'}`)
 
   // Set actions (title comes from route meta)
   setActions(

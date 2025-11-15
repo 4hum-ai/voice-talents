@@ -201,7 +201,7 @@ import Avatar from '@/components/atoms/Avatar.vue'
 import StatusBadge from '@/components/atoms/StatusBadge.vue'
 import Chip from '@/components/atoms/Chip.vue'
 import { Textarea } from '@/lib/form'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import FolderOpenIcon from '~icons/mdi/folder-open'
 
 interface Props {

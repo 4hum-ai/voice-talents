@@ -6,7 +6,7 @@ import {
   type Appearance,
   type CssFontSource,
 } from '@stripe/stripe-js'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import { useTheme } from '@/composables/useTheme'
 
 /**
@@ -22,7 +22,7 @@ export function useStripeEmbedded() {
   const isLoading = ref(false)
   const isInitialized = ref(false)
 
-  const authStore = useAuthStore()
+  const { user } = useAuth()
   const { mode: theme } = useTheme()
 
   /**
@@ -129,7 +129,7 @@ export function useStripeEmbedded() {
       throw new Error('Payment element not initialized')
     }
 
-    if (!authStore.user?.email) {
+    if (!user.value?.email) {
       throw new Error('User email is required for payment')
     }
 

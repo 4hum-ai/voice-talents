@@ -1,4 +1,4 @@
-import type { AuthProvider, AuthConfig, AuthProviderType } from '@/types/auth'
+import type { AuthProvider, AuthConfig, AuthProviderType } from '../type'
 import { FirebaseAuthProvider } from './firebaseAuthProvider'
 import { GisAuthProvider } from './gisAuthProvider'
 

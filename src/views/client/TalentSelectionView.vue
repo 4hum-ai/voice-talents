@@ -464,7 +464,7 @@ import Tab from '@/components/molecules/Tab.vue'
 import { useJob, type Job } from '@/composables/useJob'
 import { useJobApplication } from '@/composables/useJobApplication'
 import type { Application } from '@/types/job-application'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { mockVoiceTalents, mockVoiceSamples } from '@/data/mock-voice-talent-data'
 import type { VoiceSample } from '@/types/voice-talent'
 // Close icon removed; using Button icon prop instead

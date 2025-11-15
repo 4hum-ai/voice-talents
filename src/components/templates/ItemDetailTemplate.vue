@@ -442,7 +442,7 @@ import Button from '@/components/atoms/Button.vue'
 import { UiConfig } from '@/types/ui-config'
 import { useRelatedItems, type RelatedItemsConfig } from '@/composables/useRelatedItems'
 import { useResourceService } from '@/composables/useResourceService'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 
 interface RelatedItem {
   /** The resource type (e.g., 'media-relationships', 'titles') */

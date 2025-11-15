@@ -284,7 +284,7 @@
 import { computed, ref } from 'vue'
 import Icon from '@/components/atoms/Icon.vue'
 import Button from '@/components/atoms/Button.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { useStripePayment, type StripeLineItem } from '@/composables/useStripePayment'
 import { getPremiumFeatureById } from '@/composables/usePremiumFeatures'
 import { ContentViewer } from '@/lib/content'

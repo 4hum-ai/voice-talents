@@ -620,8 +620,7 @@ import SkeletonLoader from '@/components/atoms/SkeletonLoader.vue'
 import StatusDot from '@/components/atoms/StatusDot.vue'
 import TimeAgo from '@/components/atoms/TimeAgo.vue'
 // Organisms
-import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
-import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
+import { VideoPlayer, AudioPlayer } from '@/lib/media'
 
 // Single source of truth for component definitions
 interface ComponentDefinition {

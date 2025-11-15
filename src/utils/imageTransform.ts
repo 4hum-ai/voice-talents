@@ -10,7 +10,7 @@
  * - Custom domain configuration via environment variables
  */
 
-import { useCdn } from '@/composables/useCdn'
+import { useCdn } from '@/lib/media'
 
 export interface ImageTransformOptions {
   width?: number

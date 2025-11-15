@@ -155,8 +155,7 @@ import MusicIcon from '~icons/mdi/music-note-outline'
 import IconCloseCircle from '~icons/mdi/close-circle'
 import type { DataArray, DataItem } from '@/types/common'
 import Image from '@/components/molecules/Image.vue'
-import VideoPlayer from '@/components/organisms/VideoPlayer.vue'
-import AudioPlayer from '@/components/organisms/AudioPlayer.vue'
+import { VideoPlayer, AudioPlayer } from '@/lib/media'
 
 type Props = {
   data: DataArray

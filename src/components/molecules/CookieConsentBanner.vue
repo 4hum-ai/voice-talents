@@ -162,7 +162,7 @@ import { useCookieConsentStore } from '@/stores/cookieConsent'
 import Button from '@/components/atoms/Button.vue'
 import Icon from '@/components/atoms/Icon.vue'
 import Card from '@/components/atoms/Card.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 
 const cookieStore = useCookieConsentStore()
 const { success } = useToast()

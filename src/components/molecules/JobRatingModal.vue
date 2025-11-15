@@ -116,7 +116,7 @@ import { ref, computed } from 'vue'
 import Button from '@/components/atoms/Button.vue'
 import Avatar from '@/components/atoms/Avatar.vue'
 import { Textarea } from '@/lib/form'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 import { mockVoiceTalents } from '@/data/mock-voice-talent-data'
 // Close icon removed; using Button icon prop instead
 // Star icon kept for rating stars in content

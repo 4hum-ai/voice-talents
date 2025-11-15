@@ -52,13 +52,13 @@
 import { ref, reactive, onMounted, h } from 'vue'
 import { useLayoutSlots } from '@/composables/useLayoutSlots'
 import Button from '@/components/atoms/Button.vue'
-import { useToast } from '@/composables/useToast'
+import { useToast } from '@/lib/toast'
 
 const { setActions } = useLayoutSlots()
 const { success } = useToast()
 import type { VoiceClient } from '@/types/voice-client'
 import { mockClientData } from '@/data/mock-voice-client-data'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/lib/auth'
 import TabNavigation from '@/components/molecules/TabNavigation.vue'
 import Tab from '@/components/molecules/Tab.vue'
 import {
@@ -70,7 +70,7 @@ import AccountIcon from '~icons/mdi/account'
 import CogIcon from '~icons/mdi/cog'
 import ShareVariantIcon from '~icons/mdi/share-variant'
 
-const authStore = useAuthStore()
+const { user } = useAuth()
 
 // State
 const currentTab = ref('account')
@@ -159,9 +159,9 @@ const loadSettings = () => {
   const client = mockClientData.voiceClients[0] // Keep mock for other fields not available in auth
 
   // Load account information
-  accountData.companyName = authStore.user?.displayName || client.companyName
-  accountData.contactName = authStore.user?.displayName || client.contactName
-  accountData.email = authStore.user?.email || client.email
+  accountData.companyName = user.value?.displayName || client.companyName
+  accountData.contactName = user.value?.displayName || client.contactName
+  accountData.email = user.value?.email || client.email
   accountData.phone = client.phone || ''
   accountData.website = client.website || ''
   accountData.location = client.location
@@ -185,8 +185,8 @@ const loadSettings = () => {
 
   // Update legacy settings for compatibility
   Object.assign(settings, {
-    id: authStore.user?.id || client.id,
-    userId: authStore.user?.id || client.id,
+    id: user.value?.id || client.id,
+    userId: user.value?.id || client.id,
     ...accountData,
     logoUrl: client.logoUrl || '',
     isVerified: client.isVerified || false,
