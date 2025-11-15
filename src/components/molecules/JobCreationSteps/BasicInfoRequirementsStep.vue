@@ -81,68 +81,79 @@
         </div>
       </div>
 
-      <!-- Optional: File Uploads (Collapsible) -->
+      <!-- Project Files (Required) -->
       <div class="bg-card border-border rounded-lg border p-6">
-        <details class="group">
-          <summary class="text-foreground cursor-pointer text-sm font-semibold">
-            <div class="flex items-center justify-between">
-              <span>Project Files (Optional)</span>
-              <Icon
-                name="mdi:chevron-down"
-                class="h-5 w-5 transition-transform group-open:rotate-180"
-              />
-            </div>
-          </summary>
+        <h3 class="text-foreground mb-4 text-base font-semibold">Project Files</h3>
 
-          <div v-if="!localProjectType" class="bg-muted/50 mt-4 rounded-lg p-4">
+        <div v-if="!localProjectType" class="bg-muted/50 rounded-lg p-4">
+          <div class="text-muted-foreground flex items-center gap-2 text-sm">
+            <Icon name="mdi:information" class="h-5 w-5" />
+            <span>Select a project type to see file requirements</span>
+          </div>
+        </div>
+
+        <div v-else-if="currentProjectConfig" class="space-y-4">
+          <!-- Required Files -->
+          <div v-if="currentProjectConfig.files.required.length">
+            <div class="space-y-4">
+              <div v-for="fileReq in currentProjectConfig.files.required" :key="fileReq.id">
+                <label class="text-foreground mb-2 block text-sm font-medium">
+                  {{ fileReq.label }}
+                  <span class="text-red-500">*</span>
+                </label>
+                <FileUpload
+                  :key="`required-${fileReq.id}`"
+                  v-model="localFiles[fileReq.id]"
+                  :accept="fileReq.acceptedFormats.join(',')"
+                  :max-size="fileReq.maxSize"
+                  :multiple="fileReq.multiple || false"
+                  @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
+                />
+                <p class="text-muted-foreground mt-1 text-xs">
+                  {{ fileReq.description }} Max {{ fileReq.maxSize }}MB.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Files -->
+          <div v-if="currentProjectConfig.files.optional.length">
+            <h4 class="text-foreground mb-3 text-sm font-medium">Optional Files</h4>
+            <div class="space-y-4">
+              <div v-for="fileReq in currentProjectConfig.files.optional" :key="fileReq.id">
+                <label class="text-foreground mb-2 block text-sm font-medium">
+                  {{ fileReq.label }}
+                  <span class="text-muted-foreground text-xs">(Optional)</span>
+                </label>
+                <FileUpload
+                  :key="`optional-${fileReq.id}`"
+                  v-model="localFiles[fileReq.id]"
+                  :accept="fileReq.acceptedFormats.join(',')"
+                  :max-size="fileReq.maxSize"
+                  :multiple="fileReq.multiple || false"
+                  @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
+                />
+                <p class="text-muted-foreground mt-1 text-xs">
+                  {{ fileReq.description }} Max {{ fileReq.maxSize }}MB.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Files Required -->
+          <div
+            v-if="
+              !currentProjectConfig.files.required.length &&
+              !currentProjectConfig.files.optional.length
+            "
+            class="bg-muted/50 rounded-lg p-4"
+          >
             <div class="text-muted-foreground flex items-center gap-2 text-sm">
-              <Icon name="mdi:information" class="h-5 w-5" />
-              <span>Select a project type to see file requirements</span>
+              <Icon name="mdi:file-check" class="h-5 w-5" />
+              <span>No files required for this project type</span>
             </div>
           </div>
-
-          <div v-else-if="currentProjectConfig" class="mt-4 space-y-4">
-            <!-- Required Files -->
-            <div v-if="currentProjectConfig.files.required.length">
-              <h4 class="text-foreground mb-3 text-sm font-medium">Required Files</h4>
-              <div class="space-y-3">
-                <div v-for="fileReq in currentProjectConfig.files.required" :key="fileReq.id">
-                  <label class="text-foreground mb-2 block text-sm font-medium">
-                    {{ fileReq.label }}
-                  </label>
-                  <FileUpload
-                    :key="`required-${fileReq.id}`"
-                    v-model="localFiles[fileReq.id]"
-                    :accept="fileReq.acceptedFormats.join(',')"
-                    :max-size="fileReq.maxSize"
-                    :multiple="fileReq.multiple || false"
-                    @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Optional Files -->
-            <div v-if="currentProjectConfig.files.optional.length">
-              <h4 class="text-foreground mb-3 text-sm font-medium">Optional Files</h4>
-              <div class="space-y-3">
-                <div v-for="fileReq in currentProjectConfig.files.optional" :key="fileReq.id">
-                  <label class="text-foreground mb-2 block text-sm font-medium">
-                    {{ fileReq.label }}
-                  </label>
-                  <FileUpload
-                    :key="`optional-${fileReq.id}`"
-                    v-model="localFiles[fileReq.id]"
-                    :accept="fileReq.acceptedFormats.join(',')"
-                    :max-size="fileReq.maxSize"
-                    :multiple="fileReq.multiple || false"
-                    @upload="(file: File | File[]) => handleFileUpload(fileReq.id, file)"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </details>
+        </div>
       </div>
     </div>
   </div>

@@ -34,15 +34,7 @@
         </Step>
 
         <!-- Step 2: Basic Information & Requirements (All Types) -->
-        <Step
-          :step="2"
-          :valid="
-            !!jobForm.title.trim() &&
-            !!jobForm.projectType &&
-            !!jobForm.requirements.language &&
-            !!jobForm.deadline
-          "
-        >
+        <Step :step="2" :valid="stepValidation[2]()">
           <BasicInfoRequirementsStep
             v-model:title="jobForm.title"
             v-model:description="jobForm.description"
@@ -85,6 +77,7 @@ import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useJob } from '@/composables/useJob'
 import { useToast } from '@/composables/useToast'
 import { useStripePayment } from '@/composables/useStripePayment'
+import { useJobType } from '@/composables/useJobType'
 import { useRoute, useRouter } from 'vue-router'
 import { mockClientData } from '@/data/mock-voice-client-data'
 import type { JobPosting } from '@/types/voice-client'
@@ -118,6 +111,7 @@ const emit = defineEmits<{
 const { saveDraft: saveDraftToStorage, autoSaveDraft, loadDraft, publishJob } = useJob()
 const { addToast: showToast } = useToast()
 const { verifyPayment } = useStripePayment()
+const { getConfig } = useJobType()
 const route = useRoute()
 const router = useRouter()
 
@@ -196,6 +190,21 @@ const jobForm = reactive({
   requirePortfolio: true,
 })
 
+// Helper function to validate required files
+const validateRequiredFiles = (): boolean => {
+  if (!jobForm.projectType) return true // Can't validate without project type
+
+  const projectConfig = getConfig(jobForm.projectType)
+  if (!projectConfig || !projectConfig.files.required.length) return true // No required files
+
+  // Check if all required files are uploaded
+  return projectConfig.files.required.every((fileReq) => {
+    const files = jobForm.files as Record<string, File | File[] | undefined>
+    const file = files[fileReq.id]
+    return file !== undefined && file !== null
+  })
+}
+
 // Step validation for all 4 steps
 const stepValidation = computed(() => {
   return {
@@ -204,7 +213,8 @@ const stepValidation = computed(() => {
       !!jobForm.title.trim() &&
       !!jobForm.projectType &&
       !!jobForm.requirements.language &&
-      !!jobForm.deadline, // Basic info & requirements
+      !!jobForm.deadline &&
+      validateRequiredFiles(), // Basic info & requirements + required files
     3: () => true, // Talent options step is always valid (can be empty)
     4: () => true, // Review step is always valid
   }

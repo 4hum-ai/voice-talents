@@ -2,8 +2,13 @@
   <div class="file-upload">
     <!-- Upload Area -->
     <div
-      class="border-border hover:border-primary/50 relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors"
-      :class="{ 'border-primary bg-primary/5': isDragOver, 'border-destructive': hasError }"
+      class="border-border hover:border-primary/50 relative cursor-pointer rounded-lg border-2 border-dashed transition-colors"
+      :class="{
+        'border-primary bg-primary/5': isDragOver,
+        'border-destructive': hasError,
+        'p-6': !hasFile,
+        'p-3': hasFile,
+      }"
       @click="triggerFileInput"
       @dragover.prevent="handleDragOver"
       @dragleave.prevent="handleDragLeave"
@@ -18,7 +23,8 @@
         @change="handleFileSelect"
       />
 
-      <div v-if="!hasFile" class="space-y-3">
+      <!-- Empty State -->
+      <div v-if="!hasFile" class="space-y-3 text-center">
         <div class="bg-muted mx-auto flex h-12 w-12 items-center justify-center rounded-lg">
           <Icon name="mdi:cloud-upload" class="text-muted-foreground h-6 w-6" />
         </div>
@@ -45,6 +51,17 @@
           {{ buttonText }}
         </Button>
       </div>
+
+      <!-- Uploaded State - Small indicator (reusing empty state icon/text) -->
+      <div v-else class="flex items-center justify-center gap-2">
+        <div class="bg-muted flex h-8 w-8 items-center justify-center rounded-lg">
+          <Icon name="mdi:cloud-upload" class="text-muted-foreground h-4 w-4" />
+        </div>
+        <span class="text-foreground text-sm font-medium">
+          {{ isDragOver ? dropText : uploadText }}
+        </span>
+        <span v-if="multiple" class="text-muted-foreground text-xs">• Click to upload more</span>
+      </div>
     </div>
 
     <!-- Error Message -->
@@ -54,36 +71,43 @@
 
     <!-- File Preview -->
     <div v-if="hasFile && !multiple && modelValue" class="mt-3 space-y-4">
-      <div class="bg-muted/50 flex items-center justify-between rounded-lg p-3">
-        <div class="flex items-center space-x-3">
+      <div class="bg-card border-border flex items-center gap-3 rounded-lg border p-3">
+        <div
+          class="bg-primary/10 text-primary flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+        >
           <Icon
             :name="
               getFileIcon(
                 Array.isArray(modelValue) ? modelValue[0]?.type : (modelValue as File).type,
               )
             "
-            class="text-muted-foreground h-5 w-5"
+            class="h-5 w-5"
           />
-          <div>
-            <p class="text-foreground text-sm font-medium">
-              {{
-                Array.isArray(modelValue) ? `${modelValue.length} files` : (modelValue as File).name
-              }}
-            </p>
-            <p class="text-muted-foreground text-xs">
-              {{
-                Array.isArray(modelValue)
-                  ? formatFileSize(modelValue.reduce((sum, file) => sum + file.size, 0))
-                  : formatFileSize((modelValue as File).size)
-              }}
-            </p>
-          </div>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p
+            class="text-foreground truncate text-sm font-medium"
+            :title="
+              Array.isArray(modelValue) ? `${modelValue.length} files` : (modelValue as File).name
+            "
+          >
+            {{
+              Array.isArray(modelValue) ? `${modelValue.length} files` : (modelValue as File).name
+            }}
+          </p>
+          <p class="text-muted-foreground text-xs">
+            {{
+              Array.isArray(modelValue)
+                ? formatFileSize(modelValue.reduce((sum, file) => sum + file.size, 0))
+                : formatFileSize((modelValue as File).size)
+            }}
+          </p>
         </div>
         <Button
           variant="ghost"
           size="sm"
           @click.stop="removeFile()"
-          class="text-destructive hover:text-destructive"
+          class="text-muted-foreground hover:text-destructive flex-shrink-0"
         >
           <Icon name="mdi:close" class="h-4 w-4" />
         </Button>
@@ -100,20 +124,24 @@
       <div
         v-for="(file, index) in modelValue"
         :key="index"
-        class="bg-muted/50 flex items-center justify-between rounded-lg p-3"
+        class="bg-card border-border flex items-center gap-3 rounded-lg border p-3"
       >
-        <div class="flex items-center space-x-3">
-          <Icon :name="getFileIcon(file.type)" class="text-muted-foreground h-5 w-5" />
-          <div>
-            <p class="text-foreground text-sm font-medium">{{ file.name }}</p>
-            <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
-          </div>
+        <div
+          class="bg-primary/10 text-primary flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+        >
+          <Icon :name="getFileIcon(file.type)" class="h-5 w-5" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-foreground truncate text-sm font-medium" :title="file.name">
+            {{ file.name }}
+          </p>
+          <p class="text-muted-foreground text-xs">{{ formatFileSize(file.size) }}</p>
         </div>
         <Button
           variant="ghost"
           size="sm"
           @click="removeFile(index)"
-          class="text-destructive hover:text-destructive"
+          class="text-muted-foreground hover:text-destructive flex-shrink-0"
         >
           <Icon name="mdi:close" class="h-4 w-4" />
         </Button>
