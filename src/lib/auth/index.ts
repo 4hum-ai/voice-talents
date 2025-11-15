@@ -40,3 +40,6 @@ export type {
   AuthLogoutFailedEvent,
   AuthUserChangedEvent,
 } from './event'
+
+// Re-export views (optional - for convenience)
+export { AuthView } from './view'

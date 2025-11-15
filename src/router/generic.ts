@@ -15,7 +15,7 @@ export const genericRoutes: RouteRecordRaw[] = [
   {
     path: '/auth',
     name: 'Auth',
-    component: () => import('../views/Auth.vue'),
+    component: () => import('../lib/auth/view/Auth.vue'),
     meta: { title: 'Sign In', layout: 'none' },
   },
   {

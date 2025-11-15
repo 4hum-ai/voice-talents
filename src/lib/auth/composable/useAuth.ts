@@ -18,6 +18,11 @@ import {
 // Global provider instance
 let authProvider: AuthProvider | null = null
 
+// Shared auth state (singleton pattern)
+const isLoading = ref(true)
+const error = ref<string | null>(null)
+const user = ref<AuthUser | null>(null)
+
 async function getAuthProvider(): Promise<AuthProvider> {
   if (!authProvider) {
     authProvider = await createDefaultAuthProvider()
@@ -26,10 +31,6 @@ async function getAuthProvider(): Promise<AuthProvider> {
 }
 
 export function useAuth() {
-  const isLoading = ref(true)
-  const error = ref<string | null>(null)
-  const user = ref<AuthUser | null>(null)
-
   const getCurrentUser = async (): Promise<AuthUser | null> => {
     try {
       const provider = await getAuthProvider()

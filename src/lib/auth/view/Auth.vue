@@ -155,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/lib/auth'
 import ThemeToggle from '@/components/atoms/ThemeToggle.vue'
@@ -182,11 +182,39 @@ const handleProvider = async (provider: 'google' | 'github' | 'microsoft' | 'app
   try {
     isLoading.value = true
     error.value = ''
-    await loginWithOAuth(provider)
+
+    console.log('🔐 Auth: Starting login with', provider)
+    const result = await loginWithOAuth(provider)
+    console.log('🔐 Auth: Login successful, user:', result.user.email)
+    console.log('🔐 Auth: isAuthenticated after login:', isAuthenticated.value)
+
+    // Wait for Vue to process the reactive update
+    await nextTick()
+    console.log('🔐 Auth: After nextTick, isAuthenticated:', isAuthenticated.value)
+
+    // Wait for authentication state to be fully propagated
+    // Poll until authenticated or timeout
+    let attempts = 0
+    const maxAttempts = 20 // 2 seconds max wait
+    while (!isAuthenticated.value && attempts < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+      console.log(
+        `🔐 Auth: Waiting for auth state... attempt ${attempts}, isAuthenticated:`,
+        isAuthenticated.value,
+      )
+    }
+
+    if (!isAuthenticated.value) {
+      console.error('🔐 Auth: Still not authenticated after waiting, but proceeding with redirect')
+    }
 
     const redirectPath = (route.query.redirect as string) || '/'
-    router.push(redirectPath)
+    console.log('🔐 Auth: Redirecting to:', redirectPath)
+    await router.push(redirectPath)
+    console.log('🔐 Auth: Redirect completed')
   } catch (err) {
+    console.error('🔐 Auth: Login error:', err)
     error.value = err instanceof Error ? err.message : 'Login failed'
   } finally {
     isLoading.value = false
